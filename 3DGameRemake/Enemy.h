@@ -14,6 +14,7 @@ protected:
 	std::vector<int> currentPath;
 	int currentNodeIndex;
 	float pathUpdateTimer;
+	float forcePathTimer;
 public:
 	Enemy(VECTOR pos, CharacterStatus& status,Player* _target) : Character(pos, status),target(_target){}
 	virtual ~Enemy(){}

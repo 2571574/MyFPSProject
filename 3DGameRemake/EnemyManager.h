@@ -61,4 +61,11 @@ public:
 	/// <returns>当たった敵を返す</returns>
 	Enemy* CheckProjectile(VECTOR pos, VECTOR nextpos, float radius, TEAMID shooterTeam);
 	std::vector<std::unique_ptr<Enemy>>& GetEnemies(){ return enemies; }
+
+
+	void SetMapNode(const std::vector<Node>& nodes) { mapNode = nodes; }
+	int GetNearestNodeID(VECTOR pos);
+	std::vector<int> CalculatePath(VECTOR startPos, VECTOR goalPos);
+
+	VECTOR GetNodePosition(int nodeID);
 };

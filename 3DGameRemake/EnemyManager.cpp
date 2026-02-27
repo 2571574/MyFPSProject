@@ -87,3 +87,38 @@ Enemy* EnemyManager::CheckProjectile(VECTOR pos, VECTOR nextpos, float radius, T
 	}
 	return nullptr;
 }
+
+
+int EnemyManager::GetNearestNodeID(VECTOR pos) {
+	int nearestID = -1;
+	float minDistSq = -1.0f;
+
+	for (const auto& node : mapNode) {
+		float distSq = VSquareSize(VSub(node.position, pos));
+
+		if (nearestID == -1 || distSq < minDistSq) {
+			minDistSq = distSq;
+			nearestID = node.ID;
+		}
+	}
+
+	return nearestID;
+}
+
+
+std::vector<int> EnemyManager::CalculatePath(VECTOR startPos, VECTOR goalPos) {
+	if (mapNode.empty()) return {};
+
+	int startID = GetNearestNodeID(startPos);
+	int goalID = GetNearestNodeID(goalPos);
+
+	if (startID == -1 || goalID == -1) return {};
+	return FindPath(startID, goalID, mapNode);
+}
+
+VECTOR EnemyManager::GetNodePosition(int nodeID) {
+	if (nodeID >= 0 && nodeID < mapNode.size()) {
+		return mapNode[nodeID].position;
+	}
+	return VGet(0.0f, 0.0f, 0.0f);
+}

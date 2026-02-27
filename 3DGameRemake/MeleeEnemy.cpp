@@ -3,7 +3,7 @@
 #include "Time.h"
 #include <cmath>
 #include "Parameter.h"
-
+#include "EnemyManager.h"
 MeleeEnemy::MeleeEnemy(VECTOR pos, Player* target) :Enemy(pos, CHARA_STATUS::MELEE_ENEMY, target), attackTimer(0.0f),range(3.0f),moveSpeed(3.0f) {}
 
 void MeleeEnemy::Update() {
@@ -19,8 +19,58 @@ void MeleeEnemy::Update() {
 	}
 
 	if (target == nullptr) return;
+	pathUpdateTimer -= dt;
+	if (pathUpdateTimer <= 0.0f) {
+		VECTOR startSearchPos = position;
+		int currentNode = GetNextNodeID();
+		if (currentNode != -1) {
+			startSearchPos = EnemyManager::GetIns().GetNodePosition(currentNode);
+		}
+		std::vector<int>newPath = EnemyManager::GetIns().CalculatePath(startSearchPos, target->GetPos());
+		SetPath(newPath);
+		pathUpdateTimer = 1.0f;
+		Debug::Log("pathUpdate");
+	}
+	VECTOR moveTarget = target->GetPos();
+	bool movePath = false;
+	VECTOR toTarget = VSub(target->GetPos(), position);
+	toTarget.y = 0.0f;
+	VECTOR dirToTarget = VGet(0.0f,0.0f,0.0f);
+	if (VSize(toTarget) > 0.0f) {
+		dirToTarget = VNorm(toTarget);
+	}
+	VECTOR checkPos = VAdd(position, VScale(dirToTarget, 1.5f));
+	checkPos.y += 0.5f;
+	VECTOR checkEnd = VAdd(checkPos, VGet(0.0f, -5.0f, 0.0f));
+	MV1_COLL_RESULT_POLY groundCheck = MV1CollCheck_Line(stageHandle, -1, checkPos, checkEnd);
+	DrawLine3D(checkPos, checkEnd, GetColor(255, 0, 0));
 
-	VECTOR dir = VSub(target->GetPos(), position);
+	VECTOR myPos = VAdd(position,VGet(0.0f,0.1f,0.0f));
+	VECTOR targetPos =VAdd(target->GetPos(),VGet(0.0f,0.1f,0.0f));
+	MV1_COLL_RESULT_POLY wallCheck = MV1CollCheck_Line(stageHandle, -1, myPos, targetPos);
+	if (groundCheck.HitFlag == 0 || wallCheck.HitFlag == 1) {
+		forcePathTimer = 2.0f;
+		Debug::Log("障害検知");
+	}
+	if (forcePathTimer > 0.0f) {
+		forcePathTimer -= dt;
+		movePath = true;
+	}
+	if (movePath) {
+		int nextNodeID = GetNextNodeID();
+		if (nextNodeID != -1) {
+			moveTarget = EnemyManager::GetIns().GetNodePosition(nextNodeID);
+			moveTarget.y = position.y;
+
+			VECTOR toNode = VSub(moveTarget, position);
+			toNode.y = 0.0f;
+			if (VSize(toNode) < 1.0f) {
+				AdvancePathIndex();
+			}
+		}
+	}
+	Debug::Watch("movePath", movePath);
+	VECTOR dir = VSub(moveTarget, position);
 	float distance = VSize(dir);
 	dir.y = 0.0f;
 	if (distance > 0.0f) {
@@ -28,10 +78,19 @@ void MeleeEnemy::Update() {
 	}
 	float slopelimit = 45.0f * (DX_PI_F / 180.0f);
 	VECTOR nextPos = position;
-	if (distance > range * 0.8f) {
+
+	bool Moving = false;
+	if (movePath) {
+		Moving = true;
+	}
+	else {
+		if (distance > range * 0.8f) {
+			Moving = true;
+		}
+	}
+	if (Moving) {
 		nextPos.x += dir.x * moveSpeed * dt;
 		nextPos.z += dir.z * moveSpeed * dt;
-		
 	}
 
 	velocity.y += -0.4f * dt;
@@ -94,8 +153,9 @@ void MeleeEnemy::Update() {
 	//当たり判定で使ったメモリを解放
 	DxLib::MV1CollResultPolyDimTerminate(wallHitDim);
 	position = nextPos;
-
-	if (distance <= range && attackTimer <= 0.0f) {
+	
+	float targetDist = VSize(toTarget);
+	if (targetDist <= range && attackTimer <= 0.0f) {
 		Action();
 	}
 

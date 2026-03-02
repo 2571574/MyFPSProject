@@ -75,9 +75,8 @@ void Weapon::AdsInput() {
 /*射撃処理*/
 void Weapon::Fire(Character& user, VECTOR direction) {
 	if (!CanFire())return;		//撃てなかったらreturn
-	VECTOR dir = VGet(0,0,0);
+	VECTOR dir = VNorm(direction);
 	float currentSpread = aim ? spec.adsSpread : spec.spread;
-	if (currentSpread > 0.0f) {
 		VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), direction));
 		VECTOR up = VNorm(VCross(direction, right));
 		float randX = ((float)GetRand(2000) - 1000.0f) / 1000.0f;
@@ -87,7 +86,6 @@ void Weapon::Fire(Character& user, VECTOR direction) {
 		dir = VAdd(direction, VScale(right, randX * currentSpread));
 		dir = VAdd(dir, VScale(up, randY * currentSpread));
 		dir = VNorm(dir);
-	}
 	//specのhitscanによって判別
 	if (spec.hitscan) {
 		FireHitScan(user, dir);

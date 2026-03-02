@@ -19,6 +19,7 @@ private:
 public:
 	Camera();	//コンストラクタ
 	void Update(VECTOR Pos);	//更新
+	void SetPos(VECTOR pos);	//座標をセット
 	void Move(float fov);	//反映
 
 	//getter

@@ -37,7 +37,7 @@
     <Filter Include="3.TOOL">
       <UniqueIdentifier>{1554755e-39b2-4491-9320-21365cc84e7e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="2.OBJECT\ENEMY">
+    <Filter Include="2.OBJECT\1.ENTITY\ENEMY">
       <UniqueIdentifier>{68d7d6db-bd31-4c4d-a5b5-9eb52f030ee7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -85,16 +85,16 @@
       <Filter>1.GAME\SCENE</Filter>
     </ClCompile>
     <ClCompile Include="Dummy.cpp">
-      <Filter>2.OBJECT\ENEMY</Filter>
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClCompile>
     <ClCompile Include="MeleeEnemy.cpp">
-      <Filter>2.OBJECT\ENEMY</Filter>
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClCompile>
     <ClCompile Include="TitleScene.cpp">
       <Filter>1.GAME\SCENE</Filter>
     </ClCompile>
     <ClCompile Include="Pathfinding.cpp">
-      <Filter>2.OBJECT\ENEMY</Filter>
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -147,19 +147,19 @@
       <Filter>1.GAME\SCENE</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h">
-      <Filter>2.OBJECT\ENEMY</Filter>
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClInclude>
     <ClInclude Include="Dummy.h">
-      <Filter>2.OBJECT\ENEMY</Filter>
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClInclude>
     <ClInclude Include="MeleeEnemy.h">
-      <Filter>2.OBJECT\ENEMY</Filter>
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClInclude>
     <ClInclude Include="TitleScene.h">
       <Filter>1.GAME\SCENE</Filter>
     </ClInclude>
     <ClInclude Include="Pathfinding.h">
-      <Filter>2.OBJECT\ENEMY</Filter>
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

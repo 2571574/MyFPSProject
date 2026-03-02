@@ -15,18 +15,20 @@ protected:
 	bool alive;			//生存タグ
 public:
 	//コンストラクタ
-	BaseProjectile(VECTOR start,TEAMID _id,const GunStatus& _spec, VECTOR direction):startpos(start),pos(start), dir(direction), id(_id), spec(_spec), alive(true) {}
+	BaseProjectile(VECTOR start,TEAMID _id,const GunStatus& _spec, VECTOR direction):startpos(start),pos(start), dir(direction), id(_id), spec(_spec), alive(true) {
+		dir = VNorm(dir);
+	}
 	
 	//デストラクタ
 	virtual ~BaseProjectile() {}
 
-	void Update();	//更新
-	void Draw();	//描画
+	virtual void Update();	//更新
+	virtual void Draw();	//描画
 
-	void Explode(VECTOR hitPos);
+	virtual void Explode(VECTOR hitPos);
 	//Getter
-	GunStatus GetBulletStatus() const { return spec; }
-	VECTOR GetPos() { return pos; }
-	TEAMID GetID() { return id; }
-	bool IsAlive() { return alive; }
+	const GunStatus& GetBulletStatus() const { return spec; }
+	VECTOR GetPos() const{ return pos; }
+	TEAMID GetID() const{ return id; }
+	bool IsAlive() const{ return alive; }
 };

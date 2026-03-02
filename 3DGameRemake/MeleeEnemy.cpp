@@ -13,7 +13,7 @@ void MeleeEnemy::Update() {
 	}
 
 	float dt = Time::GetIns().GetDelta();
-
+	float dt60 = 60.0f * dt;
 	if (attackTimer > 0.0f) {
 		attackTimer -= dt;
 	}
@@ -35,7 +35,7 @@ void MeleeEnemy::Update() {
 	bool movePath = false;
 	VECTOR toTarget = VSub(target->GetPos(), position);
 	toTarget.y = 0.0f;
-	VECTOR dirToTarget = VGet(0.0f,0.0f,0.0f);
+	VECTOR dirToTarget = VGet(0.0f, 0.0f, 0.0f);
 	if (VSize(toTarget) > 0.0f) {
 		dirToTarget = VNorm(toTarget);
 	}
@@ -45,8 +45,8 @@ void MeleeEnemy::Update() {
 	MV1_COLL_RESULT_POLY groundCheck = MV1CollCheck_Line(stageHandle, -1, checkPos, checkEnd);
 	DrawLine3D(checkPos, checkEnd, GetColor(255, 0, 0));
 
-	VECTOR myPos = VAdd(position,VGet(0.0f,0.1f,0.0f));
-	VECTOR targetPos =VAdd(target->GetPos(),VGet(0.0f,0.1f,0.0f));
+	VECTOR myPos = VAdd(position, VGet(0.0f, 0.1f, 0.0f));
+	VECTOR targetPos = VAdd(target->GetPos(), VGet(0.0f, 0.1f, 0.0f));
 	MV1_COLL_RESULT_POLY wallCheck = MV1CollCheck_Line(stageHandle, -1, myPos, targetPos);
 	if (groundCheck.HitFlag == 0 || wallCheck.HitFlag == 1) {
 		forcePathTimer = 2.0f;
@@ -93,8 +93,8 @@ void MeleeEnemy::Update() {
 		nextPos.z += dir.z * moveSpeed * dt;
 	}
 
-	velocity.y += -0.4f * dt;
-	nextPos.y += velocity.y;
+	velocity.y += -0.01f * dt60;
+	nextPos.y += velocity.y * dt60;
 
 	float radius = status.width;
 

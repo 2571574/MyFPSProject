@@ -8,7 +8,7 @@ Player::Player(VECTOR pos,Camera* camera)
 	, stageHandle(-1)
 	, forwardVec({ 0,0,0 })
 	, rightVec({ 0,0,0 })
-	, weapon(std::make_unique<Weapon>(PLAYER_GUN::RIFLE))
+	, weapon(std::make_unique<Weapon>(PLAYER_GUN::SMG))
 	, fov(0)
 	,slidingCT(0.0f)
 	, isAds(false)
@@ -26,8 +26,10 @@ Player::~Player() {
 
 
 void Player::Update() {
+	float dt = Time::GetIns().GetDelta();
+	float dt60 = 60.0f * dt;
 	if (slidingCT > 0.0f) {
-		slidingCT -= Time::GetIns().GetDelta();
+		slidingCT -= dt;
 		if (slidingCT <= 0.0f) {
 			slidingCT = 0.0f;
 		}
@@ -108,7 +110,6 @@ void Player::Update() {
 
 	if(!crouch) {
 		if (!isAds) {
-			//ステップの入力があれば移動方向に追加で加算
 			if (running) {
 				accel += 0.02f;
 				friction -= 0.05f;
@@ -124,7 +125,7 @@ void Player::Update() {
 	//空中にいる場合
 	if (!onGround) {
 		//時間で下に加速
-		velocity.y += -0.4f * Time::GetIns().GetDelta();
+		velocity.y += -0.01f * dt60;
 		//加速しにくく慣性を残す
 		accel *= 0.1f;
 		friction = 0.98f;
@@ -132,17 +133,18 @@ void Player::Update() {
 
 	//速度を変更
 	//入力方向に加速
-	velocity = VAdd(velocity, VScale(moveVec, accel));
+	velocity = VAdd(velocity, VScale(moveVec, accel * dt60));
+	float finalfriction = std::pow(friction, dt60);
 	//摩擦分減速
-	velocity.x *= friction;
-	velocity.z *= friction;
+	velocity.x *= finalfriction;
+	velocity.z *= finalfriction;
 
 	float slopelimit = 0.6f;
 	float radius = status.width;		//プレイヤーの半径
 	int currentgroundPoly = -1;
 	bool hitGround = false;
 	//移動予定の座標
-	VECTOR nextPos = VAdd(position, velocity);
+	VECTOR nextPos = VAdd(position, VScale(velocity, dt60));
 
 	//床との判定
 	//プレイヤーが落下、止まっている時のみ床の判定をする
@@ -251,13 +253,14 @@ void Player::Update() {
 	float targetcamHeight = crouch ? CROUCH_EYE_HEIGHT : EYE_HEIGHT;
 
 	//現在のカメラの高さを目標に徐々に近づける
+	float lerp = 1.0f - std::pow(1.0f - 0.1f, dt60);
 	if (targetcamHeight > camHeight) {
-		camHeight += abs(camHeight - targetcamHeight) * 0.1f;
+		camHeight += abs(camHeight - targetcamHeight) * lerp;
 		if (targetcamHeight < camHeight) {
 			camHeight = targetcamHeight;
 		}
 	}if (targetcamHeight < camHeight) {
-		camHeight -= abs(camHeight - targetcamHeight) * 0.1f;
+		camHeight -= abs(camHeight - targetcamHeight) * lerp;
 		if (targetcamHeight > camHeight) {
 			camHeight = targetcamHeight;
 		}
@@ -277,7 +280,7 @@ void Player::Update() {
 			targetFov = weapon->GetSpec().adsFov * DX_PI_F / 180;
 	}
 	//徐々に目標の視野角に近づける
-	fov += (targetFov - fov) * 0.1f;
+	fov += (targetFov - fov) * lerp;
 
 	//揺れをonにしている、覗いていない、着地時
 	if (headBob && onGround&&!isAds) {
@@ -286,7 +289,7 @@ void Player::Update() {
 		if(!(crouch&&speed>0.06f))
 		if (speed > 0.01f) {
 			//sin波でカメラを上下させる
-			bobbingTimer += speed * 1.3f;
+			bobbingTimer += speed * 1.3f * dt60;
 			float bobbingOffset = sinf(bobbingTimer) * 0.05f;
 			camPos.y += bobbingOffset;
 		}

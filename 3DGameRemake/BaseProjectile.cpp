@@ -23,27 +23,28 @@ void BaseProjectile::Update() {
 		}
 		alive = false;		//弾の生存タグを消す
 	}
-
-	//射程以上進んだら弾の生存タグを消す
-	if (VSize(VSub(pos, startpos)) > spec.range) {
-		if (spec.AOE) Explode(pos);
-		alive = false;
+	if (alive) {
+		//射程以上進んだら弾の生存タグを消す
+		if (VSize(VSub(pos, startpos)) > spec.range) {
+			if (spec.AOE) Explode(nextpos);
+			alive = false;
+		}
+		//移動処理
+		pos.x += dir.x * move;
+		pos.y += dir.y * move;
+		pos.z += dir.z * move;
 	}
-	//移動処理
-	pos.x += dir.x * move;
-	pos.y += dir.y * move;
-	pos.z += dir.z * move;
 }
 
 /*弾の描画*/
 void BaseProjectile::Draw() {
-	DrawSphere3D(pos, spec.projectileSize, CIRCLE_DIVNUM, GetColor(255, 255, 255), GetColor(255, 255, 255), true);
+	DrawSphere3D(pos, spec.projectileSize, CIRCLE_DIVNUM, GetColor(0, 0, 0), GetColor(0, 0, 0), true);
 }
 
 
 void BaseProjectile::Explode(VECTOR hitPos) {
 	float radius = (float)spec.explodeArea;
-
+	if (radius <= 0.0f)return;
 	auto& enemies = EnemyManager::GetIns().GetEnemies();
 	for (auto& enemy : enemies) {
 		if (!enemy || !enemy->IsAlive()) continue;

@@ -93,7 +93,7 @@ void MeleeEnemy::Update() {
 		nextPos.z += dir.z * moveSpeed * dt;
 	}
 
-	velocity.y += -0.01f * dt60;
+	velocity.y += -0.008f * dt60;
 	nextPos.y += velocity.y * dt60;
 
 	float radius = status.width;

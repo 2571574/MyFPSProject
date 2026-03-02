@@ -125,7 +125,7 @@ void Player::Update() {
 	//空中にいる場合
 	if (!onGround) {
 		//時間で下に加速
-		velocity.y += -0.01f * dt60;
+		velocity.y += -0.008f * dt60;
 		//加速しにくく慣性を残す
 		accel *= 0.1f;
 		friction = 0.98f;

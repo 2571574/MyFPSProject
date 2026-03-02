@@ -39,11 +39,6 @@ void Camera::Update(VECTOR Pos) {
 		recoilYaw -= recoilYaw * RECOVERY_SPEED * dt;
 		recoilPitch -= recoilPitch * RECOVERY_SPEED * dt;
 	}
-	else {
-		yaw += recoilYaw;
-		pitch += recoilPitch;
-		recoilYaw = recoilPitch = 0.0f;
-	}
 	//補正
 	if (pitch > CAM_ANGLESNAP_PITCH)pitch = CAM_ANGLESNAP_PITCH;
 	if (pitch < -CAM_ANGLESNAP_PITCH)pitch = -CAM_ANGLESNAP_PITCH;

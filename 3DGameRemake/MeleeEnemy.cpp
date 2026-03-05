@@ -33,7 +33,8 @@ void MeleeEnemy::Update() {
 	}
 	VECTOR moveTarget = target->GetPos();
 	bool movePath = false;
-	VECTOR toTarget = VSub(target->GetPos(), position);
+	VECTOR toTarget3D = VSub(target->GetPos(), position);
+	VECTOR toTarget = toTarget3D;
 	toTarget.y = 0.0f;
 	VECTOR dirToTarget = VGet(0.0f, 0.0f, 0.0f);
 	if (VSize(toTarget) > 0.0f) {
@@ -154,8 +155,9 @@ void MeleeEnemy::Update() {
 	DxLib::MV1CollResultPolyDimTerminate(wallHitDim);
 	position = nextPos;
 	
-	float targetDist = VSize(toTarget);
-	if (targetDist <= range && attackTimer <= 0.0f) {
+	float targetDistXZ = VSize(toTarget);
+	float targetHeight = std::abs(toTarget3D.y);
+	if (targetDistXZ <= range && targetHeight <= status.height && attackTimer <= 0.0f) {
 		Action();
 	}
 

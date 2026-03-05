@@ -18,7 +18,7 @@ void GameScene::Init() {
 	MV1SetupCollInfo(stageHandle, -1, 8, 8, 8);
 	player.SetStageHandle(stageHandle);
 	EnemyManager::GetIns().Init();
-	EnemyManager::GetIns().Spawn(std::make_unique<Dummy>(VGet(5, 10, 10),&player),stageHandle);
+	EnemyManager::GetIns().Spawn(std::make_unique<MeleeEnemy>(VGet(5, 10, 10),&player),stageHandle);
 }
 
 void GameScene::Update() {

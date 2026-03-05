@@ -31,21 +31,59 @@ void MeleeEnemy::Update() {
 		pathUpdateTimer = 1.0f;
 		Debug::Log("pathUpdate");
 	}
-	VECTOR moveTarget = target->GetPos();
-	bool movePath = false;
+
+	bool canChase = true;
 	VECTOR toTarget3D = VSub(target->GetPos(), position);
 	VECTOR toTarget = toTarget3D;
 	toTarget.y = 0.0f;
+
+	float heightDiff = target->GetPos().y - position.y;
+	if (std::abs(heightDiff) > 1.5f) {
+		canChase = false;
+	}
+
+	VECTOR myCenter = VAdd(position, VGet(0.0f, status.height * 0.5f, 0.0f));
+	VECTOR targetCenter = VAdd(target->GetPos(), VGet(0.0f, target->GetStatus().height * 0.5f, 0.0f));
+
+	MV1_COLL_RESULT_POLY wallCheck = MV1CollCheck_Line(stageHandle, -1, myCenter, targetCenter);
+	if (wallCheck.HitFlag == 1) {
+		canChase = false;
+	}
+
 	VECTOR dirToTarget = VGet(0.0f, 0.0f, 0.0f);
 	if (VSize(toTarget) > 0.0f) {
 		dirToTarget = VNorm(toTarget);
 	}
 	VECTOR checkPos = VAdd(position, VScale(dirToTarget, 1.5f));
-	checkPos.y += 0.5f;
-	VECTOR checkEnd = VAdd(checkPos, VGet(0.0f, -5.0f, 0.0f));
+	checkPos.y += 1.0f;
+	VECTOR checkEnd = VAdd(checkPos, VGet(0.0f, -3.0f, 0.0f));
 	MV1_COLL_RESULT_POLY groundCheck = MV1CollCheck_Line(stageHandle, -1, checkPos, checkEnd);
-	DrawLine3D(checkPos, checkEnd, GetColor(255, 0, 0));
+	if (groundCheck.HitFlag == 0 || (position.y - groundCheck.HitPosition.y) > 1.5f) {
+		canChase = false;
+	}
 
+	bool movePath = false;
+	VECTOR moveTarget = target->GetPos();
+	if (!canChase) {
+		movePath = true;
+	}
+	else {
+		int nextNodeID = GetNextNodeID();
+		if (nextNodeID != -1) {
+			VECTOR nodePos = EnemyManager::GetIns().GetNodePosition(nextNodeID);
+			float distToPlayer = VSize(toTarget);
+			VECTOR toNode2D = VSub(nodePos, position);
+			toNode2D.y = 0.0f;
+			float distToNode = VSize(toNode2D);
+			if (distToPlayer > distToNode) {
+				movePath = true;
+			}
+		}
+	}
+
+	if (movePath) {
+		int nextNode
+	}
 	VECTOR myPos = VAdd(position, VGet(0.0f, 0.1f, 0.0f));
 	VECTOR targetPos = VAdd(target->GetPos(), VGet(0.0f, 0.1f, 0.0f));
 	MV1_COLL_RESULT_POLY wallCheck = MV1CollCheck_Line(stageHandle, -1, myPos, targetPos);

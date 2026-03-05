@@ -19,8 +19,8 @@ void Camera::Update(VECTOR Pos) {
 	//マウス
 	int deltaX = CENTER_X - mouseX;
 	int deltaY = CENTER_Y - mouseY;
-	yaw -= deltaX * SENSITIVITY * dt60;
-	pitch += deltaY * SENSITIVITY * dt60;
+	yaw -= deltaX * SENSITIVITY;
+	pitch += deltaY * SENSITIVITY;
 	SetMousePoint(CENTER_X, CENTER_Y);
 
 	//コントローラー　

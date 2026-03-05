@@ -3,7 +3,7 @@
 
 /*弾の更新*/
 void BaseProjectile::Update() {
-	float move = spec.projectileSpeed * Time::GetIns().GetDelta();		//進む量
+	float move = spec.projectileSpeed * Time::GetIns().GetDelta()*60;		//進む量
 	VECTOR nextpos = VAdd(pos, VScale(dir, move));		//次のフレームの時の位置
 
 	Enemy* hitEnemy =

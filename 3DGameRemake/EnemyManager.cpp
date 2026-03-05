@@ -105,7 +105,6 @@ int EnemyManager::GetNearestNodeID(VECTOR pos) {
 	return nearestID;
 }
 
-
 std::vector<int> EnemyManager::CalculatePath(VECTOR startPos, VECTOR goalPos) {
 	if (mapNode.empty()) return {};
 

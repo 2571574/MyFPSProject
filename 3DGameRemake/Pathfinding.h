@@ -19,5 +19,5 @@ struct NodeRecord {
 	}
 };
 
-void InitNode(std::vector<Node>&mapnode);
+void InitNode(int modelhandle);
 std::vector<int> FindPath(int startId, int goalId, std::vector<Node>& mapnode);

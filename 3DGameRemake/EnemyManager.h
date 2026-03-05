@@ -17,7 +17,7 @@ public:
 	/// <returns>唯一のインスタンス</returns>
 	static EnemyManager& GetIns();
 
-	void Init();
+	void Init(int modelhandle);
 	/// <summary>
 	/// 敵をスポーンさせる。
 	/// </summary>
@@ -63,7 +63,6 @@ public:
 	std::vector<std::unique_ptr<Enemy>>& GetEnemies(){ return enemies; }
 
 
-	void SetMapNode(const std::vector<Node>& nodes) { mapNode = nodes; }
 	int GetNearestNodeID(VECTOR pos);
 	std::vector<int> CalculatePath(VECTOR startPos, VECTOR goalPos);
 

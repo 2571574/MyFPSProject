@@ -3,7 +3,6 @@
 #include "DxLib.h"
 
 struct Node {
-	int ID;
 	VECTOR position;
 	std::vector <int> connectedNode;
 };
@@ -19,5 +18,6 @@ struct NodeRecord {
 	}
 };
 
-void InitNode(int modelhandle);
+void InitNode(int modelhandle, std::vector<Node>& mapnode);
+float GetDistance(VECTOR a, VECTOR b) { return VSize(VSub(a, b)); };
 std::vector<int> FindPath(int startId, int goalId, std::vector<Node>& mapnode);

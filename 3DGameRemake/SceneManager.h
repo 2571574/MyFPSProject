@@ -12,6 +12,7 @@ public:
 	void Update();
 	void Draw();
 
+	void SetExitTag(bool tag) { exitTag = tag; }
 	bool GetExitTag() { return exitTag; }
 };
 

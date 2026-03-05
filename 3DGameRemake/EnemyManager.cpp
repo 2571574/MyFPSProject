@@ -92,14 +92,29 @@ Enemy* EnemyManager::CheckProjectile(VECTOR pos, VECTOR nextpos, float radius, T
 int EnemyManager::GetNearestNodeID(VECTOR pos) {
 	int nearestID = -1;
 	float minDistSq = -1.0f;
-
+	float fallbackDistSq = -1.0f;
+	int fallbackID = -1;
 	for (const auto& node : mapNode) {
-		float distSq = VSquareSize(VSub(node.position, pos));
+		float dist3D = VSquareSize(VSub(node.position, pos));
+		if(fallbackID == -1 || dist3D < fallbackDistSq) {
+			fallbackDistSq = dist3D;
+			fallbackID = node.ID;
+		}
+		float heightDiff = std::abs(node.position.y - pos.y);
 
-		if (nearestID == -1 || distSq < minDistSq) {
-			minDistSq = distSq;
+		if (heightDiff > 2.0f) continue;
+		VECTOR toNode2D = VSub(node.position, pos);
+		toNode2D.y = 0.0f;
+		float distSqXZ = VSquareSize(toNode2D);
+
+		if (nearestID == -1 || distSqXZ < minDistSq) {
+			minDistSq = distSqXZ;
 			nearestID = node.ID;
 		}
+	}
+
+	if (nearestID -= -1) {
+		return fallbackID;
 	}
 
 	return nearestID;

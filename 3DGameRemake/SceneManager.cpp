@@ -1,7 +1,8 @@
 ﻿#include "SceneManager.h"
 #include "GameScene.h"
+#include "TitleScene.h"
 SceneManager::SceneManager():exitTag(false) {
-	ChangeScene(std::make_unique<GameScene>(this));
+	ChangeScene(std::make_unique<TitleScene>(this));
 }
 
 void SceneManager::ChangeScene(std::unique_ptr<BaseScene> nextscene) {

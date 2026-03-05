@@ -62,7 +62,7 @@ void MeleeEnemy::Update() {
 		canChase = false;
 	}
 
-	bool movePath = false;
+	bool movePath = !canChase;
 	VECTOR moveTarget = target->GetPos();
 	if (!canChase) {
 		movePath = true;
@@ -82,40 +82,32 @@ void MeleeEnemy::Update() {
 	}
 
 	if (movePath) {
-		int nextNode
-	}
-	VECTOR myPos = VAdd(position, VGet(0.0f, 0.1f, 0.0f));
-	VECTOR targetPos = VAdd(target->GetPos(), VGet(0.0f, 0.1f, 0.0f));
-	MV1_COLL_RESULT_POLY wallCheck = MV1CollCheck_Line(stageHandle, -1, myPos, targetPos);
-	if (groundCheck.HitFlag == 0 || wallCheck.HitFlag == 1) {
-		forcePathTimer = 2.0f;
-		Debug::Log("障害検知");
-	}
-	if (forcePathTimer > 0.0f) {
-		forcePathTimer -= dt;
-		movePath = true;
-	}
-	if (movePath) {
 		int nextNodeID = GetNextNodeID();
 		if (nextNodeID != -1) {
 			moveTarget = EnemyManager::GetIns().GetNodePosition(nextNodeID);
 			moveTarget.y = position.y;
-
-			VECTOR toNode = VSub(moveTarget, position);
-			toNode.y = 0.0f;
-			if (VSize(toNode) < 1.0f) {
+			VECTOR nodePos = EnemyManager::GetIns().GetNodePosition(nextNodeID);
+			moveTarget = nodePos;
+			moveTarget.y = position.y;
+			VECTOR toNode = VSub(nodePos, position);
+			VECTOR toNode2D = toNode;
+			toNode2D.y = 0.0f;
+			
+			float distToNodeXZ = VSize(toNode2D);
+			float distToNodeY = std::abs(toNode.y);
+			if (distToNodeXZ < 1.8f && distToNodeY < 2.0f) {
 				AdvancePathIndex();
 			}
 		}
 	}
-	Debug::Watch("movePath", movePath);
+
 	VECTOR dir = VSub(moveTarget, position);
 	float distance = VSize(dir);
 	dir.y = 0.0f;
 	if (distance > 0.0f) {
 		dir = VNorm(dir);
 	}
-	float slopelimit = 45.0f * (DX_PI_F / 180.0f);
+	
 	VECTOR nextPos = position;
 
 	bool Moving = false;
@@ -139,8 +131,8 @@ void MeleeEnemy::Update() {
 
 	if (stageHandle != -1 && velocity.y <= 0.2f) {
 
-		VECTOR start = VAdd(nextPos, VGet(0.0f, radius + 0.1f, 0.0f));
-		VECTOR end = VAdd(nextPos, VGet(0.0f, -0.1f, 0.0f));
+		VECTOR start = VAdd(nextPos, VGet(0.0f, radius + 0.5f, 0.0f));
+		VECTOR end = VAdd(nextPos, VGet(0.0f, -0.5f, 0.0f));
 
 		MV1_COLL_RESULT_POLY groundHit = MV1CollCheck_Line(stageHandle, -1, start, end);
 
@@ -151,7 +143,7 @@ void MeleeEnemy::Update() {
 		
 	}
 
-	VECTOR capBottom = VAdd(nextPos, VGet(0, radius + 0.1f, 0));
+	VECTOR capBottom = VAdd(nextPos, VGet(0, radius + 0.3f, 0));
 	VECTOR capTop = VAdd(nextPos, VGet(0, status.height - radius, 0));
 	MV1_COLL_RESULT_POLY_DIM wallHitDim = MV1CollCheck_Capsule(stageHandle, -1, capBottom, capTop, radius);
 	VECTOR totalPush = VGet(0, 0, 0);

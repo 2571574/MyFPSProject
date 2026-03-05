@@ -29,7 +29,6 @@ private:
 		MODE_HARD,
 		MODE_MAX
 	};
-
 	TitleState currentState;
 	int selectNum;
 

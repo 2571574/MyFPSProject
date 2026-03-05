@@ -3,7 +3,7 @@
 #include <memory>
 #include "InputManager.h"
 TitleScene::TitleScene(SceneManager* manager) :BaseScene(manager)
-,selectNum(0)
+, selectNum(0), currentState(TitleState::TOP)
 {}
 
 TitleScene::~TitleScene() {
@@ -52,11 +52,49 @@ void TitleScene::Update() {
 		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_SELECT)) {
 			manager->ChangeScene(std::make_unique<GameScene>(manager));
 		}
+		break;
+
+	case TitleState::SETTINGS:
+		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_BACK)) {
+			currentState = TitleState::TOP;
+			selectNum = MENU_PLAY;
+		}
+		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_SELECT)) {
+			
+		}
+		break;
+
+	case TitleState::CREDIT:
+		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_BACK)) {
+			currentState = TitleState::TOP;
+			selectNum = MENU_PLAY;
+		}
+		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_SELECT)) {
+		}
+		break;
+
+	case TitleState::KEY_CONFIG:
+		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_BACK)) {
+			currentState = TitleState::SETTINGS;
+			selectNum = MENU_PLAY;
+		}
+		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_SELECT)) {
+		}
+		break;
 	}
 }
 
 void TitleScene::Draw() {
-
+	switch (currentState) {
+		case TitleState::TOP:
+		
+			DrawString(80, 100+30*selectNum, ">", GetColor(255, 255, 255));
+			DrawString(100, 100, "Play", GetColor(255, 255, 255));
+			DrawString(100, 130, "Settings", GetColor(255, 255, 255));
+			DrawString(100, 160, "Credit", GetColor(255, 255, 255));
+			DrawString(100, 190, "Exit", GetColor(255, 255, 255));
+			break;
+	}
 }
 
 void TitleScene::Control() {

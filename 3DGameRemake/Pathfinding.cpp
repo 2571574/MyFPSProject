@@ -14,8 +14,8 @@ void InitNode(std::vector<Node>&mapnode) {
 	Node n7 = { 7,VGet(20,0,0), {0,6} };
 	Node n8 = { 8,VGet(22,0,-27), {5,6} };
 	Node n9 = { 9,VGet(-22,0,-27), {4,5} };
-	Node n10 = { 10,VGet(27,0,17), {0,23} };
-	Node n11 = { 11,VGet(-27,0,17), {2,24} };
+	Node n10 = { 10,VGet(27,0,17), {0,25} };
+	Node n11 = { 11,VGet(-27,0,17), {2,28} };
 	Node n12 = { 12,VGet(-12,0,16), {1,2,14} };
 	Node n13 = { 13,VGet(12,0,-16), {5,6,15} };
 	Node n14 = { 14,VGet(-12,8,-13), {12,20} };
@@ -29,6 +29,12 @@ void InitNode(std::vector<Node>&mapnode) {
 	Node n22 = { 22,VGet(0,20,-27), {21,23,24} };
 	Node n23 = { 23,VGet(27,20,-27), {10,22} };
 	Node n24 = { 24,VGet(-27,20,-27), {11,22} };
+	Node n25 = { 25,VGet(27,5,5), {10,26} };
+	Node n26 = { 26,VGet(27,10,-5), {25,27} };
+	Node n27 = { 27,VGet(27,15,-15), {26,23} };
+	Node n28 = { 28,VGet(-27,5,5), {11,29} };
+	Node n29 = { 29,VGet(-27,10,-5), {28,30} };
+	Node n30 = { 30,VGet(-27,15,-15), {29,24} };
 
 	mapnode.push_back(n0);
 	mapnode.push_back(n1);
@@ -55,6 +61,13 @@ void InitNode(std::vector<Node>&mapnode) {
 	mapnode.push_back(n22);
 	mapnode.push_back(n23);
 	mapnode.push_back(n24);
+	mapnode.push_back(n25);
+	mapnode.push_back(n26);
+	mapnode.push_back(n27);
+	mapnode.push_back(n28);
+	mapnode.push_back(n29);
+	mapnode.push_back(n30);
+	
 }
 
 std::vector<int> FindPath(int startID, int goalID, std::vector<Node>&mapNode) {

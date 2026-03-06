@@ -21,105 +21,49 @@ void MeleeEnemy::Update() {
 	if (target == nullptr) return;
 	pathUpdateTimer -= dt;
 	if (pathUpdateTimer <= 0.0f) {
-		VECTOR startSearchPos = position;
-		int currentNode = GetNextNodeID();
-		if (currentNode != -1) {
-			startSearchPos = EnemyManager::GetIns().GetNodePosition(currentNode);
-		}
-		std::vector<int>newPath = EnemyManager::GetIns().CalculatePath(startSearchPos, target->GetPos());
+
+		std::vector<VECTOR>newPath = EnemyManager::GetIns().CalculatePath(position, target->GetPos());
 		SetPath(newPath);
 		pathUpdateTimer = 1.0f;
 		Debug::Log("pathUpdate");
-	}
 
-	bool canChase = true;
-	VECTOR toTarget3D = VSub(target->GetPos(), position);
-	VECTOR toTarget = toTarget3D;
-	toTarget.y = 0.0f;
-
-	float heightDiff = target->GetPos().y - position.y;
-	if (std::abs(heightDiff) > 1.5f) {
-		canChase = false;
-	}
-
-	VECTOR myCenter = VAdd(position, VGet(0.0f, status.height * 0.5f, 0.0f));
-	VECTOR targetCenter = VAdd(target->GetPos(), VGet(0.0f, target->GetStatus().height * 0.5f, 0.0f));
-
-	MV1_COLL_RESULT_POLY wallCheck = MV1CollCheck_Line(stageHandle, -1, myCenter, targetCenter);
-	if (wallCheck.HitFlag == 1) {
-		canChase = false;
-	}
-
-	VECTOR dirToTarget = VGet(0.0f, 0.0f, 0.0f);
-	if (VSize(toTarget) > 0.0f) {
-		dirToTarget = VNorm(toTarget);
-	}
-	VECTOR checkPos = VAdd(position, VScale(dirToTarget, 1.5f));
-	checkPos.y += 1.0f;
-	VECTOR checkEnd = VAdd(checkPos, VGet(0.0f, -3.0f, 0.0f));
-	MV1_COLL_RESULT_POLY groundCheck = MV1CollCheck_Line(stageHandle, -1, checkPos, checkEnd);
-	if (groundCheck.HitFlag == 0 || (position.y - groundCheck.HitPosition.y) > 1.5f) {
-		canChase = false;
-	}
-
-	bool movePath = !canChase;
-	VECTOR moveTarget = target->GetPos();
-	if (!canChase) {
-		movePath = true;
-	}
-	else {
-		int nextNodeID = GetNextNodeID();
-		if (nextNodeID != -1) {
-			VECTOR nodePos = EnemyManager::GetIns().GetNodePosition(nextNodeID);
-			float distToPlayer = VSize(toTarget);
-			VECTOR toNode2D = VSub(nodePos, position);
-			toNode2D.y = 0.0f;
-			float distToNode = VSize(toNode2D);
-			if (distToPlayer > distToNode) {
-				movePath = true;
-			}
-		}
-	}
-
-	if (movePath) {
-		int nextNodeID = GetNextNodeID();
-		if (nextNodeID != -1) {
-			moveTarget = EnemyManager::GetIns().GetNodePosition(nextNodeID);
-			moveTarget.y = position.y;
-			VECTOR nodePos = EnemyManager::GetIns().GetNodePosition(nextNodeID);
-			moveTarget = nodePos;
-			moveTarget.y = position.y;
-			VECTOR toNode = VSub(nodePos, position);
-			VECTOR toNode2D = toNode;
-			toNode2D.y = 0.0f;
-			
-			float distToNodeXZ = VSize(toNode2D);
-			float distToNodeY = std::abs(toNode.y);
-			if (distToNodeXZ < 1.8f && distToNodeY < 2.0f) {
+		if (currentPath.size() > 1) {
+			if (VSize(VSub(currentPath[0], position)) < 0.5f) {
 				AdvancePathIndex();
 			}
 		}
 	}
+	bool isMoving = false;
+	VECTOR moveTarget = position;
 
-	VECTOR dir = VSub(moveTarget, position);
-	float distance = VSize(dir);
-	dir.y = 0.0f;
-	if (distance > 0.0f) {
-		dir = VNorm(dir);
-	}
-	
-	VECTOR nextPos = position;
+	if (HasPath()) {
+		moveTarget = GetNextNodeID();
+		isMoving = true;
 
-	bool Moving = false;
-	if (movePath) {
-		Moving = true;
-	}
-	else {
-		if (distance > range * 0.8f) {
-			Moving = true;
+		VECTOR toTarget = VSub(moveTarget, position);
+		toTarget.y = 0.0f;
+		if (VSize(toTarget)<1.0f){
+			AdvancePathIndex();
 		}
 	}
-	if (Moving) {
+	else {
+		moveTarget = target->GetPos();
+		VECTOR toTarget2D = VSub(moveTarget, position);
+		toTarget2D.y = 0.0f;
+		if (VSize(toTarget2D) > range * 0.8f) {
+			isMoving = true;
+		}
+	}
+
+	VECTOR dir = VSub(moveTarget, position);
+	dir.y = 0.0f;
+	if (VSize(dir) > 0.0f) {
+		dir = VNorm(dir);
+	}
+
+	VECTOR nextPos = position;
+
+	if (isMoving) {
 		nextPos.x += dir.x * moveSpeed * dt;
 		nextPos.z += dir.z * moveSpeed * dt;
 	}
@@ -185,8 +129,9 @@ void MeleeEnemy::Update() {
 	DxLib::MV1CollResultPolyDimTerminate(wallHitDim);
 	position = nextPos;
 	
-	float targetDistXZ = VSize(toTarget);
-	float targetHeight = std::abs(toTarget3D.y);
+	VECTOR toTarget = VSub(moveTarget, position);
+	float targetDistXZ = VSize(VGet(toTarget.x,0.0f,toTarget.z));
+	float targetHeight = std::abs(toTarget.y);
 	if (targetDistXZ <= range && targetHeight <= status.height && attackTimer <= 0.0f) {
 		Action();
 	}

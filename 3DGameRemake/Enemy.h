@@ -11,10 +11,9 @@ protected:
 	Player* target;
 	int stageHandle = -1;
 
-	std::vector<int> currentPath;
+	std::vector<VECTOR> currentPath;
 	int currentNodeIndex;
 	float pathUpdateTimer;
-	float forcePathTimer;
 public:
 	Enemy(VECTOR pos, CharacterStatus& status,Player* _target) : Character(pos, status),target(_target){}
 	virtual ~Enemy(){}
@@ -33,14 +32,17 @@ public:
 
 	void SetStageHandle(int handle) { stageHandle = handle; }
 
-	void SetPath(const std::vector<int>& path) {
+	void SetPath(const std::vector<VECTOR>& path) {
 		currentPath = path;
 		currentNodeIndex = 0;
 	}
 
-	int GetNextNodeID()const {
+	bool HasPath() const {
+		return !currentPath.empty() && currentNodeIndex < currentPath.size();
+	}
+	VECTOR GetNextNodeID()const {
 		if (currentPath.empty() || currentNodeIndex >= currentPath.size()) {
-			return -1;
+			return VGet(0.0f,0.0f,0.0f);
 		}
 		return currentPath[currentNodeIndex];
 	}

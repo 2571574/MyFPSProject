@@ -35,7 +35,7 @@ void EnemyManager::Draw() {
 	}
 	for(int i = 0; i < mapNode.size(); i++) {
 		//ノードの位置に球を描画
-		DrawSphere3D(mapNode[i].position, 1.0f, 8, GetColor(255, 0, 0), GetColor(255, 0, 0), TRUE);
+		DrawSphere3D(mapNode[i].position, 0.3f, 8, GetColor(255, 0, 0), GetColor(255, 0, 0), TRUE);
 	}
 }
 
@@ -89,34 +89,7 @@ Enemy* EnemyManager::CheckProjectile(VECTOR pos, VECTOR nextpos, float radius, T
 }
 
 
-int EnemyManager::GetNearestNodeID(VECTOR pos) {
-	int nearestID = -1;
-	float minDistSq = -1.0f;
-	
-	for (int i = 0; i < mapNode.size(); i++) {
-		float distSq =GetDistance(pos,mapNode[i].position);
-		if (distSq < minDistSq) {
-			nearestID = i;
-			minDistSq = distSq;
-		}
-	}
-
-	return nearestID;
+std::vector<VECTOR> EnemyManager::CalculatePath(VECTOR startPos, VECTOR goalPos) {
+	return FindPath(startPos, goalPos, mapNode);
 }
 
-std::vector<int> EnemyManager::CalculatePath(VECTOR startPos, VECTOR goalPos) {
-	if (mapNode.empty()) return {};
-
-	int startID = GetNearestNodeID(startPos);
-	int goalID = GetNearestNodeID(goalPos);
-
-	if (startID == -1 || goalID == -1) return {};
-	return FindPath(startID, goalID, mapNode);
-}
-
-VECTOR EnemyManager::GetNodePosition(int nodeID) {
-	if (nodeID >= 0 && nodeID < mapNode.size()) {
-		return mapNode[nodeID].position;
-	}
-	return VGet(0.0f, 0.0f, 0.0f);
-}

@@ -4,7 +4,7 @@
 #include<algorithm>
 #include "Debug.h"
 void InitNode(int modelhandle, std::vector<Node>& mapnode) {
-	float gridSize = 2.0f;
+	float gridSize = 3.0f;
 	float startY = 30.0f;
 	float endY = -20.0f;
 
@@ -66,7 +66,7 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode) {
 			}
 			MV1CollResultPolyDimTerminate(capHit);
 
-			VECTOR midPos = VGet((posA.x + posB.x) / 2.0f, (posA.y + posB.y) / 2.0f, (posA.z, posB.z) / 2.0f);
+			VECTOR midPos = VGet((posA.x + posB.x) / 2.0f, (posA.y + posB.y) / 2.0f, (posA.z + posB.z) / 2.0f);
 
 			VECTOR midRayStart = VGet(midPos.x, midPos.y + maxStepHeight, midPos.z);
 			VECTOR midRayEnd = VGet(midPos.x, midPos.y - maxStepHeight * 2.0f, midPos.z);
@@ -79,52 +79,86 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode) {
 		}
 	}
 }
+int GetNearestNodeIndex(VECTOR pos, std::vector<Node>& mapnode) {
+	int nearestID = -1;
+	float minDistSq = 99999.0f;
 
-std::vector<int> FindPath(int startID, int goalID, std::vector<Node>&mapNode) {
-	std::vector<int> path;	//最終経路
-
-	std::priority_queue < NodeRecord, std::vector<NodeRecord>, std::greater<NodeRecord>> openList;
-
-	std::unordered_map<int, NodeRecord> closedList;
-
-	float initialH = VSize(VSub(mapNode[goalID].position, mapNode[startID].position));
-	openList.push({ startID,-1,0.0f,initialH });
-
-	while (!openList.empty()) {
-		NodeRecord current = openList.top();
-		openList.pop();
-
-		if(current.ID == goalID) {
-			closedList[current.ID] = current;
-			break;
-		}
-
-		if (closedList.find(current.ID) != closedList.end() && closedList[current.ID].costDist <= current.costDist) {
-			continue;
-		}
-
-		closedList[current.ID] = current;
-
-		for (int neighborID : mapNode[current.ID].connectedNode) {
-			float distance = VSize(VSub(mapNode[neighborID].position, mapNode[current.ID].position));
-
-			float newCostD = current.costDist + distance;
-
-			float costH = VSize(VSub(mapNode[goalID].position, mapNode[neighborID].position));
-			float newCostT = newCostD + costH;
-
-			openList.push({ neighborID,current.ID,newCostD,newCostT });
+	for (int i = 0; i < mapnode.size(); i++) {
+		float distSq = GetDistance(pos, mapnode[i].position);
+		if (distSq < minDistSq) {
+			nearestID = i;
+			minDistSq = distSq;
 		}
 	}
 
-	if (closedList.find(goalID) != closedList.end()) {
-		int currentID = goalID;
-		while (currentID != -1) {
-			path.push_back(currentID);
-			currentID = closedList[currentID].parentID;
+	return nearestID;
+}
+
+VECTOR GetNodePosition(int nodeID, std::vector<Node>& mapnode) {
+	if (nodeID >= 0 && nodeID < mapnode.size()) {
+		return mapnode[nodeID].position;
+	}
+	return VGet(0.0f, 0.0f, 0.0f);
+}
+
+float GetDistance(VECTOR a, VECTOR b) { return VSize(VSub(a, b)); };
+
+std::vector<VECTOR>FindPath(VECTOR startPos, VECTOR goalPos, std::vector<Node>&mapnode) {
+	std::vector<VECTOR> path;
+	if (mapnode.empty()) return path;
+	int startIndex = GetNearestNodeIndex(startPos, mapnode);
+	int goalIndex = GetNearestNodeIndex(goalPos, mapnode);
+
+	if (startIndex == -1 || goalIndex == -1) {
+		return path;
+	}
+
+	std::vector<NodeRecord> nodeRecords(mapnode.size());
+	using P = std::pair<float, int>;
+	std::priority_queue <P, std::vector<P>, std::greater<P>> openList;
+
+	nodeRecords[startIndex].costG = 0.0f;
+	nodeRecords[startIndex].costF = GetDistance(mapnode[startIndex].position, mapnode[goalIndex].position);
+	openList.push({ nodeRecords[startIndex].costF,startIndex });
+
+	while (!openList.empty()) {
+		int currentIndex = openList.top().second;
+		openList.pop();
+
+		if (currentIndex == goalIndex)break;
+
+		if (nodeRecords[currentIndex].isClosed)continue;
+		nodeRecords[currentIndex].isClosed = false;
+
+		for (int neighborIndex : mapnode[currentIndex].connectedNode) {
+			if (nodeRecords[neighborIndex].isClosed)continue;
+
+			float distToNeighbor = GetDistance(mapnode[currentIndex].position, mapnode[neighborIndex].position);
+			float tentative_costG = nodeRecords[currentIndex].costG + distToNeighbor;
+
+			if (tentative_costG < nodeRecords[neighborIndex].costG) {
+				nodeRecords[neighborIndex].parentID = currentIndex;
+				nodeRecords[neighborIndex].costG = tentative_costG;
+
+				float costH = GetDistance(mapnode[neighborIndex].position, mapnode[goalIndex].position);
+
+				nodeRecords[neighborIndex].costF = tentative_costG + costH;
+
+				openList.push({ nodeRecords[neighborIndex].costF,neighborIndex });
+			}
+		}
+	}
+
+	if (nodeRecords[goalIndex].parentID != -1 || startIndex == goalIndex) {
+		int curr = goalIndex;
+		while (curr != -1) {
+			path.push_back(mapnode[curr].position);
+			curr = nodeRecords[curr].parentID;
 		}
 
 		std::reverse(path.begin(), path.end());
 	}
+
 	return path;
+	
 }

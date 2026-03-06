@@ -63,8 +63,9 @@ public:
 	std::vector<std::unique_ptr<Enemy>>& GetEnemies(){ return enemies; }
 
 
-	int GetNearestNodeID(VECTOR pos);
-	std::vector<int> CalculatePath(VECTOR startPos, VECTOR goalPos);
 
-	VECTOR GetNodePosition(int nodeID);
+	//移動関連
+	std::vector<VECTOR> CalculatePath(VECTOR startPos, VECTOR goalPos);
+
+	
 };

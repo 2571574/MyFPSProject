@@ -4,20 +4,20 @@
 #include<algorithm>
 #include "Debug.h"
 void InitNode(int modelhandle, std::vector<Node>& mapnode, std::vector<connectNodepair> & pair) {
-	float gridSize = 2.5f;
+	float gridSize = 2.0f;
 	float startY = 30.0f;
 	float endY = -20.0f;
 
 	float maxSlopeNormal = 0.6f;
 	float charaHeight = 2.0f;
 	float charaRadius = 0.5f;
-	float maxStepHeight = 1.5f;
+	float maxStepHeight = 2.0f;
 
 	float minX = -30.0f;	float maxX = 30.0f;
 	float minZ = -30.0f;	float maxZ = 30.0f;
 
-	for (int x = minX; x <= maxX; x += gridSize) {
-		for (int z = minZ; z <= maxZ; z += gridSize) {
+	for (float x = minX; x <= maxX; x += gridSize) {
+		for (float z = minZ; z <= maxZ; z += gridSize) {
 			VECTOR rayStart = VGet(x, startY, z);
 			VECTOR rayEnd = VGet(x, endY, z);
 			while (1) {
@@ -27,13 +27,45 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode, std::vector<connectNo
 				}
 
 				if (hit.Normal.y >= maxSlopeNormal) {
-					VECTOR ceilStart = VGet(hit.HitPosition.x, hit.HitPosition.y + 0.1f, hit.HitPosition.z);
-					VECTOR ceilEnd = VGet(hit.HitPosition.x, hit.HitPosition.y + charaHeight + maxStepHeight, hit.HitPosition.z);
-					MV1_COLL_RESULT_POLY ceilHit = MV1CollCheck_Line(modelhandle, -1, ceilStart, ceilEnd);
-					if (ceilHit.HitFlag == 0) {
-						Node node;
-						node.position = hit.HitPosition;
-						mapnode.push_back(node);
+					bool isValidNode = true;
+					VECTOR pos = hit.HitPosition;
+
+					float CheckDist = charaRadius + 0.1f;
+					VECTOR offsets[4] = { VGet(CheckDist,0,0),VGet(-CheckDist,0,0),VGet(0,0,CheckDist),VGet(0,0,-CheckDist) };
+
+					for (int i = 0; i < 4; i++) {
+						VECTOR origin = VAdd(pos, offsets[i]);
+
+						VECTOR edgeStart = VGet(origin.x, pos.y + maxStepHeight, origin.z);
+						VECTOR edgeEnd = VGet(origin.x, pos.y - maxStepHeight, origin.z);
+
+						MV1_COLL_RESULT_POLY edgeHit = MV1CollCheck_Line(modelhandle, -1, edgeStart, edgeEnd);
+
+						if (edgeHit.HitFlag == 0 || edgeHit.Normal.y<maxSlopeNormal || std::abs(edgeHit.HitPosition.y - pos.y) > maxStepHeight) {
+							isValidNode = false;
+							break;
+						}
+					}
+
+					if(isValidNode){
+						VECTOR checkBottom = VGet(hit.HitPosition.x, hit.HitPosition.y + charaRadius + 0.1f, hit.HitPosition.z);
+						VECTOR checkTop = VGet(hit.HitPosition.x, hit.HitPosition.y + charaHeight - charaRadius, hit.HitPosition.z);
+						MV1_COLL_RESULT_POLY_DIM spaceHit = MV1CollCheck_Capsule(modelhandle, -1, checkBottom, checkTop, charaRadius);
+						if (spaceHit.HitNum != 0) {
+							for (int i = 0; i < spaceHit.HitNum; i++) {
+								if (spaceHit.Dim[i].Normal.y < maxSlopeNormal) {
+									isValidNode = false;
+									break;
+								}
+							}
+						}
+						MV1CollResultPolyDimTerminate(spaceHit);
+
+						if (isValidNode) {
+							Node node;
+							node.position = VAdd(hit.HitPosition, VGet(0.0f, 0.1f, 0.0f));
+							mapnode.push_back(node);
+						}
 					}
 				}
 
@@ -56,23 +88,63 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode, std::vector<connectNo
 			VECTOR bXZ = VGet(posB.x, 0.0f, posB.z);
 			if (VSize(VSub(aXZ, bXZ)) > connectDist2D) continue;
 			if (std::abs(posA.y - posB.y) > maxStepHeight)continue;
+
+
 			VECTOR capStart = VGet(posA.x, posA.y + charaHeight * 0.5f, posA.z);
 			VECTOR capEnd = VGet(posB.x, posB.y + charaHeight * 0.5f, posB.z);
 
 			MV1_COLL_RESULT_POLY_DIM capHit = MV1CollCheck_Capsule(modelhandle, -1, capStart, capEnd, charaRadius);
+			bool hitWall = false;
 			if (capHit.HitNum != 0) {
+				for (int j = 0; j < capHit.HitNum; j++) {
+					if (capHit.Dim[j].Normal.y < maxSlopeNormal) {
+						hitWall = true;
+						break;
+					}
+				}
 				MV1CollResultPolyDimTerminate(capHit);
-				continue;
+				if (hitWall)continue;
 			}
-			MV1CollResultPolyDimTerminate(capHit);
+			float distXZ = VSize(VGet(posA.x - posB.x, 0.0f, posA.z - posB.z));
+			int divCount = (int)(distXZ / 0.5f);
+			if (divCount < 1)divCount = 1;
 
-			VECTOR midPos = VGet((posA.x + posB.x) / 2.0f, (posA.y + posB.y) / 2.0f, (posA.z + posB.z) / 2.0f);
+			bool isPathValid = true;
+			float prevGroundY = posA.y;
 
-			VECTOR midRayStart = VGet(midPos.x, midPos.y + maxStepHeight, midPos.z);
-			VECTOR midRayEnd = VGet(midPos.x, midPos.y - maxStepHeight * 2.0f, midPos.z);
+			for (int d = 1; d <= divCount; d++) {
+				float t = (float)d / (divCount + 1);
 
-			MV1_COLL_RESULT_POLY  gapHit = MV1CollCheck_Line(modelhandle, -1, midRayStart, midRayEnd);
-			if (gapHit.HitFlag == 0)continue;
+				float px = posA.x + (posB.x - posA.x) * t;
+				float pz = posA.z + (posB.z - posA.z) * t;
+
+				VECTOR rayStart = VGet(px, prevGroundY + maxStepHeight, pz);
+				VECTOR rayEnd = VGet(px, prevGroundY - maxStepHeight, pz);
+
+				MV1_COLL_RESULT_POLY groundHit = MV1CollCheck_Line(modelhandle, -1, rayStart, rayEnd);
+				if (groundHit.HitFlag == 0) {
+					isPathValid = false;
+					break;
+				}
+
+				if (groundHit.Normal.y < maxSlopeNormal) {
+					isPathValid = false;
+					break;
+				}
+
+				float heightDiff = std::abs(groundHit.HitPosition.y - prevGroundY);
+				if (heightDiff > maxStepHeight) {
+					isPathValid = false;
+					break;
+				}
+
+				prevGroundY = groundHit.HitPosition.y;
+			}
+			if (std::abs(posB.y - prevGroundY) > maxStepHeight) {
+				isPathValid = false;
+			}
+
+			if (!isPathValid) continue;
 
 			mapnode[i].connectedNode.push_back(j);
 			mapnode[j].connectedNode.push_back(i);
@@ -133,7 +205,7 @@ std::vector<VECTOR>FindPath(VECTOR startPos, VECTOR goalPos, std::vector<Node>&m
 		if (currentIndex == goalIndex)break;
 
 		if (nodeRecords[currentIndex].isClosed)continue;
-		nodeRecords[currentIndex].isClosed = false;
+		nodeRecords[currentIndex].isClosed = true;
 
 		for (int neighborIndex : mapnode[currentIndex].connectedNode) {
 			if (nodeRecords[neighborIndex].isClosed)continue;

@@ -38,9 +38,7 @@ void EnemyManager::Draw() {
 		DrawSphere3D(mapNode[i].position, 0.3f, 8, GetColor(255, 0, 0), GetColor(255, 0, 0), TRUE);
 	}
 	for (int i = 0; i < pair.size(); i++) {
-		SetUseZBuffer3D(false);
 		DrawLine3D(pair[i].pos1, pair[i].pos2, GetColor(255, 0, 255));
-		SetUseZBuffer3D(true);
 	}
 }
 

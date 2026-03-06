@@ -24,7 +24,7 @@ void MeleeEnemy::Update() {
 
 		std::vector<VECTOR>newPath = EnemyManager::GetIns().CalculatePath(position, target->GetPos());
 		SetPath(newPath);
-		pathUpdateTimer = 1.0f;
+		pathUpdateTimer = 1.0f + (GetRand(100) / 100.0f);
 		Debug::Log("pathUpdate");
 
 		if (currentPath.size() > 1) {
@@ -68,16 +68,19 @@ void MeleeEnemy::Update() {
 		MV1_COLL_RESULT_POLY_DIM wallHit = MV1CollCheck_Capsule(stageHandle, -1, wallRayStart, wallRayEnd,radius*0.8f);
 
 		if (wallHit.HitNum != 0) {
-			VECTOR normal = wallHit.Dim[0].Normal;
-			normal.y = 0.0f;
-			if (VSize(normal) > 0.0f)normal = VNorm(normal);
+			for (int i = 0; i < wallHit.HitNum; i++) {
+				VECTOR normal = wallHit.Dim[i].Normal;
+				if(normal.y >= 0.4f)continue;
+				normal.y = 0.0f;
+				if (VSize(normal) > 0.0f)normal = VNorm(normal);
 
-			float dot = VDot(dir, normal);
-			if (dot < 0.0f) {
-				dir.x -= normal.x * dot;
-				dir.z -= normal.z * dot;
+				float dot = VDot(dir, normal);
+				if (dot < 0.0f) {
+					dir.x -= normal.x * dot;
+					dir.z -= normal.z * dot;
 
-				if (VSize(dir) > 0.0f)dir = VNorm(dir);
+					if (VSize(dir) > 0.0f)dir = VNorm(dir);
+				}
 			}
 		}
 	}
@@ -93,18 +96,41 @@ void MeleeEnemy::Update() {
 
 	float radius = status.width;
 
-	if (stageHandle != -1 && velocity.y <= 0.2f) {
+	if (velocity.y <= 0.0f) {
+		float offset = radius * 0.8f;
 
-		VECTOR start = VAdd(nextPos, VGet(0.0f, radius + 0.5f, 0.0f));
-		VECTOR end = VAdd(nextPos, VGet(0.0f, -0.5f, 0.0f));
+		VECTOR rayOffsets[5] = {
+			VGet(0.0f,0.0f,0.0f),
+			VGet(offset,0.0f,0.0f),
+			VGet(-offset,0.0f,0.0f),
+			VGet(0.0f,0.0f,offset),
+			VGet(0.0f,0.0f,-offset),
+		};
+		bool hitGroundThisFrame = false;
+		float highestY = -999;
+		int hitPolyIndex = -1;
+		for (int i = 0; i < 5; i++) {
+			VECTOR basePos = VAdd(nextPos, rayOffsets[i]);
+			//足元からレイを打つ
+			VECTOR start = VAdd(basePos, VGet(0, radius + 0.1f, 0));
+			VECTOR end = VAdd(basePos, VGet(0, -0.2f, 0));
+			//床と当たったか判定する
+			MV1_COLL_RESULT_POLY groundHit = MV1CollCheck_Line(stageHandle, -1, start, end);
 
-		MV1_COLL_RESULT_POLY groundHit = MV1CollCheck_Line(stageHandle, -1, start, end);
-
-		if (groundHit.HitFlag == 1 && groundHit.Normal.y > 0.3f) {
-			nextPos.y = groundHit.HitPosition.y;
-			velocity.y = 0.0f;
+			//当たっていた時、その面の法線が上を向いていたら地面とみなす
+			if (groundHit.HitFlag == 1 && groundHit.Normal.y > 0.3f) {
+				if (groundHit.HitPosition.y > highestY) {
+					highestY = groundHit.HitPosition.y;
+					hitGroundThisFrame = true;
+					hitPolyIndex = groundHit.PolygonIndex;
+				}
+			}
 		}
-		
+		if (hitGroundThisFrame) {
+			//地面の高さにして、落下をなくす
+			nextPos.y = highestY;
+			velocity.y = 0;
+		}
 	}
 
 	VECTOR capBottom = VAdd(nextPos, VGet(0, radius + 0.3f, 0));

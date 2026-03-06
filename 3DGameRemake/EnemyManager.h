@@ -10,6 +10,7 @@ private:
 	std::vector<std::unique_ptr<Enemy>> enemies;	//敵の配列
 	EnemyManager() = default;		//コンストラクタ
 	std::vector<Node> mapNode;
+	std::vector<connectNodepair> pair;
 public:
 	/// <summary>
 	/// 唯一のインスタンスを取得

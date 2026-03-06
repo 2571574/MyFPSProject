@@ -28,7 +28,9 @@ void MeleeEnemy::Update() {
 		Debug::Log("pathUpdate");
 
 		if (currentPath.size() > 1) {
-			if (VSize(VSub(currentPath[0], position)) < 0.5f) {
+			float distS = VSize(VSub(currentPath[0], position));
+			float distG = VSize(VSub(currentPath[1], position));
+			if (distS < 1.5f || distG < distS) {
 				AdvancePathIndex();
 			}
 		}
@@ -46,23 +48,41 @@ void MeleeEnemy::Update() {
 			AdvancePathIndex();
 		}
 	}
-	else {
-		moveTarget = target->GetPos();
-		VECTOR toTarget2D = VSub(moveTarget, position);
-		toTarget2D.y = 0.0f;
-		if (VSize(toTarget2D) > range * 0.8f) {
-			isMoving = true;
+
+	VECTOR dir = VGet(0.0f, 0.0f, 0.0f);
+	if (isMoving) {
+
+		dir = VSub(moveTarget, position);
+		dir.y = 0.0f;
+		if (VSize(dir) > 0.0f) {
+			dir = VNorm(dir);
 		}
 	}
 
-	VECTOR dir = VSub(moveTarget, position);
-	dir.y = 0.0f;
-	if (VSize(dir) > 0.0f) {
-		dir = VNorm(dir);
+	if (isMoving && stageHandle != -1) {
+		float radius = status.width;
+		VECTOR checkPos = VAdd(position, VScale(dir, radius + 0.5f));
+
+		VECTOR wallRayStart = VGet(position.x, position.y + status.height * 0.5f, position.z);
+		VECTOR wallRayEnd = VGet(checkPos.x, checkPos.y + status.height * 0.5f, checkPos.z);
+		MV1_COLL_RESULT_POLY_DIM wallHit = MV1CollCheck_Capsule(stageHandle, -1, wallRayStart, wallRayEnd,radius*0.8f);
+
+		if (wallHit.HitNum != 0) {
+			VECTOR normal = wallHit.Dim[0].Normal;
+			normal.y = 0.0f;
+			if (VSize(normal) > 0.0f)normal = VNorm(normal);
+
+			float dot = VDot(dir, normal);
+			if (dot < 0.0f) {
+				dir.x -= normal.x * dot;
+				dir.z -= normal.z * dot;
+
+				if (VSize(dir) > 0.0f)dir = VNorm(dir);
+			}
+		}
 	}
 
 	VECTOR nextPos = position;
-
 	if (isMoving) {
 		nextPos.x += dir.x * moveSpeed * dt;
 		nextPos.z += dir.z * moveSpeed * dt;

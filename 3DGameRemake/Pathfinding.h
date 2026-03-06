@@ -18,7 +18,11 @@ struct NodeRecord {
 	}
 };
 
-void InitNode(int modelhandle, std::vector<Node>& mapnode);
+struct connectNodepair {
+	VECTOR pos1;
+	VECTOR pos2;
+};
+void InitNode(int modelhandle, std::vector<Node>& mapnode,std::vector<connectNodepair> & pair);
 VECTOR GetNodePosition(int nodeID, std::vector<Node>& mapnode);
 float GetDistance(VECTOR a, VECTOR b);
 int GetNearestNodeIndex(VECTOR pos, std::vector<Node>& mapnode);

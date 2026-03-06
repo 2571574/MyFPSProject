@@ -6,7 +6,7 @@ EnemyManager& EnemyManager::GetIns() {
 	return ins;
 }
 void EnemyManager::Init(int modelhandle){
-	InitNode(modelhandle,mapNode);
+	InitNode(modelhandle,mapNode,pair);
 }
 void EnemyManager::Spawn(std::unique_ptr<Enemy>enemy,int stageHandle) {
 	enemy->SetStageHandle(stageHandle);
@@ -36,6 +36,11 @@ void EnemyManager::Draw() {
 	for(int i = 0; i < mapNode.size(); i++) {
 		//ノードの位置に球を描画
 		DrawSphere3D(mapNode[i].position, 0.3f, 8, GetColor(255, 0, 0), GetColor(255, 0, 0), TRUE);
+	}
+	for (int i = 0; i < pair.size(); i++) {
+		SetUseZBuffer3D(false);
+		DrawLine3D(pair[i].pos1, pair[i].pos2, GetColor(255, 0, 255));
+		SetUseZBuffer3D(true);
 	}
 }
 

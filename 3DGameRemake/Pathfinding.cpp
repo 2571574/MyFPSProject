@@ -3,18 +3,18 @@
 #include<unordered_map>
 #include<algorithm>
 #include "Debug.h"
-void InitNode(int modelhandle, std::vector<Node>& mapnode) {
-	float gridSize = 3.0f;
+void InitNode(int modelhandle, std::vector<Node>& mapnode, std::vector<connectNodepair> & pair) {
+	float gridSize = 2.5f;
 	float startY = 30.0f;
 	float endY = -20.0f;
 
 	float maxSlopeNormal = 0.6f;
 	float charaHeight = 2.0f;
 	float charaRadius = 0.5f;
-	float maxStepHeight = 0.5f;
+	float maxStepHeight = 1.5f;
 
-	float minX = -29.0f;	float maxX = 29.0f;
-	float minZ = -29.0f;	float maxZ = 29.0f;
+	float minX = -30.0f;	float maxX = 30.0f;
+	float minZ = -30.0f;	float maxZ = 30.0f;
 
 	for (int x = minX; x <= maxX; x += gridSize) {
 		for (int z = minZ; z <= maxZ; z += gridSize) {
@@ -76,6 +76,11 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode) {
 
 			mapnode[i].connectedNode.push_back(j);
 			mapnode[j].connectedNode.push_back(i);
+			connectNodepair paircon;
+			paircon.pos1 = mapnode[i].position;
+			paircon.pos2 = mapnode[j].position;
+			
+			pair.push_back(paircon);
 		}
 	}
 }

@@ -112,14 +112,18 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode, std::vector<connectNo
 			bool isPathValid = true;
 			float prevGroundY = posA.y;
 
+			float stepDist = distXZ / (divCount + 1);
+
+			float maxWalkableStep = stepDist * sqrtf(1.0f / (maxSlopeNormal * maxSlopeNormal) - 1.0f)  + 0.05f;
+
 			for (int d = 1; d <= divCount; d++) {
 				float t = (float)d / (divCount + 1);
 
 				float px = posA.x + (posB.x - posA.x) * t;
 				float pz = posA.z + (posB.z - posA.z) * t;
 
-				VECTOR rayStart = VGet(px, prevGroundY + maxStepHeight, pz);
-				VECTOR rayEnd = VGet(px, prevGroundY - maxStepHeight, pz);
+				VECTOR rayStart = VGet(px, prevGroundY + maxWalkableStep, pz);
+				VECTOR rayEnd = VGet(px, prevGroundY - maxWalkableStep, pz);
 
 				MV1_COLL_RESULT_POLY groundHit = MV1CollCheck_Line(modelhandle, -1, rayStart, rayEnd);
 				if (groundHit.HitFlag == 0) {

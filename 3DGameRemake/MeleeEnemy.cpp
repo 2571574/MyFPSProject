@@ -95,7 +95,7 @@ void MeleeEnemy::Update() {
 	nextPos.y += velocity.y * dt60;
 
 	float radius = status.width;
-
+	 
 	if (velocity.y <= 0.0f) {
 		float offset = radius * 0.8f;
 

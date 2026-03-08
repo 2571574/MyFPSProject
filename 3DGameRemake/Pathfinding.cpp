@@ -15,18 +15,39 @@ bool IsSafePlace(int modelhandle, VECTOR pos, float charaRadius, float charaHeig
 		float angle = i * (DX_PI_F / 4);
 
 		VECTOR offset = VGet(cosf(angle) * checkDist, 0, sinf(angle) * checkDist);
+		VECTOR p = VAdd(centerHit.HitPosition, offset);
+
+		VECTOR s = VAdd(p, VGet(0.0f, 1.0f, 0.0f));
+		VECTOR e = VAdd(p, VGet(0.0f, -1.0f, 0.0f));
+		MV1_COLL_RESULT_POLY edgeHit = MV1CollCheck_Line(modelhandle, -1, s, e);
+
+		if (edgeHit.HitFlag == 0 || std::abs(edgeHit.HitPosition.y - centerHit.HitPosition.y) > 0.5f) {
+			return false;
+		}
 	}
+
+	VECTOR capBottom = VAdd(centerHit.HitPosition, VGet(0, charaRadius + 0.1f, 0));
+	VECTOR capTop = VAdd(centerHit.HitPosition, VGet(0, charaHeight - charaRadius, 0));
+
+	MV1_COLL_RESULT_POLY_DIM spaceHit = MV1CollCheck_Capsule(modelhandle, -1, capBottom, capTop,charaRadius);
+	bool hasSpace = (spaceHit.HitNum == 0);
+	MV1CollResultPolyDimTerminate(spaceHit);
+
+	return hasSpace;
 }
 
 void InitNode(int modelhandle, std::vector<Node>& mapnode, std::vector<connectNodepair> & pair) {
-	float gridSize = 2.0f;
-	float startY = 30.0f;
-	float endY = -20.0f;
+	mapnode.clear();
+	pair.clear();
 
-	float maxSlopeNormal = 0.6f;
+	float gridSize = 2.0f;
 	float charaHeight = 2.0f;
 	float charaRadius = 0.5f;
-	float maxStepHeight = 2.0f;
+
+	float startY = 30.0f;
+	float endY = -10.0f;
+	float maxSlopeNormal = 0.6f;
+	float maxStepHeight = 1.5f;
 
 	float minX = -30.0f;	float maxX = 30.0f;
 	float minZ = -30.0f;	float maxZ = 30.0f;
@@ -35,143 +56,85 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode, std::vector<connectNo
 		for (float z = minZ; z <= maxZ; z += gridSize) {
 			VECTOR rayStart = VGet(x, startY, z);
 			VECTOR rayEnd = VGet(x, endY, z);
+
+
 			while (1) {
 				MV1_COLL_RESULT_POLY hit = MV1CollCheck_Line(modelhandle, -1, rayStart, rayEnd);
 				if (hit.HitFlag == 0) {
 					break;
 				}
 
-				if (hit.Normal.y >= maxSlopeNormal) {
-					bool isValidNode = true;
-					VECTOR pos = hit.HitPosition;
-
-					float CheckDist = charaRadius + 0.1f;
-					VECTOR offsets[4] = { VGet(CheckDist,0,0),VGet(-CheckDist,0,0),VGet(0,0,CheckDist),VGet(0,0,-CheckDist) };
-
-					for (int i = 0; i < 4; i++) {
-						VECTOR origin = VAdd(pos, offsets[i]);
-
-						VECTOR edgeStart = VGet(origin.x, pos.y + maxStepHeight, origin.z);
-						VECTOR edgeEnd = VGet(origin.x, pos.y - maxStepHeight, origin.z);
-
-						MV1_COLL_RESULT_POLY edgeHit = MV1CollCheck_Line(modelhandle, -1, edgeStart, edgeEnd);
-
-						if (edgeHit.HitFlag == 0 || edgeHit.Normal.y<maxSlopeNormal || std::abs(edgeHit.HitPosition.y - pos.y) > maxStepHeight) {
-							isValidNode = false;
-							break;
-						}
-					}
-
-					if(isValidNode){
-						VECTOR checkBottom = VGet(hit.HitPosition.x, hit.HitPosition.y + charaRadius + 0.1f, hit.HitPosition.z);
-						VECTOR checkTop = VGet(hit.HitPosition.x, hit.HitPosition.y + charaHeight - charaRadius, hit.HitPosition.z);
-						MV1_COLL_RESULT_POLY_DIM spaceHit = MV1CollCheck_Capsule(modelhandle, -1, checkBottom, checkTop, charaRadius);
-						if (spaceHit.HitNum != 0) {
-							for (int i = 0; i < spaceHit.HitNum; i++) {
-								if (spaceHit.Dim[i].Normal.y < maxSlopeNormal) {
-									isValidNode = false;
-									break;
-								}
-							}
-						}
-						MV1CollResultPolyDimTerminate(spaceHit);
-
-						if (isValidNode) {
-							Node node;
-							node.position = VAdd(hit.HitPosition, VGet(0.0f, 0.1f, 0.0f));
-							mapnode.push_back(node);
-						}
-					}
+				if (IsSafePlace(modelhandle, hit.HitPosition, charaRadius, charaHeight, maxSlopeNormal)) {
+					Node node;
+					node.position = VAdd(hit.HitPosition, VGet(0.0f, 0.1f, 0.0f));
+					mapnode.push_back(node);
 				}
 
-				rayStart = VAdd(hit.HitPosition, VGet(0, -0.1f, 0));
-				if (rayStart.y < endY) {
-					break;
-				}
+				rayStart = VAdd(hit.HitPosition, VGet(0.0f, -0.5f, 0.0f));
+				if (rayStart.y < rayEnd.y)break;
+
+
 			}
 		}
 	}
 
-	float connectDist2D = gridSize * 1.5f;
+
+	float connectDistMax = gridSize * 1.8f;
 
 	for (size_t i = 0; i < mapnode.size(); ++i) {
 		for (size_t j = i + 1; j < mapnode.size(); ++j) {
 			VECTOR posA = mapnode[i].position;
 			VECTOR posB = mapnode[j].position;
 
-			VECTOR aXZ = VGet(posA.x, 0.0f, posA.z);
-			VECTOR bXZ = VGet(posB.x, 0.0f, posB.z);
-			if (VSize(VSub(aXZ, bXZ)) > connectDist2D) continue;
-			if (std::abs(posA.y - posB.y) > maxStepHeight)continue;
+			float dist = GetDistance(posA, posB);
+			if (dist > connectDistMax) continue;
 
+			float walkableTan = sqrtf(1.0f / (maxSlopeNormal * maxSlopeNormal) - 1.0f);
+			float maxWalkableDiff = dist * walkableTan + 0.2f;
+			if (std::abs(posA.y - posB.y) > maxWalkableDiff)continue;
 
-			VECTOR capStart = VGet(posA.x, posA.y + charaHeight * 0.5f, posA.z);
-			VECTOR capEnd = VGet(posB.x, posB.y + charaHeight * 0.5f, posB.z);
+			VECTOR capStart = VAdd(posA, VGet(0, charaHeight * 0.5f, 0));
+			VECTOR capEnd = VAdd(posB, VGet(0, charaHeight * 0.5f, 0));
 
-			MV1_COLL_RESULT_POLY_DIM capHit = MV1CollCheck_Capsule(modelhandle, -1, capStart, capEnd, charaRadius);
-			bool hitWall = false;
-			if (capHit.HitNum != 0) {
-				for (int j = 0; j < capHit.HitNum; j++) {
-					if (capHit.Dim[j].Normal.y < maxSlopeNormal) {
-						hitWall = true;
+			MV1_COLL_RESULT_POLY_DIM wallHit = MV1CollCheck_Capsule(modelhandle, -1, capStart, capEnd, charaRadius);
+			bool isBlockedByWall = false;
+			if (wallHit.HitNum > 0) {
+				for (int k = 0; k < wallHit.HitNum; k++) {
+					if (wallHit.Dim[k].Normal.y < maxSlopeNormal) {
+						isBlockedByWall = true;
 						break;
 					}
 				}
-				MV1CollResultPolyDimTerminate(capHit);
-				if (hitWall)continue;
-			}
-			float distXZ = VSize(VGet(posA.x - posB.x, 0.0f, posA.z - posB.z));
-			int divCount = (int)(distXZ / 0.5f);
-			if (divCount < 1)divCount = 1;
-
-			bool isPathValid = true;
-			float prevGroundY = posA.y;
-
-			float stepDist = distXZ / (divCount + 1);
-
-			float maxWalkableStep = stepDist * sqrtf(1.0f / (maxSlopeNormal * maxSlopeNormal) - 1.0f)  + 0.05f;
-
-			for (int d = 1; d <= divCount; d++) {
-				float t = (float)d / (divCount + 1);
-
-				float px = posA.x + (posB.x - posA.x) * t;
-				float pz = posA.z + (posB.z - posA.z) * t;
-
-				VECTOR rayStart = VGet(px, prevGroundY + maxWalkableStep, pz);
-				VECTOR rayEnd = VGet(px, prevGroundY - maxWalkableStep, pz);
-
-				MV1_COLL_RESULT_POLY groundHit = MV1CollCheck_Line(modelhandle, -1, rayStart, rayEnd);
-				if (groundHit.HitFlag == 0) {
-					isPathValid = false;
-					break;
-				}
-
-				if (groundHit.Normal.y < maxSlopeNormal) {
-					isPathValid = false;
-					break;
-				}
-
-				float heightDiff = std::abs(groundHit.HitPosition.y - prevGroundY);
-				if (heightDiff > maxStepHeight) {
-					isPathValid = false;
-					break;
-				}
-
-				prevGroundY = groundHit.HitPosition.y;
-			}
-			if (std::abs(posB.y - prevGroundY) > maxStepHeight) {
-				isPathValid = false;
 			}
 
-			if (!isPathValid) continue;
+			MV1CollResultPolyDimTerminate(wallHit);
+			if (isBlockedByWall)continue;
 
-			mapnode[i].connectedNode.push_back(j);
-			mapnode[j].connectedNode.push_back(i);
-			connectNodepair paircon;
-			paircon.pos1 = mapnode[i].position;
-			paircon.pos2 = mapnode[j].position;
-			
-			pair.push_back(paircon);
+			bool isGroundContinuous = true;
+			int div = (int)(dist / 0.4f);
+			if (div < 1)div = 1;
+
+			float prevY = posA.y;
+			for (int k = 1; k <= div; k++) {
+				float t = (float)k / (div + 1);
+				VECTOR checkPos = VAdd(posA, VScale(VSub(posB, posA), t));
+				
+				VECTOR s = VGet(checkPos.x, prevY + 0.5f, checkPos.z);
+				VECTOR e = VGet(checkPos.x, prevY - 0.5f, checkPos.z);
+				MV1_COLL_RESULT_POLY groundHit = MV1CollCheck_Line(modelhandle, -1, s, e);
+
+				if (groundHit.HitFlag == 0 || groundHit.Normal.y < maxSlopeNormal) {
+					isGroundContinuous = false;
+					break;
+				}
+				prevY = groundHit.HitPosition.y;
+			}
+
+			if (isGroundContinuous) {
+				mapnode[i].connectedNode.push_back(j);
+				mapnode[j].connectedNode.push_back(i);
+				pair.push_back({ posA,posB });
+			}
 		}
 	}
 }

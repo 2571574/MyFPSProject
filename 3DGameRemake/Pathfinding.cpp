@@ -3,6 +3,21 @@
 #include<unordered_map>
 #include<algorithm>
 #include "Debug.h"
+bool IsSafePlace(int modelhandle, VECTOR pos, float charaRadius, float charaHeight, float maxSlope) {
+	VECTOR rayStart = VAdd(pos, VGet(0.0f, 1.0f, 0.0f));
+	VECTOR rayEnd = VAdd(pos, VGet(0.0f, -1.0f, 0.0f));
+	MV1_COLL_RESULT_POLY centerHit = MV1CollCheck_Line(modelhandle, -1, rayStart, rayEnd);
+
+	if (centerHit.HitFlag == 0 || centerHit.Normal.y < maxSlope)return false;
+
+	float checkDist = charaRadius;
+	for (int i = 0; i < 8; i++) {
+		float angle = i * (DX_PI_F / 4);
+
+		VECTOR offset = VGet(cosf(angle) * checkDist, 0, sinf(angle) * checkDist);
+	}
+}
+
 void InitNode(int modelhandle, std::vector<Node>& mapnode, std::vector<connectNodepair> & pair) {
 	float gridSize = 2.0f;
 	float startY = 30.0f;

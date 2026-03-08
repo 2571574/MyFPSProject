@@ -19,74 +19,70 @@ void MeleeEnemy::Update() {
 	}
 
 	if (target == nullptr) return;
+
+	VECTOR eyePos = VAdd(position, VGet(0.0f, status.height * 0.8f, 0.0f));
+	VECTOR targetPos = target->GetPos();
+	VECTOR targeteyePos = VAdd(targetPos, VGet(0.0f, target->GetStatus().height * 0.8f, 0));
+
+	MV1_COLL_RESULT_POLY losHit = MV1CollCheck_Line(stageHandle, -1, eyePos, targeteyePos);
+	bool hasLoS = (losHit.HitFlag == 0);
+
+	bool isDirectPathSafe = false;
+	if (hasLoS) {
+		isDirectPathSafe = true;
+		VECTOR toTarget = VSub(targetPos, position);
+		float distXZ = VSize(VGet(toTarget.x, 0, toTarget.z));
+
+		int sample = (int)(distXZ / 1.0f);
+		float prevY = position.y;
+
+		for (int i = 1; i <= sample; i++) {
+			float t = (float)i / sample;
+			VECTOR checkPos = VAdd(position, VScale(toTarget, t));
+
+			VECTOR s = VGet(checkPos.x, prevY + 1.0f, checkPos.z);
+			VECTOR e = VGet(checkPos.x, prevY - 1.0f, checkPos.z);
+			MV1_COLL_RESULT_POLY ground = MV1CollCheck_Line(stageHandle, -1, s, e);
+
+			if (ground.HitFlag == 0 || ground.Normal.y < 0.6f || std::abs(ground.HitPosition.y - prevY)> 0.8f) {
+				isDirectPathSafe = false;
+				break;
+			}
+			prevY = ground.HitPosition.y;
+		}
+
+	}
 	pathUpdateTimer -= dt;
 	if (pathUpdateTimer <= 0.0f) {
-
-		std::vector<VECTOR>newPath = EnemyManager::GetIns().CalculatePath(position, target->GetPos());
-		SetPath(newPath);
-		pathUpdateTimer = 1.0f + (GetRand(100) / 100.0f);
-		Debug::Log("pathUpdate");
-
-		if (currentPath.size() > 1) {
-			float distS = VSize(VSub(currentPath[0], position));
-			float distG = VSize(VSub(currentPath[1], position));
-			if (distS < 1.5f || distG < distS) {
-				AdvancePathIndex();
-			}
+		if (!isDirectPathSafe) {
+			std::vector<VECTOR>newPath = EnemyManager::GetIns().CalculatePath(position, target->GetPos());
+			SetPath(newPath);
+			Debug::Log("pathUpdate");
 		}
+		pathUpdateTimer = 0.5f + (GetRand(50) / 100.0f);
 	}
-	bool isMoving = false;
-	VECTOR moveTarget = position;
+	VECTOR moveTarget = targetPos;
+	bool usePath = !isDirectPathSafe && HasPath();
 
-	if (HasPath()) {
+	if (usePath) {
 		moveTarget = GetNextNodeID();
-		isMoving = true;
-
-		VECTOR toTarget = VSub(moveTarget, position);
-		toTarget.y = 0.0f;
-		if (VSize(toTarget)<1.0f){
+		VECTOR toNode = VSub(moveTarget, position);
+		toNode.y = 0.0f;
+		if (VSize(toNode) < 1.0f) {
 			AdvancePathIndex();
 		}
+
 	}
 
-	VECTOR dir = VGet(0.0f, 0.0f, 0.0f);
-	if (isMoving) {
+	VECTOR dir = VSub(moveTarget,position);
+	dir.y = 0.0f;
+	float distToMoveTarget = VSize(dir);
+	if (distToMoveTarget > 0.1f)dir = VNorm(dir);
+	else dir = VGet(0.0f, 0.0f, 0.0f);
 
-		dir = VSub(moveTarget, position);
-		dir.y = 0.0f;
-		if (VSize(dir) > 0.0f) {
-			dir = VNorm(dir);
-		}
-	}
-
-	if (isMoving && stageHandle != -1) {
-		float radius = status.width;
-		VECTOR checkPos = VAdd(position, VScale(dir, radius + 0.5f));
-
-		VECTOR wallRayStart = VGet(position.x, position.y + status.height * 0.5f, position.z);
-		VECTOR wallRayEnd = VGet(checkPos.x, checkPos.y + status.height * 0.5f, checkPos.z);
-		MV1_COLL_RESULT_POLY_DIM wallHit = MV1CollCheck_Capsule(stageHandle, -1, wallRayStart, wallRayEnd,radius*0.8f);
-
-		if (wallHit.HitNum != 0) {
-			for (int i = 0; i < wallHit.HitNum; i++) {
-				VECTOR normal = wallHit.Dim[i].Normal;
-				if(normal.y >= 0.4f)continue;
-				normal.y = 0.0f;
-				if (VSize(normal) > 0.0f)normal = VNorm(normal);
-
-				float dot = VDot(dir, normal);
-				if (dot < 0.0f) {
-					dir.x -= normal.x * dot;
-					dir.z -= normal.z * dot;
-
-					if (VSize(dir) > 0.0f)dir = VNorm(dir);
-				}
-			}
-		}
-	}
 
 	VECTOR nextPos = position;
-	if (isMoving) {
+	if (VSize(VSub(targetPos, position)) > range * 0.8f) {
 		nextPos.x += dir.x * moveSpeed * dt;
 		nextPos.z += dir.z * moveSpeed * dt;
 	}
@@ -95,7 +91,7 @@ void MeleeEnemy::Update() {
 	nextPos.y += velocity.y * dt60;
 
 	float radius = status.width;
-	 
+
 	if (velocity.y <= 0.0f) {
 		float offset = radius * 0.8f;
 
@@ -147,7 +143,7 @@ void MeleeEnemy::Update() {
 		//カプセルの下を基準
 		VECTOR checkPos = nextPos;
 		// 法線ベクトルが下を向いているときのみ上を基準に計算
-		if (normal.y < -0.1f)checkPos = VAdd(nextPos,VGet(0,status.height - radius, 0));
+		if (normal.y < -0.1f)checkPos = VAdd(nextPos, VGet(0, status.height - radius, 0));
 
 		//カプセルの中心から壁の面の最短距離
 		float distance = VDot(VSub(checkPos, wallHitDim.Dim[i].Position[0]), normal);
@@ -162,30 +158,29 @@ void MeleeEnemy::Update() {
 
 			nextPos = VAdd(nextPos, pushVec);
 			hitCount++;
-				float dotVec = velocity.x * normal.x + velocity.z * normal.z;
-				if (dotVec < 0.0f) {
-					velocity.x -= normal.x * dotVec;
-					velocity.z -= normal.z * dotVec;
-				}
-			
+			float dotVec = velocity.x * normal.x + velocity.z * normal.z;
+			if (dotVec < 0.0f) {
+				velocity.x -= normal.x * dotVec;
+				velocity.z -= normal.z * dotVec;
+			}
+
 
 		}
 	}
 	//当たり判定で使ったメモリを解放
 	DxLib::MV1CollResultPolyDimTerminate(wallHitDim);
 	position = nextPos;
-	
-	VECTOR toTarget = VSub(moveTarget, position);
-	float targetDistXZ = VSize(VGet(toTarget.x,0.0f,toTarget.z));
-	float targetHeight = std::abs(toTarget.y);
-	if (targetDistXZ <= range && targetHeight <= status.height && attackTimer <= 0.0f) {
+
+	float distToTarget = VSize(VSub(targetPos, position));
+	if (distToTarget <= range && std::abs(targetPos.y - position.y) <= status.height && attackTimer <= 0.0f) {
 		Action();
 	}
 
-	Debug::Watch("BOT X",position.x);
-	Debug::Watch("BOT Y",position.y);
-	Debug::Watch("BOT Z",position.z);
+	Debug::Watch("BOT X", position.x);
+	Debug::Watch("BOT Y", position.y);
+	Debug::Watch("BOT Z", position.z);
 }
+
 
 
 void MeleeEnemy::Draw() {

@@ -36,14 +36,16 @@ void Weapon::Update() {
 }
 
 void Weapon::Fired(Character& user) {
+	//弾数を減らす、クールタイムをセット
 	if (ammo > 0) ammo--;
 	fireCT = 1.0f / spec.fireRate;
 
+	//反動の処理
 	float recoilP = spec.recoil;
 	float recoilY = ((float)GetRand(spec.recoil) - (spec.recoil/2));
-
 	user.AddRecoil(recoilY, recoilP);
 }
+
 /*射撃の入力を得る関数*/
 void Weapon::FireInput(Character& user, VECTOR direction) {
 	if (spec.fullAuto) {

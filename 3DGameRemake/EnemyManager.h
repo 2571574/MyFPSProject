@@ -3,21 +3,23 @@
 #include<memory>
 #include"Enemy.h"
 #include "Pathfinding.h"
-/*敵の実体を管理するクラス*/
+/// <summary>
+/// 敵全体を管理するマネージャークラス
+/// </summary>
 class EnemyManager
 {
 private:
 	std::vector<std::unique_ptr<Enemy>> enemies;	//敵の配列
-	EnemyManager() = default;		//コンストラクタ
-	std::vector<Node> mapNode;
-	std::vector<connectNodepair> pair;
+	std::vector<Node> mapNode;		//マップのノード
+	std::vector<connectNodepair> pair;	
+	EnemyManager() = default;
 public:
-	/// <summary>
-	/// 唯一のインスタンスを取得
-	/// </summary>
-	/// <returns>唯一のインスタンス</returns>
 	static EnemyManager& GetIns();
 
+	/// <summary>
+	/// 初期化処理
+	/// </summary>
+	/// <param name="modelhandle">ステージのモデルハンドル</param>
 	void Init(int modelhandle);
 	/// <summary>
 	/// 敵をスポーンさせる。
@@ -65,7 +67,12 @@ public:
 
 
 
-	//移動関連
+	/// <summary>
+	/// 移動経路を計算する関数
+	/// </summary>
+	/// <param name="startPos">開始地点</param>
+	/// <param name="goalPos">最終ゴール地点</param>
+	/// <returns>次に向かうノードを返す</returns>
 	std::vector<VECTOR> CalculatePath(VECTOR startPos, VECTOR goalPos);
 
 	

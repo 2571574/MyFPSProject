@@ -5,22 +5,24 @@
 #include "Weapon.h"
 #include <memory>
 
-/*プレイヤーを管理するクラス*/
+/// <summary>
+/// プレイヤーを管理するクラス
+/// </summary>
 class Player : public Character
 {
 private:
-	VECTOR forwardVec, rightVec;	//プレイヤーの方向から取った前ベクトル、右ベクトル
-	std::unique_ptr<Weapon> weapon;		
-	float fov;
-	bool isAds;			
-	bool onGround;
-	float slidingCT;
-	bool running;
-	bool headBob;
-	float bobbingTimer;
-	Camera* cam;
+	VECTOR forwardVec, rightVec;		//プレイヤーの方向から取った前ベクトル、右ベクトル
+	std::unique_ptr<Weapon> weapon;		//現在持っている武器	
+	float fov;			//現在の視野角
+	bool isAds;			//ADSしているか
+	bool onGround;		//地面にいるか
+	float slidingCT;	//スライディングのクールタイム
+	bool running;		//走っているか
+	bool headBob;		//歩行時のカメラの揺れをonにするか
+	float bobbingTimer; //カメラの揺れのタイマー
+	Camera* cam;		//カメラのポインタ
 
-	int stageHandle;
+	int stageHandle;	//ステージのモデルハンドル
 public:
 	/// <summary>
 	///	playerのコンストラクタ 座標にplayerを生成
@@ -49,13 +51,9 @@ public:
 	/// <param name="y">横方向の反動量</param>
 	/// <param name="p">縦方向の反動量</param>
 	void AddRecoil(float y, float p)override;
-	//getter
 
-	/// <summary>
-	/// ステージのモデルをセットする
-	/// </summary>
-	/// <param name="handle">ステージモデルのハンドル</param>
-	void SetStageHandle(int handle) { stageHandle = handle; }
+
+	//getter
 
 	/// <summary>
 	/// 現在のカメラの注視方向（視線ベクトル）を取得
@@ -63,10 +61,7 @@ public:
 	/// <returns>カメラの注視方向を返す</returns>
 	VECTOR GetCamDirection();
 
-	/// <summary>
-	/// 現在持っている武器を取得
-	/// </summary>
-	/// <returns>持っている武器のポインタを返す</returns>
+	void SetStageHandle(int handle) { stageHandle = handle; }
 	Weapon* GetWeapon() { return weapon.get(); }
 };
 

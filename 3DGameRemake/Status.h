@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "DxLib.h"
-//チームIDの定義
+
 enum class TEAMID {
 	ID_FRIENDLY,
 	ID_ENEMY,

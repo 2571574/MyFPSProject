@@ -29,19 +29,17 @@ protected:
 	int effectHandle;	 //発射時のエフェクト
 	int soundHandle;	 //サウンドハンドル
 
-	/// <summary>
-	/// 弾速がある弾を発射する
-	/// </summary>
-	/// <param name="user"></param>
-	/// <param name="direction"></param>
-	virtual void FireProjectile(Character& user, VECTOR direction);		//プロジェクタイルの発射
+	//弾速のある弾を生成する　user=射手　direction=射撃方向のベクトル
+	virtual void FireProjectile(Character& user, VECTOR direction);
+
+	//即着の弾の処理　中でヒットスキャンの判定を行う　user=射手　direction=射撃方向のベクトル
 	virtual void FireHitScan(Character& user, VECTOR direction);		//ヒットスキャンの発射
 
-	//発射後の処理
+	//射撃後の処理　クールタイムのセットや弾数の減少など　user=射手
 	void Fired(Character& user);
 	
 public:
-	Weapon(const GunStatus _spec) :spec(_spec), ammo(_spec.magAmmo), reserveAmmo(_spec.bagAmmo),				//コンストラクタ
+	Weapon(const GunStatus _spec) :spec(_spec), ammo(_spec.magAmmo), reserveAmmo(_spec.bagAmmo),
 		reloadCT(0), fireCT(0), reloading(false), aim(false), gunModelHandle(-1), bulletModelHandle(-1), effectHandle(-1), soundHandle(-1) {
 		if (reserveAmmo == 0) {
 			infinite = true;
@@ -49,37 +47,62 @@ public:
 		else infinite = false;
 	}
 
-	//デストラクタ
+	
 	virtual ~Weapon() {}
 
-	//更新
+	/// <summary>
+	/// 更新処理
+	/// </summary>
 	virtual void Update();
 
-	//入力処理
-	virtual void FireInput(Character& user, VECTOR direction);	//射撃の入力を得る
-	virtual void AdsInput();
-	virtual void ReloadInput();	//リロードの入力を得る
+	/// <summary>
+	/// 射撃の入力を得る
+	/// </summary>
+	/// <param name="user">射手</param>
+	/// <param name="direction">射撃方向のベクトル</param>
+	virtual void FireInput(Character& user, VECTOR direction);
 
-	//射撃
+	/// <summary>
+	/// ADSの入力を得る
+	/// </summary>
+	virtual void AdsInput();
+
+	/// <summary>
+	/// リロードの入力を得る
+	/// </summary>
+	virtual void ReloadInput();
+
+	/// <summary>
+	/// 射撃処理
+	/// </summary>
+	/// <param name="user">射手</param>
+	/// <param name="direction">射撃方向のベクトル</param>
 	virtual void Fire(Character& user, VECTOR direction);
 
+	/// <summary>
+	/// ADSの処理
+	/// </summary>
 	virtual void Ads();
-	//リロード
+	
+	/// <summary>
+	/// リロードの処理
+	/// </summary>
 	virtual void Reload();
 
-	//描画
+	/// <summary>
+	/// 描画処理
+	/// </summary>
 	virtual void Draw();
 
-	//撃てるか確認
 	bool CanFire() const {
 		return (fireCT <= 0 && !reloading && ammo > 0);
 	}
-	//リロードできるか確認
+		
 	bool CanReload() const {
 		return  ((infinite || reserveAmmo > 0) && ammo < spec.magAmmo && !reloading );
 	}
 
-	//リロード中
+	
 	bool Reloading()const {
 		return reloading;
 	}
@@ -87,6 +110,7 @@ public:
 	bool TakingAim()const {
 		return aim;
 	}
+	
 
 	virtual void CancelAds() {
 		aim = false;

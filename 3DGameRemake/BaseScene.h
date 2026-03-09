@@ -19,17 +19,17 @@ public:
 	virtual ~BaseScene(){}
 
 	/// <summary>
-	/// モデルの読み込みや初期化を行う
+	/// 初期化
 	/// </summary>
 	virtual void Init() = 0;
 
 	/// <summary>
-	/// オブジェクトの更新や入力の処理を行う
+	/// 更新処理
 	/// </summary>
 	virtual void Update() = 0;
 
 	/// <summary>
-	/// 描画処理を行う
+	/// 描画処理
 	/// </summary>
 	virtual void Draw() = 0;
 };

@@ -29,9 +29,6 @@ public:
 		position(_position),velocity({0,0,0}), status(_status), hp(_status.maxHP), alive(true), crouch(false)
 		, camHeight(EYE_HEIGHT), modelHandle(-1) {};		//コンストラクタ
 
-	/// <summary>
-	/// デストラクタ　モデルを削除する
-	/// </summary>
 	virtual ~Character() {if(modelHandle!= -1) MV1DeleteModel(modelHandle);}
 
 	/// <summary>

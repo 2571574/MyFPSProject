@@ -3,13 +3,12 @@
 #include <vector>
 #include "CheckKey.h"
 
-//キーバインドの構造体
+
 struct KeyBind {
 	InputType type;
 	int KeyCode;
 };
 
-//操作を指定するID
 enum class ActionID {
 	MOVE_FORWARD,
 	MOVE_LEFT,
@@ -31,22 +30,38 @@ enum class ActionID {
 	MENU_BACK,
 };
 
-
-/*キーとアクションを紐づけるクラス*/
+/// <summary>
+///	キー入力をアクションに変換するクラス
+/// </summary>
 class InputManager
 {
 private:
-	InputManager();	//コンストラクタ
+	InputManager();
 
 	std::map<ActionID, std::vector<KeyBind>> bindings;	//キーバインド
 
 public:
-	static InputManager& GetIns();	//インスタンスを取得
+	static InputManager& GetIns();
 
-	void SetDefaultBinding();		//キーバインドをデフォルトにする
+	/// <summary>
+	/// 全てのアクションをデフォルトのキーバインドにする。
+	/// </summary>
+	void SetDefaultBinding();
 
-	bool IsActionHold(ActionID id)const;	//ホールドでアクション
-	bool IsActionTrigger(ActionID id)const;	//トリガーでアクション
+	/// <summary>
+	/// 押している間を検知する
+	/// </summary>
+	/// <param name="id">検知したいアクション</param>
+	/// <returns>押している間true</returns>
+	bool IsActionHold(ActionID id)const;
+
+	/// <summary>
+	/// 押した瞬間を検知する
+	/// </summary>
+	/// <param name="id">検知したいアクション</param>
+	/// <returns>押した瞬間のみtrue</returns>
+	bool IsActionTrigger(ActionID id)const;
+
 	void SetBind(ActionID id, InputType type, int code);	//キーバインドをセット
 };
 

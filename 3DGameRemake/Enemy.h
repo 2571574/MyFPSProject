@@ -1,54 +1,72 @@
 ﻿#pragma once
 #include "Character.h"
 #include "Debug.h"
-
 class Player;
 
-/*敵の基底クラス、Characterの派生*/
+/// <summary>
+/// 全ての敵の基底クラス
+/// </summary>
 class Enemy : public Character
 {
 protected:
-	Player* target;
-	int stageHandle = -1;
+	Player* target;	//攻撃対象のプレイヤーのポインタ
+	int stageHandle = -1;	//ステージのモデルハンドル
 
-	std::vector<VECTOR> currentPath;
-	int currentNodeIndex;
-	float pathUpdateTimer;
+	std::vector<VECTOR> currentPath;	//現在の経路
+	int currentNodeID;		//次に向かうノードのID
+	float pathUpdateTimer;	//経路更新のタイマー
 public:
-	Enemy(VECTOR pos, CharacterStatus& status,Player* _target) : Character(pos, status),target(_target){}
+
+	Enemy(VECTOR pos, CharacterStatus& status,Player* _target) : Character(pos, status),target(_target),currentNodeID(0), pathUpdateTimer(0) {}
 	virtual ~Enemy(){}
 
-	virtual void Update() override = 0;		//更新
-	virtual void Draw() override = 0;		//描画
-	virtual void Action() = 0;				//攻撃
+	/// <summary>
+	/// 更新処理
+	/// </summary>
+	virtual void Update() override = 0;
 
-	float GetRadius() const { return status.width / 2.0f; }	//半径を得る
+	/// <summary>
+	/// 描画処理
+	/// </summary>
+	virtual void Draw() override = 0;
 
-	//被弾処理
+
+	/// <summary>
+	/// 攻撃処理
+	/// </summary>
+	virtual void Action() = 0;
+
+	/// <summary>
+	/// 被弾処理
+	/// </summary>
+	/// <param name="damage">喰らったダメージ量</param>
 	virtual void OnHit(int damage) {
 		TakeDamage(damage);
 		Debug::Log("HIT");
 	}
 
 	void SetStageHandle(int handle) { stageHandle = handle; }
+	float GetRadius() const { return status.width; }	
 
+	
 	void SetPath(const std::vector<VECTOR>& path) {
 		currentPath = path;
-		currentNodeIndex = 0;
+		currentNodeID = 0;
 	}
 
 	bool HasPath() const {
-		return !currentPath.empty() && currentNodeIndex < currentPath.size();
+		return !currentPath.empty() && currentNodeID < currentPath.size();
 	}
+
 	VECTOR GetNextNodeID()const {
-		if (currentPath.empty() || currentNodeIndex >= currentPath.size()) {
+		if (currentPath.empty() || currentNodeID >= currentPath.size()) {
 			return VGet(0.0f,0.0f,0.0f);
 		}
-		return currentPath[currentNodeIndex];
+		return currentPath[currentNodeID];
 	}
 
 	void AdvancePathIndex() {
-		currentNodeIndex++;
+		currentNodeID++;
 	}
 };
 

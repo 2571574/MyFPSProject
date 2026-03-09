@@ -4,7 +4,9 @@
 #include "Character.h"
 #include "Time.h"
 
-/*弾速を持つ武器の弾のクラス*/
+/// <summary>
+/// プロジェクタイルの弾を管理するクラス
+/// </summary>
 class BaseProjectile {
 protected:
 	VECTOR startpos;	//発射位置
@@ -14,18 +16,36 @@ protected:
 	TEAMID id;			//射手のチームID
 	bool alive;			//生存タグ
 public:
-	//コンストラクタ
+	/// <summary>
+	/// コンストラクタ
+	/// </summary>
+	/// <param name="start">発射位置</param>
+	/// <param name="_id">射手のチームID</param>
+	/// <param name="_spec">撃った銃の性能</param>
+	/// <param name="direction">射撃方向のベクトル</param>
 	BaseProjectile(VECTOR start,TEAMID _id,const GunStatus& _spec, VECTOR direction):startpos(start),pos(start), dir(direction), id(_id), spec(_spec), alive(true) {
 		dir = VNorm(dir);
 	}
 	
-	//デストラクタ
+	
 	virtual ~BaseProjectile() {}
 
-	virtual void Update();	//更新
-	virtual void Draw();	//描画
+	/// <summary>
+	/// 更新処理
+	/// </summary>
+	virtual void Update();
 
+	/// <summary>
+	/// 描画処理
+	/// </summary>
+	virtual void Draw();
+
+	/// <summary>
+	/// 着弾点で爆発させる　AOE=trueの武器の場合のみ
+	/// </summary>
+	/// <param name="hitPos">着弾位置</param>
 	virtual void Explode(VECTOR hitPos);
+
 	//Getter
 	const GunStatus& GetBulletStatus() const { return spec; }
 	VECTOR GetPos() const{ return pos; }

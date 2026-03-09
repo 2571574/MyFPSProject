@@ -24,8 +24,19 @@ public:
 	GameScene(SceneManager* manager);
 	~GameScene() override;
 
+	/// <summary>
+	/// 初期化　モデルの読み込みや位置の設定など
+	/// </summary>
 	void Init() override;
+
+	/// <summary>
+	/// 更新処理
+	/// </summary>
 	void Update()override;
+
+	/// <summary>
+	/// 描画処理
+	/// </summary>
 	void Draw()override;
 };
 

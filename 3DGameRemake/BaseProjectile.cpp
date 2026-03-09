@@ -9,9 +9,12 @@ void BaseProjectile::Update() {
 	Enemy* hitEnemy =
 		EnemyManager::GetIns().CheckProjectile(pos, nextpos, spec.projectileSize, id);	//弾が敵に当たったか判定
 
+	//地面に当たったか判定
 	bool hitGround = (nextpos.y <= 0.0f);
 
+	//当たっていた場合
 	if (hitEnemy != nullptr || hitGround) {
+		//着弾点の計算
 		VECTOR hitPoint = hitEnemy ? hitEnemy->GetPos() : nextpos;
 
 		//当たっていたらその敵の被弾処理

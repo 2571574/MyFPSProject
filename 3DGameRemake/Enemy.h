@@ -15,9 +15,11 @@ protected:
 	std::vector<VECTOR> currentPath;	//現在の経路
 	int currentNodeID;		//次に向かうノードのID
 	float pathUpdateTimer;	//経路更新のタイマー
+
+
 public:
 
-	Enemy(VECTOR pos, CharacterStatus& status,Player* _target) : Character(pos, status),target(_target),currentNodeID(0), pathUpdateTimer(0) {}
+	Enemy(VECTOR pos, CharacterStatus& status,Player* _target) : Character(pos, status), target(_target), currentNodeID(0), pathUpdateTimer(0) {}
 	virtual ~Enemy(){}
 
 	/// <summary>
@@ -40,15 +42,11 @@ public:
 	/// 被弾処理
 	/// </summary>
 	/// <param name="damage">喰らったダメージ量</param>
-	virtual void OnHit(int damage) {
-		TakeDamage(damage);
-		Debug::Log("HIT");
-	}
+	virtual void OnHit(int damage);
 
 	void SetStageHandle(int handle) { stageHandle = handle; }
 	float GetRadius() const { return status.width; }	
 
-	
 	void SetPath(const std::vector<VECTOR>& path) {
 		currentPath = path;
 		currentNodeID = 0;
@@ -58,15 +56,16 @@ public:
 		return !currentPath.empty() && currentNodeID < currentPath.size();
 	}
 
-	VECTOR GetNextNodeID()const {
-		if (currentPath.empty() || currentNodeID >= currentPath.size()) {
-			return VGet(0.0f,0.0f,0.0f);
-		}
-		return currentPath[currentNodeID];
-	}
+	VECTOR GetNextNodeID()const;
 
 	void AdvancePathIndex() {
 		currentNodeID++;
 	}
+
+	void UpdateVelocity(VECTOR moveDir, float dt);
+	void UpdatePhysics(VECTOR& nextPos, float dt);
+	
+
+
 };
 

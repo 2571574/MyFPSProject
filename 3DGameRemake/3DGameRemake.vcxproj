@@ -134,6 +134,7 @@
     <ClCompile Include="CheckKey.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Dummy.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="HUD.cpp" />
@@ -143,6 +144,7 @@
     <ClCompile Include="Pathfinding.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ProjectileManager.cpp" />
+    <ClCompile Include="RifleEnemy.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Status.cpp" />
     <ClCompile Include="Time.cpp" />
@@ -167,6 +169,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="ProjectileManager.h" />
     <ClInclude Include="BaseScene.h" />
+    <ClInclude Include="RifleEnemy.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Status.h" />
     <ClInclude Include="Time.h" />

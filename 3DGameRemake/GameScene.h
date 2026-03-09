@@ -6,6 +6,7 @@
 #include "ProjectileManager.h"
 #include "Dummy.h"
 #include "MeleeEnemy.h"
+#include "RifleEnemy.h"
 #include "EnemyManager.h"
 
 /// <summary>

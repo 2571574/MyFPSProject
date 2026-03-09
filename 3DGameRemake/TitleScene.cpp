@@ -36,7 +36,7 @@ void TitleScene::Update() {
 				selectNum = 0;
 			}
 			else if (selectNum == MENU_EXIT) {
-				selectNum = 0;
+				manager->SetExitTag(true);
 			}
 		}
 		break;
@@ -86,20 +86,37 @@ void TitleScene::Update() {
 
 void TitleScene::Draw() {
 	switch (currentState) {
-		case TitleState::TOP:
+	case TitleState::TOP:
+
+		DrawString(80, 100 + 30 * selectNum, ">", GetColor(255, 255, 255));
+		DrawString(100, 100, "Play", GetColor(255, 255, 255));
+		DrawString(100, 130, "Settings", GetColor(255, 255, 255));
+		DrawString(100, 160, "Credit", GetColor(255, 255, 255));
+		DrawString(100, 190, "Exit", GetColor(255, 255, 255));
+		break;
+	case TitleState::MODE_SELECT:
+		DrawString(80, 100 + 30 * selectNum, ">", GetColor(255, 255, 255));
+		DrawString(100, 100, "Tutorial", GetColor(255, 255, 255));
+		DrawString(100, 130, "Easy", GetColor(255, 255, 255));
+		DrawString(100, 160, "Normal", GetColor(255, 255, 255));
+		DrawString(100, 190, "Hard", GetColor(255, 255, 255));
+		break;
+	case TitleState::SETTINGS:
+		DrawString(100, 100, "Settings", GetColor(255, 255, 255));
+		break;
+	case TitleState::CREDIT:
+		DrawString(100, 100, "Credit", GetColor(255, 255, 255));
+		break;
+	case TitleState::KEY_CONFIG:
+		DrawString(100, 100, "Key Config", GetColor(255, 255, 255));
+		break;
 		
-			DrawString(80, 100+30*selectNum, ">", GetColor(255, 255, 255));
-			DrawString(100, 100, "Play", GetColor(255, 255, 255));
-			DrawString(100, 130, "Settings", GetColor(255, 255, 255));
-			DrawString(100, 160, "Credit", GetColor(255, 255, 255));
-			DrawString(100, 190, "Exit", GetColor(255, 255, 255));
-			break;
 	}
 }
 
 void TitleScene::Control() {
 	if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_UP))
-		selectNum++;
-	if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_DOWN))
 		selectNum--;
+	if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_DOWN))
+		selectNum++;
 }

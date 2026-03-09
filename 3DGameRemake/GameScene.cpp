@@ -25,10 +25,8 @@ void GameScene::Update() {
 	Time::GetIns().Update();    //時間の更新
 	ProjectileManager::GetIns().Update();   //弾の更新
 	Debug::Update();
-	CheckKey::GetIns().Input(); //入力を取得
 	player.Update();            //プレイヤーを更新
 	EnemyManager::GetIns().Update();    //敵の更新
-	CheckKey::GetIns().LateInput(); //入力を保持
 }
 
 void GameScene::Draw() {
@@ -36,5 +34,6 @@ void GameScene::Draw() {
 	MV1DrawModel(stageHandle);
 	ProjectileManager::GetIns().Draw();     //弾の描画
 	EnemyManager::GetIns().Draw();          //敵の描画
+	player.Draw();                        //プレイヤーの描画
 	Debug::Draw();
 }

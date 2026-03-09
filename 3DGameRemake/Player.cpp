@@ -8,7 +8,7 @@ Player::Player(VECTOR pos,Camera* camera)
 	, stageHandle(-1)
 	, forwardVec({ 0,0,0 })
 	, rightVec({ 0,0,0 })
-	, weapon(std::make_unique<Weapon>(PLAYER_GUN::LAUNCHER))
+	, weapon(std::make_unique<Weapon>(PLAYER_GUN::PISTOL))
 	, fov(0)
 	,slidingCT(0.0f)
 	, isAds(false)
@@ -18,6 +18,7 @@ Player::Player(VECTOR pos,Camera* camera)
 	, bobbingTimer(0)
 	
 {
+	hud = std::make_unique<HUD>(this);
 }
 
 
@@ -303,9 +304,13 @@ void Player::Update() {
 	//適用
 	cam->Update(camPos);
 	cam->Move(fov);
+
+	hud->Update();
 }
 
-void Player::Draw() {}
+void Player::Draw() {
+	if (hud)hud->Draw();
+}
 
 
 void Player::AddRecoil(float y,float p){

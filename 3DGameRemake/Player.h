@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "InputManager.h"
 #include "Weapon.h"
+#include "HUD.h"
 #include <memory>
 
 /// <summary>
@@ -21,6 +22,7 @@ private:
 	bool headBob;		//歩行時のカメラの揺れをonにするか
 	float bobbingTimer; //カメラの揺れのタイマー
 	Camera* cam;		//カメラのポインタ
+	std::unique_ptr<HUD> hud;	//HUD
 
 	int stageHandle;	//ステージのモデルハンドル
 public:

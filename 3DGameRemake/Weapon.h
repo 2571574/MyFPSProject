@@ -22,6 +22,7 @@ protected:
 	float reloadCT;	     //リロード中タイマー     
 	float fireCT;		 //次の射撃までのタイマー
 	bool reloading;		 //リロード中
+	bool reloadcanceled;
 	bool aim;
 	//演出用
 	int gunModelHandle;	 //銃のモデルハンドル
@@ -40,7 +41,16 @@ protected:
 	
 public:
 	Weapon(const GunStatus _spec) :spec(_spec), ammo(_spec.magAmmo), reserveAmmo(_spec.bagAmmo),
-		reloadCT(0), fireCT(0), reloading(false), aim(false), gunModelHandle(-1), bulletModelHandle(-1), effectHandle(-1), soundHandle(-1) {
+		reloadCT(0)
+		, fireCT(0)
+		, reloading(false)
+		, aim(false)
+		, reloadcanceled(false)
+		, gunModelHandle(-1)
+		, bulletModelHandle(-1)
+		, effectHandle(-1)
+		, soundHandle(-1)
+	{
 		if (reserveAmmo == 0) {
 			infinite = true;
 		}
@@ -119,9 +129,19 @@ public:
 	virtual void CancelReload() {
 		reloading = false;
 		reloadCT = 0.0f;
+		reloadcanceled = true;
+	}
+
+	bool IsReloadCanceled() const {
+		return reloadcanceled;
+	}
+
+	void SetReloadCanceled() {
+		reloadcanceled = false;
 	}
 	//getter
 	GunStatus GetSpec() const { return spec; }
 	int GetAmmo() const { return ammo; }
 	int GetReserveAmmo() const { return reserveAmmo; }
+	bool IsInfinite() const { return infinite; }
 };

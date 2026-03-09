@@ -96,6 +96,9 @@
     <ClCompile Include="Pathfinding.cpp">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClCompile>
+    <ClCompile Include="HUD.cpp">
+      <Filter>2.OBJECT\1.ENTITY</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Parameter.h">
@@ -160,6 +163,9 @@
     </ClInclude>
     <ClInclude Include="Pathfinding.h">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClInclude>
+    <ClInclude Include="HUD.h">
+      <Filter>2.OBJECT\1.ENTITY</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

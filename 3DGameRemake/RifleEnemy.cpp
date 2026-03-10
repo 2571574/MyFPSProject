@@ -51,12 +51,15 @@ void RifleEnemy::Update() {
 			VECTOR s = VGet(checkPos.x, prevY + 1.0f, checkPos.z);
 			VECTOR e = VGet(checkPos.x, prevY - 1.0f, checkPos.z);
 			MV1_COLL_RESULT_POLY ground = MV1CollCheck_Line(stageHandle, -1, s, e);
-
 			if (ground.HitFlag == 0 || ground.Normal.y < 0.6f || std::abs(ground.HitPosition.y - prevY)> 0.8f) {
 				isDirectPathSafe = false;
 				break;
 			}
 			prevY = ground.HitPosition.y;
+		}
+		float heightDiff = targetPos.y - position.y;
+		if(std::abs(heightDiff) > 1.0f) {
+			isDirectPathSafe = false;
 		}
 
 	}

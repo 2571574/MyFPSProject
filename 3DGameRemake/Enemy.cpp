@@ -24,7 +24,7 @@ void Enemy::UpdateVelocity(VECTOR moveDir, float dt) {
 
 
 void Enemy::UpdatePhysics(VECTOR& nextPos, float dt) {
-	float dt60 = dt * dt60;
+	float dt60 = dt * 60;
 	float radius = status.width;
 
 	velocity.y += -0.008f * dt60;

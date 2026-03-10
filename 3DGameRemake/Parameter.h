@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 //描画
-#define WINDOW_WIDTH 1280				//ウィンドウの幅
-#define WINDOW_HEIGHT 720				//ウィンドウの高さ
+#define WINDOW_WIDTH 1920				//ウィンドウの幅
+#define WINDOW_HEIGHT 1080				//ウィンドウの高さ
 #define WINDOW_COLORBIT 32				//カラービット数
 #define CENTER_X (WINDOW_WIDTH / 2)		//X軸画面中央
 #define CENTER_Y (WINDOW_HEIGHT / 2)	//Y軸画面中央

@@ -11,7 +11,6 @@ private:
 	float attackTimer;  //攻撃のクールタイム
     float range;        //攻撃射程
 	float moveSpeed;    //移動速度
-
 public:
     /// <summary>
     /// コンストラクタ

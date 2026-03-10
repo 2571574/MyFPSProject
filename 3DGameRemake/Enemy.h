@@ -16,10 +16,11 @@ protected:
 	int currentNodeID;		//次に向かうノードのID
 	float pathUpdateTimer;	//経路更新のタイマー
 
+	bool isDirectPathSafe;	//直接攻撃しても安全かどうか
 
 public:
 
-	Enemy(VECTOR pos, CharacterStatus& status,Player* _target) : Character(pos, status), target(_target), currentNodeID(0), pathUpdateTimer(0) {}
+	Enemy(VECTOR pos, CharacterStatus& status,Player* _target) : Character(pos, status), target(_target), currentNodeID(0), pathUpdateTimer(0), isDirectPathSafe(false) {}
 	virtual ~Enemy(){}
 
 	/// <summary>
@@ -62,8 +63,17 @@ public:
 		currentNodeID++;
 	}
 
+	//移動
+	void ApplyMovement(VECTOR moveDir, float dt);
 	void UpdateVelocity(VECTOR moveDir, float dt);
-	void UpdatePhysics(VECTOR& nextPos, float dt);
+	void UpdatePhysics(float dt);
+
+	bool CheckLineSight(VECTOR targetPos);
+
+	bool CheckPathSafety(VECTOR targetPos);
+
+	VECTOR UpdateNavigation(VECTOR targetPos, float dt);
+	
 	
 
 

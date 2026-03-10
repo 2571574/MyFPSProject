@@ -1,5 +1,6 @@
 ﻿#include "Enemy.h"
 #include <cmath>
+#include "EnemyManager.h"
 void Enemy::OnHit(int damage) {
 	TakeDamage(damage);
 	Debug::Log("HIT");
@@ -11,24 +12,31 @@ VECTOR Enemy::GetNextNodeID()const {
 	}
 	return currentPath[currentNodeID];
 }
-void Enemy::UpdateVelocity(VECTOR moveDir, float dt) {
-	float dt60 = dt * 60;
 
-	velocity = VAdd(velocity, VScale(moveDir, status.accel * dt60));
+void Enemy::ApplyMovement(VECTOR moveDir, float dt) {
+	UpdateVelocity(moveDir, dt);
+	UpdatePhysics(dt);
+}
+void Enemy::UpdateVelocity(VECTOR moveDir, float dt) {
+	float dt60 = dt * 60.0f;
+	if (VSize(moveDir) > 0.0f) {
+		velocity.x += moveDir.x * status.accel * dt60;
+		velocity.z += moveDir.z * status.accel * dt60;
+	}
 
 	float finalFriction = std::pow(status.friction, dt60);
-
 	velocity.x *= finalFriction;
 	velocity.z *= finalFriction;
 }
 
 
-void Enemy::UpdatePhysics(VECTOR& nextPos, float dt) {
-	float dt60 = dt * 60;
+void Enemy::UpdatePhysics(float dt) {
+	float dt60 = dt * 60.0f;
 	float radius = status.width;
 
 	velocity.y += -0.008f * dt60;
-	nextPos.y += velocity.y * dt60;
+	
+	VECTOR nextPos = VAdd(position,VScale(velocity,dt60));
 
 	if (velocity.y <= 0.0f) {
 		float offset = radius * 0.8f;
@@ -42,7 +50,6 @@ void Enemy::UpdatePhysics(VECTOR& nextPos, float dt) {
 		};
 		bool hitGroundThisFrame = false;
 		float highestY = -999;
-		int hitPolyIndex = -1;
 		for (int i = 0; i < 5; i++) {
 			VECTOR basePos = VAdd(nextPos, rayOffsets[i]);
 			//足元からレイを打つ
@@ -56,7 +63,6 @@ void Enemy::UpdatePhysics(VECTOR& nextPos, float dt) {
 				if (groundHit.HitPosition.y > highestY) {
 					highestY = groundHit.HitPosition.y;
 					hitGroundThisFrame = true;
-					hitPolyIndex = groundHit.PolygonIndex;
 				}
 			}
 		}
@@ -107,4 +113,64 @@ void Enemy::UpdatePhysics(VECTOR& nextPos, float dt) {
 	}
 	//当たり判定で使ったメモリを解放
 	DxLib::MV1CollResultPolyDimTerminate(wallHitDim);
+
+	position = nextPos;
+}
+
+
+bool Enemy::CheckLineSight(VECTOR targetPos) {
+	VECTOR myEye = VAdd(position, VGet(0, camHeight, 0));
+	VECTOR targetEye = VAdd(targetPos, VGet(0, camHeight, 0));
+	MV1_COLL_RESULT_POLY hitResult = MV1CollCheck_Line(stageHandle, -1, myEye, targetEye);
+	return hitResult.HitFlag == 0; //ヒットしていないなら見えている
+}
+
+bool Enemy::CheckPathSafety(VECTOR targetPos) {
+	VECTOR toTarget = VSub(targetPos, position);
+	float distXZ = VSize(VGet(toTarget.x, 0, toTarget.z));
+	int sample = (int)(distXZ / 1.0f);
+	float prevY = position.y;
+
+	for (int i = 1; i <= sample; i++) {
+		float t = (float)i / sample;
+		VECTOR checkPos = VAdd(position, VScale(toTarget, t));
+
+		VECTOR s = VGet(checkPos.x, prevY + 1.0f, checkPos.z);
+		VECTOR e = VGet(checkPos.x, prevY - 1.0f, checkPos.z);
+		MV1_COLL_RESULT_POLY ground = MV1CollCheck_Line(stageHandle, -1, s, e);
+		if (ground.HitFlag == 0 || ground.Normal.y < 0.6f || std::abs(ground.HitPosition.y - prevY)> 0.8f) {
+			return false;
+		}
+		prevY = ground.HitPosition.y;
+	}
+	float heightDiff = targetPos.y - position.y;
+	if (std::abs(heightDiff) > 1.0f) {
+		return false;
+	}
+	return true;
+}
+
+VECTOR Enemy::UpdateNavigation(VECTOR targetPos, float dt) {
+	bool hasLOS = CheckLineSight(targetPos);
+
+	isDirectPathSafe = hasLOS && CheckPathSafety(targetPos);
+
+	pathUpdateTimer -= dt;
+	if (pathUpdateTimer <= 0.0f) {
+		if (!isDirectPathSafe) {
+			SetPath(EnemyManager::GetIns().CalculatePath(position, targetPos));
+		}
+		pathUpdateTimer = 0.5f + (GetRand(50) / 100.0f);
+	}
+
+	VECTOR moveTarget = targetPos;
+	if (!isDirectPathSafe && HasPath()) {
+		moveTarget = GetNextNodeID();
+		VECTOR toNode = VSub(moveTarget, position);
+		toNode.y = 0.0f;
+		if (VSize(toNode) < 1.0f) {
+			AdvancePathIndex();
+		}
+	}
+	return moveTarget;
 }

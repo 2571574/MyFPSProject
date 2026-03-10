@@ -2,7 +2,7 @@
 namespace CHARA_STATUS {
 	CharacterStatus PLAYER = { 100, 0.015f, 0.9f, 0.5f, 2.0f, TEAMID::ID_FRIENDLY ,AITYPE::NONE};
 	CharacterStatus DUMMY = { 10000,0.0f,0.0f,1.0f,2.0f,TEAMID::ID_ENEMY, AITYPE::NONE};
-	CharacterStatus MELEE_ENEMY = { 10,0.03f,0.9f,0.5f,2.0f,TEAMID::ID_ENEMY, AITYPE::MELEE};
+	CharacterStatus MELEE_ENEMY = { 2,0.023f,0.8f,0.5f,2.0f,TEAMID::ID_ENEMY, AITYPE::MELEE};
 	CharacterStatus RIFLE_ENEMY = { 10,0.015f,0.9f,0.5f,2.0f,TEAMID::ID_ENEMY, AITYPE::RIFLE};
 	CharacterStatus SNIPER_ENEMY = { 10,0.01f,0.9f,0.5f,1.75f,TEAMID::ID_ENEMY, AITYPE::SNIPER};
 }

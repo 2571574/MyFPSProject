@@ -4,7 +4,7 @@
 #include <cmath>
 #include "Parameter.h"
 #include "EnemyManager.h"
-MeleeEnemy::MeleeEnemy(VECTOR pos, Player* target) :Enemy(pos, CHARA_STATUS::MELEE_ENEMY, target), attackTimer(0.0f),range(3.0f),moveSpeed(3.0f) {}
+MeleeEnemy::MeleeEnemy(VECTOR pos, Player* target) :Enemy(pos, CHARA_STATUS::MELEE_ENEMY, target,ENEMYTYPE::MELEE), attackTimer(0.0f), range(3.0f), moveSpeed(3.0f) {}
 
 void MeleeEnemy::Update() {
 	if (hp <= 0) {

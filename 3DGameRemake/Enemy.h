@@ -17,10 +17,10 @@ protected:
 	float pathUpdateTimer;	//経路更新のタイマー
 
 	bool isDirectPathSafe;	//直接攻撃しても安全かどうか
-
+	ENEMYTYPE type;
 public:
 
-	Enemy(VECTOR pos, CharacterStatus& status,Player* _target) : Character(pos, status), target(_target), currentNodeID(0), pathUpdateTimer(0), isDirectPathSafe(false) {}
+	Enemy(VECTOR pos, CharacterStatus& status, Player* _target, ENEMYTYPE type);
 	virtual ~Enemy(){}
 
 	/// <summary>
@@ -74,7 +74,7 @@ public:
 
 	VECTOR UpdateNavigation(const Character* target, float dt);
 	
-	
+	ENEMYTYPE GetType()const { return type; }
 
 
 };

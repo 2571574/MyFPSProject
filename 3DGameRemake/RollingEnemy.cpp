@@ -3,7 +3,7 @@
 #include "EnemyManager.h"
 
 RollingEnemy::RollingEnemy(VECTOR pos, Player* target)
-	:Enemy(pos, CHARA_STATUS::ROLL_ENEMY, target)
+	:Enemy(pos, CHARA_STATUS::ROLL_ENEMY, target,ENEMYTYPE::ROLLING)
 	, isExploding(false)
 	, explodeTimer(2.0f)
 	, triggerDist(5.0f) {

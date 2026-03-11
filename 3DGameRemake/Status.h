@@ -6,8 +6,13 @@ enum class TEAMID {
 	ID_ENEMY,
 };
 
-
-
+enum class ENEMYTYPE {
+	MELEE,
+	RIFLE,
+	SNIPER,
+	ROLLING,
+	MAX_TYPE
+};
 //キャラのステータスの定義
 struct CharacterStatus { //エンティティの性能
 	int maxHP;			 //最大体力
@@ -19,6 +24,7 @@ struct CharacterStatus { //エンティティの性能
 	float eyeHeight;
 	float crouchEyeHeight;
 	TEAMID teamID;		 //チームID
+	int score;
 };
 
 struct GunStatus {		 //武器の性能

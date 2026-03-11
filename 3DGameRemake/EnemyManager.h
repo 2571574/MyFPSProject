@@ -3,15 +3,33 @@
 #include<memory>
 #include"Enemy.h"
 #include "Pathfinding.h"
+class Player;
+
 /// <summary>
 /// 敵全体を管理するマネージャークラス
 /// </summary>
 class EnemyManager
 {
 private:
+	std::vector<VECTOR>spawnPoints;
+	Player* target;
+	int stageHandle;
+	int maxEnemiesOnMap;
+	float currentSpawnInterval;
+	float minSpawnInterval;
+	float spawnTimer;
+	float difficultyTimer;
+
+	int maxLimitMelee;
+	int maxLimitRifle;
+	int maxLimitSniper;
+	int maxLimitRolling;
+
 	std::vector<std::unique_ptr<Enemy>> enemies;	//敵の配列
 	std::vector<Node> mapNode;		//マップのノード
 	EnemyManager() = default;
+
+	int CountEnemyType(ENEMYTYPE type);
 public:
 	static EnemyManager& GetIns();
 
@@ -19,7 +37,10 @@ public:
 	/// 初期化処理
 	/// </summary>
 	/// <param name="modelhandle">ステージのモデルハンドル</param>
-	void Init(int modelhandle);
+	void Init(int modelhandle,Player* player);
+
+	void AddSpawnPoint(VECTOR pos) { spawnPoints.push_back(pos);
+	}
 	/// <summary>
 	/// 敵をスポーンさせる。
 	/// </summary>
@@ -29,7 +50,7 @@ public:
 	/// <summary>
 	/// 生存している敵を更新する
 	/// </summary>
-	void Update();
+	int Update();
 
 	/// <summary>
 	/// 生存している敵を描画する

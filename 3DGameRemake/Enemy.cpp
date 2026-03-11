@@ -1,6 +1,7 @@
 ﻿#include "Enemy.h"
 #include <cmath>
 #include "EnemyManager.h"
+Enemy::Enemy(VECTOR pos, CharacterStatus& status, Player* _target,ENEMYTYPE type) : Character(pos, status), target(_target), currentNodeID(0), isDirectPathSafe(false), type(type) { pathUpdateTimer = (GetRand(50) / 100.0f); }
 void Enemy::OnHit(int damage) {
 	TakeDamage(damage);
 	Debug::Log("HIT");

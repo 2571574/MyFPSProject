@@ -75,8 +75,8 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode) {
 
 			}
 		}
-	}
 
+	}
 
 	float connectDistMax = gridSize * 1.8f;
 

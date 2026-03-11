@@ -5,7 +5,7 @@
 #include "Status.h"
 
 RifleEnemy::RifleEnemy(VECTOR pos,Player*target)
-	: Enemy(pos,CHARA_STATUS::RIFLE_ENEMY,target)
+	: Enemy(pos,CHARA_STATUS::RIFLE_ENEMY,target,ENEMYTYPE::RIFLE)
 	,moveSpeed(2.0f){
 	
 	rifle = std::make_unique<Weapon>(ENEMY_GUN::RIFLE);

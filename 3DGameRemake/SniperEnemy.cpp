@@ -3,7 +3,7 @@
 #include "Status.h"
 #include "Time.h"
 
-SniperEnemy::SniperEnemy(VECTOR pos, Player* target) : Enemy(pos, CHARA_STATUS::SNIPER_ENEMY, target), targetingTimer(0.0f) {
+SniperEnemy::SniperEnemy(VECTOR pos, Player* target) : Enemy(pos, CHARA_STATUS::SNIPER_ENEMY, target,ENEMYTYPE::SNIPER), targetingTimer(0.0f) {
 	sniper = std::make_unique<Weapon>(ENEMY_GUN::SNIPER);
 	attackDist = sniper->GetSpec().range * 0.8f;
 	escapeDist = sniper->GetSpec().range * 0.4f;

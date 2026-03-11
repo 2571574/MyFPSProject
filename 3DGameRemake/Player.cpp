@@ -2,7 +2,7 @@
 #include "cmath"
 
 
-Player::Player(VECTOR pos,Camera* camera)
+Player::Player(VECTOR pos, Camera* camera)
 	: Character(pos, CHARA_STATUS::PLAYER)
 	, cam(camera)
 	, stageHandle(-1)
@@ -27,6 +27,7 @@ Player::~Player() {
 
 
 void Player::Update() {
+	ClearTargeted();
 	float dt = Time::GetIns().GetDelta();
 	float dt60 = 60.0f * dt;
 	if (slidingCT > 0.0f) {

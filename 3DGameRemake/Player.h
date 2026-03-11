@@ -25,6 +25,7 @@ private:
 	std::unique_ptr<HUD> hud;	//HUD
 
 	int stageHandle;	//ステージのモデルハンドル
+	std::vector<VECTOR> TargetedPos;
 public:
 	/// <summary>
 	///	playerのコンストラクタ 座標にplayerを生成
@@ -65,5 +66,10 @@ public:
 
 	void SetStageHandle(int handle) { stageHandle = handle; }
 	Weapon* GetWeapon() { return weapon.get(); }
+
+	void AddTargeted(VECTOR pos) { TargetedPos.push_back(pos); }
+	const std::vector<VECTOR>& GetTargeted()const { return TargetedPos; }
+	void ClearTargeted() { TargetedPos.clear();}
+	Camera* GetCam()const { return cam; }
 };
 

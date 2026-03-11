@@ -99,11 +99,14 @@
     <ClCompile Include="HUD.cpp">
       <Filter>2.OBJECT\1.ENTITY</Filter>
     </ClCompile>
+    <ClCompile Include="RifleEnemy.cpp">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClCompile>
     <ClCompile Include="Enemy.cpp">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClCompile>
-    <ClCompile Include="RifleEnemy.cpp">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    <ClCompile Include="SniperEnemy.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="RifleEnemy.h">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClInclude>
+    <ClInclude Include="SniperEnemy.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

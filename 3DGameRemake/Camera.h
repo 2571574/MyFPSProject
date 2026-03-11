@@ -44,6 +44,6 @@ public:
 	void SetPos(VECTOR pos);
 	void GetForwardVec(VECTOR& forward, VECTOR& right);
 	VECTOR GetLookDirection();
-
+	float GetYaw()const { return yaw; }
 };
 

@@ -5,7 +5,6 @@ class RifleEnemy :
     public Enemy
 {
 private:
-	float attackTimer;    //射撃のタイマー
 	float range;
 	float stopDist;		//止まる距離
 	float moveSpeed;

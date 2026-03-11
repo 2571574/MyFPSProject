@@ -41,6 +41,25 @@ void HUD::Draw() {
 			if (weapon->Reloading()) {
 				DrawString(CENTER_X - 40, CENTER_Y + 40, "RELOADING", GetColor(0, 0, 0));
 			}
+
+			const auto& attackers = pplayer->GetTargeted();
+			if (attackers.empty())return;
+
+			float playerYaw = pplayer->GetCam()->GetYaw() * (DX_PI_F / 180.0f);
+			float radius = 100.0f;
+
+			for (const auto& enemyPos : attackers) {
+				VECTOR toEnemy = VSub(enemyPos, pplayer->GetPos());
+
+				float enemyAngle = atan2f(toEnemy.x, toEnemy.z);
+
+				float relativeAngle = enemyAngle - playerYaw;
+
+				int drawX = CENTER_X + (int)(sinf(relativeAngle) * radius);
+				int drawY = CENTER_Y - (int)(cosf(relativeAngle) * radius);
+
+				DrawCircle(drawX, drawY, 5, GetColor(255, 0, 0),TRUE);
+			}
 	/* 
 			if (weapon->IsReloadCanceled() || cancelReloadTimer > 0) {
 				DrawString(CENTER_X - 40, CENTER_Y + 60, "CANCELED", GetColor(0, 0, 0));

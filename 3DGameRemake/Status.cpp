@@ -3,19 +3,19 @@ namespace CHARA_STATUS {
 	CharacterStatus PLAYER = { 100, 0.015f, 0.9f, 0.5f, 2.0f, TEAMID::ID_FRIENDLY ,AITYPE::NONE};
 	CharacterStatus DUMMY = { 10000,0.0f,0.0f,1.0f,2.0f,TEAMID::ID_ENEMY, AITYPE::NONE};
 	CharacterStatus MELEE_ENEMY = { 2,0.023f,0.8f,0.5f,2.0f,TEAMID::ID_ENEMY, AITYPE::MELEE};
-	CharacterStatus RIFLE_ENEMY = { 10,0.015f,0.9f,0.5f,2.0f,TEAMID::ID_ENEMY, AITYPE::RIFLE};
+	CharacterStatus RIFLE_ENEMY = { 10,0.012f,0.8f,0.5f,2.0f,TEAMID::ID_ENEMY, AITYPE::RIFLE};
 	CharacterStatus SNIPER_ENEMY = { 10,0.01f,0.9f,0.5f,1.75f,TEAMID::ID_ENEMY, AITYPE::SNIPER};
 }
 namespace PLAYER_GUN {
 	GunStatus RIFLE = { true, false,true, 1, 30.0f, 20, 120, 2.0f, 12.0f, 0.15f, 0.005f, 2.0f, VGet(0.3f,-0.2f,0.0f), 1.0f,0.4f,50.0f};
 	GunStatus SNIPER = { true, false,false, 1, 60.0f, 3, 40, 3.0f, 0.6f, 0.2f, 0.0001f, 7.0f,VGet(0.3f,-0.2f,0.0f), 0.9f, 0.2f, 40.0f };
-	GunStatus LAUNCHER = { false, true, false, 2, 20.0f, 1, 5, 1.5f, 10.0f, 0.001f,0.001f, 14.0f,VGet(0.3f,-0.2f,0.0f),0.5f,0.5f,65.0f,0.1f,0.25f,10.0f };
-	GunStatus SMG = { false, false, true, 1, 30.0f, 30, 180, 1.8f, 20.0f, 0.1f, 0.03f, 1.5f, VGet(0.3f,-0.2f,0.0f), 1.0f, 0.7f, 60.0f,0.06f,0.5f };
-	GunStatus PISTOL = { false, false, false, 1, 20.0f, 8, 0, 2.0f, 8.0f, 0.1f, 0.01f, 3.0f,VGet(0.3f,-0.2f,0.0f),1.0f,0.8f,60.0f,0.06f,0.5f };
+	GunStatus LAUNCHER = { false, true, false, 2, 20.0f, 1, 5, 1.5f, 10.0f, 0.001f,0.001f, 14.0f,VGet(0.3f,-0.2f,0.0f),0.5f,0.5f,65.0f,0.1f,0.5f,10.0f };
+	GunStatus SMG = { false, false, true, 1, 30.0f, 30, 180, 1.8f, 20.0f, 0.1f, 0.03f, 1.5f, VGet(0.3f,-0.2f,0.0f), 1.0f, 0.7f, 60.0f,0.06f,1.0f };
+	GunStatus PISTOL = { false, false, false, 1, 20.0f, 8, 0, 2.0f, 8.0f, 0.1f, 0.01f, 3.0f,VGet(0.3f,-0.2f,0.0f),1.0f,0.8f,60.0f,0.06f,1.0f };
 }
 namespace ENEMY_GUN {
 	GunStatus RIFLE = { false, false, true, 1, 20.0f, 20, 0, 5.0f, 1.0f, 0.001f, 0.001f, 0.0f, VGet(0.0f,0.0f,0.0f), 1.0f,1.0f,50.0f,0.1f,0.3f };
-	GunStatus SNIPER = { false, false, true, 1, 30.0f, 1, 0, 10.0f, 1.0f, 0.0001f, 0.0001f, 0.0f,VGet(0.0f,0.0f,0.0f), 1.0f, 0.5f, 40.0f, 0.06f, 0.8f };
+	GunStatus SNIPER = { false, false, true, 1, 30.0f, 3, 0, 10.0f, 0.2f, 0.0001f, 0.0001f, 0.0f,VGet(0.0f,0.0f,0.0f), 1.0f, 0.5f, 40.0f, 0.06f, 0.8f };
 }
 /*
   Entity						Gun

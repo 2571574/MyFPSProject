@@ -64,8 +64,8 @@ public:
 	}
 
 	//移動
-	void ApplyMovement(VECTOR moveDir, float dt,float velRatio = 1.0f);
-	void UpdateVelocity(VECTOR moveDir, float dt,float velRatio = 1.0f);
+	void ApplyMovement(VECTOR moveDir, float dt);
+	void UpdateVelocity(VECTOR moveDir, float dt);
 	void UpdatePhysics(float dt);
 
 	bool CheckLineSight(const Character* target,float height);

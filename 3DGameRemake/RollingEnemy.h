@@ -13,5 +13,8 @@ public:
     void Update()override;
     void Draw()override;
     void Action()override;
+	void OnHit(int damage)override;
+    void UpdatePhysics(float dt);
+	VECTOR UpdateNavigation(const Character* target, float dt);
 };
 

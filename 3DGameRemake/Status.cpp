@@ -4,7 +4,7 @@ namespace CHARA_STATUS {
 	CharacterStatus DUMMY = { 10000,0.0f,0.0f,1.0f,2.0f,2.0f,1.8f,1.8f, TEAMID::ID_ENEMY, AITYPE::NONE};
 	CharacterStatus MELEE_ENEMY = { 2,0.023f,0.8f,0.5f,2.0f,2.0f,1.8f,1.8f,TEAMID::ID_ENEMY, AITYPE::MELEE};
 	CharacterStatus RIFLE_ENEMY = { 10,0.012f,0.8f,0.5f,2.0f,2.0f,1.8f,1.8f,TEAMID::ID_ENEMY, AITYPE::RIFLE};
-	CharacterStatus SNIPER_ENEMY = { 10,0.01f,0.9f,0.5f,1.5f,1.5f,1.3f,1.3f,TEAMID::ID_ENEMY, AITYPE::SNIPER};
+	CharacterStatus SNIPER_ENEMY = { 10,0.01f,0.8f,0.5f,1.5f,1.5f,1.3f,1.3f,TEAMID::ID_ENEMY, AITYPE::SNIPER};
 }
 namespace PLAYER_GUN {
 	GunStatus RIFLE = { true, false,true, 1, 30.0f, 20, 120, 2.0f, 12.0f, 0.15f, 0.005f, 2.0f, VGet(0.3f,-0.2f,0.0f), 1.0f,0.4f,50.0f};

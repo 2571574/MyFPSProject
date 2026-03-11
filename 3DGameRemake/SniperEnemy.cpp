@@ -21,16 +21,31 @@ void SniperEnemy::Update() {
 
 	VECTOR moveTarget = UpdateNavigation(target, dt);
 	float distToPlayer = VSize(VSub(target->GetPos(), position));
+	bool hasLos = CheckLineSight(target, target->GetCurrentHeight() * 0.5f);
 	VECTOR moveDir = VGet(0, 0, 0);
 
 	if (distToPlayer < escapeDist) {
-		moveDir = VNorm(VSub(position, target->GetPos()));
-		targetingTimer = 0.0f;
+		VECTOR escapeDir = VNorm(VSub(position, target->GetPos()));
+
+		if(CheckPathSafety(VAdd(position,VScale(escapeDir,2.0f)))){
+			moveDir = escapeDir;
+		}
+		else {
+			moveDir = VGet(0.0f, 0.0f, 0.0f);
+		}
 	}
-	else if (distToPlayer > attackDist) {
+	else if (distToPlayer > attackDist || !hasLos) {
 		moveDir = VNorm(VSub(moveTarget, position));
 	}
 
+	if (targetingTimer > 0.0f) {
+		VECTOR toPlayer = VSub(target->GetPos(), position);
+		toPlayer.y = 0.0f;
+
+		if (VDot(moveDir, toPlayer) > 0.0f) {
+			moveDir = VGet(0.0f, 0.0f, 0.0f);
+		}
+	}
 	moveDir.y = 0.0f;
 	ApplyMovement(moveDir, dt);
 
@@ -46,7 +61,6 @@ void SniperEnemy::Update() {
 			Action();
 			targetingTimer = 0.0f;
 		}
-		targetingTimer = 0.3f;
 	}
 	else {
 		targetingTimer = 0.0f;

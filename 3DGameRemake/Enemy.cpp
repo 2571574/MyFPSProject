@@ -13,15 +13,16 @@ VECTOR Enemy::GetNextNodeID()const {
 	return currentPath[currentNodeID];
 }
 
-void Enemy::ApplyMovement(VECTOR moveDir, float dt) {
-	UpdateVelocity(moveDir, dt);
+void Enemy::ApplyMovement(VECTOR moveDir, float dt,float velRatio) {
+	UpdateVelocity(moveDir, dt,velRatio);
 	UpdatePhysics(dt);
 }
-void Enemy::UpdateVelocity(VECTOR moveDir, float dt) {
+void Enemy::UpdateVelocity(VECTOR moveDir, float dt,float velRatio) {
 	float dt60 = dt * 60.0f;
 	if (VSize(moveDir) > 0.0f) {
-		velocity.x += moveDir.x * status.accel * dt60;
-		velocity.z += moveDir.z * status.accel * dt60;
+		float accel = status.accel * velRatio;
+		velocity.x += moveDir.x * accel * dt60;
+		velocity.z += moveDir.z * accel * dt60;
 	}
 
 	float finalFriction = std::pow(status.friction, dt60);

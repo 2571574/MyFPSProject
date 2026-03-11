@@ -145,6 +145,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ProjectileManager.cpp" />
     <ClCompile Include="RifleEnemy.cpp" />
+    <ClCompile Include="RollingEnemy.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SniperEnemy.cpp" />
     <ClCompile Include="Status.cpp" />
@@ -171,6 +172,7 @@
     <ClInclude Include="ProjectileManager.h" />
     <ClInclude Include="BaseScene.h" />
     <ClInclude Include="RifleEnemy.h" />
+    <ClInclude Include="RollingEnemy.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SniperEnemy.h" />
     <ClInclude Include="Status.h" />

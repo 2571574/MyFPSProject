@@ -1,10 +1,11 @@
 ﻿#include "Status.h"
 namespace CHARA_STATUS {
-	CharacterStatus PLAYER = { 100, 0.015f, 0.9f, 0.5f, 2.0f, 1.0f,1.8f,0.8f,TEAMID::ID_FRIENDLY ,AITYPE::NONE};
-	CharacterStatus DUMMY = { 10000,0.0f,0.0f,1.0f,2.0f,2.0f,1.8f,1.8f, TEAMID::ID_ENEMY, AITYPE::NONE};
-	CharacterStatus MELEE_ENEMY = { 2,0.023f,0.8f,0.5f,2.0f,2.0f,1.8f,1.8f,TEAMID::ID_ENEMY, AITYPE::MELEE};
-	CharacterStatus RIFLE_ENEMY = { 10,0.012f,0.8f,0.5f,2.0f,2.0f,1.8f,1.8f,TEAMID::ID_ENEMY, AITYPE::RIFLE};
-	CharacterStatus SNIPER_ENEMY = { 10,0.01f,0.8f,0.5f,1.5f,1.5f,1.3f,1.3f,TEAMID::ID_ENEMY, AITYPE::SNIPER};
+	CharacterStatus PLAYER = { 100, 0.015f, 0.9f, 0.5f, 2.0f, 1.0f,1.8f,0.8f,TEAMID::ID_FRIENDLY};
+	CharacterStatus DUMMY = { 10000,0.0f,0.0f,1.0f,2.0f,2.0f,1.8f,1.8f, TEAMID::ID_ENEMY};
+	CharacterStatus MELEE_ENEMY = { 2,0.023f,0.8f,0.5f,2.0f,2.0f,1.8f,1.8f,TEAMID::ID_ENEMY};
+	CharacterStatus RIFLE_ENEMY = { 10,0.012f,0.8f,0.5f,2.0f,2.0f,1.8f,1.8f,TEAMID::ID_ENEMY};
+	CharacterStatus SNIPER_ENEMY = { 10,0.01f,0.8f,0.5f,1.5f,1.5f,1.3f,1.3f,TEAMID::ID_ENEMY};
+	CharacterStatus ROLL_ENEMY = { 3, 0.01f, 0.95f, 0.5f,0.5f, 0.5f, 0.5f, 0.5f, TEAMID::ID_ENEMY};
 }
 namespace PLAYER_GUN {
 	GunStatus RIFLE = { true, false,true, 1, 30.0f, 20, 120, 2.0f, 12.0f, 0.15f, 0.005f, 2.0f, VGet(0.3f,-0.2f,0.0f), 1.0f,0.4f,50.0f};
@@ -16,13 +17,14 @@ namespace PLAYER_GUN {
 namespace ENEMY_GUN {
 	GunStatus RIFLE = { false, false, true, 1, 20.0f, 20, 0, 5.0f, 1.0f, 0.001f, 0.001f, 0.0f, VGet(0.0f,0.0f,0.0f), 1.0f,1.0f,50.0f,0.1f,0.3f };
 	GunStatus SNIPER = { false, false, true, 1, 30.0f, 3, 0, 10.0f, 0.2f, 0.0001f, 0.0001f, 0.0f,VGet(0.0f,0.0f,0.0f), 1.0f, 0.5f, 40.0f, 0.06f, 0.8f };
+	GunStatus DESTRUCT = { false,false,false,10, 0.0f, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, VGet(0.0f, 0.0f, 0.0f), 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 10.0f };
 }
 /*
   Entity						Gun
   最大HP,						ヒットスキャンかどうか,
   加速度,						着弾で爆発かどうか,
   摩擦係数,						フルオート,
-  ステップ速度,					ダメージ,
+								ダメージ,
   幅,							射程,
   高さ,							弾倉の最大弾数,
   チームID,						予備弾数,

@@ -108,6 +108,9 @@
     <ClCompile Include="SniperEnemy.cpp">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClCompile>
+    <ClCompile Include="RollingEnemy.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Parameter.h">
@@ -181,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="SniperEnemy.h">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClInclude>
+    <ClInclude Include="RollingEnemy.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

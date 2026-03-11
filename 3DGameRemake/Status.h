@@ -6,12 +6,7 @@ enum class TEAMID {
 	ID_ENEMY,
 };
 
-enum class AITYPE {
-	NONE,
-	MELEE,
-	RIFLE,
-	SNIPER,
-};
+
 
 //キャラのステータスの定義
 struct CharacterStatus { //エンティティの性能
@@ -24,7 +19,6 @@ struct CharacterStatus { //エンティティの性能
 	float eyeHeight;
 	float crouchEyeHeight;
 	TEAMID teamID;		 //チームID
-	AITYPE AIType;		 //AIタイプ
 };
 
 struct GunStatus {		 //武器の性能
@@ -56,6 +50,7 @@ namespace CHARA_STATUS {
 	extern CharacterStatus MELEE_ENEMY;
 	extern CharacterStatus RIFLE_ENEMY;
 	extern CharacterStatus SNIPER_ENEMY;
+	extern CharacterStatus ROLL_ENEMY;
 }
 namespace PLAYER_GUN {
 	extern GunStatus RIFLE;
@@ -68,4 +63,5 @@ namespace ENEMY_GUN {
 	extern GunStatus MELEE;
 	extern GunStatus RIFLE;
 	extern GunStatus SNIPER;
+	extern GunStatus DESTRUCT;
 }

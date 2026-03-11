@@ -8,6 +8,7 @@
 #include "MeleeEnemy.h"
 #include "RifleEnemy.h"
 #include "SniperEnemy.h"
+#include "RollingEnemy.h"
 #include "EnemyManager.h"
 
 /// <summary>

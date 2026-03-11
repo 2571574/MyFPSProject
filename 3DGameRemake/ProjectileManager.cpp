@@ -19,7 +19,6 @@ void ProjectileManager::Spawn(std::unique_ptr<BaseProjectile> b)
 /*弾の更新*/
 void ProjectileManager::Update()
 {
-	Debug::Watch("bullet", projectiles.size());
 	for (int i = (int)projectiles.size() - 1; i >= 0; i--){
 		projectiles[i]->Update();	//弾1つ1つを更新させる
 		

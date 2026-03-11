@@ -68,11 +68,11 @@ public:
 	void UpdateVelocity(VECTOR moveDir, float dt);
 	void UpdatePhysics(float dt);
 
-	bool CheckLineSight(VECTOR targetPos);
+	bool CheckLineSight(const Character* target,float heightRatio);
 
 	bool CheckPathSafety(VECTOR targetPos);
 
-	VECTOR UpdateNavigation(VECTOR targetPos, float dt);
+	VECTOR UpdateNavigation(const Character* target, float dt);
 	
 	
 

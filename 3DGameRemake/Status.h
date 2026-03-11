@@ -20,6 +20,9 @@ struct CharacterStatus { //エンティティの性能
 	float friction;		 //摩擦係数
 	float width;		 //幅
 	float height;		 //高さ
+	float crouchHeight;
+	float eyeHeight;
+	float crouchEyeHeight;
 	TEAMID teamID;		 //チームID
 	AITYPE AIType;		 //AIタイプ
 };

@@ -192,7 +192,7 @@ void Player::Update() {
 	//壁との判定
 	//プレイヤーのカプセル
 	VECTOR capBottom = VAdd(nextPos, VGet(0, radius+0.1f, 0));
-	VECTOR capTop = VAdd(nextPos, VGet(0, status.height - radius, 0));
+	VECTOR capTop = VAdd(nextPos, VGet(0, currentHeight - radius, 0));
 
 	//プレイヤーのカプセルとぶつかっているモデルのポリゴンを取得
 	MV1_COLL_RESULT_POLY_DIM wallHitDim = MV1CollCheck_Capsule(stageHandle, -1, capBottom, capTop, radius);
@@ -239,37 +239,27 @@ void Player::Update() {
 	}
 	//当たり判定で使ったメモリを解放
 	MV1CollResultPolyDimTerminate(wallHitDim);
-	//============================================================================================
 
 	//位置反映
 	onGround = hitGround;
 	position = nextPos;
 
-	Debug::Watch("X", position.x);
-	Debug::Watch("Y", position.y);
-	Debug::Watch("Z", position.z);
+	
 	//カメラ位置の更新,反映
 	VECTOR camPos = position;
 
 	//目標のカメラの高さ
-	float targetcamHeight = crouch ? CROUCH_EYE_HEIGHT : EYE_HEIGHT;
-
+	float targetcamHeight = crouch ? status.crouchEyeHeight:status.eyeHeight;
+	float targetBodyHeight = crouch ? status.crouchHeight :status.height;
 	//現在のカメラの高さを目標に徐々に近づける
 	float lerp = 1.0f - std::pow(1.0f - 0.1f, dt60);
-	if (targetcamHeight > camHeight) {
-		camHeight += abs(camHeight - targetcamHeight) * lerp;
-		if (targetcamHeight < camHeight) {
-			camHeight = targetcamHeight;
-		}
-	}if (targetcamHeight < camHeight) {
-		camHeight -= abs(camHeight - targetcamHeight) * lerp;
-		if (targetcamHeight > camHeight) {
-			camHeight = targetcamHeight;
-		}
-	}
-	//高さを適用
-	camPos.y += camHeight;
 
+	currentEyeHeight += (targetcamHeight - currentEyeHeight) * lerp;
+	currentHeight += (targetBodyHeight - currentHeight) * lerp;
+	
+	//高さを適用
+	camPos.y += currentEyeHeight;
+	
 	//視野角を変える処理
 	float speed = VSize(velocity);
 	float speedRate = speed / 0.75f;

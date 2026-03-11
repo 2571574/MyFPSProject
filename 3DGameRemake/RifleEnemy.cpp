@@ -26,7 +26,7 @@ void RifleEnemy::Update() {
 	if (target == nullptr) return;
 
 	
-	VECTOR moveTarget = UpdateNavigation(target->GetPos(), dt);
+	VECTOR moveTarget = UpdateNavigation(target, dt);
 
 	VECTOR dir = VNorm(VSub(moveTarget, position));
 	dir.y = 0.0f;
@@ -38,13 +38,13 @@ void RifleEnemy::Update() {
 		ApplyMovement(VGet(0, 0, 0), dt);
 	}
 
-	if (CheckLineSight(target->GetPos())) {
+	if (CheckLineSight(target,target->GetCurrentEyeHeight())) {
 		Action();
 	}
 }
 
 void RifleEnemy::Action() {
-	VECTOR eyePos = VAdd(position, VGet(0.0f, status.height * 0.8f, 0.0f));
+	VECTOR eyePos = VAdd(position, VGet(0.0f, status.eyeHeight, 0.0f));
 	VECTOR targetEyePos = VAdd(target->GetPos(), VGet(0.0f, target->GetStatus().height * 0.8f, 0.0f));
 	VECTOR fireDir = VNorm(VSub(targetEyePos, eyePos));
 	if (rifle) {
@@ -59,6 +59,6 @@ void RifleEnemy::Action() {
 
 
 void RifleEnemy::Draw() {
-	VECTOR top = VAdd(position, VGet(0, status.height, 0));
+	VECTOR top = VAdd(position, VGet(0, currentHeight, 0));
 	DrawCapsule3D(position, top, status.width, 16, GetColor(0, 0, 255), GetColor(0, 0, 255), true);
 }

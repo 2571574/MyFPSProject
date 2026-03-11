@@ -29,10 +29,6 @@ void Weapon::Update() {
 		reserveAmmo -= add;
 		reloading = false;
 	}
-	Debug::Watch("reload", reloadCT);
-	Debug::Watch("Aim", aim);
-	Debug::Watch("ammo", ammo);
-	Debug::Watch("reserve", reserveAmmo);
 }
 
 void Weapon::Fired(Character& user) {
@@ -83,8 +79,6 @@ void Weapon::Fire(Character& user, VECTOR direction) {
 		VECTOR up = VNorm(VCross(direction, right));
 		float randX = ((float)GetRand(2000) - 1000.0f) / 1000.0f;
 		float randY = ((float)GetRand(2000) - 1000.0f) / 1000.0f;
-		Debug::Watch("right.x",right.x);
-		Debug::Watch("right.z",right.z);
 		dir = VAdd(direction, VScale(right, randX * currentSpread));
 		dir = VAdd(dir, VScale(up, randY * currentSpread));
 		dir = VNorm(dir);
@@ -102,7 +96,7 @@ void Weapon::Fire(Character& user, VECTOR direction) {
 /*弾速のある弾を発射する関数*/
 void Weapon::FireProjectile(Character& user, VECTOR direction) {
 	//射撃位置の取得
-	VECTOR userEyePos = VAdd(user.GetPos(), VGet(0, user.GetCamHeight(), 0));
+	VECTOR userEyePos = VAdd(user.GetPos(), VGet(0, user.GetCurrentEyeHeight(), 0));
 	VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), direction));				//右のベクトル
 	VECTOR up = VNorm(VCross(direction, right));					//上のベクトル
 	VECTOR offset = aim ? VGet(0.0f, 0.0f, 3.0f) : spec.muzzleOffset;				//銃口のオフセット
@@ -121,7 +115,7 @@ void Weapon::FireProjectile(Character& user, VECTOR direction) {
 /*即着の弾を発射する関数*/
 void Weapon::FireHitScan(Character& user, VECTOR direction) {
 	//射撃位置の取得
-	VECTOR userEyePos = VAdd(user.GetPos(), VGet(0, user.GetCamHeight(), 0));
+	VECTOR userEyePos = VAdd(user.GetPos(), VGet(0, user.GetCurrentEyeHeight(), 0));
 	VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), direction));
 	VECTOR up = VNorm(VCross(direction, right));
 	VECTOR offset = aim ? VGet(0.0f, 0.0f, 3.0f) : spec.muzzleOffset;

@@ -18,7 +18,7 @@ void MeleeEnemy::Update() {
 	}
 	if (target == nullptr) return;
 	
-	VECTOR moveTarget = UpdateNavigation(target->GetPos(), dt);
+	VECTOR moveTarget = UpdateNavigation(target, dt);
 
 	VECTOR dir = VNorm(VSub(moveTarget, position));
 	dir.y = 0.0f;
@@ -31,7 +31,7 @@ void MeleeEnemy::Update() {
 	}
 	VECTOR targetPos = target->GetPos();
 	float distToTarget = VSize(VSub(targetPos, position));
-	if (distToTarget <= range && std::abs(targetPos.y - position.y) <= status.height && attackTimer <= 0.0f) {
+	if (distToTarget <= range && std::abs(targetPos.y - position.y) <= currentHeight && attackTimer <= 0.0f) {
 		Action();
 	}
 }
@@ -39,7 +39,7 @@ void MeleeEnemy::Update() {
 
 
 void MeleeEnemy::Draw() {
-	VECTOR top = VAdd(position, VGet(0, status.height, 0));
+	VECTOR top = VAdd(position, VGet(0, currentHeight, 0));
 	DrawCapsule3D(position, top, status.width, CIRCLE_DIVNUM, GetColor(255, 125, 0), GetColor(255, 125, 0), TRUE);
 }
 

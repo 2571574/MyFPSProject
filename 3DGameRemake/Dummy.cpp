@@ -23,7 +23,7 @@ void Dummy::Update() {
 
 /*描画*/
 void Dummy::Draw() {
-	VECTOR top = VAdd(position, VGet(0, status.height, 0));		//高さ
+	VECTOR top = VAdd(position, VGet(0,currentHeight, 0));		//高さ
 
 	unsigned int color = alive ? GetColor(255, 50, 50) : GetColor(50, 50, 50);	//色
 	//カプセルを描画
@@ -48,10 +48,10 @@ void Dummy::OnHit(int damage) {
 
 		lastText.damage += damage;
 		lastText.lifeTime = 1.0f;
-		lastText.pos = VAdd(position, VGet(0, status.height + 0.5f, 0));
+		lastText.pos = VAdd(position, VGet(0, currentHeight + 0.5f, 0));
 	}
 	else {
-		VECTOR textPos = VAdd(position, VGet(0, status.height + 0.5f, 0));
+		VECTOR textPos = VAdd(position, VGet(0, currentHeight + 0.5f, 0));
 		damageTexts.push_back({ damage,textPos,1.0f });
 	}
 

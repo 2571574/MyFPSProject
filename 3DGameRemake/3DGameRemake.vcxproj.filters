@@ -106,7 +106,7 @@
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClCompile>
     <ClCompile Include="SniperEnemy.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -180,7 +180,7 @@
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClInclude>
     <ClInclude Include="SniperEnemy.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

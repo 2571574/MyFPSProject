@@ -42,6 +42,13 @@ void HUD::Draw() {
 				DrawString(CENTER_X - 40, CENTER_Y + 40, "RELOADING", GetColor(0, 0, 0));
 			}
 
+	/* 
+			if (weapon->IsReloadCanceled() || cancelReloadTimer > 0) {
+				DrawString(CENTER_X - 40, CENTER_Y + 60, "CANCELED", GetColor(0, 0, 0));
+				weapon->SetReloadCanceled();
+				cancelReloadTimer = 1.5f;
+			}
+	*/
 			const auto& attackers = pplayer->GetTargeted();
 			if (attackers.empty())return;
 
@@ -49,6 +56,11 @@ void HUD::Draw() {
 			float radius = 100.0f;
 
 			for (const auto& enemyPos : attackers) {
+				VECTOR screenPos = ConvWorldPosToScreenPos(enemyPos);
+
+				if (screenPos.z >= 0.0f && screenPos.z <= 1.0f &&
+					screenPos.x >= 0 && screenPos.x <= WINDOW_WIDTH &&
+					screenPos.y >= 0 && screenPos.y <= WINDOW_HEIGHT) continue;
 				VECTOR toEnemy = VSub(enemyPos, pplayer->GetPos());
 
 				float enemyAngle = atan2f(toEnemy.x, toEnemy.z);
@@ -60,13 +72,6 @@ void HUD::Draw() {
 
 				DrawCircle(drawX, drawY, 5, GetColor(255, 0, 0),TRUE);
 			}
-	/* 
-			if (weapon->IsReloadCanceled() || cancelReloadTimer > 0) {
-				DrawString(CENTER_X - 40, CENTER_Y + 60, "CANCELED", GetColor(0, 0, 0));
-				weapon->SetReloadCanceled();
-				cancelReloadTimer = 1.5f;
-			}
-	*/
 		}
 	}
 }

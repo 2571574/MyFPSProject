@@ -36,9 +36,8 @@ bool IsSafePlace(int modelhandle, VECTOR pos, float charaRadius, float charaHeig
 	return hasSpace;
 }
 
-void InitNode(int modelhandle, std::vector<Node>& mapnode, std::vector<connectNodepair> & pair) {
+void InitNode(int modelhandle, std::vector<Node>& mapnode) {
 	mapnode.clear();
-	pair.clear();
 
 	float gridSize = 2.0f;
 	float charaHeight = 2.0f;
@@ -133,7 +132,6 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode, std::vector<connectNo
 			if (isGroundContinuous) {
 				mapnode[i].connectedNode.push_back(j);
 				mapnode[j].connectedNode.push_back(i);
-				pair.push_back({ posA,posB });
 			}
 		}
 	}

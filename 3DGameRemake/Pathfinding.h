@@ -20,18 +20,13 @@ struct NodeRecord {
 	}
 };
 
-struct connectNodepair {
-	VECTOR pos1;
-	VECTOR pos2;
-};
-
 /// <summary>
 /// ノードの初期化　マップ上にノードを配置し、繋げる
 /// </summary>
 /// <param name="modelhandle">ステージのモデルハンドル</param>
 /// <param name="mapnode">配置したノード参照</param>
 /// <param name="pair">ペア参照</param>
-void InitNode(int modelhandle, std::vector<Node>& mapnode,std::vector<connectNodepair> & pair);
+void InitNode(int modelhandle, std::vector<Node>& mapnode);
 
 /// <summary>
 /// スタート地点からゴール地点までの最短経路をノードで求める

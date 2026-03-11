@@ -11,12 +11,12 @@ protected:
 	VECTOR position;		//座標
 	VECTOR velocity;		//速度
 	CharacterStatus status;	//ステータス情報
-
 	bool alive;				//生存タグ
 	int hp;					//現在HP
 	bool crouch;		//しゃがみ
-	float camHeight;	//現在の目の高さ
-	
+	float currentHeight;
+	float currentEyeHeight;	//現在の目の高さ
+
 	int modelHandle;		//モデルハンドル
 
 public:
@@ -25,9 +25,16 @@ public:
 	/// </summary>
 	/// <param name="_position">初期座標</param>
 	/// <param name="_status">キャラのステータス</param>
-	Character(VECTOR _position,CharacterStatus& _status) :	
-		position(_position),velocity({0,0,0}), status(_status), hp(_status.maxHP), alive(true), crouch(false)
-		, camHeight(EYE_HEIGHT), modelHandle(-1) {};		//コンストラクタ
+	Character(VECTOR _position, CharacterStatus& _status) :
+		position(_position)
+		, velocity({ 0,0,0 })
+		, status(_status)
+		, hp(_status.maxHP)
+		, alive(true)
+		, crouch(false)
+		, currentHeight(_status.height)
+		, currentEyeHeight(_status.eyeHeight)
+		, modelHandle(-1) {};		//コンストラクタ
 
 	virtual ~Character() {if(modelHandle!= -1) MV1DeleteModel(modelHandle);}
 
@@ -70,5 +77,6 @@ public:
 	VECTOR GetPos()const { return position; }
 	CharacterStatus GetStatus()const { return status; }
 	TEAMID GetID()const { return status.teamID; }
-	float GetCamHeight()const { return camHeight; }
+	float GetCurrentHeight()const { return currentHeight; }
+	float GetCurrentEyeHeight()const { return currentEyeHeight; }
 };

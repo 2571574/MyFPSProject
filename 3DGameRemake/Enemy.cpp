@@ -74,7 +74,7 @@ void Enemy::UpdatePhysics(float dt) {
 	}
 
 	VECTOR capBottom = VAdd(nextPos, VGet(0, radius + 0.3f, 0));
-	VECTOR capTop = VAdd(nextPos, VGet(0, status.height - radius, 0));
+	VECTOR capTop = VAdd(nextPos, VGet(0, currentHeight - radius, 0));
 	MV1_COLL_RESULT_POLY_DIM wallHitDim = MV1CollCheck_Capsule(stageHandle, -1, capBottom, capTop, radius);
 	VECTOR totalPush = VGet(0, 0, 0);
 	int hitCount = 0;
@@ -87,7 +87,7 @@ void Enemy::UpdatePhysics(float dt) {
 		//カプセルの下を基準
 		VECTOR checkPos = nextPos;
 		// 法線ベクトルが下を向いているときのみ上を基準に計算
-		if (normal.y < -0.1f)checkPos = VAdd(nextPos, VGet(0, status.height - radius, 0));
+		if (normal.y < -0.1f)checkPos = VAdd(nextPos, VGet(0,currentHeight - radius, 0));
 
 		//カプセルの中心から壁の面の最短距離
 		float distance = VDot(VSub(checkPos, wallHitDim.Dim[i].Position[0]), normal);
@@ -118,9 +118,9 @@ void Enemy::UpdatePhysics(float dt) {
 }
 
 
-bool Enemy::CheckLineSight(VECTOR targetPos) {
-	VECTOR myEye = VAdd(position, VGet(0, camHeight, 0));
-	VECTOR targetEye = VAdd(targetPos, VGet(0, camHeight, 0));
+bool Enemy::CheckLineSight(const Character* target,float height) {
+	VECTOR myEye = VAdd(position, VGet(0, currentEyeHeight, 0));
+	VECTOR targetEye = VAdd(target->GetPos(), VGet(0, height, 0));
 	MV1_COLL_RESULT_POLY hitResult = MV1CollCheck_Line(stageHandle, -1, myEye, targetEye);
 	return hitResult.HitFlag == 0; //ヒットしていないなら見えている
 }
@@ -150,20 +150,20 @@ bool Enemy::CheckPathSafety(VECTOR targetPos) {
 	return true;
 }
 
-VECTOR Enemy::UpdateNavigation(VECTOR targetPos, float dt) {
-	bool hasLOS = CheckLineSight(targetPos);
+VECTOR Enemy::UpdateNavigation(const Character* target, float dt) {
+	bool hasLOS = CheckLineSight(target, target->GetCurrentEyeHeight());
 
-	isDirectPathSafe = hasLOS && CheckPathSafety(targetPos);
+	isDirectPathSafe = hasLOS && CheckPathSafety(target->GetPos());
 
 	pathUpdateTimer -= dt;
 	if (pathUpdateTimer <= 0.0f) {
 		if (!isDirectPathSafe) {
-			SetPath(EnemyManager::GetIns().CalculatePath(position, targetPos));
+			SetPath(EnemyManager::GetIns().CalculatePath(position, target->GetPos()));
 		}
 		pathUpdateTimer = 0.5f + (GetRand(50) / 100.0f);
 	}
 
-	VECTOR moveTarget = targetPos;
+	VECTOR moveTarget = target->GetPos();
 	if (!isDirectPathSafe && HasPath()) {
 		moveTarget = GetNextNodeID();
 		VECTOR toNode = VSub(moveTarget, position);

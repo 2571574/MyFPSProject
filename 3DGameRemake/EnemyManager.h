@@ -11,7 +11,6 @@ class EnemyManager
 private:
 	std::vector<std::unique_ptr<Enemy>> enemies;	//敵の配列
 	std::vector<Node> mapNode;		//マップのノード
-	std::vector<connectNodepair> pair;	
 	EnemyManager() = default;
 public:
 	static EnemyManager& GetIns();

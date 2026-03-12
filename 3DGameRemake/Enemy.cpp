@@ -15,7 +15,6 @@ Enemy::Enemy(VECTOR pos, CharacterStatus& status, Player* _target, ENEMYTYPE typ
 void Enemy::OnHit(int damage) {
 	if (!alive || nowSpawned) return;
 	TakeDamage(damage);
-	Debug::Log("HIT");
 }
 
 VECTOR Enemy::GetNextNodeID()const {

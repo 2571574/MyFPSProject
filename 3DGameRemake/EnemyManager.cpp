@@ -170,52 +170,6 @@ void EnemyManager::Clear() {
 	enemies.clear();
 }
 
-Enemy* EnemyManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooterTeam) {
-	Enemy* hitEnemy = nullptr;		//当たった敵のポインタ
-	float minDistance = FLT_MAX;	//最短の敵との距離
-
-	//1体ずつ繰り返し
-	for (const auto& e : enemies) {
-		if (e->GetID() == shooterTeam)continue;	//射手とIDが一緒なら飛ばす
-
-		//敵の判定のカプセルを作成
-		VECTOR ePos = e->GetPos();
-		VECTOR eTop = VAdd(ePos, VGet(0, e->GetStatus().height, 0));
-		float r = e->GetRadius();
-
-		//弾をカプセルに見立ててチェック
-		if (HitCheck_Capsule_Capsule(start, end, 0.05f, ePos, eTop, r)) {
-			//当たった場合敵と発射地点との距離をチェック
-			float dist = VSize(VSub(ePos, start));
-
-			//最短距離なら距離とポインタを上書きする
-			if (dist < minDistance) {
-				minDistance = dist;
-				hitEnemy = e.get();
-			}
-		}
-	}
-	return hitEnemy;
-}
-
-Enemy* EnemyManager::CheckProjectile(VECTOR pos, VECTOR nextpos, float radius, TEAMID shooterTeam) {
-	for (const auto& e : enemies) {
-		if (e->GetID() == shooterTeam)continue;	//射手とIDが一緒なら飛ばす
-
-		//敵の判定のカプセルを作成
-		VECTOR ePos = e->GetPos();
-		VECTOR eTop = VAdd(ePos, VGet(0, e->GetStatus().height, 0));
-		float eRad = e->GetStatus().width / 2.0f;
-
-		//現在の弾と次のフレームの弾をつないだカプセルとして判定をチェック
-		if (HitCheck_Capsule_Capsule(pos, nextpos, radius, ePos, eTop, eRad)) {
-			return e.get();
-		}
-	}
-	return nullptr;
-}
-
-
 std::vector<VECTOR> EnemyManager::CalculatePath(VECTOR startPos, VECTOR goalPos) {
 	return FindPath(startPos, goalPos, mapNode);
 }

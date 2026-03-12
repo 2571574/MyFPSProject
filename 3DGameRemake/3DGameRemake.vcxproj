@@ -131,7 +131,9 @@
   <ItemGroup>
     <ClCompile Include="BaseProjectile.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Character.cpp" />
     <ClCompile Include="CheckKey.cpp" />
+    <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Dummy.cpp" />
     <ClCompile Include="Enemy.cpp" />
@@ -157,6 +159,7 @@
     <ClInclude Include="BaseProjectile.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CheckKey.h" />
+    <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Dummy.h" />
     <ClInclude Include="Enemy.h" />

@@ -15,6 +15,8 @@ protected:
 	GunStatus spec;		//武器性能
 	TEAMID id;			//射手のチームID
 	bool alive;			//生存タグ
+
+	int stageHandle;
 public:
 	/// <summary>
 	/// コンストラクタ

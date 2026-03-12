@@ -111,6 +111,12 @@
     <ClCompile Include="RollingEnemy.cpp">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>2.OBJECT\3.BASE</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Parameter.h">
@@ -187,6 +193,9 @@
     </ClInclude>
     <ClInclude Include="RollingEnemy.h">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

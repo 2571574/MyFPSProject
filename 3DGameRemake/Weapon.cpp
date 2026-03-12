@@ -1,5 +1,6 @@
 ﻿#include"Weapon.h"
-#include"EnemyManager.h"
+#include"Character.h"
+#include "CollisionManager.h"
 #include <memory>
 
 /*武器の更新*/
@@ -99,7 +100,7 @@ void Weapon::FireProjectile(Character& user, VECTOR direction) {
 	VECTOR userEyePos = VAdd(user.GetPos(), VGet(0, user.GetCurrentEyeHeight(), 0));
 	VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), direction));				//右のベクトル
 	VECTOR up = VNorm(VCross(direction, right));					//上のベクトル
-	VECTOR offset = aim ? VGet(0.0f, 0.0f, 3.0f) : spec.muzzleOffset;				//銃口のオフセット
+	VECTOR offset = aim ? VGet(0.0f, 0.0f, 1.0f) : spec.muzzleOffset;				//銃口のオフセット
 
 	//回転に応じてオフセット分ずらす
 	VECTOR finalOffset;
@@ -118,7 +119,7 @@ void Weapon::FireHitScan(Character& user, VECTOR direction) {
 	VECTOR userEyePos = VAdd(user.GetPos(), VGet(0, user.GetCurrentEyeHeight(), 0));
 	VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), direction));
 	VECTOR up = VNorm(VCross(direction, right));
-	VECTOR offset = aim ? VGet(0.0f, 0.0f, 3.0f) : spec.muzzleOffset;
+	VECTOR offset = aim ? VGet(0.0f, 0.0f, 1.0f) : spec.muzzleOffset;
 	//回転に応じてオフセット分ずらす
 	VECTOR finalOffset;
 	finalOffset = VAdd(VScale(right, offset.x), VScale(up, offset.y));
@@ -130,9 +131,12 @@ void Weapon::FireHitScan(Character& user, VECTOR direction) {
 	VECTOR end = VAdd(start, VScale(direction, spec.range));
 	DrawLine3D(start, end, GetColor(255, 255, 0));
 	//始点から終点までで当たったか判定する
-	Enemy* hitenemy = EnemyManager::GetIns().CheckHitScan(start, end, user.GetID());
-	if (hitenemy != nullptr) {
-		hitenemy->OnHit(spec.damage);	//当たった場合の被弾処理
+	HitInfo hit = CollisionManager::GetIns().CheckHitScan(start, end, user.GetID());
+	if (hit.character != nullptr) {
+		int lastdamage = hit.isHeadShot ? spec.damage * 2 : spec.damage;
+		if (hit.isHeadShot)Debug::Log("Headshot");
+		else Debug::Log("hit");
+		hit.character->OnHit(lastdamage);	//当たった場合の被弾処理
 	}
 }
 

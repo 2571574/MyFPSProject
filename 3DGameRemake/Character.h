@@ -2,6 +2,8 @@
 #include "DxLib.h"
 #include "Status.h"
 #include "Parameter.h"
+#include "Debug.h"
+#include "CollisionManager.h"
 /// <summary>
 /// ゲーム内キャラすべての基底クラス
 /// </summary>
@@ -25,18 +27,9 @@ public:
 	/// </summary>
 	/// <param name="_position">初期座標</param>
 	/// <param name="_status">キャラのステータス</param>
-	Character(VECTOR _position, CharacterStatus& _status) :
-		position(_position)
-		, velocity({ 0,0,0 })
-		, status(_status)
-		, hp(_status.maxHP)
-		, alive(true)
-		, crouch(false)
-		, currentHeight(_status.height)
-		, currentEyeHeight(_status.eyeHeight)
-		, modelHandle(-1) {};		//コンストラクタ
+	Character(VECTOR _position, CharacterStatus& _status);
 
-	virtual ~Character() {if(modelHandle!= -1) MV1DeleteModel(modelHandle);}
+	virtual ~Character();
 
 	/// <summary>
 	/// 更新　派生クラスでオーバーライド
@@ -70,7 +63,6 @@ public:
 	virtual void OnHit(int damage) {
 		if (!alive) return;
 		TakeDamage(damage);
-		Debug::Log("HIT");
 	}
 
 	/// <summary>
@@ -80,6 +72,9 @@ public:
 	/// <param name="p">縦反動の量</param>
 	virtual void  AddRecoil(float y, float p){}
 
+
+	void SetPos(VECTOR _pos) { position = _pos; }
+	void AddVel(VECTOR _vel) { VAdd(velocity,_vel); }
 	//getter
 	bool IsCrouching() { return crouch; }
 	bool IsAlive() const { return alive; }

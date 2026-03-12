@@ -19,6 +19,7 @@ struct CharacterStatus { //エンティティの性能
 	int maxHP;			 //最大体力
 	float accel;		 //加速度
 	float friction;		 //摩擦係数
+	int mass;			 //重量
 	float width;		 //幅
 	float height;		 //高さ
 	float crouchHeight;

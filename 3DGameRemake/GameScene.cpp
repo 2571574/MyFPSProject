@@ -1,4 +1,5 @@
 ﻿#include "GameScene.h"
+#include "CollisionManager.h"
 #include "SceneManager.h"
 #include "TitleScene.h"
 GameScene::GameScene(SceneManager* manager):BaseScene(manager),player(VGet(0,15,0),&camera),stageHandle(-1){}
@@ -25,10 +26,12 @@ void GameScene::Init() {
 
 void GameScene::Update() {
 	Time::GetIns().Update();    //時間の更新
-	ProjectileManager::GetIns().Update();   //弾の更新
 	Debug::Update();
 	player.Update();            //プレイヤーを更新
 	currentScore += EnemyManager::GetIns().Update();    //敵の更新
+
+	CollisionManager::GetIns().Update(&player, &EnemyManager::GetIns());
+	ProjectileManager::GetIns().Update();   //弾の更新
 
 	if (player.GetHP() <= 0) {
 		manager->ChangeScene(std::make_unique<TitleScene>(manager));

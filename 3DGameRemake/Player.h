@@ -16,7 +16,6 @@ private:
 	std::unique_ptr<Weapon> weapon;		//現在持っている武器	
 	float fov;			//現在の視野角
 	bool isAds;			//ADSしているか
-	bool onGround;		//地面にいるか
 	float slidingCT;	//スライディングのクールタイム
 	bool running;		//走っているか
 	bool headBob;		//歩行時のカメラの揺れをonにするか

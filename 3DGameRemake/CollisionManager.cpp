@@ -116,7 +116,7 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radius, TEAMID shooter) {
 	HitInfo result;
 	for (auto* chara : characters) {
-		if (chara->GetID() == shooter || !chara->IsAlive())continue;
+		if (!chara->IsAlive())continue;
 
 		VECTOR cPos = chara->GetPos();
 		float headRad =0.25f;
@@ -148,6 +148,23 @@ void CollisionManager::ProcessExplotion(VECTOR hitPos, float radius, int damage,
 		if (dist <= radius) {
 			float damageRate = 1.0f - (dist / radius);
 			chara->OnHit((int)(damage * damageRate));
+
+			VECTOR toChara = VSub(chara->GetPos(), hitPos);
+
+			if (VSize(toChara) < 0.01f) {
+				toChara = VGet(0.0f, 1.0f, 0.0f);
+			}
+			else {
+				toChara = VNorm(toChara);
+
+				toChara.y += 0.5f;
+				toChara = VNorm(toChara);
+			}
+
+			float baseKnockbackPower = 2.0f;
+			float currentKnockback = baseKnockbackPower * damageRate;
+			
+			chara->Applyknockback(VScale(toChara, currentKnockback));
 		}
 	}
 }

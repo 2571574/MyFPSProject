@@ -49,25 +49,7 @@ void RollingEnemy::Update() {
 }
 
 void RollingEnemy::Action() {
-	float radius = explodeSpec.explodeArea;
-
-	float distToPlayer = VSize(VSub(target->GetPos(), position));
-
-	if (distToPlayer <= radius) {
-		float damageRate = 1.0f - (distToPlayer / radius);
-		target->TakeDamage((int)(explodeSpec.damage) * damageRate);
-	}
-
-	auto& enemies = EnemyManager::GetIns().GetEnemies();
-
-	for(auto&enemy : enemies){
-		if (!enemy || !enemy->IsAlive() || enemy.get() == this) continue;
-
-		float dist = VSize(VSub(enemy->GetPos(), position));
-		if (dist <= radius) {
-			enemy->OnHit(explodeSpec.damage);
-		}
-	}
+	CollisionManager::GetIns().ProcessExplotion(position, explodeSpec.explodeArea, explodeSpec.damage, status.teamID);
 
 	alive = false;
 }

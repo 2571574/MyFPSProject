@@ -17,6 +17,7 @@ protected:
 	bool alive;				//生存タグ
 	int hp;					//現在HP
 	bool crouch;		//しゃがみ
+	bool onGround;		//地面にいるか
 	float currentHeight;
 	float currentEyeHeight;	//現在の目の高さ
 
@@ -80,7 +81,9 @@ public:
 
 	void SetPos(VECTOR _pos) { position = _pos; }
 	void Applyknockback(VECTOR force) {
-		knockback = VAdd(knockback, force);
+		knockback.x += force.x;
+		knockback.z += force.z;
+		velocity.y += force.y;
 	}
 	//getter
 	bool IsCrouching() { return crouch; }

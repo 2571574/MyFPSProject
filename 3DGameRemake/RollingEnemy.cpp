@@ -11,8 +11,19 @@ RollingEnemy::RollingEnemy(VECTOR pos, Player* target)
 }
 
 void RollingEnemy::Update() {
-
 	float dt = Time::GetIns().GetDelta();
+	if (nowSpawned) {
+		spawnedTimer -= dt;
+		if (spawnedTimer <= 0.0f) {
+			nowSpawned = false;
+		}
+		return;
+	}
+	if (hp <= 0) {
+		isExploding = true;
+		explodeTimer = 2.0f;
+	}
+
 	float distToPlayer = VSize(VSub(target->GetPos(), position));
 
 	if (!isExploding) {
@@ -68,15 +79,6 @@ void RollingEnemy::Draw() {
 	}
 
 	DrawSphere3D(VAdd(position, VGet(0.0f, status.height, 0.0f)), status.width, 16, color, color, TRUE);
-}
-
-void RollingEnemy::OnHit(int damage) {
-	hp -= damage;
-	if (hp <= 0) {
-		isExploding = true;
-		explodeTimer = 2.0f;
-	}
-	Debug::Log("RollingEnemyHit");
 }
 
 void RollingEnemy::UpdatePhysics(float dt) {

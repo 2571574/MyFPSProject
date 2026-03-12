@@ -1,7 +1,7 @@
 ﻿#include "Dummy.h"
 #include "Time.h"
 /*コンストラクタ*/
-Dummy::Dummy(VECTOR pos,Player* _target) :Enemy(pos, CHARA_STATUS::DUMMY,_target),accumulateTimer(0.0f) {};
+Dummy::Dummy(VECTOR pos, Player* _target) :Enemy(pos, CHARA_STATUS::DUMMY, _target, ENEMYTYPE::DUMMY), accumulateTimer(0.0f) {};
 
 /*更新*/
 void Dummy::Update() {

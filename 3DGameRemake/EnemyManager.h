@@ -20,6 +20,8 @@ private:
 	float spawnTimer;
 	float difficultyTimer;
 
+	float prepareTimer;
+
 	int maxLimitMelee;
 	int maxLimitRifle;
 	int maxLimitSniper;
@@ -45,7 +47,7 @@ public:
 	/// 敵をスポーンさせる。
 	/// </summary>
 	/// <param name="enemy">敵の種類 CHARA_STATUS参照</param>
-	void Spawn(std::unique_ptr<Enemy> enemy, int stageHandle);
+	void Spawn(std::unique_ptr<Enemy> enemy);
 
 	/// <summary>
 	/// 生存している敵を更新する
@@ -96,4 +98,6 @@ public:
 	std::vector<VECTOR> CalculatePath(VECTOR startPos, VECTOR goalPos);
 
 	
+
+	float GetPrepareTimer()const { return prepareTimer; }
 };

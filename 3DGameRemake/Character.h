@@ -64,6 +64,16 @@ public:
 	}
 
 	/// <summary>
+	/// 被弾処理
+	/// </summary>
+	/// <param name="damage">喰らったダメージ量</param>
+	virtual void OnHit(int damage) {
+		if (!alive) return;
+		TakeDamage(damage);
+		Debug::Log("HIT");
+	}
+
+	/// <summary>
 	/// リコイル分のカメラの揺れを加える　プレイヤー用
 	/// </summary>
 	/// <param name="y">横反動の量</param>

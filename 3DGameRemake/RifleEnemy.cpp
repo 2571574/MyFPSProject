@@ -14,12 +14,20 @@ RifleEnemy::RifleEnemy(VECTOR pos,Player*target)
 }
 
 void RifleEnemy::Update() {
+	float dt = Time::GetIns().GetDelta();
+	if (nowSpawned) {
+		spawnedTimer -= dt;
+		if (spawnedTimer <= 0.0f) {
+			nowSpawned = false;
+		}
+		return;
+	}
+
 	if (hp <= 0) {
 		alive = false;
 		return;
 	}
 
-	float dt = Time::GetIns().GetDelta();
 	if (rifle) {
 		rifle->Update();
 	}

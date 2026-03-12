@@ -1,4 +1,5 @@
 ﻿#include "Player.h"
+#include "Debug.h"
 #include "cmath"
 
 
@@ -297,6 +298,10 @@ void Player::Update() {
 	cam->Move(fov);
 
 	hud->Update();
+
+	Debug::Watch("X", position.x);
+	Debug::Watch("Y", position.y);
+	Debug::Watch("Z", position.z);
 }
 
 void Player::Draw() {

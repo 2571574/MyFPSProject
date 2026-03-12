@@ -1,4 +1,6 @@
 ﻿#include "GameScene.h"
+#include "SceneManager.h"
+#include "TitleScene.h"
 GameScene::GameScene(SceneManager* manager):BaseScene(manager),player(VGet(0,15,0),&camera),stageHandle(-1){}
 
 GameScene::~GameScene() {
@@ -17,8 +19,8 @@ void GameScene::Init() {
 	MV1SetScale(stageHandle, VGet(0.02f, 0.02f, 0.02f));
 	MV1SetupCollInfo(stageHandle, -1, 8, 8, 8);
 	player.SetStageHandle(stageHandle);
-	EnemyManager::GetIns().Init(stageHandle);
-	EnemyManager::GetIns().Spawn(std::make_unique<RollingEnemy>(VGet(5, 10, 10),&player),stageHandle);
+	EnemyManager::GetIns().Init(stageHandle,&player);
+	currentScore = 0;
 }
 
 void GameScene::Update() {
@@ -26,7 +28,11 @@ void GameScene::Update() {
 	ProjectileManager::GetIns().Update();   //弾の更新
 	Debug::Update();
 	player.Update();            //プレイヤーを更新
-	EnemyManager::GetIns().Update();    //敵の更新
+	currentScore += EnemyManager::GetIns().Update();    //敵の更新
+
+	if (player.GetHP() <= 0) {
+		manager->ChangeScene(std::make_unique<TitleScene>(manager));
+	}
 }
 
 void GameScene::Draw() {

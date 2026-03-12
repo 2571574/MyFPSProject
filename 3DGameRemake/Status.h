@@ -7,6 +7,7 @@ enum class TEAMID {
 };
 
 enum class ENEMYTYPE {
+	DUMMY,
 	MELEE,
 	RIFLE,
 	SNIPER,

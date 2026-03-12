@@ -9,6 +9,8 @@ class Player;
 class Enemy : public Character
 {
 protected:
+	bool nowSpawned;
+	float spawnedTimer;
 	Player* target;	//攻撃対象のプレイヤーのポインタ
 	int stageHandle = -1;	//ステージのモデルハンドル
 
@@ -43,8 +45,9 @@ public:
 	/// 被弾処理
 	/// </summary>
 	/// <param name="damage">喰らったダメージ量</param>
-	virtual void OnHit(int damage);
+	void OnHit(int damage)override;
 
+	void SetAlive(bool tag) { alive = tag; }
 	void SetStageHandle(int handle) { stageHandle = handle; }
 	float GetRadius() const { return status.width; }	
 
@@ -67,7 +70,6 @@ public:
 	void ApplyMovement(VECTOR moveDir, float dt);
 	void UpdateVelocity(VECTOR moveDir, float dt);
 	void UpdatePhysics(float dt);
-
 	bool CheckLineSight(const Character* target,float height);
 
 	bool CheckPathSafety(VECTOR targetPos);
@@ -76,6 +78,8 @@ public:
 	
 	ENEMYTYPE GetType()const { return type; }
 
+	bool CheckFall() { return position.y < -10.0f; }
 
+	bool NowSpawned() { return nowSpawned; }
 };
 

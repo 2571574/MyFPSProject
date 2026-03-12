@@ -7,12 +7,19 @@
 MeleeEnemy::MeleeEnemy(VECTOR pos, Player* target) :Enemy(pos, CHARA_STATUS::MELEE_ENEMY, target,ENEMYTYPE::MELEE), attackTimer(0.0f), range(3.0f), moveSpeed(3.0f) {}
 
 void MeleeEnemy::Update() {
+	float dt = Time::GetIns().GetDelta();
+	if (nowSpawned) {
+		spawnedTimer -= dt;
+		if (spawnedTimer <= 0.0f) {
+			nowSpawned = false;
+		}
+		return;
+	}
 	if (hp <= 0) {
 		alive = false;
 		return;
 	}
 
-	float dt = Time::GetIns().GetDelta();
 	if (attackTimer > 0.0f) {
 		attackTimer -= dt;
 	}

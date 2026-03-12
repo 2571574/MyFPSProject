@@ -10,12 +10,19 @@ SniperEnemy::SniperEnemy(VECTOR pos, Player* target) : Enemy(pos, CHARA_STATUS::
 }
 
 void SniperEnemy::Update() {
+	float dt = Time::GetIns().GetDelta();
+	if (nowSpawned) {
+		spawnedTimer -= dt;
+		if (spawnedTimer <= 0.0f) {
+			nowSpawned = false;
+		}
+		return;
+	}
 	if (hp <= 0) {
 		alive = false;
 		return;
 	}
 
-	float dt = Time::GetIns().GetDelta();
 	if (sniper)sniper->Update();
 	if (target == nullptr)return;
 

@@ -143,7 +143,7 @@ void Player::Update() {
 	velocity.z *= finalfriction;
 
 	float slopelimit = 0.6f;
-	float radius = status.width;		//プレイヤーの半径
+	float radius = status.width / 2.0f;		//プレイヤーの半径
 	int currentgroundPoly = -1;
 	bool hitGround = false;
 	//移動予定の座標

@@ -50,7 +50,7 @@ void CollisionManager::Update(Player* player, EnemyManager* enemymanager) {
 
 			float sumRad = radA + radB;
 
-			if (distSq < 0.01f && distSq < sumRad * sumRad) {
+			if (distSq > 0.01f && distSq < sumRad * sumRad) {
 				float dist = sqrtf(distSq);
 				float overlap = sumRad - dist;
 				VECTOR pushDir = VScale(vecAB, 1.0f / dist);
@@ -83,7 +83,7 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 
 		VECTOR cPos = chara->GetPos();
 
-		float headRad = 0.2f;
+		float headRad =0.25f;
 		VECTOR headPos = VAdd(cPos, VGet(0.0f, chara->GetCurrentEyeHeight(), 0.0f));
 		if (HitCheck_Capsule_Capsule(start, end, 0.05f, headPos, headPos, headRad)) {
 			float dist = VSize(VSub(headPos, start));
@@ -119,17 +119,17 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 		if (chara->GetID() == shooter || !chara->IsAlive())continue;
 
 		VECTOR cPos = chara->GetPos();
-		float headRad = 0.2f;
+		float headRad =0.25f;
 		VECTOR headPos = VAdd(cPos, VGet(0.0f, chara->GetCurrentEyeHeight(), 0.0f));
-	
 		if (HitCheck_Capsule_Capsule(pos, nextPos, radius, headPos, headPos, headRad)) {
 			result.character = chara;
 			result.isHeadShot = true;
 			return result;
 		}
-		VECTOR bodyTop = VAdd(cPos, VGet(0.0f, chara->GetStatus().height - headRad, 0.0f));
 		float bodyRad = chara->GetStatus().width / 2.0f;
-		if (HitCheck_Capsule_Capsule(pos, nextPos, radius, cPos, bodyTop, bodyRad)) {
+		VECTOR bodyBottom = VAdd(cPos, VGet(0.0f, bodyRad, 0.0f));
+		VECTOR bodyTop = VAdd(cPos, VGet(0.0f, chara->GetStatus().height - bodyRad, 0.0f));
+		if (HitCheck_Capsule_Capsule(pos, nextPos, radius, bodyBottom, bodyTop, bodyRad)) {
 			result.character = chara;
 			result.isHeadShot = false;
 			return result;

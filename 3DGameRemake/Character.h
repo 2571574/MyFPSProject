@@ -12,6 +12,7 @@ class Character
 protected:
 	VECTOR position;		//座標
 	VECTOR velocity;		//速度
+	VECTOR knockback;
 	CharacterStatus status;	//ステータス情報
 	bool alive;				//生存タグ
 	int hp;					//現在HP
@@ -73,8 +74,14 @@ public:
 	virtual void  AddRecoil(float y, float p){}
 
 
+	virtual void ApplyMovement(VECTOR moveDir, int stageHandle);
+	virtual void UpdateVelocity(VECTOR moveDir);
+	virtual void UpdatePhysics(int stagehandle);
+
 	void SetPos(VECTOR _pos) { position = _pos; }
-	void AddVel(VECTOR _vel) { VAdd(velocity,_vel); }
+	void Applyknockback(VECTOR force) {
+		knockback = VAdd(knockback, force);
+	}
 	//getter
 	bool IsCrouching() { return crouch; }
 	bool IsAlive() const { return alive; }

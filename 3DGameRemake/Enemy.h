@@ -49,7 +49,7 @@ public:
 
 	void SetAlive(bool tag) { alive = tag; }
 	void SetStageHandle(int handle) { stageHandle = handle; }
-	float GetRadius() const { return status.width; }	
+	float GetRadius() const { return status.width / 2.0f; }	
 
 	void SetPath(const std::vector<VECTOR>& path) {
 		currentPath = path;
@@ -67,9 +67,7 @@ public:
 	}
 
 	//移動
-	void ApplyMovement(VECTOR moveDir, float dt);
-	void UpdateVelocity(VECTOR moveDir, float dt);
-	void UpdatePhysics(float dt);
+	
 	bool CheckLineSight(const Character* target,float height);
 
 	bool CheckPathSafety(VECTOR targetPos);

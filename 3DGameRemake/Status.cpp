@@ -1,11 +1,11 @@
 ﻿#include "Status.h"
 namespace CHARA_STATUS {
-	CharacterStatus PLAYER = { 100, 0.015f, 0.9f, 5, 0.5f, 2.0f, 1.0f,1.8f,0.8f,TEAMID::ID_FRIENDLY, 0};
+	CharacterStatus PLAYER = { 100, 0.015f, 0.9f, 5, 1.0f, 2.0f, 1.0f,1.8f,0.8f,TEAMID::ID_FRIENDLY, 0};
 	CharacterStatus DUMMY = { 10000,0.0f,0.0f, 10, 1.0f,2.0f,2.0f,1.8f,1.8f, TEAMID::ID_ENEMY, 0 };
-	CharacterStatus MELEE_ENEMY = { 1,0.023f,0.8f, 1, 0.5f,2.0f,2.0f,1.8f,1.8f,TEAMID::ID_ENEMY , 100};
-	CharacterStatus RIFLE_ENEMY = { 1,0.012f,0.8f, 1, 0.5f,2.0f,2.0f,1.8f,1.8f,TEAMID::ID_ENEMY , 150};
+	CharacterStatus MELEE_ENEMY = { 1,0.023f,0.8f, 1, 1.0f,2.0f,2.0f,1.8f,1.8f,TEAMID::ID_ENEMY , 100};
+	CharacterStatus RIFLE_ENEMY = { 1,0.012f,0.8f, 1, 1.0f,2.0f,2.0f,1.8f,1.8f,TEAMID::ID_ENEMY , 150};
 	CharacterStatus SNIPER_ENEMY = { 1,0.01f,0.8f, 1, 0.5f,1.5f,1.5f,1.3f,1.3f,TEAMID::ID_ENEMY , 150};
-	CharacterStatus ROLL_ENEMY = { 1, 0.01f, 0.95f, 1, 0.5f,0.5f, 0.5f, 0.25f, 0.25f, TEAMID::ID_ENEMY, 50};
+	CharacterStatus ROLL_ENEMY = { 1, 0.01f, 0.95f, 1, 1.0f,1.0f, 1.0f, 0.5f, 0.5f, TEAMID::ID_ENEMY, 50};
 }
 namespace PLAYER_GUN {
 	GunStatus RIFLE = { true, false,true, 1, 30.0f, 20, 120, 2.0f, 12.0f, 0.15f, 0.005f, 2.0f, VGet(0.3f,-0.2f,0.0f), 1.0f,0.4f,50.0f};

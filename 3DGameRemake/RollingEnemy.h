@@ -13,7 +13,7 @@ public:
     void Update()override;
     void Draw()override;
     void Action()override;
-    void UpdatePhysics(float dt);
+    void UpdatePhysics();
 	VECTOR UpdateNavigation(const Character* target, float dt);
 };
 

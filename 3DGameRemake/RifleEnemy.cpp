@@ -40,10 +40,10 @@ void RifleEnemy::Update() {
 	dir.y = 0.0f;
 
 	if (VSize(VSub(target->GetPos(), position)) > stopDist) {
-		ApplyMovement(dir, dt);
+		ApplyMovement(dir, stageHandle);
 	}
 	else {
-		ApplyMovement(VGet(0, 0, 0), dt);
+		ApplyMovement(VGet(0, 0, 0), stageHandle);
 	}
 
 	if (CheckLineSight(target,target->GetCurrentEyeHeight())) {
@@ -67,6 +67,19 @@ void RifleEnemy::Action() {
 
 
 void RifleEnemy::Draw() {
-	VECTOR top = VAdd(position, VGet(0, currentHeight, 0));
-	DrawCapsule3D(position, top, status.width, 16, GetColor(0, 0, 255), GetColor(0, 0, 255), true);
+	float bodyRad = status.width / 2.0f;
+	VECTOR bottom = VAdd(position, VGet(0.0f, bodyRad, 0.0f));
+	VECTOR top = VAdd(position, VGet(0, currentHeight - bodyRad, 0));
+	DrawCapsule3D(bottom, top, bodyRad, 16, GetColor(0, 0, 255), GetColor(0, 0, 255), true);
+
+	SetUseZBuffer3D(false);
+	VECTOR cPos = GetPos();
+	float headRadius = 0.25f;
+	VECTOR bodyTop = VAdd(cPos, VGet(0.0f, status.height - bodyRad, 0.0f));
+	float bodyRadius = status.width / 2.0f;
+
+	DrawCapsule3D(bottom, bodyTop, bodyRadius, 16, GetColor(0, 255, 0), GetColor(0, 255, 0), FALSE);
+	VECTOR headPos = VAdd(cPos, VGet(0.0f, currentEyeHeight, 0.0f));
+	DrawSphere3D(headPos, headRadius, 16, GetColor(255, 0, 0), GetColor(255, 0, 0), FALSE);
+	SetUseZBuffer3D(true);
 }

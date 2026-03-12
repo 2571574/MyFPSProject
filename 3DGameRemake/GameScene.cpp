@@ -29,7 +29,6 @@ void GameScene::Update() {
 	Debug::Update();
 	player.Update();            //プレイヤーを更新
 	currentScore += EnemyManager::GetIns().Update();    //敵の更新
-
 	CollisionManager::GetIns().Update(&player, &EnemyManager::GetIns());
 	ProjectileManager::GetIns().Update();   //弾の更新
 

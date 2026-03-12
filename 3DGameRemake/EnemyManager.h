@@ -64,10 +64,6 @@ public:
 	/// </summary>
 	void Clear();
 
-	//当たったか判定する関数
-
-
-
 	std::vector<std::unique_ptr<Enemy>>& GetEnemies(){ return enemies; }
 
 

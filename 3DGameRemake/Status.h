@@ -1,6 +1,11 @@
 ﻿#pragma once
 #include "DxLib.h"
 
+#define PLAYER_AR 1
+#define PLAYER_SR 2 
+#define PLAYER_RPG 3
+#define PLAYER_SMG 4
+#define PLAYER_PIS 5
 enum class TEAMID {
 	ID_FRIENDLY,
 	ID_ENEMY,
@@ -23,6 +28,14 @@ enum PlayMode {
 	MODE_MAX
 };
 
+enum GUNNAME {
+	AssaultRifle,
+	Sniper,
+	RocketLauncher,
+	SubMashineGun,
+	HandGun,
+	
+};
 //キャラのステータスの定義
 struct CharacterStatus { //エンティティの性能
 	int maxHP;			 //最大体力

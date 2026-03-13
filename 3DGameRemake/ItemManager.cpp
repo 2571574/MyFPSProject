@@ -1,6 +1,7 @@
 ﻿#include "ItemManager.h"
 #include "Player.h"
 #include "InputManager.h"
+#include <algorithm>
 
 ItemManager& ItemManager::GetIns() {
 	static ItemManager ins;
@@ -13,30 +14,35 @@ void ItemManager::Spawn(std::unique_ptr<WeaponItem> item) {
 
 void ItemManager::Update(Player* player) {
 	float pickUpRadius = 2.0f;
+	bool hasPickThisFrame = false;
 
 	for (int i = items.size() - 1; i >= 0; i--) {
 		items[i]->Update();
 
-		if (player && items[i]->IsAlive()) {
+		if (player && items[i]->IsAlive() && !hasPickThisFrame) {
 			float dist = VSize(VSub(player->GetPos(), items[i]->GetPos()));
 
 			if (dist <= pickUpRadius) {
 				if (InputManager::GetIns().IsActionTrigger(ActionID::INTERACT)) {
 					std::unique_ptr<Weapon> pickWeapon = items[i]->PickUp();
 
-					if (player->AddWeapon(std::move(pickWeapon))) {}
+					if (player->AddWeapon(std::move(pickWeapon))) {
+						hasPickThisFrame = true;
+					}
 					else {
 						items[i] = std::make_unique<WeaponItem>(items[i]->GetPos(), std::move(pickWeapon));
 					}
 				}
 			}
 		}
-
-		if (!items[i]->IsAlive()) {
-			items[i] = std::move(items.back());
-			items.pop_back();
-		}
 	}
+
+	items.erase(
+		std::remove_if(items.begin(), items.end(), [](const std::unique_ptr<WeaponItem>& item) {
+			return !item->IsAlive();
+			}
+		),
+		items.end());
 }
 
 

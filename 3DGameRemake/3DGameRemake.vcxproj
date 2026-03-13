@@ -141,6 +141,7 @@
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="HUD.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="ItemManager.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MeleeEnemy.cpp" />
     <ClCompile Include="Pathfinding.cpp" />
@@ -154,6 +155,7 @@
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="Weapon.cpp" />
+    <ClCompile Include="WeaponItem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseProjectile.h" />
@@ -168,6 +170,7 @@
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="HUD.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="ItemManager.h" />
     <ClInclude Include="MeleeEnemy.h" />
     <ClInclude Include="Parameter.h" />
     <ClInclude Include="Pathfinding.h" />
@@ -182,6 +185,7 @@
     <ClInclude Include="Time.h" />
     <ClInclude Include="TitleScene.h" />
     <ClInclude Include="Weapon.h" />
+    <ClInclude Include="WeaponItem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

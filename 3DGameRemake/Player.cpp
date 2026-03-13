@@ -1,24 +1,46 @@
 ﻿#include "Player.h"
 #include "Debug.h"
+#include "ItemManager.h"
 #include "cmath"
 
 
-Player::Player(VECTOR pos, Camera* camera)
+Player::Player(VECTOR pos, Camera* camera,PlayMode mode)
 	: Character(pos, CHARA_STATUS::PLAYER)
 	, cam(camera)
 	, stageHandle(-1)
 	, forwardVec({ 0,0,0 })
 	, rightVec({ 0,0,0 })
-	, weapon(std::make_unique<Weapon>(PLAYER_GUN::LAUNCHER))
 	, fov(0)
 	,slidingCT(0.0f)
 	, isAds(false)
 	,running(false)
 	, headBob(true)
 	, bobbingTimer(0)
+	,currentWeaponIndex(0)
+	,currentMode(mode)
 	
 {
 	hud = std::make_unique<HUD>(this);
+
+	slot.push_back(std::make_unique<Weapon>(PLAYER_GUN::PISTOL));
+	if (currentMode == PlayMode::MODE_EASY || currentMode == PlayMode::MODE_TUTORIAL) {
+		maxWeaponSlot = 10;
+		slot.push_back(std::make_unique<Weapon>(PLAYER_GUN::RIFLE));
+		slot.push_back(std::make_unique<Weapon>(PLAYER_GUN::SNIPER));
+		slot.push_back(std::make_unique<Weapon>(PLAYER_GUN::SMG));
+		slot.push_back(std::make_unique<Weapon>(PLAYER_GUN::LAUNCHER));
+
+		for (auto& w : slot) {
+			w->SetInfinite(true);
+		}
+	}
+
+	if (currentMode == PlayMode::MODE_NORMAL) {
+		maxWeaponSlot = 10;
+	}
+	if (currentMode == PlayMode::MODE_HARD) {
+		maxWeaponSlot = 2;
+	}
 }
 
 
@@ -67,21 +89,21 @@ void Player::Update() {
 	
 	crouch = InputManager::GetIns().IsActionHold(ActionID::CROUCH);
 	running = InputManager::GetIns().IsActionHold(ActionID::RUN);
-
+	Weapon* currentWeapon = GetWeapon();
 	if (crouch)running = false;
 	//武器の更新と入力を検知
-	if (weapon) {
+	if (currentWeapon) {
 		if (running) {
-			weapon->CancelAds();
-			weapon->CancelReload();
+			currentWeapon->CancelAds();
+			currentWeapon->CancelReload();
 		}
 		else{
-			weapon->FireInput(*this, GetCamDirection());
-			weapon->AdsInput();
-			weapon->ReloadInput();
+			currentWeapon->FireInput(*this, GetCamDirection());
+			currentWeapon->AdsInput();
+			currentWeapon->ReloadInput();
 		}
-		weapon->Update();
-		isAds = weapon->TakingAim();
+		currentWeapon->Update();
+		isAds = currentWeapon->TakingAim();
 	}
 
 	//加速度と摩擦係数の処理
@@ -102,11 +124,11 @@ void Player::Update() {
 	}
 
 	//武器の速度減衰率を適用
-	if (weapon) {
+	if (currentWeapon) {
 		if(isAds)
-			accel *= weapon->GetSpec().adsDampingRatio;
+			accel *= currentWeapon->GetSpec().adsDampingRatio;
 		else
-			accel *= weapon->GetSpec().hasDampingRatio;
+			accel *= currentWeapon->GetSpec().hasDampingRatio;
 	}
 
 
@@ -138,6 +160,24 @@ void Player::Update() {
 	velocity.z *= finalFriction;
 	
 	UpdatePhysics(stageHandle);
+
+	if (!slot.empty()) {
+		int next = currentWeaponIndex;
+
+		if (InputManager::GetIns().IsActionTrigger(ActionID::WEAPON_NEXT)) {
+			next++;
+			if (next >= slot.size())next = 0;
+		}
+		if (InputManager::GetIns().IsActionTrigger(ActionID::WEAPON_PREV)) {
+			next--;
+			if (next < 0)next = slot.size() - 1;
+		}
+
+		if (next != currentWeaponIndex) {
+			SwitchWeapon(next);
+		}
+	}
+
 	//カメラ位置の更新,反映
 	VECTOR camPos = position;
 
@@ -159,10 +199,10 @@ void Player::Update() {
 	if (speedRate > 1.0f) speedRate = 1.0f;
 	//速度に応じて視野角を広げる
 	float targetFov = BASE_FOV + (MAX_FOV - BASE_FOV) * speedRate;
-	if (weapon) {
+	if (currentWeapon) {
 		//覗いていれば武器のズームを適用
 		if (isAds)
-			targetFov = weapon->GetSpec().adsFov * DX_PI_F / 180;
+			targetFov = currentWeapon->GetSpec().adsFov * DX_PI_F / 180;
 	}
 	//徐々に目標の視野角に近づける
 	fov += (targetFov - fov) * lerp;
@@ -212,6 +252,50 @@ void Player::AddRecoil(float y,float p){
 	cam->AddAngle(y, p);
 }
 
+
+void Player::SwitchWeapon(int next) {
+	if (slot.empty() || next == currentWeaponIndex)return;
+	if (next < 0 || next >= slot.size())return;
+
+	if (Weapon* current = GetWeapon()) {
+		current->CancelAds();
+		current->CancelReload();
+	}
+
+	currentWeaponIndex = next;
+}
+
 VECTOR Player::GetCamDirection() {
 	return cam->GetLookDirection();
+}
+
+
+bool Player::AddWeapon(std::unique_ptr<Weapon> newWeapon) {
+	for (auto& w : slot) {
+		if (w->IsSameType(newWeapon->GetSpec())) {
+			if (currentMode != PlayMode::MODE_EASY) {
+				int getAmmo = newWeapon->GetAmmo() + newWeapon->GetReserveAmmo();
+				w->AddReserveAmmo(getAmmo);
+			}
+			return true;
+		}
+	}
+
+	if (slot.size() < maxWeaponSlot + 1) {
+		slot.push_back(std::move(newWeapon));
+		SwitchWeapon((int)slot.size() - 1);
+		return true;
+	}
+
+	int dropIndex = (currentWeaponIndex == 0) ? 1 : currentWeaponIndex;
+	VECTOR dropPos = VAdd(position, VGet(0.0f, 0.4f, 0.0f));
+
+	auto dropItem = std::make_unique<WeaponItem>(dropPos, std::move(slot[dropIndex]));
+	ItemManager::GetIns().Spawn(std::move(dropItem));
+
+	slot[dropIndex] = std::move(newWeapon);
+
+	SwitchWeapon(dropIndex);
+
+	return false;
 }

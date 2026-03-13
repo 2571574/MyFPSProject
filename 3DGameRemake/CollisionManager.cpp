@@ -62,12 +62,12 @@ void CollisionManager::Update(Player* player, EnemyManager* enemymanager) {
 					charaB->SetPos(VAdd(posB, VScale(pushDir, overlap)));
 				}
 				else if (massB > massA) {
-					charaA->SetPos(VAdd(posA, VScale(pushDir, overlap)));
+					charaA->SetPos(VSub(posA, VScale(pushDir, overlap)));
 				}
 				else {
 					float half = overlap * 0.5f;
 					charaA->SetPos(VSub(posA, VScale(pushDir, half)));
-					charaB->SetPos(VSub(posB, VScale(pushDir, half)));
+					charaB->SetPos(VAdd(posB, VScale(pushDir, half)));
 				}
 			}
 		}
@@ -77,6 +77,14 @@ void CollisionManager::Update(Player* player, EnemyManager* enemymanager) {
 HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter) {
 	HitInfo result;
 	float minDistance = FLT_MAX;
+	if (stageHandle != -1) {
+		MV1_COLL_RESULT_POLY wallHit = MV1CollCheck_Line(stageHandle, -1, start, end);
+		if (wallHit.HitFlag == 1) {
+			minDistance = VSize(VSub(wallHit.HitPosition, start));
+			result.isWallHit = true;
+			result.hitPos = wallHit.HitPosition;
+		}
+	}
 
 	for (auto* chara : characters) {
 		if (chara->GetID() == shooter || !chara->IsAlive())continue;
@@ -91,6 +99,8 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 				minDistance = dist;
 				result.character = chara;
 				result.isHeadShot = true;
+				result.isWallHit = false;
+				result.hitPos = headPos;
 			}
 			continue;
 		}
@@ -105,6 +115,8 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 				minDistance = dist;
 				result.character = chara;
 				result.isHeadShot = false;
+				result.isWallHit = false;
+				result.hitPos = cPos;
 			}
 		}
 	}
@@ -115,8 +127,22 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 
 HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radius, TEAMID shooter) {
 	HitInfo result;
+	result.hitPos = nextPos;
+	float minDistance = VSize(VSub(nextPos, pos));
+
+	if (stageHandle != -1) {
+		MV1_COLL_RESULT_POLY wallHit = MV1CollCheck_Line(stageHandle, -1, pos, nextPos);
+
+		if (wallHit.HitFlag == 1) {
+			minDistance = VSize(VSub(wallHit.HitPosition, pos));
+			result.isWallHit = true;
+			result.hitPos = wallHit.HitPosition;
+		}
+	}
+
+
 	for (auto* chara : characters) {
-		if (!chara->IsAlive())continue;
+		if (chara->GetID() == shooter || !chara->IsAlive())continue;
 
 		VECTOR cPos = chara->GetPos();
 		float headRad =0.25f;
@@ -124,6 +150,8 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 		if (HitCheck_Capsule_Capsule(pos, nextPos, radius, headPos, headPos, headRad)) {
 			result.character = chara;
 			result.isHeadShot = true;
+			result.isWallHit = false;
+			result.hitPos = headPos;
 			return result;
 		}
 		float bodyRad = chara->GetStatus().width / 2.0f;
@@ -132,6 +160,8 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 		if (HitCheck_Capsule_Capsule(pos, nextPos, radius, bodyBottom, bodyTop, bodyRad)) {
 			result.character = chara;
 			result.isHeadShot = false;
+			result.isWallHit = false;
+			result.hitPos = cPos;
 			return result;
 		}
 	}
@@ -142,7 +172,7 @@ void CollisionManager::ProcessExplotion(VECTOR hitPos, float radius, int damage,
 	if (radius <= 0.0f)return;
 
 	for (auto* chara : characters) {
-		if (!chara->IsAlive() || chara->GetID() == shooter)continue;
+		if (!chara->IsAlive())continue;
 
 		float dist = VSize(VSub(chara->GetPos(), hitPos));
 		if (dist <= radius) {
@@ -161,7 +191,7 @@ void CollisionManager::ProcessExplotion(VECTOR hitPos, float radius, int damage,
 				toChara = VNorm(toChara);
 			}
 
-			float baseKnockbackPower = 2.0f;
+			float baseKnockbackPower = 0.3f;
 			float currentKnockback = baseKnockbackPower * damageRate;
 			
 			chara->Applyknockback(VScale(toChara, currentKnockback));

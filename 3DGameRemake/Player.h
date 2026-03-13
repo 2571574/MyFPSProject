@@ -13,7 +13,9 @@ class Player : public Character
 {
 private:
 	VECTOR forwardVec, rightVec;		//プレイヤーの方向から取った前ベクトル、右ベクトル
-	std::unique_ptr<Weapon> weapon;		//現在持っている武器	
+	std::vector<std::unique_ptr<Weapon>> slot;		//現在持っている武器	
+	int currentWeaponIndex;
+	int maxWeaponSlot;
 	float fov;			//現在の視野角
 	bool isAds;			//ADSしているか
 	float slidingCT;	//スライディングのクールタイム
@@ -25,12 +27,14 @@ private:
 
 	int stageHandle;	//ステージのモデルハンドル
 	std::vector<VECTOR> TargetedPos;
+
+	PlayMode currentMode;
 public:
 	/// <summary>
 	///	playerのコンストラクタ 座標にplayerを生成
 	/// </summary>
 	/// <param name="pos">playerの初期座標</param>
-	Player(VECTOR pos,Camera* camera);	//コンストラクタ
+	Player(VECTOR pos,Camera* camera,PlayMode mode);	//コンストラクタ
 
 	/// <summary>
 	/// playerのデストラクタ　使用していたハンドルの削除
@@ -55,6 +59,8 @@ public:
 	void AddRecoil(float y, float p)override;
 
 
+	void SwitchWeapon(int next);
+	bool AddWeapon(std::unique_ptr<Weapon> newWeapon);
 	//getter
 
 	/// <summary>
@@ -64,8 +70,11 @@ public:
 	VECTOR GetCamDirection();
 
 	void SetStageHandle(int handle) { stageHandle = handle; }
-	Weapon* GetWeapon() { return weapon.get(); }
-
+	Weapon* GetWeapon() { 
+		if (slot.empty() || currentWeaponIndex < 0 || currentWeaponIndex >= slot.size()) return nullptr;
+		return slot[currentWeaponIndex].get();
+	}
+	int GetWeaponIndex() { return currentWeaponIndex; }
 	void AddTargeted(VECTOR pos) { TargetedPos.push_back(pos); }
 	const std::vector<VECTOR>& GetTargeted()const { return TargetedPos; }
 	void ClearTargeted() { TargetedPos.clear();}

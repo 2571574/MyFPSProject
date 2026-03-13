@@ -9,7 +9,7 @@ CheckKey::CheckKey() {
 	joy = Prevjoy = 0;
 	MouseX = MouseY = 0;
 	LstickX = LstickY = RstickX = RstickY = 0;
-
+	mouseWheelVol = 0;
 	//コントローラーのデッドゾーンを設定
 	SetJoypadDeadZone(DX_INPUT_PAD1, STICK_DEADZONE);
 }
@@ -36,6 +36,7 @@ void CheckKey::Input() {
 	GetMousePoint(&MouseX, &MouseY);
 	GetJoypadAnalogInput(&LstickX, &LstickY, DX_INPUT_PAD1);
 	GetJoypadAnalogInputRight(&RstickX, &RstickY, DX_INPUT_PAD1);
+	mouseWheelVol = GetMouseWheelRotVol();
 }
 
 
@@ -55,14 +56,18 @@ bool CheckKey::isKeyRelease(int code)const {	//入力がない&前に入力が�
 
 /*マウスのボタンの検知*/
 bool CheckKey::IsmouseHold(int code)const {		
+	if (code == MOUSE_WHEEL_UP || code == MOUSE_WHEEL_DOWN)return false;
 	return(mouseButton & code) != 0;
 }
 
 bool CheckKey::IsmousePress(int code)const {
+	if (code == MOUSE_WHEEL_UP)return mouseWheelVol > 0;
+	if (code == MOUSE_WHEEL_DOWN)return mouseWheelVol < 0;
 	return (mouseButton & code) != 0 && (prevMouseButton & code) == 0;
 }
 
 bool CheckKey::IsmouseRelease(int code)const {
+	if (code == MOUSE_WHEEL_UP || code == MOUSE_WHEEL_DOWN)return false;
 	return (mouseButton & code) == 0 && (prevMouseButton & code) != 0;
 }
 

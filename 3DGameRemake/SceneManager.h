@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <memory>
 #include "BaseScene.h"
+#include "Status.h"
 
 /// <summary>
 ///　全てのシーンを繋げるマネージャークラス
@@ -10,6 +11,7 @@ class SceneManager
 private:
 	std::unique_ptr<BaseScene> currentScene;	//現在のシーン
 	bool exitTag;		//終了タグ
+	PlayMode currentMode;
 public:
 	SceneManager();
 
@@ -29,7 +31,8 @@ public:
 	/// </summary>
 	void Draw();
 
-	
+	void SetPlayMode(PlayMode mode) { currentMode = mode; }
+	PlayMode GetcurrentMode()const { return currentMode; }
 	void SetExitTag(bool tag) { exitTag = tag; }
 	bool GetExitTag() { return exitTag; }
 };

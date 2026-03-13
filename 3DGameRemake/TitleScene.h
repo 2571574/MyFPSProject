@@ -22,13 +22,6 @@ private:
 		MENU_MAX
 	};
 
-	enum PlayMode {
-		MODE_TUTORIAL,
-		MODE_EASY,
-		MODE_NORMAL,
-		MODE_HARD,
-		MODE_MAX
-	};
 	TitleState currentState;
 	int selectNum;
 

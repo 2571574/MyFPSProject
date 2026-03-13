@@ -50,6 +50,7 @@ void TitleScene::Update() {
 			selectNum = MENU_PLAY;
 		}
 		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_SELECT)) {
+			manager->SetPlayMode((PlayMode)selectNum);
 			manager->ChangeScene(std::make_unique<GameScene>(manager));
 		}
 		break;

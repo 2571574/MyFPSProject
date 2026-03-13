@@ -22,3 +22,4 @@
 #define CAM_ANGLESNAP_PITCH 89.9f		//カメラのy軸制限
 #define CAM_ANGLESNAP_YAW 180.0f		//カメラのx軸制限
 #define YAW_SNAP 360.0f					//x軸のスナップ用
+

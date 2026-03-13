@@ -138,8 +138,17 @@ public:
 	void SetReloadCanceled() {
 		reloadcanceled = false;
 	}
+
+	void SetInfinite(bool flag) { infinite = flag; }
+	void AddReserveAmmo(int amount) {
+		reserveAmmo += amount;
+	}
+
+	bool IsSameType(const GunStatus& newspec) {
+		return(spec.ID == newspec.ID);
+	}
 	//getter
-	GunStatus GetSpec() const { return spec; }
+	const GunStatus& GetSpec() const { return spec; }
 	int GetAmmo() const { return ammo; }
 	int GetReserveAmmo() const { return reserveAmmo; }
 	bool IsInfinite() const { return infinite; }

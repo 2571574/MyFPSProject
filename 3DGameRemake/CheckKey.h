@@ -2,6 +2,8 @@
 #include "DxLib.h"
 #include "Parameter.h"
 
+#define MOUSE_WHEEL_UP 1301
+#define MOUSE_WHEEL_DOWN 1302
 enum InputType {
 	KEYBOARD,
 	MOUSE,
@@ -30,6 +32,7 @@ private:
 	int LstickX, LstickY;
 	int RstickX, RstickY;
 
+	int mouseWheelVol;
 
 	//キーボード
 	bool isKeyHold(int code) const;	

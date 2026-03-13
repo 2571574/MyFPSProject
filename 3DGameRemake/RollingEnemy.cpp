@@ -19,7 +19,7 @@ void RollingEnemy::Update() {
 		}
 		return;
 	}
-	if (hp <= 0) {
+	if (hp <= 0 && !isExploding) {
 		isExploding = true;
 		explodeTimer = 2.0f;
 	}

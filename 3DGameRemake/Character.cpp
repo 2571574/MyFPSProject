@@ -53,11 +53,15 @@ void Character::UpdatePhysics(int stageHandle) {
 	float dt60 = dt * 60.0f;
 	float radius = status.width / 2.0f;
 
-
-	float kbFriction = std::pow(0.8f, dt60);
+	float currentkbFriction = onGround ? 0.8f : 0.98f;
+	float kbFriction = std::pow(currentkbFriction, dt60);
 	knockback.x *= kbFriction;
 	knockback.z *= kbFriction;
 
+	if (VSize(knockback) < 0.01f) {
+		knockback = VGet(0.0f, 0.0f, 0.0f);
+	}
+	
 	velocity.y += -0.008f * dt60;
 
 	VECTOR totalVelocity = VAdd(velocity, knockback);

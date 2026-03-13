@@ -50,12 +50,6 @@ public:
 	virtual void TakeDamage(int damage) {
 		if (!alive)return;		//死亡ならreturn 
 		hp -= damage;		//ダメージ分HPを減らす
-
-		//HPが0以下なら死亡判定
-		if (hp <= 0) {
-			hp = 0;
-			alive = false;
-		}
 	}
 
 	/// <summary>

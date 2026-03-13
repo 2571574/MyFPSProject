@@ -31,7 +31,7 @@ void HUD::Draw() {
 			int ammo = weapon->GetAmmo();
 			int mag = weapon->GetSpec().magAmmo;
 			int reserve = weapon->GetReserveAmmo();
-
+			DrawFormatString(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 110, GetColor(0, 0, 0), "WEAPON: %d", pplayer->GetWeaponIndex());
 			DrawFormatString(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 80, GetColor(0, 0, 0), "AMMO: %d / %d", ammo, mag);
 
 			if (!weapon->IsInfinite()) {

@@ -10,13 +10,10 @@ void BaseProjectile::Update() {
 	HitInfo hit =
 		CollisionManager::GetIns().CheckProjectile(pos, nextpos, spec.projectileSize, id);	//弾が敵に当たったか判定
 
-	//地面に当たったか判定
-	bool hitGround = (nextpos.y <= 0.0f);
-
 	//当たっていた場合
-	if (hit.character != nullptr || hitGround) {
-		//着弾点の計算
-		VECTOR hitPoint = hit.character ? hit.character->GetPos() : nextpos;
+	if (hit.character != nullptr || hit.isWallHit) {
+
+		VECTOR hitPoint = hit.hitPos;
 
 		//当たっていたらその敵の被弾処理
 		if (spec.AOE) {
@@ -37,9 +34,7 @@ void BaseProjectile::Update() {
 			alive = false;
 		}
 		//移動処理
-		pos.x += dir.x * move;
-		pos.y += dir.y * move;
-		pos.z += dir.z * move;
+		pos = nextpos;
 	}
 }
 

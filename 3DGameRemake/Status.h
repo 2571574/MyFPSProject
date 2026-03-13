@@ -14,6 +14,15 @@ enum class ENEMYTYPE {
 	ROLLING,
 	MAX_TYPE
 };
+
+enum PlayMode {
+	MODE_TUTORIAL,
+	MODE_EASY,
+	MODE_NORMAL,
+	MODE_HARD,
+	MODE_MAX
+};
+
 //キャラのステータスの定義
 struct CharacterStatus { //エンティティの性能
 	int maxHP;			 //最大体力
@@ -30,6 +39,7 @@ struct CharacterStatus { //エンティティの性能
 };
 
 struct GunStatus {		 //武器の性能
+	int ID;				//武器ID 
 	bool hitscan;		//ヒットスキャン
 	bool AOE;			//範囲攻撃武器
 	bool fullAuto;		//フルオート

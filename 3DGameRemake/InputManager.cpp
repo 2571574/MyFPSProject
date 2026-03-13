@@ -22,10 +22,12 @@ void InputManager::SetDefaultBinding() {
 	SetBind(ActionID::FIRE,InputType::MOUSE,MOUSE_INPUT_LEFT);
 	SetBind(ActionID::ADS, InputType::MOUSE, MOUSE_INPUT_RIGHT);
 	SetBind(ActionID::RELOAD, InputType::KEYBOARD, KEY_INPUT_R);
-	SetBind(ActionID::ITEMTHROW, InputType::KEYBOARD, KEY_INPUT_G);
 	SetBind(ActionID::RUN, InputType::KEYBOARD, KEY_INPUT_LSHIFT);
 	SetBind(ActionID::JUMP, InputType::KEYBOARD, KEY_INPUT_SPACE);
 	SetBind(ActionID::CROUCH, InputType::KEYBOARD, KEY_INPUT_LCONTROL);
+	SetBind(ActionID::WEAPON_NEXT, InputType::MOUSE, MOUSE_WHEEL_DOWN);
+	SetBind(ActionID::WEAPON_PREV, InputType::MOUSE, MOUSE_WHEEL_UP);
+	SetBind(ActionID::INTERACT, InputType::KEYBOARD, KEY_INPUT_F);
 	SetBind(ActionID::MENU_UP, InputType::KEYBOARD, KEY_INPUT_W);
 	SetBind(ActionID::MENU_LEFT, InputType::KEYBOARD, KEY_INPUT_A);
 	SetBind(ActionID::MENU_DOWN, InputType::KEYBOARD, KEY_INPUT_S);
@@ -37,10 +39,11 @@ void InputManager::SetDefaultBinding() {
 	SetBind(ActionID::FIRE, InputType::JOY,PAD_INPUT_8);
 	SetBind(ActionID::ADS, InputType::JOY, PAD_INPUT_7);
 	SetBind(ActionID::RELOAD, InputType::JOY, PAD_INPUT_1);
-	SetBind(ActionID::ITEMTHROW, InputType::JOY, PAD_INPUT_12);
 	SetBind(ActionID::JUMP, InputType::JOY, PAD_INPUT_5);
 	SetBind(ActionID::RUN, InputType::JOY, PAD_INPUT_2);
 	SetBind(ActionID::CROUCH, InputType::JOY, PAD_INPUT_6);
+	SetBind(ActionID::WEAPON_NEXT, InputType::JOY, PAD_INPUT_RIGHT);
+	SetBind(ActionID::WEAPON_PREV, InputType::JOY, PAD_INPUT_LEFT);
 	SetBind(ActionID::MENU_UP, InputType::JOY, PAD_INPUT_UP);
 	SetBind(ActionID::MENU_LEFT, InputType::JOY, PAD_INPUT_LEFT);
 	SetBind(ActionID::MENU_DOWN, InputType::JOY, PAD_INPUT_DOWN);

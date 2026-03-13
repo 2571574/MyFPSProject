@@ -111,11 +111,17 @@
     <ClCompile Include="RollingEnemy.cpp">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Character.cpp">
       <Filter>2.OBJECT\3.BASE</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
+    </ClCompile>
+    <ClCompile Include="WeaponItem.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemManager.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -195,6 +201,12 @@
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClInclude>
     <ClInclude Include="CollisionManager.h">
+      <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
+    </ClInclude>
+    <ClInclude Include="WeaponItem.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

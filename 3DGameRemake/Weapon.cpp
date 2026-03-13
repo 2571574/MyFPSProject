@@ -108,8 +108,11 @@ void Weapon::FireProjectile(Character& user, VECTOR direction) {
 	finalOffset = VAdd(finalOffset, VScale(direction, offset.z));
 	VECTOR spawnPos = VAdd(userEyePos, finalOffset);
 
+	VECTOR targetPos = VAdd(userEyePos, VScale(direction, 100.0f));
+	VECTOR lastDir = VNorm(VSub(targetPos, spawnPos));
+
 	//弾の生成
-	auto p = std::make_unique<BaseProjectile>(spawnPos, user.GetID(), spec, direction);
+	auto p = std::make_unique<BaseProjectile>(spawnPos, user.GetID(), spec, lastDir);
 	ProjectileManager::GetIns().Spawn(std::move(p));
 }
 
@@ -126,9 +129,12 @@ void Weapon::FireHitScan(Character& user, VECTOR direction) {
 	finalOffset = VAdd(finalOffset, VScale(direction, offset.z));
 	VECTOR spawnPos = VAdd(userEyePos, finalOffset);
 
+	VECTOR targetPos = VAdd(userEyePos, VScale(direction, 100.0f));
+	VECTOR lastDir = VNorm(VSub(targetPos, spawnPos));
+
 	//始点と終点をセット
 	VECTOR start = spawnPos;
-	VECTOR end = VAdd(start, VScale(direction, spec.range));
+	VECTOR end = VAdd(start, VScale(lastDir, spec.range));
 	DrawLine3D(start, end, GetColor(255, 255, 0));
 	//始点から終点までで当たったか判定する
 	HitInfo hit = CollisionManager::GetIns().CheckHitScan(start, end, user.GetID());

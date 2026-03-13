@@ -1,11 +1,5 @@
 ﻿#pragma once
 #include "DxLib.h"
-
-#define PLAYER_AR 1
-#define PLAYER_SR 2 
-#define PLAYER_RPG 3
-#define PLAYER_SMG 4
-#define PLAYER_PIS 5
 enum class TEAMID {
 	ID_FRIENDLY,
 	ID_ENEMY,
@@ -36,6 +30,20 @@ enum GUNNAME {
 	HandGun,
 	
 };
+
+enum class WeaponID {
+	AR,
+	SR,
+	LR,
+	SMG,
+	PIS,
+	ENEMY_KNIFE,
+	ENEMY_AR,
+	ENEMY_SR,
+	ENEMY_EXPLOSION,
+
+	UNKNOWN
+};
 //キャラのステータスの定義
 struct CharacterStatus { //エンティティの性能
 	int maxHP;			 //最大体力
@@ -52,7 +60,7 @@ struct CharacterStatus { //エンティティの性能
 };
 
 struct GunStatus {		 //武器の性能
-	int ID;				//武器ID 
+	WeaponID id;			//武器ID 
 	bool hitscan;		//ヒットスキャン
 	bool AOE;			//範囲攻撃武器
 	bool fullAuto;		//フルオート

@@ -60,7 +60,7 @@ public:
 
 
 	void SwitchWeapon(int next);
-	bool AddWeapon(std::unique_ptr<Weapon> newWeapon);
+	bool AddWeapon(std::unique_ptr<Weapon>& newWeapon);
 	//getter
 
 	/// <summary>

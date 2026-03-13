@@ -26,7 +26,7 @@ void ItemManager::Update(Player* player) {
 				if (InputManager::GetIns().IsActionTrigger(ActionID::INTERACT)) {
 					std::unique_ptr<Weapon> pickWeapon = items[i]->PickUp();
 
-					if (player->AddWeapon(std::move(pickWeapon))) {
+					if (player->AddWeapon(pickWeapon)) {
 						hasPickThisFrame = true;
 					}
 					else {

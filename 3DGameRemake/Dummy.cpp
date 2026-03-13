@@ -42,7 +42,7 @@ void Dummy::Action() {
 
 }
 
-void Dummy::OnHit(int damage) {
+void Dummy::OnHit(int damage, WeaponID id) {
 	if (accumulateTimer > 0.0f && !damageTexts.empty()) {
 		DamageText& lastText = damageTexts.back();
 

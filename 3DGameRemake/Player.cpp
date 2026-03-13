@@ -270,13 +270,15 @@ VECTOR Player::GetCamDirection() {
 }
 
 
-bool Player::AddWeapon(std::unique_ptr<Weapon> newWeapon) {
+bool Player::AddWeapon(std::unique_ptr<Weapon>& newWeapon) {
+	if (!newWeapon)return false;
 	for (auto& w : slot) {
 		if (w->IsSameType(newWeapon->GetSpec())) {
 			if (currentMode != PlayMode::MODE_EASY) {
 				int getAmmo = newWeapon->GetAmmo() + newWeapon->GetReserveAmmo();
 				w->AddReserveAmmo(getAmmo);
 			}
+			newWeapon.reset();
 			return true;
 		}
 	}
@@ -299,5 +301,5 @@ bool Player::AddWeapon(std::unique_ptr<Weapon> newWeapon) {
 
 	SwitchWeapon(dropIndex);
 
-	return false;
+	return true;
 }

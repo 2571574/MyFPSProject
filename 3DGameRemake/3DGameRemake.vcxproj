@@ -152,6 +152,7 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SniperEnemy.cpp" />
     <ClCompile Include="Status.cpp" />
+    <ClCompile Include="TextManager.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="Weapon.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SniperEnemy.h" />
     <ClInclude Include="Status.h" />
+    <ClInclude Include="TextManager.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="TitleScene.h" />
     <ClInclude Include="Weapon.h" />

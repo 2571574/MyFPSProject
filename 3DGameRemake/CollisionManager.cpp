@@ -168,7 +168,7 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 	return result;
 }
 
-void CollisionManager::ProcessExplotion(VECTOR hitPos, float radius, int damage, TEAMID shooter) {
+void CollisionManager::ProcessExplotion(VECTOR hitPos, float radius, int damage, TEAMID shooter, WeaponID id) {
 	if (radius <= 0.0f)return;
 
 	for (auto* chara : characters) {
@@ -177,7 +177,7 @@ void CollisionManager::ProcessExplotion(VECTOR hitPos, float radius, int damage,
 		float dist = VSize(VSub(chara->GetPos(), hitPos));
 		if (dist <= radius) {
 			float damageRate = 1.0f - (dist / radius);
-			chara->OnHit((int)(damage * damageRate));
+			chara->OnHit((int)(damage * damageRate),id);
 
 			VECTOR toChara = VSub(chara->GetPos(), hitPos);
 

@@ -47,7 +47,7 @@ public:
 	/// 被弾処理　ダメージ量分HPを減らし、死亡判定も行う
 	/// </summary>
 	/// <param name="damage">ダメージ量</param>
-	virtual void TakeDamage(int damage) {
+	virtual void TakeDamage(int damage,WeaponID id = WeaponID::UNKNOWN) {
 		if (!alive)return;		//死亡ならreturn 
 		hp -= damage;		//ダメージ分HPを減らす
 	}
@@ -56,9 +56,9 @@ public:
 	/// 被弾処理
 	/// </summary>
 	/// <param name="damage">喰らったダメージ量</param>
-	virtual void OnHit(int damage) {
+	virtual void OnHit(int damage,WeaponID id = WeaponID::UNKNOWN) {
 		if (!alive) return;
-		TakeDamage(damage);
+		TakeDamage(damage,id);
 	}
 
 	/// <summary>

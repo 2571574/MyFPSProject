@@ -64,7 +64,7 @@ void MeleeEnemy::Draw() {
 }
 
 void MeleeEnemy::Action() {
-	target->TakeDamage(1);
+	target->TakeDamage(1,WeaponID::ENEMY_KNIFE);
 
 	attackTimer = 0.5f;
 

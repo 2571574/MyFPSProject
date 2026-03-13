@@ -12,9 +12,9 @@ Enemy::Enemy(VECTOR pos, CharacterStatus& status, Player* _target, ENEMYTYPE typ
 	pathUpdateTimer = (GetRand(50) / 100.0f);
 }
 
-void Enemy::OnHit(int damage) {
+void Enemy::OnHit(int damage,WeaponID id) {
 	if (!alive || nowSpawned) return;
-	TakeDamage(damage);
+	TakeDamage(damage,id);
 }
 
 VECTOR Enemy::GetNextNodeID()const {
@@ -25,7 +25,7 @@ VECTOR Enemy::GetNextNodeID()const {
 }
 
 bool Enemy::CheckLineSight(const Character* target,float height) {
-	VECTOR myEye = VAdd(position, VGet(0, currentEyeHeight, 0));
+	VECTOR myEye = VAdd(position, VGet(0, currentEyeHeight, 0)); 
 	VECTOR targetEye = VAdd(target->GetPos(), VGet(0, height, 0));
 	MV1_COLL_RESULT_POLY hitResult = MV1CollCheck_Line(stageHandle, -1, myEye, targetEye);
 	return hitResult.HitFlag == 0; //ヒットしていないなら見えている

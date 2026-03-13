@@ -45,7 +45,7 @@ public:
 	/// 被弾処理
 	/// </summary>
 	/// <param name="damage">喰らったダメージ量</param>
-	void OnHit(int damage)override;
+	void OnHit(int damage,WeaponID id = WeaponID::UNKNOWN)override;
 
 	void SetAlive(bool tag) { alive = tag; }
 	void SetStageHandle(int handle) { stageHandle = handle; }

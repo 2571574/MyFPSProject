@@ -23,7 +23,7 @@ void BaseProjectile::Update() {
 			int lastDamage = hit.isHeadShot ? spec.damage * 2 : spec.damage;
 			if (hit.isHeadShot)Debug::Log("Headshot");
 			else Debug::Log("hit");
-			hit.character->OnHit(lastDamage);
+			hit.character->OnHit(lastDamage,spec.id);
 		}
 		alive = false;		//弾の生存タグを消す
 	}

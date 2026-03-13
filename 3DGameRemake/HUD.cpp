@@ -3,6 +3,7 @@
 #include "Weapon.h"
 #include "Parameter.h"
 #include "Time.h"
+#include "TextManager.h"
 
 HUD::HUD(Player* player) : pplayer(player),cancelReloadTimer(0.0f) {}
 
@@ -31,7 +32,8 @@ void HUD::Draw() {
 			int ammo = weapon->GetAmmo();
 			int mag = weapon->GetSpec().magAmmo;
 			int reserve = weapon->GetReserveAmmo();
-			DrawFormatString(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 110, GetColor(0, 0, 0), "WEAPON: %d", pplayer->GetWeaponIndex());
+			const char* weaponName = TextManager::GetIns().GetWeaponName(pplayer->GetWeapon()->GetSpec().id);
+			DrawFormatString(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 110, GetColor(0, 0, 0), "%s", weaponName);
 			DrawFormatString(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 80, GetColor(0, 0, 0), "AMMO: %d / %d", ammo, mag);
 
 			if (!weapon->IsInfinite()) {

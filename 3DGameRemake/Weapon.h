@@ -145,7 +145,7 @@ public:
 	}
 
 	bool IsSameType(const GunStatus& newspec) {
-		return(spec.ID == newspec.ID);
+		return(spec.id == newspec.id);
 	}
 	//getter
 	const GunStatus& GetSpec() const { return spec; }

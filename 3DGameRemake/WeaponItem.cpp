@@ -1,5 +1,6 @@
 ﻿#include "WeaponItem.h"
 #include "Time.h"
+#include "TextManager.h"
 #include <cmath>
 
 WeaponItem::WeaponItem(VECTOR pos, std::unique_ptr<Weapon>weapon)
@@ -23,6 +24,8 @@ void WeaponItem::Draw() {
 
 	VECTOR screenPos = ConvWorldPosToScreenPos(drawPos);
 	if (screenPos.z >= 0.0f && screenPos.z <= 1.0f) {
+		const char* weaponName = TextManager::GetIns().GetWeaponName(droppedWeapon->GetSpec().id);
 		DrawFormatString((int)screenPos.x - 20, (int)screenPos.y - 40, GetColor(0, 0, 0), "AMMO: %d / %d", droppedWeapon->GetAmmo(), droppedWeapon->GetReserveAmmo());
+		DrawFormatString((int)screenPos.x - 20, (int)screenPos.y - 20, GetColor(0, 0, 0), "%s", weaponName);
 	}
 }

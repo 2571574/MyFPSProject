@@ -29,7 +29,7 @@ public:
 	HitInfo CheckHitScan(VECTOR start, VECTOR end, TEAMID shooterTeam);
 	HitInfo CheckProjectile(VECTOR pos, VECTOR nextPos, float radius, TEAMID shooter);
 
-	void ProcessExplotion(VECTOR hitPos, float radius, int damage, TEAMID shooter,WeaponID id = WeaponID::UNKNOWN);
+	bool ProcessExplotion(VECTOR hitPos, float radius, int damage, float knockbackPower, bool distanceFallOff, TEAMID shooter,WeaponID id = WeaponID::UNKNOWN);
 
 	void SetStageHandle(int handle) { stageHandle = handle; }
 };

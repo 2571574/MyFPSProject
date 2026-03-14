@@ -292,10 +292,17 @@ bool Player::AddWeapon(std::unique_ptr<Weapon>& newWeapon) {
 	int dropIndex = (currentWeaponIndex == 0) ? 1 : currentWeaponIndex;
 	
 	if (dropIndex >= slot.size())return false;
-	VECTOR dropPos = VAdd(position, VGet(0.0f, 0.4f, 0.0f));
 
-	auto dropItem = std::make_unique<WeaponItem>(dropPos, std::move(slot[dropIndex]));
-	ItemManager::GetIns().Spawn(std::move(dropItem));
+	int totalAmmo = slot[dropIndex]->GetAmmo() + slot[dropIndex]->GetReserveAmmo();
+	if (totalAmmo > 0) {
+		VECTOR dropPos = VAdd(position, VGet(0.0f, 0.4f, 0.0f));
+
+		auto dropItem = std::make_unique<WeaponItem>(dropPos, std::move(slot[dropIndex]));
+		ItemManager::GetIns().Spawn(std::move(dropItem));
+	}
+	else {
+		slot[dropIndex].reset();
+	}
 
 	slot[dropIndex] = std::move(newWeapon);
 

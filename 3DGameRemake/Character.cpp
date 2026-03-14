@@ -18,15 +18,13 @@ Character::Character(VECTOR _position, CharacterStatus& _status) :
 	, crouch(false)
 	, onGround(true)
 	, currentHeight(_status.height)
-	, currentEyeHeight(_status.eyeHeight)
-	, modelHandle(-1) {
+	, currentEyeHeight(_status.eyeHeight){
 
 	CollisionManager::GetIns().Register(this);
 };		//コンストラクタ
 
 Character::~Character() {
 	CollisionManager::GetIns().Unregister(this);
-	if (modelHandle != -1) MV1DeleteModel(modelHandle);
 }
 
 void Character::ApplyMovement(VECTOR moveDir,int stageHandle) {

@@ -3,6 +3,7 @@
 #include<memory>
 #include"Enemy.h"
 #include "Pathfinding.h"
+#include <map>
 class Player;
 
 /// <summary>
@@ -30,7 +31,7 @@ private:
 	std::vector<std::unique_ptr<Enemy>> enemies;	//敵の配列
 	std::vector<Node> mapNode;		//マップのノード
 	EnemyManager() = default;
-
+	std::map<ENEMYTYPE, int>killCounts;
 	int CountEnemyType(ENEMYTYPE type);
 public:
 	static EnemyManager& GetIns();
@@ -79,4 +80,10 @@ public:
 	
 
 	float GetPrepareTimer()const { return prepareTimer; }
+	int GetKillCount(ENEMYTYPE type)const {
+		auto it = killCounts.find(type);
+		return it != killCounts.end() ? it->second : 0;
+	}
+
+	Player* GetPlayer()const { return target; }
 };

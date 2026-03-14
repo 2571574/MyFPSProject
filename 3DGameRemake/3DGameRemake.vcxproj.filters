@@ -117,11 +117,17 @@
     <ClCompile Include="CollisionManager.cpp">
       <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
     </ClCompile>
-    <ClCompile Include="WeaponItem.cpp">
+    <ClCompile Include="TextManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="ItemManager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>2.OBJECT\2.WEAPON</Filter>
+    </ClCompile>
+    <ClCompile Include="WeaponItem.cpp">
+      <Filter>2.OBJECT\2.WEAPON</Filter>
+    </ClCompile>
+    <ClCompile Include="ResultScene.cpp">
+      <Filter>1.GAME\SCENE</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -203,11 +209,17 @@
     <ClInclude Include="CollisionManager.h">
       <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
     </ClInclude>
-    <ClInclude Include="WeaponItem.h">
+    <ClInclude Include="TextManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="ItemManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>2.OBJECT\2.WEAPON</Filter>
+    </ClInclude>
+    <ClInclude Include="ResultScene.h">
+      <Filter>1.GAME\SCENE</Filter>
+    </ClInclude>
+    <ClInclude Include="WeaponItem.h">
+      <Filter>1.GAME</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

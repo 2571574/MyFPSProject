@@ -1,6 +1,12 @@
 ﻿#pragma once
 #include "Enemy.h"
 
+enum class MeleeState {
+    IDLE,
+    ATTACK_WIND,
+    ATTACK_RECOVERY
+};
+
 /// <summary>
 /// 近接型人型敵クラス
 /// </summary>
@@ -8,6 +14,8 @@ class MeleeEnemy :
     public Enemy
 {
 private:
+    MeleeState state = MeleeState::IDLE;
+    float stateTimer = 0.0f;
 	float attackTimer;  //攻撃のクールタイム
     float range;        //攻撃射程
 	float moveSpeed;    //移動速度

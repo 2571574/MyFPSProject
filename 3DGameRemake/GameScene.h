@@ -21,7 +21,7 @@ private:
 	Camera camera;		//カメラ
 
 	int stageHandle;	//ステージのモデルハンドル
-	int currentScore;	//スコア
+	int score;
 public:
 	
 	GameScene(SceneManager* manager);

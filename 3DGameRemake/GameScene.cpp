@@ -3,6 +3,7 @@
 #include "SceneManager.h"
 #include "TitleScene.h"
 #include "ItemManager.h"
+#include "ResultScene.h"
 GameScene::GameScene(SceneManager* manager):BaseScene(manager),player(VGet(0,15,0),&camera,manager->GetcurrentMode()),stageHandle(-1){}
 
 GameScene::~GameScene() {
@@ -23,6 +24,7 @@ void GameScene::Init() {
 	player.SetStageHandle(stageHandle);
 	CollisionManager::GetIns().SetStageHandle(stageHandle);
 	EnemyManager::GetIns().Init(stageHandle,&player);
+	ItemManager::GetIns().Clear();
 	auto item1 = std::make_unique<WeaponItem>(VGet(0.0f, 0.4f, 25.0f), std::make_unique<Weapon>(PLAYER_GUN::SNIPER));
 	auto item2 = std::make_unique<WeaponItem>(VGet(3.0f, 0.4f, 25.0f), std::make_unique<Weapon>(PLAYER_GUN::RIFLE));
 	auto item3 = std::make_unique<WeaponItem>(VGet(6.0f, 0.4f, 25.0f), std::make_unique<Weapon>(PLAYER_GUN::LAUNCHER));
@@ -33,20 +35,22 @@ void GameScene::Init() {
 	ItemManager::GetIns().Spawn(std::move(item3));
 	ItemManager::GetIns().Spawn(std::move(item4));
 	ItemManager::GetIns().Spawn(std::move(item5));
-	currentScore = 0;
+	score = 0;
 }
 
 void GameScene::Update() {
 	Time::GetIns().Update();    //時間の更新
 	Debug::Update();
 	player.Update();            //プレイヤーを更新
-	currentScore += EnemyManager::GetIns().Update();    //敵の更新
+	score +=EnemyManager::GetIns().Update();    //敵の更新
 	CollisionManager::GetIns().Update(&player, &EnemyManager::GetIns());
 	ProjectileManager::GetIns().Update();   //弾の更新
 	ItemManager::GetIns().Update(&player);
 
 	if (player.GetHP() <= 0) {
-		manager->ChangeScene(std::make_unique<TitleScene>(manager));
+		manager->SetScore(score);
+		manager->SetAccuracy(player.GetShots(), player.GetHits(), player.GetHeadShot());
+		manager->ChangeScene(std::make_unique<ResultScene>(manager));
 	}
 }
 

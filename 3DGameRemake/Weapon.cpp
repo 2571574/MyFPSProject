@@ -74,6 +74,7 @@ void Weapon::AdsInput() {
 /*射撃処理*/
 void Weapon::Fire(Character& user, VECTOR direction) {
 	if (!CanFire())return;		//撃てなかったらreturn
+	user.ShotRecord();
 	VECTOR dir = VNorm(direction);
 	float currentSpread = aim ? spec.adsSpread : spec.spread;
 		VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), direction));
@@ -139,6 +140,7 @@ void Weapon::FireHitScan(Character& user, VECTOR direction) {
 	//始点から終点までで当たったか判定する
 	HitInfo hit = CollisionManager::GetIns().CheckHitScan(start, end, user.GetID());
 	if (hit.character != nullptr) {
+		user.HitRecord(hit.isHeadShot);
 		int lastdamage = hit.isHeadShot ? spec.damage * 2 : spec.damage;
 		if (hit.isHeadShot)Debug::Log("Headshot");
 		else Debug::Log("hit");

@@ -49,7 +49,7 @@ void RollingEnemy::Update() {
 }
 
 void RollingEnemy::Action() {
-	CollisionManager::GetIns().ProcessExplotion(position, explodeSpec.explodeArea, explodeSpec.damage, status.teamID);
+	CollisionManager::GetIns().ProcessExplotion(position, explodeSpec.explodeArea, explodeSpec.damage,explodeSpec.knockbackP,false, status.teamID,explodeSpec.id);
 
 	alive = false;
 }

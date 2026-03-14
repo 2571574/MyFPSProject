@@ -46,7 +46,7 @@ public:
 	/// 着弾点で爆発させる　AOE=trueの武器の場合のみ
 	/// </summary>
 	/// <param name="hitPos">着弾位置</param>
-	virtual void Explode(VECTOR hitPos);
+	virtual bool Explode(VECTOR hitPos);
 
 	//Getter
 	const GunStatus& GetBulletStatus() const { return spec; }

@@ -1,6 +1,7 @@
 ﻿#include "BaseProjectile.h"
 #include "CollisionManager.h"
 #include "EnemyManager.h"
+#include "Player.h"
 
 /*弾の更新*/
 void BaseProjectile::Update() {
@@ -14,16 +15,23 @@ void BaseProjectile::Update() {
 	if (hit.character != nullptr || hit.isWallHit) {
 
 		VECTOR hitPoint = hit.hitPos;
+		bool hitEnemy = false;
+		bool isHeadShot = false;
 
 		//当たっていたらその敵の被弾処理
 		if (spec.AOE) {
-			Explode(hitPoint);
+			hitEnemy = Explode(hitPoint);
 		}
 		else if (hit.character) {
 			int lastDamage = hit.isHeadShot ? spec.damage * 2 : spec.damage;
 			if (hit.isHeadShot)Debug::Log("Headshot");
 			else Debug::Log("hit");
 			hit.character->OnHit(lastDamage,spec.id);
+		}
+		if (hitEnemy && id == TEAMID::ID_FRIENDLY) {
+			if (Player* p = EnemyManager::GetIns().GetPlayer()) {
+				p->HitRecord(isHeadShot);
+			}
 		}
 		alive = false;		//弾の生存タグを消す
 	}
@@ -44,7 +52,7 @@ void BaseProjectile::Draw() {
 }
 
 
-void BaseProjectile::Explode(VECTOR hitPos) {
-	CollisionManager::GetIns().ProcessExplotion(hitPos, spec.explodeArea, spec.damage, id);
+bool BaseProjectile::Explode(VECTOR hitPos) {
 	DrawSphere3D(hitPos, spec.explodeArea, CIRCLE_DIVNUM, GetColor(255, 150, 0), GetColor(255, 150, 0), FALSE);
+	return CollisionManager::GetIns().ProcessExplotion(hitPos, spec.explodeArea, spec.damage, spec.knockbackP, false, id, spec.id);
 }

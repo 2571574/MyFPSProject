@@ -26,6 +26,7 @@ void EnemyManager::Init(int modelhandle,Player * _target){
 	maxLimitRifle = 4;
 	maxLimitSniper = 3;
 	maxLimitRolling = 2;
+	killCounts.clear();
 
 	EnemyManager::GetIns().AddSpawnPoint(VGet(25.0f, 2.0f, 25.0f));
 	EnemyManager::GetIns().AddSpawnPoint(VGet(-25.0f, 2.0f, 25.0f));
@@ -71,6 +72,7 @@ int EnemyManager::Update() {
 		//生存タグが消えたら消去する
 		if (!enemies[i]->IsAlive()) {
 			earnScore += enemies[i]->GetStatus().score;
+			killCounts[enemies[i]->GetType()]++;
 			enemies[i] = std::move(enemies.back());
 			enemies.pop_back();
 		}

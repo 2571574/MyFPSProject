@@ -21,8 +21,6 @@ protected:
 	float currentHeight;
 	float currentEyeHeight;	//現在の目の高さ
 
-	int modelHandle;		//モデルハンドル
-
 public:
 	/// <summary>
 	/// コンストラクタ　位置とステータスを受け取る
@@ -73,12 +71,15 @@ public:
 	virtual void UpdateVelocity(VECTOR moveDir);
 	virtual void UpdatePhysics(int stagehandle);
 
-	void SetPos(VECTOR _pos) { position = _pos; }
 	void Applyknockback(VECTOR force) {
 		knockback.x += force.x;
 		knockback.z += force.z;
 		velocity.y += force.y;
 	}
+
+	virtual void ShotRecord(){}
+	virtual void HitRecord(bool isHeadShot){}
+	void SetPos(VECTOR _pos) { position = _pos; }
 	//getter
 	bool IsCrouching() { return crouch; }
 	bool IsAlive() const { return alive; }

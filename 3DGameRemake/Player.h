@@ -25,6 +25,11 @@ private:
 	Camera* cam;		//カメラのポインタ
 	std::unique_ptr<HUD> hud;	//HUD
 
+
+	int Shot = 0;
+	int totalHit = 0;
+	int totalHeadHit = 0;
+
 	int stageHandle;	//ステージのモデルハンドル
 	std::vector<VECTOR> TargetedPos;
 
@@ -61,6 +66,12 @@ public:
 
 	void SwitchWeapon(int next);
 	bool AddWeapon(std::unique_ptr<Weapon>& newWeapon);
+
+	void ShotRecord()override { Shot++; }
+	void HitRecord(bool isHeadShot)override {
+		totalHit++;
+		if (isHeadShot)totalHeadHit++;
+	}
 	//getter
 
 	/// <summary>
@@ -79,5 +90,9 @@ public:
 	const std::vector<VECTOR>& GetTargeted()const { return TargetedPos; }
 	void ClearTargeted() { TargetedPos.clear();}
 	Camera* GetCam()const { return cam; }
+
+	int GetShots()const { return Shot; }
+	int GetHits()const { return totalHit; }
+	int GetHeadShot()const { return totalHeadHit; }
 };
 

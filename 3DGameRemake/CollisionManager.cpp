@@ -168,15 +168,23 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 	return result;
 }
 
-void CollisionManager::ProcessExplotion(VECTOR hitPos, float radius, int damage, TEAMID shooter, WeaponID id) {
-	if (radius <= 0.0f)return;
+bool CollisionManager::ProcessExplotion(VECTOR hitPos, float radius, int damage,float knockbackPower,bool distanceFallOff, TEAMID shooter, WeaponID id) {
+	if (radius <= 0.0f)return false;
+	bool hit = false;
 
 	for (auto* chara : characters) {
 		if (!chara->IsAlive())continue;
 
+		if (chara->GetID() == shooter)continue;
+
 		float dist = VSize(VSub(chara->GetPos(), hitPos));
 		if (dist <= radius) {
-			float damageRate = 1.0f - (dist / radius);
+			hit = true;
+			float damageRate = distanceFallOff ? (1.0f - (dist / radius)) : 1.0f;
+			int actualDamage = (int)(damage * damageRate);
+			if (actualDamage < 1 && damage > 0)actualDamage = 1;
+
+
 			chara->OnHit((int)(damage * damageRate),id);
 
 			VECTOR toChara = VSub(chara->GetPos(), hitPos);
@@ -186,15 +194,14 @@ void CollisionManager::ProcessExplotion(VECTOR hitPos, float radius, int damage,
 			}
 			else {
 				toChara = VNorm(toChara);
-
 				toChara.y += 0.5f;
 				toChara = VNorm(toChara);
 			}
 
-			float baseKnockbackPower = 0.3f;
-			float currentKnockback = baseKnockbackPower * damageRate;
+			float currentKnockback = knockbackPower * damageRate;
 			
 			chara->Applyknockback(VScale(toChara, currentKnockback));
 		}
 	}
+	return hit;
 }

@@ -117,9 +117,6 @@
     <ClCompile Include="CollisionManager.cpp">
       <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
     </ClCompile>
-    <ClCompile Include="TextManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="ItemManager.cpp">
       <Filter>2.OBJECT\2.WEAPON</Filter>
     </ClCompile>
@@ -128,6 +125,9 @@
     </ClCompile>
     <ClCompile Include="ResultScene.cpp">
       <Filter>1.GAME\SCENE</Filter>
+    </ClCompile>
+    <ClCompile Include="TextManager.cpp">
+      <Filter>2.OBJECT\3.BASE</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -209,9 +209,6 @@
     <ClInclude Include="CollisionManager.h">
       <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
     </ClInclude>
-    <ClInclude Include="TextManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="ItemManager.h">
       <Filter>2.OBJECT\2.WEAPON</Filter>
     </ClInclude>
@@ -220,6 +217,9 @@
     </ClInclude>
     <ClInclude Include="WeaponItem.h">
       <Filter>1.GAME</Filter>
+    </ClInclude>
+    <ClInclude Include="TextManager.h">
+      <Filter>2.OBJECT\3.BASE</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -21,7 +21,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	SceneManager ins;		//ゲームの処理のインスタンス
 	// メインループ
-	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0) {
+	while (ProcessMessage() == 0) {
 		CheckKey::GetIns().Input();	//入力を取得
 		ClearDrawScreen();	//画面をクリア
 		ins.Update();		//更新

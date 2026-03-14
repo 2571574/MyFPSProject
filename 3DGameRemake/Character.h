@@ -71,6 +71,10 @@ public:
 	virtual void UpdateVelocity(VECTOR moveDir);
 	virtual void UpdatePhysics(int stagehandle);
 
+	virtual void revive() {
+		hp = status.maxHP;
+		alive = true;
+	}
 	void Applyknockback(VECTOR force) {
 		knockback.x += force.x;
 		knockback.z += force.z;

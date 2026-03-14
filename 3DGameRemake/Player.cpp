@@ -298,7 +298,7 @@ bool Player::AddWeapon(std::unique_ptr<Weapon>& newWeapon) {
 		VECTOR dropPos = VAdd(position, VGet(0.0f, 0.4f, 0.0f));
 
 		auto dropItem = std::make_unique<WeaponItem>(dropPos, std::move(slot[dropIndex]));
-		ItemManager::GetIns().Spawn(std::move(dropItem));
+		ItemManager::GetIns().SpawnDroppedItem(std::move(dropItem));
 	}
 	else {
 		slot[dropIndex].reset();

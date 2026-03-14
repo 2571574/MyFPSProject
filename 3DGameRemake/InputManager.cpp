@@ -34,6 +34,7 @@ void InputManager::SetDefaultBinding() {
 	SetBind(ActionID::MENU_RIGHT, InputType::KEYBOARD, KEY_INPUT_D);
 	SetBind(ActionID::MENU_SELECT, InputType::KEYBOARD, KEY_INPUT_F);
 	SetBind(ActionID::MENU_BACK, InputType::MOUSE, MOUSE_INPUT_RIGHT);
+	SetBind(ActionID::PAUSE, InputType::KEYBOARD, KEY_INPUT_ESCAPE);
 
 	//コントローラー
 	SetBind(ActionID::FIRE, InputType::JOY,PAD_INPUT_8);

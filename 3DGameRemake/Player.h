@@ -79,7 +79,6 @@ public:
 	/// </summary>
 	/// <returns>カメラの注視方向を返す</returns>
 	VECTOR GetCamDirection();
-
 	void SetStageHandle(int handle) { stageHandle = handle; }
 	Weapon* GetWeapon() { 
 		if (slot.empty() || currentWeaponIndex < 0 || currentWeaponIndex >= slot.size()) return nullptr;

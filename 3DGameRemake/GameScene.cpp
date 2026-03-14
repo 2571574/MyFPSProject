@@ -24,23 +24,32 @@ void GameScene::Init() {
 	player.SetStageHandle(stageHandle);
 	CollisionManager::GetIns().SetStageHandle(stageHandle);
 	EnemyManager::GetIns().Init(stageHandle,&player);
-	ItemManager::GetIns().Clear();
-	auto item1 = std::make_unique<WeaponItem>(VGet(0.0f, 0.4f, 25.0f), std::make_unique<Weapon>(PLAYER_GUN::SNIPER));
-	auto item2 = std::make_unique<WeaponItem>(VGet(3.0f, 0.4f, 25.0f), std::make_unique<Weapon>(PLAYER_GUN::RIFLE));
-	auto item3 = std::make_unique<WeaponItem>(VGet(6.0f, 0.4f, 25.0f), std::make_unique<Weapon>(PLAYER_GUN::LAUNCHER));
-	auto item4 = std::make_unique<WeaponItem>(VGet(-3.0f, 0.4f, 25.0f), std::make_unique<Weapon>(PLAYER_GUN::SMG));
-	auto item5 = std::make_unique<WeaponItem>(VGet(-6.0f, 0.4f, 25.0f), std::make_unique<Weapon>(PLAYER_GUN::SNIPER));
-	ItemManager::GetIns().Spawn(std::move(item1));
-	ItemManager::GetIns().Spawn(std::move(item2));
-	ItemManager::GetIns().Spawn(std::move(item3));
-	ItemManager::GetIns().Spawn(std::move(item4));
-	ItemManager::GetIns().Spawn(std::move(item5));
+	std::vector<VECTOR> spawnerPos = {
+		VGet(25.0f, 0.4f, 25.0f),
+		VGet(-25.0f, 0.4f, 25.0f),
+		VGet(27.0f, 20.4f, -27.0f),
+		VGet(-27.0f, 20.4f, -27.0f)
+	};
+	ItemManager::GetIns().InitSpawners(spawnerPos);
+	if (manager->GetcurrentMode() == PlayMode::MODE_EASY) {
+		ItemManager::GetIns().Clear();
+	}
 	score = 0;
 }
 
 void GameScene::Update() {
 	Time::GetIns().Update();    //時間の更新
 	Debug::Update();
+
+	if (InputManager::GetIns().IsActionTrigger(ActionID::PAUSE)) {
+		isPaused = !isPaused;
+		pauseSelectNum = 0;
+	}
+
+	if (isPaused) {
+		PauseUpdate();
+		return;
+	}
 	player.Update();            //プレイヤーを更新
 	score +=EnemyManager::GetIns().Update();    //敵の更新
 	CollisionManager::GetIns().Update(&player, &EnemyManager::GetIns());
@@ -48,9 +57,35 @@ void GameScene::Update() {
 	ItemManager::GetIns().Update(&player);
 
 	if (player.GetHP() <= 0) {
-		manager->SetScore(score);
-		manager->SetAccuracy(player.GetShots(), player.GetHits(), player.GetHeadShot());
-		manager->ChangeScene(std::make_unique<ResultScene>(manager));
+		if (manager->GetcurrentMode() == PlayMode::MODE_TUTORIAL) {
+			player.revive();
+		}
+		else {
+			manager->SetScore(score);
+			manager->SetAccuracy(player.GetShots(), player.GetHits(), player.GetHeadShot());
+			manager->ChangeScene(std::make_unique<ResultScene>(manager));
+		}
+	}
+}
+
+void GameScene::PauseUpdate() {
+	SetMousePoint(CENTER_X, CENTER_Y);
+	if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_UP)) {
+		pauseSelectNum--;
+		if (pauseSelectNum < 0) pauseSelectNum = PAUSE_MAX - 1;
+	}
+	if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_DOWN)) {
+		pauseSelectNum++;
+		if (pauseSelectNum >= PAUSE_MAX) pauseSelectNum = 0;
+	}
+
+	if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_SELECT)) {
+		if (pauseSelectNum == RESUME) {
+			isPaused = false;
+		}
+		else if (pauseSelectNum == RETURN_TITLE) {
+			manager->ChangeScene(std::make_unique<TitleScene>(manager));
+		}
 	}
 }
 
@@ -63,4 +98,22 @@ void GameScene::Draw() {
 
 	ItemManager::GetIns().Draw();
 	Debug::Draw();
+	if (isPaused) {
+		PauseDraw();
+	}
+}
+
+void GameScene::PauseDraw() {
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+	DrawBox(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GetColor(0, 0, 0), TRUE);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	DrawString(CENTER_X - 40, CENTER_Y - 100, "PAUSE", GetColor(255, 255, 255));
+
+	int colorResume = (pauseSelectNum == RESUME) ? GetColor(255, 255, 0) : GetColor(255, 255, 255);
+	int colorTitle = (pauseSelectNum == RETURN_TITLE) ? GetColor(255, 255, 0) : GetColor(255, 255, 255);
+
+	DrawString(CENTER_X - 80, CENTER_Y + 40 * pauseSelectNum, ">", GetColor(255, 255, 255));
+	DrawString(CENTER_X - 60, CENTER_Y, "Resume", colorResume);
+	DrawString(CENTER_X - 60, CENTER_Y + 40, "Return Title", colorTitle);
 }

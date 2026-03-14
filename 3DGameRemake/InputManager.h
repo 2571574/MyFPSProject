@@ -29,6 +29,7 @@ enum class ActionID {
 	MENU_RIGHT,
 	MENU_SELECT,
 	MENU_BACK,
+	PAUSE
 };
 
 /// <summary>

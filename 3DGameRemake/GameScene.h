@@ -19,9 +19,18 @@ class GameScene: public BaseScene
 private:
 	Player player;		//プレイヤー
 	Camera camera;		//カメラ
-
 	int stageHandle;	//ステージのモデルハンドル
 	int score;
+
+	bool isPaused;
+	int pauseSelectNum;
+	enum PauseMenu {
+		RESUME,
+		RETURN_TITLE,
+		PAUSE_MAX
+	};
+	void PauseUpdate();
+	void PauseDraw();
 public:
 	
 	GameScene(SceneManager* manager);

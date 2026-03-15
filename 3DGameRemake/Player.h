@@ -71,6 +71,10 @@ public:
 	void HitRecord(bool isHeadShot)override {
 		totalHit++;
 		if (isHeadShot)totalHeadHit++;
+
+		if (hud) {
+			hud->OnHitTarget(isHeadShot);
+		}
 	}
 	//getter
 

@@ -156,6 +156,7 @@
     <ClCompile Include="TextManager.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="TitleScene.cpp" />
+    <ClCompile Include="TutorialScene.cpp" />
     <ClCompile Include="Weapon.cpp" />
     <ClCompile Include="WeaponItem.cpp" />
   </ItemGroup>
@@ -188,6 +189,7 @@
     <ClInclude Include="TextManager.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="TitleScene.h" />
+    <ClInclude Include="TutorialScene.h" />
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="WeaponItem.h" />
   </ItemGroup>

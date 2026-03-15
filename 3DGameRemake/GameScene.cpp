@@ -92,11 +92,11 @@ void GameScene::PauseUpdate() {
 void GameScene::Draw() {
 	DrawSphere3D(VGet(0, 0, 0), 0.2f, 16, GetColor(255, 255, 0), GetColor(255, 255, 0), TRUE);
 	MV1DrawModel(stageHandle);
+	ItemManager::GetIns().Draw();
 	ProjectileManager::GetIns().Draw();     //弾の描画
 	EnemyManager::GetIns().Draw();          //敵の描画
 	player.Draw();                        //プレイヤーの描画
 
-	ItemManager::GetIns().Draw();
 	Debug::Draw();
 	if (isPaused) {
 		PauseDraw();

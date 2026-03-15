@@ -4,15 +4,21 @@
 #include "Parameter.h"
 #include "Time.h"
 #include "TextManager.h"
+#include "ItemManager.h"
 
 HUD::HUD(Player* player) : pplayer(player),cancelReloadTimer(0.0f) {}
 
 void HUD::Update() {
+	float dt = Time::GetIns().GetDelta();
 	if (cancelReloadTimer >= 0) {
-		cancelReloadTimer -= Time::GetIns().GetDelta();
+		cancelReloadTimer -= dt;
 		if (cancelReloadTimer < 0) {
 			cancelReloadTimer = 0;
 		}
+	}
+
+	if (hitMarkTimer > 0.0f) {
+		hitMarkTimer -= dt;
 	}
 }
 
@@ -21,6 +27,29 @@ void HUD::Draw() {
 		int dotSize = 4;
 		DrawCircle(CENTER_X, CENTER_Y, dotSize, GetColor(0, 0, 0), true);
 
+		if (hitMarkTimer > 0.0f) {
+			int cx = CENTER_X;
+			int cy = CENTER_Y;
+			int offset = 8;
+			int length = 8;
+
+			int color = lastHitWasHS ? GetColor(255, 0, 0) : GetColor(255, 255, 255);
+
+			DrawLine(cx - offset - length, cy - offset - length, cx - offset, cy - offset, color,3);
+			DrawLine(cx + offset + length, cy - offset - length, cx + offset, cy - offset, color,3);
+			DrawLine(cx - offset - length, cy + offset + length, cx - offset, cy + offset, color,3);
+			DrawLine(cx + offset + length, cy + offset + length, cx + offset, cy + offset, color,3);
+		}
+
+		WeaponItem* nearItem = ItemManager::GetIns().GetNearItem();
+		if (nearItem) {
+			const GunStatus* spec = nearItem->GetSpec();
+			if (spec) {
+				const char* weaponName = TextManager::GetIns().GetWeaponName(spec->id);
+
+				DrawFormatString(CENTER_X - 120, CENTER_Y + 120, GetColor(0, 0, 0), "PickUp : %s", weaponName);
+			}
+		}
 		int hp = pplayer->GetHP();
 		int maxHP = pplayer->GetStatus().maxHP;
 
@@ -76,4 +105,9 @@ void HUD::Draw() {
 			}
 		}
 	}
+}
+
+void HUD::OnHitTarget(bool isHeadShot) {
+	hitMarkTimer = 0.2f;
+	lastHitWasHS = isHeadShot;
 }

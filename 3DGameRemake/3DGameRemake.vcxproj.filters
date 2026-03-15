@@ -129,6 +129,9 @@
     <ClCompile Include="TextManager.cpp">
       <Filter>2.OBJECT\3.BASE</Filter>
     </ClCompile>
+    <ClCompile Include="TutorialScene.cpp">
+      <Filter>1.GAME\SCENE</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Parameter.h">
@@ -220,6 +223,9 @@
     </ClInclude>
     <ClInclude Include="TextManager.h">
       <Filter>2.OBJECT\3.BASE</Filter>
+    </ClInclude>
+    <ClInclude Include="TutorialScene.h">
+      <Filter>1.GAME\SCENE</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

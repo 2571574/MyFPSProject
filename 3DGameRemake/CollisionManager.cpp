@@ -90,9 +90,16 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 		if (chara->GetID() == shooter || !chara->IsAlive())continue;
 
 		VECTOR cPos = chara->GetPos();
+		float hitY = start.y;
+		if (hitY < cPos.y)hitY = cPos.y;
+		if (hitY > cPos.y + chara->GetStatus().height)hitY = cPos.y + chara->GetStatus().height;
+		VECTOR approxBodyHitPos = VGet(cPos.x, hitY, cPos.z);
 
-		float headRad =0.25f;
+		float bodyRad = chara->GetStatus().width / 2.0f;
+		float headRad =bodyRad * 0.5f;
+		if (headRad < 0.15f)headRad = 0.15f;
 		VECTOR headPos = VAdd(cPos, VGet(0.0f, chara->GetCurrentEyeHeight(), 0.0f));
+
 		if (HitCheck_Capsule_Capsule(start, end, 0.05f, headPos, headPos, headRad)) {
 			float dist = VSize(VSub(headPos, start));
 			if (dist < minDistance) {
@@ -105,18 +112,19 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 			continue;
 		}
 
-		VECTOR bodyTop = VAdd(cPos, VGet(0.0f, chara->GetStatus().height - headRad, 0.0f));
-		float bodyRad = chara->GetStatus().width / 2.0f;
+		VECTOR bodyBottom = VAdd(cPos, VGet(0.0f, bodyRad, 0.0f));
+		float neckHeight = chara->GetCurrentEyeHeight() - headRad;
+		if (neckHeight < bodyRad * 2.0f)neckHeight = bodyRad * 2.0f;
+		VECTOR bodyTop = VAdd(cPos, VGet(0.0f, neckHeight - headRad, 0.0f));
 
-
-		if (HitCheck_Capsule_Capsule(start, end, 0.05f, cPos, bodyTop, bodyRad)) {
-			float dist = VSize(VSub(cPos, start));
+		if (HitCheck_Capsule_Capsule(start, end, 0.05f, bodyBottom, bodyTop, bodyRad)) {
+			float dist = VSize(VSub(approxBodyHitPos, start));
 			if (dist < minDistance) {
 				minDistance = dist;
 				result.character = chara;
 				result.isHeadShot = false;
 				result.isWallHit = false;
-				result.hitPos = cPos;
+				result.hitPos = approxBodyHitPos;
 			}
 		}
 	}
@@ -128,7 +136,8 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radius, TEAMID shooter) {
 	HitInfo result;
 	result.hitPos = nextPos;
-	float minDistance = VSize(VSub(nextPos, pos));
+
+	float minDistance = FLT_MAX;
 
 	if (stageHandle != -1) {
 		MV1_COLL_RESULT_POLY wallHit = MV1CollCheck_Line(stageHandle, -1, pos, nextPos);
@@ -145,24 +154,48 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 		if (chara->GetID() == shooter || !chara->IsAlive())continue;
 
 		VECTOR cPos = chara->GetPos();
-		float headRad =0.25f;
-		VECTOR headPos = VAdd(cPos, VGet(0.0f, chara->GetCurrentEyeHeight(), 0.0f));
-		if (HitCheck_Capsule_Capsule(pos, nextPos, radius, headPos, headPos, headRad)) {
-			result.character = chara;
-			result.isHeadShot = true;
-			result.isWallHit = false;
-			result.hitPos = headPos;
-			return result;
-		}
+		float hitY = pos.y;
+		if (hitY < cPos.y)hitY = cPos.y;
+		if (hitY > cPos.y + chara->GetStatus().height)hitY = cPos.y + chara->GetStatus().height;
+		VECTOR approxBodyHitPos = VGet(cPos.x, hitY, cPos.z);
+
 		float bodyRad = chara->GetStatus().width / 2.0f;
+		float headRad = bodyRad * 0.5f;
+		if (headRad < 0.15f)headRad = 0.15f;
+		VECTOR headPos = VAdd(cPos, VGet(0.0f, chara->GetCurrentEyeHeight(), 0.0f));
+
+		VECTOR moveVec = VSub(nextPos, pos);
+		VECTOR extendedNextPos = nextPos;
+		if (VSquareSize(moveVec) > 0.001f) {
+			VECTOR moveDir = VNorm(moveVec);
+
+			extendedNextPos = VAdd(nextPos, VScale(moveDir, chara->GetStatus().width));
+		}
+		if (HitCheck_Capsule_Capsule(pos, extendedNextPos, radius, headPos, headPos, headRad)) {
+			float dist = VSize(VSub(headPos, pos));
+			if (dist < minDistance) {
+				minDistance = dist;
+				result.character = chara;
+				result.isHeadShot = true;
+				result.isWallHit = false;
+				result.hitPos = headPos;
+			}
+			continue;
+		}
 		VECTOR bodyBottom = VAdd(cPos, VGet(0.0f, bodyRad, 0.0f));
-		VECTOR bodyTop = VAdd(cPos, VGet(0.0f, chara->GetStatus().height - bodyRad, 0.0f));
+		float neckHeight = chara->GetCurrentEyeHeight() - headRad;
+		if (neckHeight < bodyRad * 2.0f)neckHeight = bodyRad * 2.0f;
+
+		VECTOR bodyTop = VAdd(cPos, VGet(0.0f, neckHeight - bodyRad, 0.0f));
 		if (HitCheck_Capsule_Capsule(pos, nextPos, radius, bodyBottom, bodyTop, bodyRad)) {
-			result.character = chara;
-			result.isHeadShot = false;
-			result.isWallHit = false;
-			result.hitPos = cPos;
-			return result;
+			float dist = VSize(VSub(approxBodyHitPos, pos));
+			if (dist < minDistance) {
+				minDistance = dist;
+				result.character = chara;
+				result.isHeadShot = false;
+				result.isWallHit = false;
+				result.hitPos = approxBodyHitPos;
+			}
 		}
 	}
 	return result;

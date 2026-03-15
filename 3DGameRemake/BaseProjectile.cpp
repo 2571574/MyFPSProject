@@ -23,6 +23,8 @@ void BaseProjectile::Update() {
 			hitEnemy = Explode(hitPoint);
 		}
 		else if (hit.character) {
+			hitEnemy = true;
+			isHeadShot = hit.isHeadShot;
 			int lastDamage = hit.isHeadShot ? spec.damage * 2 : spec.damage;
 			if (hit.isHeadShot)Debug::Log("Headshot");
 			else Debug::Log("hit");

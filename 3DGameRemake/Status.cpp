@@ -12,7 +12,7 @@ namespace PLAYER_GUN {
 	GunStatus SNIPER = { WeaponID::SR, true, false,false, 1, 60.0f, 3, 40, 3.0f, 0.6f, 0.2f, 0.0001f, 7.0f,VGet(0.3f,-0.2f,0.0f), 0.9f, 0.2f, 40.0f };
 	GunStatus LAUNCHER = { WeaponID::LR, false, true, false, 2, 20.0f, 1, 5, 1.5f, 10.0f, 0.001f,0.001f, 14.0f,VGet(0.3f,-0.2f,0.0f),0.5f,0.5f,65.0f,0.1f,0.5f,10.0f, 0.3f };
 	GunStatus SMG = { WeaponID::SMG, false, false, true, 1, 30.0f, 30, 180, 1.8f, 20.0f, 0.1f, 0.03f, 1.5f, VGet(0.3f,-0.2f,0.0f), 1.0f, 0.7f, 60.0f,0.06f,1.0f };
-	GunStatus PISTOL = { WeaponID::PIS, false, false, false, 1, 20.0f, 8, 0, 2.0f, 8.0f, 0.1f, 0.01f, 3.0f,VGet(0.3f,-0.2f,0.0f),1.0f,0.8f,60.0f,0.06f,1.0f };
+	GunStatus PISTOL = { WeaponID::PIS, false, false, false, 1, 20.0f, 8, 0, 2.0f, 8.0f, 0.1f, 0.005f, 3.0f,VGet(0.3f,-0.2f,0.0f),1.0f,0.8f,60.0f,0.06f,1.0f };
 }
 namespace ENEMY_GUN {
 	GunStatus RIFLE = {WeaponID::ENEMY_AR, false, false, true, 1, 20.0f, 20, 0, 5.0f, 1.0f, 0.001f, 0.001f, 0.0f, VGet(0.0f,0.0f,0.0f), 1.0f,1.0f,50.0f,0.1f,0.3f };

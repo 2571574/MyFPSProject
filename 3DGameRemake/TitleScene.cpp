@@ -1,4 +1,5 @@
 ﻿#include "TitleScene.h"
+#include "TutorialScene.h"
 #include "GameScene.h"
 #include <memory>
 #include "InputManager.h"
@@ -51,7 +52,12 @@ void TitleScene::Update() {
 		}
 		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_SELECT)) {
 			manager->SetPlayMode((PlayMode)selectNum);
-			manager->ChangeScene(std::make_unique<GameScene>(manager));
+			if ((PlayMode)selectNum == PlayMode::MODE_TUTORIAL) {
+				manager->ChangeScene(std::make_unique<TutorialScene>(manager));
+			}
+			else {
+				manager->ChangeScene(std::make_unique<GameScene>(manager));
+			}
 		}
 		break;
 

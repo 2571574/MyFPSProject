@@ -77,6 +77,8 @@ void ItemManager::Update(Player* player) {
 	if (interact && currentNearItem && player) {
 		std::unique_ptr<Weapon> w = currentNearItem->PickUp();
 		player->AddWeapon(w);
+
+		currentNearItem = nullptr;
 	}
 
 	for (int i = (int)droppedItem.size() - 1; i >= 0; i--) {

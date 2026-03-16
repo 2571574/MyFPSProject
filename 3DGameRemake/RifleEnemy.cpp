@@ -53,7 +53,7 @@ void RifleEnemy::Update() {
 
 void RifleEnemy::Action() {
 	VECTOR eyePos = VAdd(position, VGet(0.0f, status.eyeHeight, 0.0f));
-	VECTOR targetEyePos = VAdd(target->GetPos(), VGet(0.0f, target->GetStatus().height * 0.8f, 0.0f));
+	VECTOR targetEyePos = VAdd(target->GetPos(), VGet(0.0f, target->GetCurrentHeight() * 0.5f, 0.0f));
 	VECTOR fireDir = VNorm(VSub(targetEyePos, eyePos));
 	if (rifle) {
 		if (rifle->GetAmmo() <= 0) {
@@ -67,19 +67,16 @@ void RifleEnemy::Action() {
 
 
 void RifleEnemy::Draw() {
-	float bodyRad = status.width / 2.0f;
-	VECTOR bottom = VAdd(position, VGet(0.0f, bodyRad, 0.0f));
-	VECTOR top = VAdd(position, VGet(0, currentHeight - bodyRad, 0));
-	DrawCapsule3D(bottom, top, bodyRad, 16, GetColor(0, 0, 255), GetColor(0, 0, 255), true);
-
-	SetUseZBuffer3D(false);
 	VECTOR cPos = GetPos();
-	float headRadius = 0.25f;
-	VECTOR bodyTop = VAdd(cPos, VGet(0.0f, status.height - bodyRad, 0.0f));
-	float bodyRadius = status.width / 2.0f;
+	float bodyRad = status.width / 2.0f;
+	float headRad = bodyRad * 0.5f;
+	if (headRad < 0.15f)headRad = 0.15f;
+	VECTOR bottom = VAdd(position, VGet(0.0f, bodyRad, 0.0f));
+	float neck = status.eyeHeight - headRad;
+	VECTOR bodyTop = VAdd(cPos, VGet(0.0f, neck - bodyRad, 0.0f));
 
-	DrawCapsule3D(bottom, bodyTop, bodyRadius, 16, GetColor(0, 255, 0), GetColor(0, 255, 0), FALSE);
+	DrawCapsule3D(bottom, bodyTop, bodyRad, 16, GetColor(0, 0, 255), GetColor(0, 0, 255), true);
 	VECTOR headPos = VAdd(cPos, VGet(0.0f, currentEyeHeight, 0.0f));
-	DrawSphere3D(headPos, headRadius, 16, GetColor(255, 0, 0), GetColor(255, 0, 0), FALSE);
-	SetUseZBuffer3D(true);
+	DrawSphere3D(headPos, headRad, 16, GetColor(0, 0, 255), GetColor(0, 0, 255), true);
+
 }

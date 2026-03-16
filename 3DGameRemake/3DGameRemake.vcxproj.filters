@@ -132,6 +132,9 @@
     <ClCompile Include="TutorialScene.cpp">
       <Filter>1.GAME\SCENE</Filter>
     </ClCompile>
+    <ClCompile Include="ConfigManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Parameter.h">
@@ -226,6 +229,9 @@
     </ClInclude>
     <ClInclude Include="TutorialScene.h">
       <Filter>1.GAME\SCENE</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigManager.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -65,5 +65,8 @@ public:
 	bool IsActionTrigger(ActionID id)const;
 
 	void SetBind(ActionID id, InputType type, int code);	//キーバインドをセット
+	void SetBind(const std::map < ActionID, std::vector<KeyBind>>& newBindings) { bindings = newBindings; }
+
+	std::map<ActionID, std::vector<KeyBind>>& GetBinds() { return bindings; }
 };
 

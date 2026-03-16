@@ -198,7 +198,7 @@ void Player::Update() {
 	float speedRate = speed / 0.75f;
 	if (speedRate > 1.0f) speedRate = 1.0f;
 	//速度に応じて視野角を広げる
-	float targetFov = BASE_FOV + (MAX_FOV - BASE_FOV) * speedRate;
+	float targetFov = _BASE_FOV + (MAX_FOV - _BASE_FOV) * speedRate;
 	if (currentWeapon) {
 		//覗いていれば武器のズームを適用
 		if (isAds)

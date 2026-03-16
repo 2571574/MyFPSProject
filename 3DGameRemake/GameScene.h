@@ -20,16 +20,26 @@ private:
 	Player player;		//プレイヤー
 	Camera camera;		//カメラ
 	int stageHandle;	//ステージのモデルハンドル
-	int score;
+	int score;			//スコア
 
-	bool isPaused;
-	int pauseSelectNum;
+	bool isPaused;		//ポーズ中フラグ
+	int pauseSelectNum;//ポーズメニュー選択
+
+	//ポーズメニュー
 	enum PauseMenu {
 		RESUME,
 		RETURN_TITLE,
 		PAUSE_MAX
 	};
+	
+	/// <summary>
+	/// ポーズ中の更新処理
+	/// </summary>
 	void PauseUpdate();
+
+	/// <summary>
+	/// ポーズ中の描画処理
+	/// </summary>
 	void PauseDraw();
 public:
 	

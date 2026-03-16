@@ -1,7 +1,7 @@
 ﻿#include "Dummy.h"
 #include "Time.h"
 /*コンストラクタ*/
-Dummy::Dummy(VECTOR pos, Player* _target) :Enemy(pos, CHARA_STATUS::DUMMY, _target, ENEMYTYPE::DUMMY), accumulateTimer(0.0f) {};
+Dummy::Dummy(VECTOR pos, Player* _target,bool _damageText) :Enemy(pos, CHARA_STATUS::DUMMY, _target, ENEMYTYPE::DUMMY), accumulateTimer(0.0f), damageText(_damageText) {};
 
 /*更新*/
 void Dummy::Update() {
@@ -23,11 +23,13 @@ void Dummy::Update() {
 
 /*描画*/
 void Dummy::Draw() {
-	VECTOR top = VAdd(position, VGet(0,currentHeight, 0));		//高さ
+	float bodyRad = status.width / 2.0f;
+	VECTOR bottom = VAdd(position, VGet(0.0f, bodyRad, 0.0f));
+	VECTOR top = VAdd(position, VGet(0, currentHeight - bodyRad, 0));
 
 	unsigned int color = alive ? GetColor(255, 50, 50) : GetColor(50, 50, 50);	//色
 	//カプセルを描画
-	DrawCapsule3D(position, top, status.width / 2.0f, 16, color, color, TRUE);
+	DrawCapsule3D(bottom, top, bodyRad, CIRCLE_DIVNUM, color,color, TRUE);
 
 	for (const auto& text : damageTexts) {
 		VECTOR screenPos = ConvWorldPosToScreenPos(text.pos);
@@ -43,6 +45,9 @@ void Dummy::Action() {
 }
 
 void Dummy::OnHit(int damage, WeaponID id) {
+	if (!alive) return;
+	TakeDamage(damage, id);
+	if (!damageText)return;
 	if (accumulateTimer > 0.0f && !damageTexts.empty()) {
 		DamageText& lastText = damageTexts.back();
 

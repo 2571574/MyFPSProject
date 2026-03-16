@@ -2,6 +2,7 @@
 #include <vector>
 #include <memory>
 #include "WeaponItem.h"
+#include "Camera.h"
 #include "Status.h"
 class Player;
 
@@ -21,7 +22,8 @@ private:
 	size_t maxDropped = 10;
 	WeaponItem* currentNearItem = nullptr;
 	ItemManager() = default;
-
+	int stageHandle;
+	VECTOR camPos;
 public:
 	static ItemManager& GetIns();
 	void InitSpawners(const std::vector<VECTOR>& position);
@@ -32,5 +34,10 @@ public:
 
 	const std::vector<Spawner>& GetSpawners() const { return spawners; }
 	WeaponItem* GetNearItem()const { return currentNearItem; }
+
+	void SetStageHandle(int handle) { stageHandle = handle; }
+	int GetStageHandle()const { return stageHandle; }
+	void SetCamPos(VECTOR pos) { camPos = pos; }
+	VECTOR GetCamPos()const { return camPos; }
 };
 

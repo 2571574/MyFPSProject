@@ -86,4 +86,5 @@ public:
 	}
 
 	Player* GetPlayer()const { return target; }
+	void SetStageHandle(int handle) { stageHandle = handle; }
 };

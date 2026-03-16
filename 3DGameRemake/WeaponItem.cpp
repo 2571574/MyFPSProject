@@ -1,6 +1,7 @@
 ﻿#include "WeaponItem.h"
 #include "Time.h"
 #include "TextManager.h"
+#include "ItemManager.h"
 #include <cmath>
 
 WeaponItem::WeaponItem(VECTOR pos, std::unique_ptr<Weapon>weapon)
@@ -22,10 +23,18 @@ void WeaponItem::Draw() {
 
 	DrawCube3D(VAdd(drawPos, VGet(0.25f, 0.25f, 0.25f)), VAdd(drawPos, VGet(-0.25f, -0.25f, -0.25f)), GetColor(255, 255, 0), GetColor(255, 255, 0), TRUE);
 
-	VECTOR screenPos = ConvWorldPosToScreenPos(drawPos);
-	if (screenPos.z >= 0.0f && screenPos.z <= 1.0f) {
-		const char* weaponName = TextManager::GetIns().GetWeaponName(droppedWeapon->GetSpec().id);
-		DrawFormatString((int)screenPos.x - 20, (int)screenPos.y - 40, GetColor(0, 0, 0), "AMMO: %d / %d", droppedWeapon->GetAmmo(), droppedWeapon->GetReserveAmmo());
-		DrawFormatString((int)screenPos.x - 20, (int)screenPos.y - 20, GetColor(0, 0, 0), "%s", weaponName);
+	VECTOR camPos = ItemManager::GetIns().GetCamPos();
+	float distance = VSize(VSub(camPos, drawPos));
+	if (distance <= 15.0f) {
+		VECTOR screenPos = ConvWorldPosToScreenPos(drawPos);
+		if (screenPos.z >= 0.0f && screenPos.z <= 1.0f) {
+			int stageHandle = ItemManager::GetIns().GetStageHandle();
+			MV1_COLL_RESULT_POLY hit = MV1CollCheck_Line(stageHandle, -1, camPos, drawPos);
+			if (hit.HitFlag == 0) {
+				const char* weaponName = TextManager::GetIns().GetWeaponName(droppedWeapon->GetSpec().id);
+				DrawFormatString((int)screenPos.x - 20, (int)screenPos.y - 40, GetColor(0, 0, 0), "AMMO: %d / %d", droppedWeapon->GetAmmo(), droppedWeapon->GetReserveAmmo());
+				DrawFormatString((int)screenPos.x - 20, (int)screenPos.y - 20, GetColor(0, 0, 0), "%s", weaponName);
+			}
+		}
 	}
 }

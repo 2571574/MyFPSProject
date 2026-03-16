@@ -4,7 +4,7 @@
 #include "TitleScene.h"
 #include "ItemManager.h"
 #include "ResultScene.h"
-GameScene::GameScene(SceneManager* manager):BaseScene(manager),player(VGet(0,15,0),&camera,manager->GetcurrentMode()),stageHandle(-1){}
+GameScene::GameScene(SceneManager* manager):BaseScene(manager),player(VGet(0,0,25),&camera,manager->GetcurrentMode()),stageHandle(-1){}
 
 GameScene::~GameScene() {
 	if (stageHandle != -1) {
@@ -24,6 +24,7 @@ void GameScene::Init() {
 	player.SetStageHandle(stageHandle);
 	CollisionManager::GetIns().SetStageHandle(stageHandle);
 	EnemyManager::GetIns().Init(stageHandle,&player);
+	ItemManager::GetIns().SetStageHandle(stageHandle);
 	std::vector<VECTOR> spawnerPos = {
 		VGet(25.0f, 0.4f, 25.0f),
 		VGet(-25.0f, 0.4f, 25.0f),
@@ -57,14 +58,9 @@ void GameScene::Update() {
 	ItemManager::GetIns().Update(&player);
 
 	if (player.GetHP() <= 0) {
-		if (manager->GetcurrentMode() == PlayMode::MODE_TUTORIAL) {
-			player.revive();
-		}
-		else {
 			manager->SetScore(score);
 			manager->SetAccuracy(player.GetShots(), player.GetHits(), player.GetHeadShot());
 			manager->ChangeScene(std::make_unique<ResultScene>(manager));
-		}
 	}
 }
 
@@ -90,6 +86,7 @@ void GameScene::PauseUpdate() {
 }
 
 void GameScene::Draw() {
+	ItemManager::GetIns().SetCamPos(camera.GetPos());
 	DrawSphere3D(VGet(0, 0, 0), 0.2f, 16, GetColor(255, 255, 0), GetColor(255, 255, 0), TRUE);
 	MV1DrawModel(stageHandle);
 	ItemManager::GetIns().Draw();

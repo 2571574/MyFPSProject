@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "BaseScene.h"
 #include "Player.h"
 #include "Camera.h"
@@ -34,9 +34,9 @@ private:
         std::unique_ptr<Dummy> dummy;
         int enemyType;
         VECTOR pos;
+        float spawnCT;
     };
     std::vector<SpawnButton>button;
-    std::unique_ptr<Character> currentEnemy;
     int currentEnemyInfo;
 
     std::vector<std::unique_ptr<Dummy>> target;

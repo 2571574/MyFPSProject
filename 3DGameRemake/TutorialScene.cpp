@@ -1,4 +1,4 @@
-#include "TutorialScene.h"
+﻿#include "TutorialScene.h"
 #include "TitleScene.h"
 #include "InputManager.h"
 #include "Time.h"
@@ -19,13 +19,6 @@ TutorialScene::TutorialScene(SceneManager* manager)
 }
 
 TutorialScene::~TutorialScene() {
-	for (auto& btn : button) {
-		if (btn.dummy)CollisionManager::GetIns().Unregister(btn.dummy.get());
-	}
-	for (auto& t : target) {
-		if (t)CollisionManager::GetIns().Unregister(t.get());
-	}
-	if (currentEnemy)CollisionManager::GetIns().Unregister(currentEnemy.get());
 	EnemyManager::GetIns().Clear();
 	ProjectileManager::GetIns().Clear();
 	ItemManager::GetIns().Clear();
@@ -42,31 +35,31 @@ void TutorialScene::Init() {
 	MV1SetupCollInfo(stageHandle, -1, 8, 8, 8);
 	player.SetStageHandle(stageHandle);
 	CollisionManager::GetIns().SetStageHandle(stageHandle);
-
-	for (int i = 0; i < 4; i++) {
-		SpawnButton btn;
-		btn.pos = VGet(-6.0f + i * 4.0f, 0.0f, 25.0f);
-		btn.dummy = std::make_unique<Dummy>(btn.pos,&player);
-		btn.enemyType = i;
-		CollisionManager::GetIns().Register(btn.dummy.get());
-		button.push_back(std::move(btn));
-	}
+	EnemyManager::GetIns().SetStageHandle(stageHandle);
+	ItemManager::GetIns().SetStageHandle(stageHandle);
 
 	std::vector<VECTOR>spawnerPos = {
-		VGet(10.0f,0.4f,45.0f),VGet(5.0f,0.4f,45.0f),VGet(-5.0f,0.4f,45.0f),VGet(-10.0f,0.4f,45.0f) };
+		VGet(-15.0f,0.4f,-16.0f),VGet(-10.0f,0.4f,-16.0f),VGet(0.0f,0.4f,-16.0f),VGet(5.0f,0.4f,-16.0f) };
 	ItemManager::GetIns().InitSpawners(spawnerPos);
 
 	for (int i = 0; i < 3; ++i) {
-		auto Target = std::make_unique<Dummy>(VGet(-5.0f + i * 5.0f, 0.0f, 50.0f + i * 10.0f),&player);
-		CollisionManager::GetIns().Register(Target.get());
+		auto Target = std::make_unique<Dummy>(VGet(-26.0f + i * 15.0f, 0.0f, -5.0f + i * 15.0f), &player, true);
 		target.push_back(std::move(Target));
+	}
+	for (int i = 0; i < 4; i++) {
+		SpawnButton btn;
+		btn.pos = VGet(28.0f + i * -5.0f, 0.0f, -28.0f);
+		btn.dummy = std::make_unique<Dummy>(btn.pos,&player,false);
+		btn.enemyType = i;
+		btn.spawnCT = 0.0f;
+		button.push_back(std::move(btn));
 	}
 }
 
 void TutorialScene::Update() {
 	Time::GetIns().Update();
 	Debug::Update();
-
+	float dt = Time::GetIns().GetDelta();
 	if (InputManager::GetIns().IsActionTrigger(ActionID::PAUSE)) {
 		isPaused = !isPaused;
 		pauseSelectNum = 0;
@@ -77,6 +70,8 @@ void TutorialScene::Update() {
 	}
 	player.Update();
 	for (auto& btn : button) {
+		if (btn.spawnCT > 0.0f)
+			btn.spawnCT -= dt;
 		if (btn.dummy)btn.dummy->Update();
 	}
 	for (auto& t : target) {
@@ -85,60 +80,73 @@ void TutorialScene::Update() {
 			if (t->GetHP() <= 0) t->revive();
 		}
 	}
-
-	if (currentEnemy) {
-		currentEnemy->Update();
-		if (!currentEnemy->IsAlive()) {
-			CollisionManager::GetIns().Unregister(currentEnemy.get());
-			currentEnemy.reset();
-		}
+	VECTOR pPos = player.GetPos();
+	bool isPlayerCombatArea = (pPos.x >= -22.0f && pPos.x <= 9.0f && pPos.z >= -30.0f && pPos.z <= -20.0f);
+	if (isPlayerCombatArea) {
+		EnemyManager::GetIns().Update();
 	}
-
 	CollisionManager::GetIns().Update(&player, &EnemyManager::GetIns());
 	ProjectileManager::GetIns().Update();
 	ItemManager::GetIns().Update(&player);
-
 	if (player.GetHP() <= 0) {
 		player.revive();
 	}
-
-	VECTOR pPos = player.GetPos();
-	auto IsInZone = [](VECTOR pos, float minX, float maxX, float minZ, float maxZ) {
-		return (pos.x >= minX && pos.x <= maxX && pos.z >= minZ && pos.z <= maxZ);
-	};
+	
 	switch (currentPhase) {
 	case TutorialPhase::MOVEMENT:
-		if (IsInZone(pPos,11.5f,30.0f,-18.0f,-20.0f)) {
+		if (pPos.x >=11.0f&&pPos.x<=30.0f&&pPos.z<-20.0f) {
 			currentPhase = TutorialPhase::COMBAT;
+			EnemyManager::GetIns().Clear();
+			currentEnemyInfo = -1;
 		}
 		break;
-	case TutorialPhase::COMBAT: 
-		if (IsInZone(pPos, 11.5f, 30.0f, -18.0f, -20.0f)) {
+	case TutorialPhase::COMBAT: {
+		static bool entered = false;
+		if (isPlayerCombatArea) {
+			entered = true;
+		}
+		if (entered && !isPlayerCombatArea) {
+			EnemyManager::GetIns().Clear();
+			entered = false;
+		}
+		if (pPos.x >= 11.0f && pPos.x <= 30.0f && pPos.z > -18.0f) {
+			currentPhase = TutorialPhase::MOVEMENT;
+			EnemyManager::GetIns().Clear();
+			currentEnemyInfo = -1;
+		}
+		if (pPos.x >= -30.0f && pPos.x <= -24.0f && pPos.z > -18.0f) {
 			currentPhase = TutorialPhase::FREERANGE;
+			EnemyManager::GetIns().Clear();
+			currentEnemyInfo = -1;
 		}
 
 		for (auto& btn : button) {
 			if (btn.dummy && btn.dummy->GetHP() < btn.dummy->GetStatus().maxHP) {
 				btn.dummy->revive();
 
-				if (currentEnemy) {
-					CollisionManager::GetIns().Unregister(currentEnemy.get());
-					currentEnemy.reset();
+				if (btn.spawnCT <= 0.0f) {
+
+					EnemyManager::GetIns().Clear();
+
+					currentEnemyInfo = btn.enemyType;
+					VECTOR spawnPos = VGet(-18, 1, -24);
+
+					if (btn.enemyType == 0)EnemyManager::GetIns().Spawn(std::make_unique<MeleeEnemy>(spawnPos, &player));
+					if (btn.enemyType == 1)EnemyManager::GetIns().Spawn(std::make_unique<RifleEnemy>(spawnPos, &player));
+					if (btn.enemyType == 2)EnemyManager::GetIns().Spawn(std::make_unique<SniperEnemy>(spawnPos, &player));
+					if (btn.enemyType == 3)EnemyManager::GetIns().Spawn(std::make_unique<RollingEnemy>(spawnPos, &player));
+					btn.spawnCT = 1.0f;
 				}
-
-				currentEnemyInfo = btn.enemyType;
-				VECTOR spawnPos = VGet(0, 0, 35.0f);
-
-				if (btn.enemyType == 0)currentEnemy = std::make_unique<MeleeEnemy>(spawnPos, &player);
-				if (btn.enemyType == 1)currentEnemy = std::make_unique<RifleEnemy>(spawnPos, &player);
-				if (btn.enemyType == 2)currentEnemy = std::make_unique<SniperEnemy>(spawnPos, &player);
-				if (btn.enemyType == 3)currentEnemy = std::make_unique<RollingEnemy>(spawnPos, &player); 
-
-				if (currentEnemy)CollisionManager::GetIns().Register(currentEnemy.get());
 			}
 		}
 		break;
+	}
 	case TutorialPhase::FREERANGE:
+		if (pPos.x >= -30.0f && pPos.x <= -24.0f && pPos.z < -20.0f) {
+			currentPhase = TutorialPhase::COMBAT;
+			EnemyManager::GetIns().Clear();
+			currentEnemyInfo = -1;
+		}
 		break;
 	}
 }
@@ -161,25 +169,33 @@ void TutorialScene::PauseUpdate() {
 
 void TutorialScene::Draw() {
 	if (stageHandle != -1) MV1DrawModel(stageHandle);
-
+	ItemManager::GetIns().SetCamPos(camera.GetPos());
 	// ボタン（ダミー）の描画とテキスト
 	for (auto& btn : button) {
 		if (btn.dummy) {
-			btn.dummy->Draw();
-			VECTOR sp = ConvWorldPosToScreenPos(VAdd(btn.pos, VGet(0, 2.0f, 0)));
-			if (sp.z >= 0 && sp.z <= 1.0f) {
-				const char* name = "";
-				if (btn.enemyType == 0) name = "Melee";
-				else if (btn.enemyType == 1) name = "Rifle";
-				else if (btn.enemyType == 2) name = "Sniper";
-				else if (btn.enemyType == 3) name = "Rolling";
-				DrawFormatString((int)sp.x - 40, (int)sp.y, GetColor(0, 255, 255), "Shoot: %s", name);
+			btn.dummy->Draw();	
+			VECTOR camPos = camera.GetPos(); 
+			float distance = VSize(VSub(camPos, btn.pos));
+			if (distance <= 15.0f){
+				VECTOR textPos3D = VAdd(btn.pos, VGet(0.0f, 2.0f, 0.0f));
+				VECTOR sp = ConvWorldPosToScreenPos(textPos3D);
+				if (sp.z >= 0 && sp.z <= 1.0f) {
+					MV1_COLL_RESULT_POLY hit = MV1CollCheck_Line(stageHandle, -1, camPos, textPos3D);
+					if (hit.HitFlag == 0) {
+						const char* name = "";
+						if (btn.enemyType == 0) name = "Melee";
+						else if (btn.enemyType == 1) name = "Rifle";
+						else if (btn.enemyType == 2) name = "Sniper";
+						else if (btn.enemyType == 3) name = "Rolling";
+						DrawFormatString((int)sp.x - 40, (int)sp.y, GetColor(0, 255, 255), "Shoot: %s", name);
+					}
+				}
 			}
 		}
 	}
 
 	for (auto& t : target) if (t) t->Draw();
-	if (currentEnemy) currentEnemy->Draw();
+	EnemyManager::GetIns().Draw();
 
 	ProjectileManager::GetIns().Draw();
 	player.Draw();

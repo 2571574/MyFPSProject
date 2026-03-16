@@ -23,7 +23,7 @@ Player::Player(VECTOR pos, Camera* camera,PlayMode mode)
 	hud = std::make_unique<HUD>(this);
 
 	slot.push_back(std::make_unique<Weapon>(PLAYER_GUN::PISTOL));
-	if (currentMode == PlayMode::MODE_EASY || currentMode == PlayMode::MODE_TUTORIAL) {
+	if (currentMode == PlayMode::MODE_EASY) {
 		maxWeaponSlot = 10;
 		slot.push_back(std::make_unique<Weapon>(PLAYER_GUN::RIFLE));
 		slot.push_back(std::make_unique<Weapon>(PLAYER_GUN::SNIPER));
@@ -35,7 +35,7 @@ Player::Player(VECTOR pos, Camera* camera,PlayMode mode)
 		}
 	}
 
-	if (currentMode == PlayMode::MODE_NORMAL) {
+	if (currentMode == PlayMode::MODE_NORMAL || currentMode == PlayMode::MODE_TUTORIAL) {
 		maxWeaponSlot = 10;
 	}
 	if (currentMode == PlayMode::MODE_HARD) {
@@ -274,10 +274,8 @@ bool Player::AddWeapon(std::unique_ptr<Weapon>& newWeapon) {
 	if (!newWeapon)return false;
 	for (auto& w : slot) {
 		if (w->IsSameType(newWeapon->GetSpec())) {
-			if (currentMode != PlayMode::MODE_EASY) {
 				int getAmmo = newWeapon->GetAmmo() + newWeapon->GetReserveAmmo();
 				w->AddReserveAmmo(getAmmo);
-			}
 			newWeapon.reset();
 			return true;
 		}

@@ -12,10 +12,11 @@ struct DamageText {
 class Dummy:public Enemy
 {
 private:
+	bool damageText;
 	std::vector<DamageText> damageTexts;	//ダメージテキストの配列
 	float accumulateTimer;					//ダメージの累積を許す時間のタイマー
 public:
-	Dummy(VECTOR pos, Player* _target);
+	Dummy(VECTOR pos, Player* _target,bool damageText);
 
 	/// <summary>
 	/// 更新処理

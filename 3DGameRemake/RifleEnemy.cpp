@@ -53,7 +53,7 @@ void RifleEnemy::Update() {
 
 void RifleEnemy::Action() {
 	VECTOR eyePos = VAdd(position, VGet(0.0f, status.eyeHeight, 0.0f));
-	VECTOR targetEyePos = VAdd(target->GetPos(), VGet(0.0f, target->GetCurrentHeight() * 0.5f, 0.0f));
+	VECTOR targetEyePos = VAdd(target->GetPos(), VGet(0.0f, target->GetCurrentEyeHeight(), 0.0f));
 	VECTOR fireDir = VNorm(VSub(targetEyePos, eyePos));
 	if (rifle) {
 		if (rifle->GetAmmo() <= 0) {

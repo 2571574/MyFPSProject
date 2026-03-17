@@ -21,10 +21,10 @@ struct HitInfo {
 class CollisionManager
 {
 private:
-	CollisionManager() = default;
 	std::vector<Character*> characters;		//現在生存しているキャラのリスト
-
 	int stageHandle = -1;
+
+	CollisionManager() = default;
 
 public:
 	static CollisionManager& GetIns();

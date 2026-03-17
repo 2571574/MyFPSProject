@@ -1,4 +1,4 @@
-#include "ResourceManager.h"
+﻿#include "ResourceManager.h"
 #include "Debug.h"
 ResourceManager& ResourceManager::GetIns() {
 	static ResourceManager instance;
@@ -22,6 +22,13 @@ int ResourceManager::GetModel(const std::string& path) {
 }
 
 int ResourceManager::DuplicateModel(const std::string& path) {
+	int masterHandle = GetModel(path);
+	if (masterHandle == -1) return -1;
+	return MV1DuplicateModel(masterHandle);
+}
+
+
+int ResourceManager::GetGraph(const std::string& path) {
 	if (graphics.find(path) != graphics.end()) {
 		return graphics[path];
 	}

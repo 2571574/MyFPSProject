@@ -10,6 +10,7 @@ ConfigManager& ConfigManager::GetIns() {
 
 void ConfigManager::Load() {
 	std::ifstream ifs(fileName, std::ios::binary);
+	//なければデフォルトをロードする
 	if (!ifs) {
 		InputManager::GetIns().SetDefaultBinding();
 		bindings = InputManager::GetIns().GetBinds();

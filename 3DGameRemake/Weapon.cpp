@@ -1,8 +1,12 @@
 ﻿#include"Weapon.h"
 #include"Character.h"
 #include "CollisionManager.h"
+
 #include <memory>
 
+namespace {
+	constexpr float SPREAD_RANDOM_PRECISION = 1000.0f;
+}
 /*武器の更新*/
 void Weapon::Update() {
 	//リロード、射撃後のタイマーを減らす
@@ -19,16 +23,18 @@ void Weapon::Update() {
 	}
 
 	// リロード中かつタイマーが尽きたときだけ弾を補充
-	if (reloading && reloadCT <= 0) {
-		int need = spec.magAmmo - ammo;
-		int add;
-		if (infinite)
-			add = need;
-		else
-			add = (reserveAmmo < need) ? reserveAmmo : need;
-		ammo += add;
-		reserveAmmo -= add;
-		reloading = false;
+	if (currentState == WeaponState::RELOADING) {
+		if (reloadCT > 0.0f) {
+			int need = spec.magAmmo - ammo;
+			int add;
+			if (infinite)
+				add = need;
+			else
+				add = (reserveAmmo < need) ? reserveAmmo : need;
+			ammo += add;
+			reserveAmmo -= add;
+			currentState == WeaponState::IDLE;
+		}
 	}
 }
 
@@ -39,7 +45,8 @@ void Weapon::Fired(Character& user) {
 
 	//反動の処理
 	float recoilP = spec.recoil;
-	float recoilY = ((float)GetRand(spec.recoil) - (spec.recoil/2));
+	int randMax = (int)(spec.recoil * 100.0f);
+	float recoilY = (randMax>0) ?(((float)GetRand(randMax) / 100.0f) - (spec.recoil/2.0)) : 0.0f;
 	user.AddRecoil(recoilY, recoilP);
 }
 
@@ -77,6 +84,9 @@ void Weapon::Fire(Character& user, VECTOR direction) {
 	user.ShotRecord();
 	VECTOR dir = VNorm(direction);
 	float currentSpread = aim ? spec.adsSpread : spec.spread;
+	if (user.IsCrouching()) {
+		currentSpread *= 0.7f;
+	}
 		VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), direction));
 		VECTOR up = VNorm(VCross(direction, right));
 		float randX = ((float)GetRand(2000) - 1000.0f) / 1000.0f;

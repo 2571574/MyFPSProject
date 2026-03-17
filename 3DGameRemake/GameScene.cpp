@@ -26,8 +26,20 @@ void GameScene::Init() {
 
 	player.SetStageHandle(stageHandle);
 	CollisionManager::GetIns().SetStageHandle(stageHandle);
-	EnemyManager::GetIns().Init(stageHandle,&player);
 	ItemManager::GetIns().SetStageHandle(stageHandle);
+
+	EnemyManager::GetIns().Init(stageHandle,&player);
+	EnemyManager::GetIns().AddSpawnPoint(VGet(25.0f, 2.0f, 25.0f));
+	EnemyManager::GetIns().AddSpawnPoint(VGet(-25.0f, 2.0f, 25.0f));
+	EnemyManager::GetIns().AddSpawnPoint(VGet(27.0f, 2.0f, -27.0f));
+	EnemyManager::GetIns().AddSpawnPoint(VGet(-27.0f, 2.0f, -27.0f));
+	EnemyManager::GetIns().AddSpawnPoint(VGet(12.0f, 10.0f, 12.0f));
+	EnemyManager::GetIns().AddSpawnPoint(VGet(-12.0f, 10.0f, -12.0f));
+	EnemyManager::GetIns().AddSpawnPoint(VGet(-6.0f, 10.0f, 12.0f));
+	EnemyManager::GetIns().AddSpawnPoint(VGet(6.0f, 10.0f, -12.0f));
+	EnemyManager::GetIns().AddSpawnPoint(VGet(0.0f, 22.0f, -25.0f));
+	EnemyManager::GetIns().AddSpawnPoint(VGet(27.0f, 22.0f, -27.0f));
+	EnemyManager::GetIns().AddSpawnPoint(VGet(-27.0f, 22.0f, -27.0f));
 
 	//武器スポナー
 	std::vector<VECTOR> spawnerPos = {

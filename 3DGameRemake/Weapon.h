@@ -6,6 +6,12 @@
 #include "Character.h"
 #include "InputManager.h"
 
+//武器の状態を表す列挙型
+enum class WeaponState {
+	IDLE,
+	RELOADING
+};
+
 /// <summary>
 /// 武器を管理するクラス
 /// </summary>
@@ -14,14 +20,13 @@ protected:
 	//性能
 	GunStatus spec;		//武器スペック
 	//状態
+	WeaponState currentState; //現在の武器ステート
 	int ammo;			 //現在の弾数
 	int reserveAmmo;	 //現在の予備弾数
 	bool infinite;
 
 	float reloadCT;	     //リロード中タイマー     
 	float fireCT;		 //次の射撃までのタイマー
-	bool reloading;		 //リロード中
-	bool reloadcanceled;
 	bool aim;
 	//演出用
 	int gunModelHandle;	 //銃のモデルハンドル
@@ -39,21 +44,20 @@ protected:
 	void Fired(Character& user);
 	
 public:
-	Weapon(const GunStatus _spec) :spec(_spec), ammo(_spec.magAmmo), reserveAmmo(_spec.bagAmmo),
-		reloadCT(0)
+	Weapon(const GunStatus _spec)
+		: spec(_spec)
+		, ammo(_spec.magAmmo)
+		, reserveAmmo(_spec.bagAmmo)
+		, currentState(WeaponState::IDLE)
+		, reloadCT(0)
 		, fireCT(0)
-		, reloading(false)
 		, aim(false)
-		, reloadcanceled(false)
 		, gunModelHandle(-1)
 		, bulletModelHandle(-1)
 		, effectHandle(-1)
 		, soundHandle(-1)
 	{
-		if (reserveAmmo == 0) {
-			infinite = true;
-		}
-		else infinite = false;
+		infinite = (reserveAmmo == 0);
 	}
 
 	
@@ -104,16 +108,16 @@ public:
 	virtual void Draw();
 
 	bool CanFire() const {
-		return (fireCT <= 0 && !reloading && ammo > 0);
+		return (fireCT <= 0 && currentState == WeaponState::IDLE && ammo > 0);
 	}
 		
 	bool CanReload() const {
-		return  ((infinite || reserveAmmo > 0) && ammo < spec.magAmmo && !reloading );
+		return  ((infinite || reserveAmmo > 0) && ammo < spec.magAmmo && currentState == WeaponState::IDLE );
 	}
 
 	
 	bool Reloading()const {
-		return reloading;
+		return currentState == WeaponState::RELOADING;
 	}
 
 	bool TakingAim()const {
@@ -125,18 +129,14 @@ public:
 		aim = false;
 	}
 
+	/// <summary>
+	/// リロード中のリロードキャンセル処理
+	/// </summary>
 	virtual void CancelReload() {
-		reloading = false;
-		reloadCT = 0.0f;
-		reloadcanceled = true;
-	}
-
-	bool IsReloadCanceled() const {
-		return reloadcanceled;
-	}
-
-	void SetReloadCanceled() {
-		reloadcanceled = false;
+		if (currentState == WeaponState::RELOADING) {
+			reloadCT = 0.0f;
+			currentState = WeaponState::IDLE;
+		}
 	}
 
 	void SetInfinite(bool flag) { infinite = flag; }
@@ -147,7 +147,6 @@ public:
 	bool IsSameType(const GunStatus& newspec) {
 		return(spec.id == newspec.id);
 	}
-	//getter
 	const GunStatus& GetSpec() const { return spec; }
 	int GetAmmo() const { return ammo; }
 	int GetReserveAmmo() const { return reserveAmmo; }

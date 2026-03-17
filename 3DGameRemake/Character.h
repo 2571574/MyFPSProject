@@ -96,4 +96,5 @@ public:
 	TEAMID GetID()const { return status.teamID; }
 	float GetCurrentHeight()const { return currentHeight; }
 	float GetCurrentEyeHeight()const { return currentEyeHeight; }
+	VECTOR GetVelocity()const { return velocity; }
 };

@@ -2,8 +2,16 @@
 #include "Player.h"
 #include "Time.h"
 #include "InputManager.h"
+
+#include<random>
 #include <algorithm>
 
+namespace {
+	constexpr size_t MAX_DROPPED = 10;
+	constexpr float ITEM_PICKUP_RAD = 2.0f;
+	constexpr float SPAWNER_RESPAWN = 30.0f;
+
+}
 ItemManager& ItemManager::GetIns() {
 	static ItemManager ins;
 	return ins;
@@ -20,12 +28,10 @@ void ItemManager::InitSpawners(const std::vector<VECTOR>& position) {
 		PLAYER_GUN::SMG,
 	};
 
-	for (int i = 0; i < 10; ++i) {
-		int a = GetRand(3);
-		int b = GetRand(3);
-		std::swap(pool[a], pool[b]);
-	}
-
+	std::random_device rd;
+	std::mt19937 g(rd());
+	std::shuffle(pool.begin(), pool.end(),g);
+	
 	for (size_t i = 0; i < position.size() && i < pool.size(); ++i) {
 		Spawner s;
 		s.pos = position[i];
@@ -40,14 +46,15 @@ void ItemManager::SpawnDroppedItem(std::unique_ptr<WeaponItem> item) {
 	if (!item)return;
 
 	droppedItem.push_back(std::move(item));
-	if (droppedItem.size() > maxDropped) {
+	if (droppedItem.size() > MAX_DROPPED) {
+		//古いものから削除
 		droppedItem.erase(droppedItem.begin());
 	}
 }
 
 void ItemManager::Update(Player* player) {
 	float dt = Time::GetIns().GetDelta();
-	float pickUpRadius = 2.0f;
+	float pickUpRadius = ITEM_PICKUP_RAD;
 	bool interact = InputManager::GetIns().IsActionTrigger(ActionID::INTERACT);
 	VECTOR pPos = player ? player->GetPos() : VGet(0.0f, 0.0f, 0.0f);
 
@@ -95,7 +102,7 @@ void ItemManager::Update(Player* player) {
 
 			if (!spawner.item->IsAlive()) {
 				spawner.item.reset();
-				spawner.respawnTimer = spawner.MAX_RESPAWNTIME;
+				spawner.respawnTimer = SPAWNER_RESPAWN;
 			}
 		}
 		else {

@@ -3,6 +3,10 @@
 #include<string>
 #include"status.h"
 #include "InputManager.h"
+
+/// <summary>
+/// ゲーム内オブジェクト名のテキストを管理するクラス
+/// </summary>
 class TextManager
 {
 private:

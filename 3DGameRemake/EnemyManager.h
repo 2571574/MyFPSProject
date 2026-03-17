@@ -21,17 +21,16 @@ private:
 	std::vector<Node> mapNode;		//マップのノード
 	std::map<ENEMYTYPE, int>killCounts;
 
-	int maxEnemiesOnMap;		//マップ上の敵の最大数
 	float currentSpawnInterval;	//スポーンのインターバル
-	float minSpawnInterval;		//インターバルの最小
-	float spawnTimer;
-	float difficultyTimer;
-	float prepareTimer;
+	float spawnTimer;			//スポーンタイマー
+	float difficultyTimer;		//難易度上昇のタイマー
+	float prepareTimer;			//スタート前タイマー
 
-	int maxLimitMelee;
-	int maxLimitRifle;
-	int maxLimitSniper;
-	int maxLimitRolling;
+	/// <summary>
+	/// 指定した種類の敵が何体生存中かカウントする
+	/// </summary>
+	/// <param name="type">敵の種類</param>
+	/// <returns>数を返す</returns>
 	int CountEnemyType(ENEMYTYPE type);
 
 	EnemyManager() = default;
@@ -39,8 +38,12 @@ private:
 public:
 	static EnemyManager& GetIns();
 
-	void AddSpawnPoint(VECTOR pos) { spawnPoints.push_back(pos);
-	}
+	/// <summary>
+	/// スポーンポイントを追加する
+	/// </summary>
+	/// <param name="pos">ポイントの座標</param>
+	void AddSpawnPoint(VECTOR pos) { spawnPoints.push_back(pos);}
+
 	/// <summary>
 	/// 敵をスポーンさせる。
 	/// </summary>

@@ -1,33 +1,51 @@
 ﻿#pragma once
-#include <vector>
-#include <memory>
 #include "WeaponItem.h"
 #include "Camera.h"
 #include "Status.h"
+
+#include <memory>
+#include <vector>
+
 class Player;
 
+//アイテムスポナーの情報
 struct Spawner{
 	VECTOR pos;
 	GunStatus spawnedSpec;
 	std::unique_ptr<WeaponItem>item;
 	float respawnTimer = 0.0f;
-	const float MAX_RESPAWNTIME = 30.0f;
 };
+
+/// <summary>
+/// フィールド上のドロップアイテムとアイテムスポナーを管理するクラス
+/// </summary>
 class ItemManager
 {
 private:
-	std::vector < std::unique_ptr<WeaponItem>> droppedItem;
-	std::vector <Spawner>spawners;
+	std::vector < std::unique_ptr<WeaponItem>> droppedItem;	//ドロップアイテム
+	std::vector <Spawner>spawners;		//スポナー
+	WeaponItem* currentNearItem = nullptr;	//最短のアイテム
 
-	size_t maxDropped = 10;
-	WeaponItem* currentNearItem = nullptr;
-	ItemManager() = default;
 	int stageHandle;
 	VECTOR camPos;
+
+	ItemManager() = default;
 public:
 	static ItemManager& GetIns();
+
+	/// <summary>
+	/// スポナーの初期化
+	/// </summary>
+	/// <param name="position">設置する座標</param>
 	void InitSpawners(const std::vector<VECTOR>& position);
+
+	/// <summary>
+	/// アイテムをスポーンさせる
+	/// </summary>
+	/// <param name="item">スポーンさせるアイテム</param>
 	void SpawnDroppedItem(std::unique_ptr<WeaponItem>item);
+
+
 	void Update(Player* player);
 	void Draw();
 	void Clear();
@@ -37,6 +55,7 @@ public:
 
 	void SetStageHandle(int handle) { stageHandle = handle; }
 	int GetStageHandle()const { return stageHandle; }
+
 	void SetCamPos(VECTOR pos) { camPos = pos; }
 	VECTOR GetCamPos()const { return camPos; }
 };

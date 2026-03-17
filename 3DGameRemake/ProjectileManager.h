@@ -20,14 +20,8 @@ public:
 	/// <param name="b">生成する弾の情報</param>
 	void Spawn(std::unique_ptr<BaseProjectile> b);
 
-	/// <summary>
-	/// 更新処理
-	/// </summary>
+	
 	void Update();
-
-	/// <summary>
-	/// 描画処理
-	/// </summary>
 	void Draw();
 
 	/// <summary>
@@ -35,7 +29,6 @@ public:
 	/// </summary>
 	void Clear();
 
-	//getter
 	const std::vector<std::unique_ptr<BaseProjectile>>& GetBullets()const {
 		return projectiles;
 	}

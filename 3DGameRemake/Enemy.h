@@ -72,6 +72,6 @@ public:
 
 	bool CheckFall()const;
 
-	bool NowSpawned()const; { return nowSpawned; }
+	bool NowSpawned()const { return nowSpawned; }
 };
 

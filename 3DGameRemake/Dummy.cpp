@@ -26,13 +26,18 @@ void Dummy::Update() {
 
 /*描画*/
 void Dummy::Draw() {
+	VECTOR cPos = GetPos();
 	float bodyRad = status.width / 2.0f;
+	float headRad = bodyRad * 0.5f;
+	if (headRad < 0.15f)headRad = 0.15f;
 	VECTOR bottom = VAdd(position, VGet(0.0f, bodyRad, 0.0f));
-	VECTOR top = VAdd(position, VGet(0, currentHeight - bodyRad, 0));
-
-	unsigned int color = alive ? GetColor(255, 50, 50) : GetColor(50, 50, 50);	//色
+	float neck = status.eyeHeight - headRad;
+	VECTOR bodyTop = VAdd(cPos, VGet(0.0f, neck - bodyRad, 0.0f));
+	VECTOR headPos = VAdd(cPos, VGet(0.0f, currentEyeHeight, 0.0f));
+	unsigned int color =GetColor(255, 50, 50);	//色
 	//カプセルを描画
-	DrawCapsule3D(bottom, top, bodyRad, CIRCLE_DIVNUM, color,color, TRUE);
+	DrawCapsule3D(bottom, bodyTop, bodyRad, 16, color, color, true);
+	DrawSphere3D(headPos, headRad, 16, color, color, true);
 
 	for (const auto& text : damageTexts) {
 		VECTOR screenPos = ConvWorldPosToScreenPos(text.pos);

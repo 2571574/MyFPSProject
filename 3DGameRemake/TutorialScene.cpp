@@ -12,6 +12,9 @@
 #include "RollingEnemy.h"
 #include "ResourceManager.h"
 
+namespace {
+	constexpr float TUTORIAL_SPAWN_TIMER = 0.5f;
+}
 TutorialScene::TutorialScene(SceneManager* manager)
 	:BaseScene(manager)
 	, player(VGet(20.0f, 0.0f, 28.0f), &camera, PlayMode::MODE_TUTORIAL)
@@ -43,9 +46,13 @@ void TutorialScene::Init() {
 	ItemManager::GetIns().SetStageHandle(stageHandle);
 
 	//武器スポナー
-	std::vector<VECTOR>spawnerPos = {
-		VGet(-15.0f,0.4f,-16.0f),VGet(-10.0f,0.4f,-16.0f),VGet(0.0f,0.4f,-16.0f),VGet(5.0f,0.4f,-16.0f) };
-	ItemManager::GetIns().InitSpawners(spawnerPos);
+	std::vector<SpawnerSetup>spawnerSetups = {
+		{VGet(-15.0f,0.4f,-16.0f),WeaponID::AR,TUTORIAL_SPAWN_TIMER},
+		{VGet(-10.0f,0.4f,-16.0f),WeaponID::SR,TUTORIAL_SPAWN_TIMER},
+		{VGet(0.0f,0.4f,-16.0f),WeaponID::SMG,TUTORIAL_SPAWN_TIMER},
+		{VGet(5.0f,0.4f,-16.0f),WeaponID::LR,TUTORIAL_SPAWN_TIMER}
+	};
+	ItemManager::GetIns().InitSpawners(spawnerSetups);
 
 	//的ダミー
 	for (int i = 0; i < 3; ++i) {
@@ -223,8 +230,8 @@ void TutorialScene::Draw() {
 	EnemyManager::GetIns().Draw();
 
 	ProjectileManager::GetIns().Draw();
-	player.Draw();
 	ItemManager::GetIns().Draw();
+	player.Draw();
 	Debug::Draw();
 
 	// --- HUD描画 ---

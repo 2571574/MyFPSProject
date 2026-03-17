@@ -26,6 +26,10 @@ namespace {
 
 	constexpr float SPAWNDIST_PLAYER = 10.0f;
 	constexpr float SPAWNDIST_ENEMY = 2.0f;
+
+	constexpr float SPAWN_RAY_START_OFFSET = 5.0f;
+	constexpr float SPAWN_RAY_END_OFFSET = -10.0f;
+	constexpr float SPAWN_GROUND_NORMAL_MIN = 0.3f;
 }
 
 EnemyManager& EnemyManager::GetIns() {
@@ -114,11 +118,11 @@ int EnemyManager::Update() {
 			VECTOR sPos = spawnPoints[index];
 
 			//地面に密着させてスポーン
-			VECTOR checkStart = VGet(sPos.x, sPos.y + 5.0f, sPos.z);
-			VECTOR checkEnd = VGet(sPos.x, sPos.y - 10.0f, sPos.z);
+			VECTOR checkStart = VGet(sPos.x, sPos.y + SPAWN_RAY_START_OFFSET, sPos.z);
+			VECTOR checkEnd = VGet(sPos.x, sPos.y + SPAWN_RAY_END_OFFSET, sPos.z);
 			MV1_COLL_RESULT_POLY ground = MV1CollCheck_Line(stageHandle, -1, checkStart, checkEnd);
 
-			if(ground.HitFlag == 1 && ground.Normal.y > 0.3f){
+			if(ground.HitFlag == 1 && ground.Normal.y > SPAWN_GROUND_NORMAL_MIN){
 				sPos.y = ground.HitPosition.y;
 			}
 			else {

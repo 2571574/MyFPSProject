@@ -3,6 +3,7 @@
 #include "Time.h"
 
 #include <cmath>
+#include <cfloat>
 
 namespace {
 	constexpr float GLAVITY = -0.008f;
@@ -14,7 +15,9 @@ namespace {
 	constexpr float WALL_NORMAL_MAX = 0.4f;
 	constexpr float CEILING_NORMAL_MAX = -0.1f;
 	constexpr float CAP_BOTTOM_OFFSET = 0.3f;
-	constexpr float CAP_GROUNDCHECK_OFFSET = 0.8f;
+	constexpr int RAY_COUNT = 5;
+	constexpr float CAP_SIDE_OFFSET = 0.8f;
+	
 }
 
 
@@ -89,9 +92,9 @@ void Character::UpdatePhysics(int stageHandle) {
 	for (int step = 0; step < stepCount; ++step) {
 		VECTOR nextPos = VAdd(currentPos, stepMove);
 		if (totalVelocity.y <= 0.0f) {
-			float offset = radius * CAP_GROUNDCHECK_OFFSET;
+			float offset = radius * CAP_SIDE_OFFSET;
 
-			VECTOR rayOffsets[5] = {
+			VECTOR rayOffsets[RAY_COUNT] = {
 				VGet(0.0f,0.0f,0.0f),
 				VGet(offset,0.0f,0.0f),
 				VGet(-offset,0.0f,0.0f),
@@ -99,9 +102,9 @@ void Character::UpdatePhysics(int stageHandle) {
 				VGet(0.0f,0.0f,-offset),
 			};
 			bool hitGroundThisFrame = false;
-			float highestY = -999;
+			float highestY = -FLT_MAX;
 
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < RAY_COUNT; i++) {
 				VECTOR basePos = VAdd(nextPos, rayOffsets[i]);
 				//足元からレイを打つ
 				VECTOR start = VAdd(basePos, VGet(0, radius + STEP_RAY_START, 0));

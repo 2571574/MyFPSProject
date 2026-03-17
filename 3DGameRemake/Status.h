@@ -73,6 +73,7 @@ struct GunStatus {		 //武器の性能
 	float projectileSpeed = 0;	//弾速
 	int explodeArea = 0; //AOE=trueの場合　爆発範囲
 	float knockbackP = 0;
+	bool friendlyFire = false;
 };
 
 //ステータスのテンプレート

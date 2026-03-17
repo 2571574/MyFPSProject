@@ -19,6 +19,8 @@ private:
 	std::unordered_map < std::string, int>models;
 	std::unordered_map < std::string, int>sounds;
 	std::unordered_map < std::string, int>graphics;
+	std::unordered_map < std::string, int>movie;
+	std::unordered_map < std::string, int>fonts;
 
 public:
 	static ResourceManager& GetIns();
@@ -51,6 +53,8 @@ public:
 	/// <param name="path">音声のファイルパス</param>
 	/// <returns>ハンドル</returns>
 	int GetSound(const std::string& path);
+
+	int GetFont(const std::string& path,int size,int thickness);
 
 
 	void ClearAll();

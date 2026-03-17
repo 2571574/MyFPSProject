@@ -23,6 +23,13 @@ TextManager::TextManager() {
 		{ActionID::WEAPON_PREV, "前の武器"},
 		{ActionID::INTERACT,"拾う"}
 	};
+	deathCause = {
+		{WeaponID::ENEMY_KNIFE, "死因:格闘"},
+		{WeaponID::ENEMY_AR,"死因:ライフル"},
+		{WeaponID::ENEMY_SR,"死因:スナイパー"},
+		{WeaponID::ENEMY_EXPLOSION,"死因:爆発"},
+		{WeaponID::LR,"死因:自爆"}
+	};
 }
 
 TextManager& TextManager::GetIns() {
@@ -41,6 +48,14 @@ const char* TextManager::GetWeaponName(WeaponID id)const {
 const char* TextManager::GetActionName(ActionID id)const {
 	auto it = actionNames.find(id);
 	if (it != actionNames.end()) {
+		return it->second.c_str();
+	}
+	return "Unknown";
+}
+
+const char* TextManager::GetCauseName(WeaponID id)const {
+	auto it = deathCause.find(id);
+	if (it != deathCause.end()) {
 		return it->second.c_str();
 	}
 	return "Unknown";

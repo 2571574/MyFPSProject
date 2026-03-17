@@ -51,7 +51,7 @@ void HUD::Draw() {
 			int cx = CENTER_X;
 			int cy = CENTER_Y;
 
-			int color = lastHitWasHS ? GetColor(255, 0, 0) : GetColor(255, 255, 255);
+			int color = lastHitWasHS ? GetColor(255, 0, 0) : GetColor(0, 0, 0);
 
 			DrawLine(cx - HITMARK_OFFSET - HITMARK_LENGTH, cy - HITMARK_OFFSET - HITMARK_LENGTH, cx - HITMARK_OFFSET, cy - HITMARK_OFFSET, color,3);
 			DrawLine(cx + HITMARK_OFFSET + HITMARK_LENGTH, cy - HITMARK_OFFSET - HITMARK_LENGTH, cx + HITMARK_OFFSET, cy - HITMARK_OFFSET, color,3);

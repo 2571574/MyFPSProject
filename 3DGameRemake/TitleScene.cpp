@@ -8,6 +8,10 @@
 #include <memory>
 #include<algorithm>
 
+namespace {
+	constexpr int KEY_MAX = 256;
+	constexpr int BUTTON_MAX = 0x8000;
+}
 //キーバインド可能なアクション
 static const std::vector<ActionID> GAMEPLAY_ACTION = {
 	ActionID::MOVE_FORWARD,ActionID::MOVE_LEFT,ActionID::MOVE_BACK,ActionID::MOVE_RIGHT,
@@ -57,8 +61,8 @@ void TitleScene::Update() {
 		break;
 
 	case TitleState::MODE_SELECT:
-		if (selectNum >= MODE_MAX) {
-			selectNum = MODE_MAX - 1;
+		if (selectNum >= (int)PlayMode::MODE_MAX) {
+			selectNum = (int)PlayMode::MODE_MAX - 1;
 		}
 		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_BACK)) {
 			ChangeState(TitleState::TOP);
@@ -101,7 +105,7 @@ void TitleScene::Update() {
 			int newCode = -1;
 			InputType detectedType = InputType::KEYBOARD;
 			if (columnidx == 0) {
-				for (int i = 0; i < 256; i++) {
+				for (int i = 0; i < KEY_MAX; i++) {
 					//キーボードのコードを受け取る
 					if (CheckKey::GetIns().isPress(InputType::KEYBOARD,i)) {
 						newCode = i;
@@ -136,7 +140,7 @@ void TitleScene::Update() {
 			}
 			//右列はコントローラーの入力としてチェック
 			else if (columnidx == 1) {
-				for (int i = 1; i <= 0x8000; i <<= 1) {
+				for (int i = 1; i <= BUTTON_MAX; i <<= 1) {
 					if (CheckKey::GetIns().isPress(InputType::JOY, i)) {
 						newCode = i; 
 						detectedType = InputType::JOY; 
@@ -349,7 +353,7 @@ void TitleScene::Control() {
 	int max = 0;
 	switch (currentState) {
 	case TitleState::TOP: max = MENU_MAX; break;
-	case TitleState::MODE_SELECT: max = MODE_MAX; break;
+	case TitleState::MODE_SELECT: max = (int)PlayMode::MODE_MAX; break;
 	case TitleState::SETTINGS: max = (int)SettingItem::MAX; break;
 	case TitleState::KEY_CONFIG: max = (int)GAMEPLAY_ACTION.size(); break;
 	case TitleState::CREDIT: max = 1; break;

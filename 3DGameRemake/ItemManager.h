@@ -8,9 +8,14 @@
 
 class Player;
 
+struct SpawnerSetup {
+	VECTOR pos;
+	WeaponID weaponId;
+	float respawnTime = 30.0f;
+};
 //アイテムスポナーの情報
 struct Spawner{
-	VECTOR pos;
+	SpawnerSetup SpawnerInfo;
 	GunStatus spawnedSpec;
 	std::unique_ptr<WeaponItem>item;
 	float respawnTimer = 0.0f;
@@ -37,7 +42,7 @@ public:
 	/// スポナーの初期化
 	/// </summary>
 	/// <param name="position">設置する座標</param>
-	void InitSpawners(const std::vector<VECTOR>& position);
+	void InitSpawners(const std::vector<SpawnerSetup>& setup);
 
 	/// <summary>
 	/// アイテムをスポーンさせる

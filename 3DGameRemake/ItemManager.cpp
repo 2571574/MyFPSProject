@@ -9,35 +9,44 @@
 namespace {
 	constexpr size_t MAX_DROPPED = 10;
 	constexpr float ITEM_PICKUP_RAD = 2.0f;
-	constexpr float SPAWNER_RESPAWN = 30.0f;
 
+	GunStatus GetPlayerGunStatus(WeaponID id) {
+		switch (id) {
+		case WeaponID::AR: return PLAYER_GUN::RIFLE;
+		case WeaponID::SR: return PLAYER_GUN::SNIPER;
+		case WeaponID::LR: return PLAYER_GUN::LAUNCHER;
+		case WeaponID::SMG: return PLAYER_GUN::SMG;
+		case WeaponID::PIS: return PLAYER_GUN::PISTOL;
+		default:break;
+		}
+
+		std::vector<GunStatus>pool = {
+		PLAYER_GUN::RIFLE,
+		PLAYER_GUN::SNIPER,
+		PLAYER_GUN::LAUNCHER,
+		PLAYER_GUN::SMG,
+		};
+		int randomIndex = GetRand((int)pool.size() - 1);
+		return pool[randomIndex];
+	}
 }
 ItemManager& ItemManager::GetIns() {
 	static ItemManager ins;
 	return ins;
 }
 
-void ItemManager::InitSpawners(const std::vector<VECTOR>& position) {
+void ItemManager::InitSpawners(const std::vector<SpawnerSetup>& setup) {
 	spawners.clear();
 	droppedItem.clear();
 
-	std::vector<GunStatus>pool = {
-		PLAYER_GUN::RIFLE,
-		PLAYER_GUN::SNIPER,
-		PLAYER_GUN::LAUNCHER,
-		PLAYER_GUN::SMG,
-	};
-
-	std::random_device rd;
-	std::mt19937 g(rd());
-	std::shuffle(pool.begin(), pool.end(),g);
-	
-	for (size_t i = 0; i < position.size() && i < pool.size(); ++i) {
+	for (const auto& set : setup) {
 		Spawner s;
-		s.pos = position[i];
-		s.spawnedSpec = pool[i];
-		s.item = std::make_unique<WeaponItem>(s.pos, std::make_unique<Weapon>(s.spawnedSpec));
-		s.respawnTimer = 0.0f;
+		s.SpawnerInfo = set;
+		s.spawnedSpec = GetPlayerGunStatus(set.weaponId);
+
+		
+			s.item = std::make_unique<WeaponItem>(s.SpawnerInfo.pos, std::make_unique<Weapon>(s.spawnedSpec));
+			s.respawnTimer = set.respawnTime;
 		spawners.push_back(std::move(s));
 	}
 }
@@ -59,7 +68,7 @@ void ItemManager::Update(Player* player) {
 	VECTOR pPos = player ? player->GetPos() : VGet(0.0f, 0.0f, 0.0f);
 
 	currentNearItem = nullptr;
-	float minDist = 2.0f;
+	float minDist = pickUpRadius;
 
 	for (auto& item : droppedItem) {
 		if (item && item->IsAlive()) {
@@ -102,13 +111,14 @@ void ItemManager::Update(Player* player) {
 
 			if (!spawner.item->IsAlive()) {
 				spawner.item.reset();
-				spawner.respawnTimer = SPAWNER_RESPAWN;
+				spawner.respawnTimer = spawner.SpawnerInfo.respawnTime;
 			}
 		}
 		else {
 			spawner.respawnTimer -= dt;
 			if (spawner.respawnTimer <= 0.0f) {
-				spawner.item = std::make_unique<WeaponItem>(spawner.pos, std::make_unique<Weapon>(spawner.spawnedSpec));
+				spawner.spawnedSpec = GetPlayerGunStatus(spawner.SpawnerInfo.weaponId);
+				spawner.item = std::make_unique<WeaponItem>(spawner.SpawnerInfo.pos, std::make_unique<Weapon>(spawner.spawnedSpec));
 			}
 		}
 	}

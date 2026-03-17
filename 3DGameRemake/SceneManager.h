@@ -12,12 +12,14 @@ struct GameResult {
 	int Shot = 0;
 	int totalHit = 0;
 	int totalHeadHit = 0;
+	WeaponID causeOfDeath = WeaponID::UNKNOWN;
 
 void Clear() {
 	currentScore = 0;
 	Shot = 0;
 	totalHit = 0;
 	totalHeadHit = 0;
+	causeOfDeath = WeaponID::UNKNOWN;
 }
 };
 
@@ -64,10 +66,11 @@ public:
 	
 	//スコアのセット
 	void SetScore(int score);
+	void SetCauseOfDeath(WeaponID id) { lastResult.causeOfDeath = id; }
 
 	//リザルト関係
 	const GameResult& GetResult()const { return lastResult; }
-	const std::vector<int>& GetRanking()const { return ranking[currentMode]; }
+	const std::vector<int>& GetRanking()const { return ranking[(int)currentMode]; }
 	
 	//難易度
 	void SetCurrentMode(PlayMode mode) { currentMode = mode; }

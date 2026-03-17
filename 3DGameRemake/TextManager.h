@@ -12,6 +12,7 @@ class TextManager
 private:
 	std::unordered_map<WeaponID, std::string>weaponNames;
 	std::unordered_map<ActionID, std::string>actionNames;
+	std::unordered_map<WeaponID, std::string>deathCause;
 	TextManager();
 
 public:
@@ -19,5 +20,6 @@ public:
 
 	const char* GetWeaponName(WeaponID id)const;
 	const char* GetActionName(ActionID id)const;
+	const char* GetCauseName(WeaponID id)const;
 };
 

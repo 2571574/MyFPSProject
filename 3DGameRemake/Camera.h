@@ -46,9 +46,9 @@ public:
 
 	void SetPos(VECTOR pos);
 
-	VECTOR GetPos() { return camPos; }
+	VECTOR GetPos() const { return camPos; }
 	float GetYaw()const { return yaw; }
-	void GetForwardVec(VECTOR& forward, VECTOR& right);
-	VECTOR GetLookDirection();
+	void GetForwardVec(VECTOR& forward, VECTOR& right)const;
+	VECTOR GetLookDirection()const;
 };
 

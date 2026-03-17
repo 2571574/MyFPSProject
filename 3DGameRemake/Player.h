@@ -28,7 +28,7 @@ private:
 	Camera* cam;		//カメラのポインタ
 	std::unique_ptr<HUD> hud;	//HUD
 
-
+	WeaponID lastHit = WeaponID::UNKNOWN;
 	int Shot = 0;
 	int totalHit = 0;
 	int totalHeadHit = 0;
@@ -79,8 +79,13 @@ public:
 			hud->OnHitTarget(isHeadShot);
 		}
 	}
-	//getter
-
+	
+	void OnHit(int damage, WeaponID id = ::WeaponID::UNKNOWN)override {
+		Character::OnHit(damage, id);
+		if (damage > 0) {
+			lastHit = id;
+		}
+	}
 
 
 	void SetStageHandle(int handle) { stageHandle = handle; }
@@ -105,5 +110,6 @@ public:
 	int GetShots()const { return Shot; }
 	int GetHits()const { return totalHit; }
 	int GetHeadShot()const { return totalHeadHit; }
+	WeaponID GetLastHitWeapon()const { return lastHit; }
 };
 

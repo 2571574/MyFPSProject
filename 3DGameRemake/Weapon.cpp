@@ -41,7 +41,7 @@ void Weapon::Update() {
 
 	// リロード中かつタイマーが尽きたときだけ弾を補充
 	if (currentState == WeaponState::RELOADING) {
-		if (reloadCT > 0.0f) {
+		if (reloadCT <= 0.0f) {
 			int need = spec.magAmmo - ammo;
 			int add;
 			if (infinite)

@@ -12,7 +12,7 @@ namespace {
 	constexpr float CHARA_RADIUS = 0.5f;
 
 	constexpr float MAP_START_Y = 30.0f;
-	constexpr float MAP_END_Y = 10.0f;
+	constexpr float MAP_END_Y = -10.0f;
 	constexpr float MAX_SLOPE_NORMAL = 0.6f;
 
 	constexpr float MAP_MIN_X = -30.0f;

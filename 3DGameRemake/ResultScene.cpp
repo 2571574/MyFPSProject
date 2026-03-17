@@ -3,6 +3,8 @@
 #include "InputManager.h"
 #include "EnemyManager.h"
 #include "Parameter.h"
+#include "ResourceManager.h"
+#include "TextManager.h"
 
 ResultScene::ResultScene(SceneManager* manager) : BaseScene(manager){}
 
@@ -21,7 +23,7 @@ void ResultScene::Draw() {
 	const int yellow = GetColor(255, 255, 0);
 	const int gray = GetColor(200, 200, 200);
 	const int red = GetColor(255, 100, 100);
-	
+	int fontHandle = ResourceManager::GetIns().GetFont("メイリオ", 16, 3);
 	const int BASE_Y = 100;
 	const int LINE_HEIGHT = 30;
 	const GameResult& result = manager->GetResult();
@@ -30,9 +32,13 @@ void ResultScene::Draw() {
 	//スコア
 	DrawFormatString(CENTER_X - 60, BASE_Y +LINE_HEIGHT * 2, white, "SCORE:%d", result.currentScore);
 
+	const char* causeStr = TextManager::GetIns().GetCauseName(result.causeOfDeath);
+	
+
+	DrawFormatStringToHandle(CENTER_X - 100, BASE_Y + LINE_HEIGHT * 3 + 10, red, fontHandle,"%s", causeStr);
 	//キル数
 	int killLineX = CENTER_X - 100;
-	int killLineY = BASE_Y + 100;
+	int killLineY = BASE_Y + 150;
 
 	DrawString(killLineX,killLineY , "-Kill-", gray);
 	int killMelee = EnemyManager::GetIns().GetKillCount(ENEMYTYPE::MELEE);

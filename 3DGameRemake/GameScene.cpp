@@ -28,7 +28,7 @@ void GameScene::Init() {
 	CollisionManager::GetIns().SetStageHandle(stageHandle);
 	ItemManager::GetIns().SetStageHandle(stageHandle);
 
-	EnemyManager::GetIns().Init(stageHandle,&player);
+	EnemyManager::GetIns().Init(stageHandle, &player);
 	EnemyManager::GetIns().AddSpawnPoint(VGet(25.0f, 2.0f, 25.0f));
 	EnemyManager::GetIns().AddSpawnPoint(VGet(-25.0f, 2.0f, 25.0f));
 	EnemyManager::GetIns().AddSpawnPoint(VGet(27.0f, 2.0f, -27.0f));
@@ -42,13 +42,13 @@ void GameScene::Init() {
 	EnemyManager::GetIns().AddSpawnPoint(VGet(-27.0f, 22.0f, -27.0f));
 
 	//武器スポナー
-	std::vector<VECTOR> spawnerPos = {
-		VGet(25.0f, 0.4f, 25.0f),
-		VGet(-25.0f, 0.4f, 25.0f),
-		VGet(27.0f, 20.4f, -27.0f),
-		VGet(-27.0f, 20.4f, -27.0f)
+	std::vector<SpawnerSetup> spawnerSetups = {
+		{VGet(25.0f, 0.4f, 25.0f),WeaponID::UNKNOWN},
+		{VGet(-25.0f, 0.4f, 25.0f),WeaponID::UNKNOWN},
+		{VGet(27.0f, 20.4f, -27.0f),WeaponID::UNKNOWN},
+		{VGet(-27.0f, 20.4f, -27.0f), WeaponID::UNKNOWN}
 	};
-	ItemManager::GetIns().InitSpawners(spawnerPos);
+	ItemManager::GetIns().InitSpawners(spawnerSetups);
 	if (manager->GetcurrentMode() == PlayMode::MODE_EASY) {
 		ItemManager::GetIns().Clear();
 	}
@@ -72,7 +72,7 @@ void GameScene::Update() {
 	}
 
 
-	player.Update();            //プレイヤーを更新
+	player.Update();							//プレイヤーを更新
 	score += EnemyManager::GetIns().Update();    //敵の更新
 	CollisionManager::GetIns().Update();
 	ProjectileManager::GetIns().Update();   //弾の更新
@@ -83,6 +83,7 @@ void GameScene::Update() {
 	if (player.GetHP() <= 0) {
 			manager->SetScore(score);
 			manager->SetAccuracy(player.GetShots(), player.GetHits(), player.GetHeadShot());
+			manager->SetCauseOfDeath(player.GetLastHitWeapon());
 			manager->ChangeScene(std::make_unique<ResultScene>(manager));
 	}
 }

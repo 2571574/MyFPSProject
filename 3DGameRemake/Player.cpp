@@ -221,7 +221,7 @@ void Player::Update() {
 	camPos.y += currentEyeHeight;
 	
 	//視野角を変える処理
-	float baseFov = ConfigManager::GetIns().Settings().basefov;
+	float baseFov = ConfigManager::GetIns().Settings().basefov * DX_PI_F / 180;
 	float speed = VSize(velocity);
 	float speedRate = speed / FOV_SPEED_BASE;
 	if (speedRate > 1.0f) speedRate = 1.0f;

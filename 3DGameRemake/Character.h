@@ -123,7 +123,7 @@ public:
 
 	void SetPos(VECTOR _pos) { position = _pos; }
 
-	bool IsCrouching() { return crouch; }
+	bool IsCrouching() const { return crouch; }
 	bool IsAlive() const { return alive; }
 	int GetHP()const { return hp; }
 	VECTOR GetPos()const { return position; }

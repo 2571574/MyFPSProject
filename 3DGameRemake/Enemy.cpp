@@ -92,6 +92,9 @@ VECTOR Enemy::UpdateNavigation(const Character* target, float dt) {
 		toNode.y = 0.0f;
 		if (VSize(toNode) < PATH_NODE_REACHED_DIST) {
 			AdvancePathIndex();
+			if (HasPath()) {
+				moveTarget = GetNextNodeID();
+			}
 		}
 	}
 	return moveTarget;

@@ -19,6 +19,7 @@ int ResourceManager::GetModel(const std::string& path) {
 		Debug::Log("ModelLoadFail:" + path);
 
 	}
+	return handle;
 }
 
 int ResourceManager::DuplicateModel(const std::string& path) {
@@ -54,6 +55,19 @@ int ResourceManager::GetSound(const std::string& path) {
 	return handle;
 }
 
+int ResourceManager::GetFont(const std::string& path, int size, int thickness) {
+	std::string key = path + std::to_string(size) + std::to_string(thickness);
+	if (fonts.find(key) != fonts.end()) {
+		return fonts[key];
+	}
+
+	int handle = CreateFontToHandle(path.c_str(), size, thickness, DX_FONTTYPE_ANTIALIASING_8X8);
+	if (handle != -1) {
+		fonts[key] = handle;
+	}
+	return handle;
+}
+
 void ResourceManager::ClearAll() {
 	for (auto& pair : models) {
 		MV1DeleteModel(pair.second);
@@ -68,4 +82,8 @@ void ResourceManager::ClearAll() {
 		DeleteSoundMem(pair.second);
 	}
 	sounds.clear();
+	for (auto& pair : fonts) {
+		DeleteFontToHandle(pair.second);
+	}
+	fonts.clear();
 }

@@ -56,14 +56,27 @@ void Camera::Update(VECTOR Pos) {
 	float moveY = pendingRecoilYaw * RECOIL_SPEED * dt;
 	float moveP = pendingRecoilPitch * RECOIL_SPEED * dt;
 
-	//適用
-	recoilYaw += moveY;
-	recoilPitch += moveP;
+	yaw += moveY;
+	pitch += moveP;
+
 	pendingRecoilYaw -= moveY;
 	pendingRecoilPitch -= moveP;
+	//適用
 	if (recovery) {
-		recoilYaw -= recoilYaw * RECOVERY_SPEED * dt;
-		recoilPitch -= recoilPitch * RECOVERY_SPEED * dt;
+		recoilYaw += moveY;
+		recoilPitch += moveP;
+
+		float recY = recoilYaw * RECOVERY_SPEED * dt;
+		float recP = recoilPitch * RECOVERY_SPEED * dt;
+
+		yaw -= recY;
+		pitch -= recP;
+		recoilYaw -= recY;
+		recoilPitch -= recP;
+	}
+	else {
+		recoilYaw = 0.0f;
+		recoilPitch = 0.0f;
 	}
 
 	//補正
@@ -81,8 +94,8 @@ void Camera::AddAngle(float deltaYaw, float deltaPitch){
 }
 
 void Camera::Move(float fov) {
-	float camYaw = yaw + recoilYaw;
-	float camPitch = pitch + recoilPitch;
+	float camYaw = yaw;
+	float camPitch = pitch;
 	//注視点を計算
 	VECTOR targetPos;	//カメラの注視点
 	targetPos.x = camPos.x + cosf(camPitch*(DX_PI_F/180)) * sinf(camYaw*(DX_PI_F/180));
@@ -97,16 +110,16 @@ void Camera::SetPos(VECTOR pos) {
 	camPos = pos;
 }
 /*プレイヤーから見た前のベクトルの方向を得る*/
-void Camera::GetForwardVec(VECTOR& forward, VECTOR& right) {
+void Camera::GetForwardVec(VECTOR& forward, VECTOR& right) const {
 	forward = VGet(sinf(yaw * (DX_PI_F / 180)), 0, cosf(yaw * (DX_PI_F / 180)));
 	right = VGet(forward.z, 0, -forward.x);
 }
 
 /*カメラの向いている方向を前としたベクトルを得る*/
-VECTOR Camera::GetLookDirection(){
+VECTOR Camera::GetLookDirection()const{
 	VECTOR out;
-	float camYaw = yaw + recoilYaw;
-	float camPitch = pitch + recoilPitch;
+	float camYaw = yaw;
+	float camPitch = pitch;
 	float radY = camYaw * (DX_PI_F / 180.0f);
 	float radP = camPitch * (DX_PI_F / 180.0f);
 	float cp = cosf(radP);

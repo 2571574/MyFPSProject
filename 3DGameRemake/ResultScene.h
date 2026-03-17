@@ -1,6 +1,10 @@
 #pragma once
 #include "BaseScene.h"
 #include "SceneManager.h"
+
+/// <summary>
+/// リザルトシーンを管理するクラス
+/// </summary>
 class ResultScene :
     public BaseScene
 {

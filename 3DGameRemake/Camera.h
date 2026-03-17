@@ -1,21 +1,25 @@
 ﻿#pragma once
 #include "DxLib.h"
 #include "CheckKey.h"
+
+
 /// <summary>
 /// カメラを管理するクラス
 /// </summary>
 class Camera
 {
 private:
+	VECTOR camPos;	//カメラの座標
+	
 	float yaw;		//水平
 	float pitch;	//垂直
-	float pendingRecoilYaw;	//射撃反動の保持　水平
-	float pendingRecoilPitch;//射撃反動の保持　垂直
-
-	VECTOR camPos;	//カメラの座標
 
 	float recoilYaw;	//反動によるカメラの移動　水平
 	float recoilPitch;  //反動によるカメラの移動　垂直
+
+	float pendingRecoilYaw;	//射撃反動の保持　水平
+	float pendingRecoilPitch;//射撃反動の保持　垂直
+
 	bool recovery;		//反動を徐々に回復させるか
 
 public:
@@ -40,11 +44,11 @@ public:
 	/// <param name="fov">視野角</param>
 	void Move(float fov);
 
-	//getter
 	void SetPos(VECTOR pos);
+
 	VECTOR GetPos() { return camPos; }
+	float GetYaw()const { return yaw; }
 	void GetForwardVec(VECTOR& forward, VECTOR& right);
 	VECTOR GetLookDirection();
-	float GetYaw()const { return yaw; }
 };
 

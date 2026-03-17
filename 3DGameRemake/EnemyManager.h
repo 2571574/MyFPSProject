@@ -1,9 +1,11 @@
 ﻿#pragma once
-#include<vector>
-#include<memory>
-#include"Enemy.h"
+#include "Enemy.h"
 #include "Pathfinding.h"
+
 #include <map>
+#include <vector>
+#include <memory>
+
 class Player;
 
 /// <summary>
@@ -12,35 +14,30 @@ class Player;
 class EnemyManager
 {
 private:
-	std::vector<VECTOR>spawnPoints;
+	std::vector<VECTOR>spawnPoints;	//スポーン位置
 	Player* target;
 	int stageHandle;
-	int maxEnemiesOnMap;
-	float currentSpawnInterval;
-	float minSpawnInterval;
+	std::vector<std::unique_ptr<Enemy>> enemies;	//敵の配列
+	std::vector<Node> mapNode;		//マップのノード
+	std::map<ENEMYTYPE, int>killCounts;
+
+	int maxEnemiesOnMap;		//マップ上の敵の最大数
+	float currentSpawnInterval;	//スポーンのインターバル
+	float minSpawnInterval;		//インターバルの最小
 	float spawnTimer;
 	float difficultyTimer;
-
 	float prepareTimer;
 
 	int maxLimitMelee;
 	int maxLimitRifle;
 	int maxLimitSniper;
 	int maxLimitRolling;
-
-	std::vector<std::unique_ptr<Enemy>> enemies;	//敵の配列
-	std::vector<Node> mapNode;		//マップのノード
-	EnemyManager() = default;
-	std::map<ENEMYTYPE, int>killCounts;
 	int CountEnemyType(ENEMYTYPE type);
+
+	EnemyManager() = default;
+
 public:
 	static EnemyManager& GetIns();
-
-	/// <summary>
-	/// 初期化処理
-	/// </summary>
-	/// <param name="modelhandle">ステージのモデルハンドル</param>
-	void Init(int modelhandle,Player* player);
 
 	void AddSpawnPoint(VECTOR pos) { spawnPoints.push_back(pos);
 	}
@@ -50,24 +47,14 @@ public:
 	/// <param name="enemy">敵の種類 CHARA_STATUS参照</param>
 	void Spawn(std::unique_ptr<Enemy> enemy);
 
-	/// <summary>
-	/// 生存している敵を更新する
-	/// </summary>
+	void Init(int modelhandle,Player* player);
 	int Update();
-
-	/// <summary>
-	/// 生存している敵を描画する
-	/// </summary>
 	void Draw();
 
 	/// <summary>
 	/// 敵を全消去する
 	/// </summary>
 	void Clear();
-
-	std::vector<std::unique_ptr<Enemy>>& GetEnemies(){ return enemies; }
-
-
 
 	/// <summary>
 	/// 移動経路を計算する関数
@@ -79,12 +66,12 @@ public:
 
 	
 
+	std::vector<std::unique_ptr<Enemy>>& GetEnemies(){ return enemies; }
 	float GetPrepareTimer()const { return prepareTimer; }
 	int GetKillCount(ENEMYTYPE type)const {
 		auto it = killCounts.find(type);
 		return it != killCounts.end() ? it->second : 0;
 	}
-
 	Player* GetPlayer()const { return target; }
 	void SetStageHandle(int handle) { stageHandle = handle; }
 };

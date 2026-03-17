@@ -1,7 +1,8 @@
 ﻿#pragma once
+#include "CheckKey.h"
+
 #include <map>
 #include <vector>
-#include "CheckKey.h"
 
 
 struct KeyBind {
@@ -64,7 +65,9 @@ public:
 	/// <returns>押した瞬間のみtrue</returns>
 	bool IsActionTrigger(ActionID id)const;
 
-	void SetBind(ActionID id, InputType type, int code);	//キーバインドをセット
+
+
+	void SetBind(ActionID id, InputType type, int code);
 	void SetBind(const std::map < ActionID, std::vector<KeyBind>>& newBindings) { bindings = newBindings; }
 
 	std::map<ActionID, std::vector<KeyBind>>& GetBinds() { return bindings; }

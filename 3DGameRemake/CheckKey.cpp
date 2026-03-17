@@ -1,15 +1,9 @@
 ﻿#include "CheckKey.h"
 #include "Debug.h"
+
+
 /*コンストラクタ*/
 CheckKey::CheckKey() {
-	//初期化
-	memset(keyboard, 0, sizeof(keyboard));
-	memset(Prevkeyboard, 0, sizeof(Prevkeyboard));
-	mouseButton = prevMouseButton = 0;
-	joy = Prevjoy = 0;
-	MouseX = MouseY = 0;
-	LstickX = LstickY = RstickX = RstickY = 0;
-	mouseWheelVol = 0;
 	//コントローラーのデッドゾーンを設定
 	SetJoypadDeadZone(DX_INPUT_PAD1, STICK_DEADZONE);
 }

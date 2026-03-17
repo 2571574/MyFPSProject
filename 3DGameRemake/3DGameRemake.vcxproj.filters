@@ -40,22 +40,13 @@
     <Filter Include="2.OBJECT\1.ENTITY\ENEMY">
       <UniqueIdentifier>{68d7d6db-bd31-4c4d-a5b5-9eb52f030ee7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="チェック済み">
+      <UniqueIdentifier>{ac5d3568-022c-4687-a5c9-daef1814fae5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>1.GAME</Filter>
-    </ClCompile>
-    <ClCompile Include="CheckKey.cpp">
-      <Filter>3.TOOL</Filter>
-    </ClCompile>
     <ClCompile Include="Debug.cpp">
       <Filter>3.TOOL</Filter>
-    </ClCompile>
-    <ClCompile Include="Time.cpp">
-      <Filter>1.GAME</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>2.OBJECT\1.ENTITY</Filter>
@@ -64,9 +55,6 @@
       <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
     </ClCompile>
     <ClCompile Include="Status.cpp">
-      <Filter>1.GAME</Filter>
-    </ClCompile>
-    <ClCompile Include="InputManager.cpp">
       <Filter>1.GAME</Filter>
     </ClCompile>
     <ClCompile Include="EnemyManager.cpp">
@@ -78,20 +66,11 @@
     <ClCompile Include="BaseProjectile.cpp">
       <Filter>2.OBJECT\3.BASE</Filter>
     </ClCompile>
-    <ClCompile Include="SceneManager.cpp">
-      <Filter>1.GAME\SCENE</Filter>
-    </ClCompile>
-    <ClCompile Include="GameScene.cpp">
-      <Filter>1.GAME\SCENE</Filter>
-    </ClCompile>
     <ClCompile Include="Dummy.cpp">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClCompile>
     <ClCompile Include="MeleeEnemy.cpp">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClCompile>
-    <ClCompile Include="TitleScene.cpp">
-      <Filter>1.GAME\SCENE</Filter>
     </ClCompile>
     <ClCompile Include="Pathfinding.cpp">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
@@ -114,43 +93,61 @@
     <ClCompile Include="Character.cpp">
       <Filter>2.OBJECT\3.BASE</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionManager.cpp">
-      <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
-    </ClCompile>
     <ClCompile Include="ItemManager.cpp">
       <Filter>2.OBJECT\2.WEAPON</Filter>
     </ClCompile>
     <ClCompile Include="WeaponItem.cpp">
       <Filter>2.OBJECT\2.WEAPON</Filter>
     </ClCompile>
-    <ClCompile Include="ResultScene.cpp">
-      <Filter>1.GAME\SCENE</Filter>
-    </ClCompile>
     <ClCompile Include="TextManager.cpp">
       <Filter>2.OBJECT\3.BASE</Filter>
     </ClCompile>
-    <ClCompile Include="TutorialScene.cpp">
-      <Filter>1.GAME\SCENE</Filter>
+    <ClCompile Include="CheckKey.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>チェック済み</Filter>
     </ClCompile>
     <ClCompile Include="ConfigManager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>2.OBJECT\1.ENTITY</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>2.OBJECT\1.ENTITY</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleScene.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="TutorialScene.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScene.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="ResultScene.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>チェック済み</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Parameter.h">
       <Filter>1.GAME</Filter>
     </ClInclude>
-    <ClInclude Include="CheckKey.h">
-      <Filter>3.TOOL</Filter>
-    </ClInclude>
     <ClInclude Include="Debug.h">
       <Filter>3.TOOL</Filter>
-    </ClInclude>
-    <ClInclude Include="Time.h">
-      <Filter>1.GAME</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>2.OBJECT\1.ENTITY</Filter>
@@ -164,23 +161,11 @@
     <ClInclude Include="Status.h">
       <Filter>1.GAME</Filter>
     </ClInclude>
-    <ClInclude Include="InputManager.h">
-      <Filter>1.GAME</Filter>
-    </ClInclude>
     <ClInclude Include="EnemyManager.h">
       <Filter>1.GAME</Filter>
     </ClInclude>
     <ClInclude Include="ProjectileManager.h">
       <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseScene.h">
-      <Filter>1.GAME\SCENE</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneManager.h">
-      <Filter>1.GAME\SCENE</Filter>
-    </ClInclude>
-    <ClInclude Include="GameScene.h">
-      <Filter>1.GAME\SCENE</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
@@ -190,9 +175,6 @@
     </ClInclude>
     <ClInclude Include="MeleeEnemy.h">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClInclude>
-    <ClInclude Include="TitleScene.h">
-      <Filter>1.GAME\SCENE</Filter>
     </ClInclude>
     <ClInclude Include="Pathfinding.h">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
@@ -212,14 +194,8 @@
     <ClInclude Include="RollingEnemy.h">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionManager.h">
-      <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
-    </ClInclude>
     <ClInclude Include="ItemManager.h">
       <Filter>2.OBJECT\2.WEAPON</Filter>
-    </ClInclude>
-    <ClInclude Include="ResultScene.h">
-      <Filter>1.GAME\SCENE</Filter>
     </ClInclude>
     <ClInclude Include="WeaponItem.h">
       <Filter>1.GAME</Filter>
@@ -227,11 +203,44 @@
     <ClInclude Include="TextManager.h">
       <Filter>2.OBJECT\3.BASE</Filter>
     </ClInclude>
-    <ClInclude Include="TutorialScene.h">
-      <Filter>1.GAME\SCENE</Filter>
+    <ClInclude Include="CheckKey.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>チェック済み</Filter>
     </ClInclude>
     <ClInclude Include="ConfigManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>2.OBJECT\1.ENTITY</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>1.GAME</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleScene.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseScene.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="TutorialScene.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="GameScene.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="ResultScene.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>チェック済み</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

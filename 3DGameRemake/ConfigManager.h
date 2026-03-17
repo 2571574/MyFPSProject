@@ -5,6 +5,9 @@
 #include"InputManager.h"
 
 struct ConfigData {
+	float bgmVolume = 0.5f;
+	float seVolume = 0.5f;
+
 	float mouseSensitivity = 0.1f;
 	float padSensitivity = 0.002f;
 	float basefov = 70.0f;

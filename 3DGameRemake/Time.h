@@ -20,6 +20,6 @@ public:
 	/// <summary>
 	/// 前のフレームからの経過時間を得る
 	/// </summary>
-	/// <returns>経過時間ミリ秒単位</returns>
+	/// <returns>秒単位の経過時間</returns>
 	float GetDelta() { return deltaTime; };
 };

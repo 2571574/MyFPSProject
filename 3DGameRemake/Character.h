@@ -83,6 +83,9 @@ public:
 
 	virtual void ShotRecord(){}
 	virtual void HitRecord(bool isHeadShot){}
+
+	void ResolveWallPenetration(int stagehandle);
+
 	void SetPos(VECTOR _pos) { position = _pos; }
 	//getter
 	bool IsCrouching() { return crouch; }

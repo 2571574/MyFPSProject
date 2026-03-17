@@ -2,8 +2,12 @@
 #include "DxLib.h"
 #include "Parameter.h"
 
-#define MOUSE_WHEEL_UP 1301
-#define MOUSE_WHEEL_DOWN 1302
+
+//マウスホイールの入力コード
+constexpr int MOUSE_WHEEL_UP = 1301;
+constexpr int MOUSE_WHEEL_DOWN = 1302;
+
+
 enum InputType {
 	KEYBOARD,
 	MOUSE,
@@ -18,21 +22,22 @@ class CheckKey
 {
 private:
 	//現在の入力状態
-	char keyboard[256];
-	int mouseButton;
-	int joy;
+	char keyboard[256] = {};
+	int mouseButton = 0;
+	int joy = 0;
 
 	//前の入力状態
-	char Prevkeyboard[256];
-	int prevMouseButton;
-	int Prevjoy;
+	char Prevkeyboard[256] = {};
+	int prevMouseButton = 0;
+	int Prevjoy = 0;
 
 	//マウスやスティックの入力
-	int MouseX, MouseY;
-	int LstickX, LstickY;
-	int RstickX, RstickY;
+	int MouseX = 0, MouseY = 0;
+	int LstickX = 0, LstickY = 0;
+	int RstickX = 0, RstickY = 0;
 
-	int mouseWheelVol;
+	//マウスホイールの回転量
+	int mouseWheelVol = 0;
 
 	//キーボード
 	bool isKeyHold(int code) const;	

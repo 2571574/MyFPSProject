@@ -173,3 +173,33 @@ void Character::UpdatePhysics(int stageHandle) {
 	position = currentPos;
 	onGround = isGroundedThisFrame;
 }
+
+
+void Character::ResolveWallPenetration(int stagehandle) {
+	if (stagehandle == -1) return;
+
+	float radius = status.width / 2.0f;
+	VECTOR capBottom = VAdd(position, VGet(0, radius + 0.3f, 0));
+	VECTOR capTop = VAdd(position, VGet(0, currentHeight - radius, 0));
+
+	MV1_COLL_RESULT_POLY_DIM wallHitDim = MV1CollCheck_Capsule(stagehandle, -1, capBottom, capTop, radius);
+
+	for (int i = 0; i < wallHitDim.HitNum; i++) {
+		VECTOR normal = wallHitDim.Dim[i].Normal;
+
+		if (normal.y >= 0.4f) continue;
+
+		VECTOR checkPos = position;
+		if (normal.y < -0.1f) checkPos = VAdd(position, VGet(0, currentHeight - radius, 0));
+
+		float distance = VDot(VSub(checkPos, wallHitDim.Dim[i].Position[0]), normal);
+
+		if (distance < radius && distance >= 0.0f) {
+			float pushOver = radius - distance;
+			VECTOR pushVec = VScale(normal, pushOver);
+			pushVec.y = 0.0f;
+			position = VAdd(position, pushVec);
+		}
+	}
+	DxLib::MV1CollResultPolyDimTerminate(wallHitDim);
+}

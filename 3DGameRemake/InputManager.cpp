@@ -60,9 +60,10 @@ void InputManager::SetBind(ActionID id, InputType type, int code) {
 
 /*ホールドでアクション*/
 bool InputManager::IsActionHold(ActionID id)const {
-	if (bindings.find(id) == bindings.end()) return false;	//idのアクションが見つからなければreturn
+	auto it = bindings.find(id);
+	if (it == bindings.end()) return false;	//idのアクションが見つからなければreturn
 	//キー入力を検知したらtrue
-	for (const auto& bind : bindings.at(id)) {
+	for (const auto& bind : it->second) {
 		if (CheckKey::GetIns().isHold(bind.type, bind.KeyCode)) {
 			return true;
 		}
@@ -72,9 +73,10 @@ bool InputManager::IsActionHold(ActionID id)const {
 
 /*トリガーでアクション*/
 bool InputManager::IsActionTrigger(ActionID id)const {
-	if (bindings.find(id) == bindings.end()) return false;	//idのアクションが見つからなければreturn
+	auto it = bindings.find(id);
+	if (it == bindings.end()) return false;	//idのアクションが見つからなければreturn
 	//キー入力を検知したらtrue
-	for (const auto& bind : bindings.at(id)) {
+	for (const auto& bind : it->second) {
 		if (CheckKey::GetIns().isPress(bind.type, bind.KeyCode)) {
 			return true;
 		}

@@ -4,27 +4,32 @@
 #include "TitleScene.h"
 #include "ItemManager.h"
 #include "ResultScene.h"
-GameScene::GameScene(SceneManager* manager):BaseScene(manager),player(VGet(0,0,25),&camera,manager->GetcurrentMode()),stageHandle(-1){}
+#include "ResourceManager.h"
+
+
+GameScene::GameScene(SceneManager* manager)
+	: BaseScene(manager)
+	, player(VGet(0,0,25),&camera,manager->GetcurrentMode())
+	, stageHandle(-1){}
 
 GameScene::~GameScene() {
-	if (stageHandle != -1) {
-		MV1DeleteModel(stageHandle);
-	}
-
 	EnemyManager::GetIns().Clear();
 	ProjectileManager::GetIns().Clear();
 }
 
 
 void GameScene::Init() {
-	stageHandle = MV1LoadModel("Resource/ArenaV5.mv1");
+	stageHandle = ResourceManager::GetIns().GetModel("Resource/ArenaV5.mv1");
 	MV1SetPosition(stageHandle, VGet(0.0f, 0.0f, 0.0f));
 	MV1SetScale(stageHandle, VGet(0.02f, 0.02f, 0.02f));
 	MV1SetupCollInfo(stageHandle, -1, 8, 8, 8);
+
 	player.SetStageHandle(stageHandle);
 	CollisionManager::GetIns().SetStageHandle(stageHandle);
 	EnemyManager::GetIns().Init(stageHandle,&player);
 	ItemManager::GetIns().SetStageHandle(stageHandle);
+
+	//武器スポナー
 	std::vector<VECTOR> spawnerPos = {
 		VGet(25.0f, 0.4f, 25.0f),
 		VGet(-25.0f, 0.4f, 25.0f),
@@ -35,12 +40,14 @@ void GameScene::Init() {
 	if (manager->GetcurrentMode() == PlayMode::MODE_EASY) {
 		ItemManager::GetIns().Clear();
 	}
+
 	score = 0;
 }
 
 void GameScene::Update() {
 	Time::GetIns().Update();    //時間の更新
 	Debug::Update();
+
 
 	if (InputManager::GetIns().IsActionTrigger(ActionID::PAUSE)) {
 		isPaused = !isPaused;
@@ -51,12 +58,16 @@ void GameScene::Update() {
 		PauseUpdate();
 		return;
 	}
+
+
 	player.Update();            //プレイヤーを更新
-	score +=EnemyManager::GetIns().Update();    //敵の更新
-	CollisionManager::GetIns().Update(&player, &EnemyManager::GetIns());
+	score += EnemyManager::GetIns().Update();    //敵の更新
+	CollisionManager::GetIns().Update();
 	ProjectileManager::GetIns().Update();   //弾の更新
 	ItemManager::GetIns().Update(&player);
 
+
+	//死亡時のリザルト画面遷移
 	if (player.GetHP() <= 0) {
 			manager->SetScore(score);
 			manager->SetAccuracy(player.GetShots(), player.GetHits(), player.GetHeadShot());
@@ -87,8 +98,9 @@ void GameScene::PauseUpdate() {
 
 void GameScene::Draw() {
 	ItemManager::GetIns().SetCamPos(camera.GetPos());
-	DrawSphere3D(VGet(0, 0, 0), 0.2f, 16, GetColor(255, 255, 0), GetColor(255, 255, 0), TRUE);
+
 	MV1DrawModel(stageHandle);
+
 	ItemManager::GetIns().Draw();
 	ProjectileManager::GetIns().Draw();     //弾の描画
 	EnemyManager::GetIns().Draw();          //敵の描画
@@ -105,12 +117,16 @@ void GameScene::PauseDraw() {
 	DrawBox(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GetColor(0, 0, 0), TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-	DrawString(CENTER_X - 40, CENTER_Y - 100, "PAUSE", GetColor(255, 255, 255));
+	const int yellow = GetColor(255, 255, 0);
+	const int white = GetColor(255, 255, 255);
 
-	int colorResume = (pauseSelectNum == RESUME) ? GetColor(255, 255, 0) : GetColor(255, 255, 255);
-	int colorTitle = (pauseSelectNum == RETURN_TITLE) ? GetColor(255, 255, 0) : GetColor(255, 255, 255);
+	DrawString(CENTER_X - 40, CENTER_Y - 100, "PAUSE", white);
 
-	DrawString(CENTER_X - 80, CENTER_Y + 40 * pauseSelectNum, ">", GetColor(255, 255, 255));
+	int colorResume = (pauseSelectNum == RESUME) ? yellow : white;
+	int colorTitle = (pauseSelectNum == RETURN_TITLE) ? yellow : white;
+	
+	
+	DrawString(CENTER_X - 80, CENTER_Y + 40 * pauseSelectNum, ">", white);
 	DrawString(CENTER_X - 60, CENTER_Y, "Resume", colorResume);
 	DrawString(CENTER_X - 60, CENTER_Y + 40, "Return Title", colorTitle);
 }

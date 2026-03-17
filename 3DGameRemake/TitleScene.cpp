@@ -4,15 +4,18 @@
 #include "InputManager.h"
 #include "ConfigManager.h"
 #include "TextManager.h"
+
 #include <memory>
 #include<algorithm>
-#include <cstdio>
 
+//キーバインド可能なアクション
 static const std::vector<ActionID> GAMEPLAY_ACTION = {
 	ActionID::MOVE_FORWARD,ActionID::MOVE_LEFT,ActionID::MOVE_BACK,ActionID::MOVE_RIGHT,
 	ActionID::FIRE,ActionID::ADS,ActionID::RELOAD,ActionID::RUN,ActionID::JUMP,ActionID::CROUCH,ActionID::WEAPON_NEXT,
 	ActionID::WEAPON_PREV,ActionID::INTERACT
 };
+
+
 TitleScene::TitleScene(SceneManager* manager) :BaseScene(manager)
 , selectNum(0), currentState(TitleState::TOP)
 {}
@@ -21,9 +24,11 @@ TitleScene::~TitleScene() {
 
 }
 
+
 void TitleScene::Init() {
 	ChangeState(TitleState::TOP);
 }
+
 
 void TitleScene::Update() {
 	Control();
@@ -59,7 +64,7 @@ void TitleScene::Update() {
 			ChangeState(TitleState::TOP);
 		}
 		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_SELECT)) {
-			manager->SetPlayMode((PlayMode)selectNum);
+			manager->SetCurrentMode((PlayMode)selectNum);
 			if ((PlayMode)selectNum == PlayMode::MODE_TUTORIAL) {
 				manager->ChangeScene(std::make_unique<TutorialScene>(manager));
 			}
@@ -89,45 +94,50 @@ void TitleScene::Update() {
 		}
 		break;
 
+
 	case TitleState::KEY_CONFIG:
+		//キー入力を受け取る
 		if (isWaitingKey) {
 			int newCode = -1;
 			InputType detectedType = InputType::KEYBOARD;
 			if (columnidx == 0) {
 				for (int i = 0; i < 256; i++) {
-					if (CheckKey::GetIns().isHold(InputType::KEYBOARD,i)) {
+					//キーボードのコードを受け取る
+					if (CheckKey::GetIns().isPress(InputType::KEYBOARD,i)) {
 						newCode = i;
 						detectedType = InputType::KEYBOARD;
 						break;
 					}
+					//エラーだった場合、マウスの入力かどうかチェック
 					if (newCode == -1) {
-						if (CheckKey::GetIns().isHold(InputType::MOUSE, MOUSE_INPUT_LEFT)) {
+						if (CheckKey::GetIns().isPress(InputType::MOUSE, MOUSE_INPUT_LEFT)) {
 							newCode = MOUSE_INPUT_LEFT; detectedType = InputType::MOUSE;
 						}
-						if (CheckKey::GetIns().isHold(InputType::MOUSE, MOUSE_INPUT_RIGHT)) {
+						if (CheckKey::GetIns().isPress(InputType::MOUSE, MOUSE_INPUT_RIGHT)) {
 							newCode = MOUSE_INPUT_RIGHT; detectedType = InputType::MOUSE;
 						}
-						if (CheckKey::GetIns().isHold(InputType::MOUSE, MOUSE_INPUT_MIDDLE)) {
+						if (CheckKey::GetIns().isPress(InputType::MOUSE, MOUSE_INPUT_MIDDLE)) {
 							newCode = MOUSE_INPUT_MIDDLE; detectedType = InputType::MOUSE;
 						}
-						if (CheckKey::GetIns().isHold(InputType::MOUSE, MOUSE_WHEEL_UP)) {
+						if (CheckKey::GetIns().isPress(InputType::MOUSE, MOUSE_WHEEL_UP)) {
 							newCode = MOUSE_WHEEL_UP; detectedType = InputType::MOUSE;
 						}
-						if (CheckKey::GetIns().isHold(InputType::MOUSE, MOUSE_WHEEL_DOWN)) {
+						if (CheckKey::GetIns().isPress(InputType::MOUSE, MOUSE_WHEEL_DOWN)) {
 							newCode = MOUSE_WHEEL_DOWN; detectedType = InputType::MOUSE;
 						}
-						if (CheckKey::GetIns().isHold(InputType::MOUSE, MOUSE_INPUT_4)) {
+						if (CheckKey::GetIns().isPress(InputType::MOUSE, MOUSE_INPUT_4)) {
 							newCode = MOUSE_INPUT_4; detectedType = InputType::MOUSE;
 						}
-						if (CheckKey::GetIns().isHold(InputType::MOUSE, MOUSE_INPUT_5)) {
+						if (CheckKey::GetIns().isPress(InputType::MOUSE, MOUSE_INPUT_5)) {
 							newCode = MOUSE_INPUT_5; detectedType = InputType::MOUSE;
 						}
 					}
 				}
 			}
-			else if (columnidx == -1) {
+			//右列はコントローラーの入力としてチェック
+			else if (columnidx == 1) {
 				for (int i = 1; i <= 0x8000; i <<= 1) {
-					if (CheckKey::GetIns().isHold(InputType::JOY, i)) { 
+					if (CheckKey::GetIns().isPress(InputType::JOY, i)) {
 						newCode = i; 
 						detectedType = InputType::JOY; 
 						break;
@@ -135,6 +145,7 @@ void TitleScene::Update() {
 				}
 			}
 
+			//受け取ったキー入力で更新する
 			if (newCode != -1) {
 				RemoveDuplicateBind(detectedType, newCode);
 
@@ -156,6 +167,8 @@ void TitleScene::Update() {
 				isWaitingKey = false;
 			}
 		}
+
+		//メニュー操作
 		else {
 			if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_LEFT))columnidx = 0;
 			if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_RIGHT))columnidx = 1;
@@ -179,21 +192,25 @@ void TitleScene::Update() {
 }
 
 void TitleScene::Draw() {
+	const int BASE_X = 100;
+	const int CHOOSE_X = BASE_X - 20;
+	const int BASE_Y = 100;
+	const int LINE_HEIGHT = 30;
+
 	switch (currentState) {
 	case TitleState::TOP:
-
-		DrawString(80, 100 + 30 * selectNum, ">", GetColor(255, 255, 255));
-		DrawString(100, 100, "Play", GetColor(255, 255, 255));
-		DrawString(100, 130, "Settings", GetColor(255, 255, 255));
-		DrawString(100, 160, "Credit", GetColor(255, 255, 255));
-		DrawString(100, 190, "Exit", GetColor(255, 255, 255));
+		DrawString(CHOOSE_X, BASE_Y + LINE_HEIGHT * selectNum, ">", GetColor(255, 255, 255));
+		DrawString(BASE_X, BASE_Y, "Play", GetColor(255, 255, 255));
+		DrawString(BASE_X, BASE_Y + LINE_HEIGHT, "Settings", GetColor(255, 255, 255));
+		DrawString(BASE_X, BASE_Y + LINE_HEIGHT * 2, "Credit", GetColor(255, 255, 255));
+		DrawString(BASE_X, BASE_Y + LINE_HEIGHT * 3, "Exit", GetColor(255, 255, 255));
 		break;
 	case TitleState::MODE_SELECT:
-		DrawString(80, 100 + 30 * selectNum, ">", GetColor(255, 255, 255));
-		DrawString(100, 100, "Tutorial", GetColor(255, 255, 255));
-		DrawString(100, 130, "Easy", GetColor(255, 255, 255));
-		DrawString(100, 160, "Normal", GetColor(255, 255, 255));
-		DrawString(100, 190, "Hard", GetColor(255, 255, 255));
+		DrawString(CHOOSE_X, 100 + 30 * selectNum, ">", GetColor(255, 255, 255));
+		DrawString(BASE_X, BASE_Y, "Tutorial", GetColor(255, 255, 255));
+		DrawString(BASE_X, BASE_Y + LINE_HEIGHT, "Easy", GetColor(255, 255, 255));
+		DrawString(BASE_X, BASE_Y + LINE_HEIGHT * 2, "Normal", GetColor(255, 255, 255));
+		DrawString(BASE_X, BASE_Y + LINE_HEIGHT * 3, "Hard", GetColor(255, 255, 255));
 		break;
 	case TitleState::SETTINGS:
 		DrawSettings();
@@ -205,78 +222,129 @@ void TitleScene::Draw() {
 	case TitleState::KEY_CONFIG:
 		DrawKeyConfig();
 		break;
-		
+
 	}
 }
 
 void TitleScene::DrawSettings() {
-	DrawString(100, 50, "Settings", GetColor(255, 255, 255));
+	const int BASE_X = 100;
+	const int CHOOSE_X = BASE_X - 20;
+	const int BASE_Y = 100;
+	const int LINE_HEIGHT = 30;
+
+	DrawString(BASE_X, 50, "Settings", GetColor(255, 255, 255));
 	auto& s = ConfigManager::GetIns().Settings();
 
-	const char* labels[] = {
-		"マウス感度","スティック感度",
-		"視野角","画面の揺れ",
-		"リコイルリカバリー","キーバインドを編集",
+	//設定項目の文字列
+	const char* labels[(int)SettingItem::MAX] = {
+		"BGM音量", "SE音量",
+		"マウス感度", "スティック感度",
+		"視野角", "画面の揺れ",
+		"リコイルリカバリー", "キーバインドを編集",
 		"タイトルに戻る"
 	};
 
-	char valStr[7][64];
-	sprintf_s(valStr[0], "%.2f", s.mouseSensitivity);
-	sprintf_s(valStr[1], "%.3f", s.padSensitivity);
-	sprintf_s(valStr[2], "%.0f", s.basefov);
-	sprintf_s(valStr[3], s.headbob ?  "ON": "OFF");
-	sprintf_s(valStr[4], s.recovery ?  "ON": "OFF");
-	sprintf_s(valStr[5], ">>>");
-	sprintf_s(valStr[6], "");
-	
+
 	for (int i = 0; i < (int)SettingItem::MAX; i++) {
 		int color = (i == selectNum) ? GetColor(255, 255, 0) : GetColor(255, 255, 255);
-		DrawString(80, 100 + i * 30, (i == selectNum) ? ">" : " ", color);
-		DrawFormatString(100, 100 + i * 30, color, "%-20s : %s", labels[i], valStr[i]);
+		int drawY = BASE_Y + i * LINE_HEIGHT;
+
+		
+		DrawString(CHOOSE_X, drawY, (i == selectNum) ? ">" : " ", color);
+
+		//描画
+		switch ((SettingItem)i) {
+		case SettingItem::BGM_VOLUME:
+			DrawFormatString(BASE_X, drawY, color, "%-20s : %d%%", labels[i], (int)(s.bgmVolume * 100));
+			break;
+		case SettingItem::SE_VOLUME:
+			DrawFormatString(BASE_X, drawY, color, "%-20s : %d%%", labels[i], (int)(s.seVolume * 100));
+			break;
+		case SettingItem::MOUSE_SENSITIVITY:
+			DrawFormatString(BASE_X, drawY, color, "%-20s : %.1f", labels[i], s.mouseSensitivity * 2.0f);
+			break;
+		case SettingItem::PAD_SENSITIVITY:
+			DrawFormatString(BASE_X, drawY, color, "%-20s : %.1f", labels[i], s.padSensitivity * 1000.0f);
+			break;
+		case SettingItem::BASE_FOV:
+			DrawFormatString(BASE_X, drawY, color, "%-20s : %.0f", labels[i], s.basefov);
+			break;
+		case SettingItem::HEAD_BOB:
+			DrawFormatString(BASE_X, drawY, color, "%-20s : %s", labels[i], s.headbob ? "ON" : "OFF");
+			break;
+		case SettingItem::RECOVERY:
+			DrawFormatString(BASE_X, drawY, color, "%-20s : %s", labels[i], s.recovery ? "ON" : "OFF");
+			break;
+		case SettingItem::KEY_CONFIG:
+			DrawFormatString(BASE_X, drawY, color, "%-20s : >>>", labels[i]);
+			break;
+		case SettingItem::BACK:
+			DrawFormatString(BASE_X, drawY, color, "%s", labels[i]);
+			break;
+		default:
+			break;
+		}
 	}
 }
 
 void TitleScene::DrawKeyConfig() {
-	DrawString(100, 30, "---Key Config---", GetColor(255, 255, 255));
-	DrawString(100, 60, "          キーボード/マウス      コントローラー",GetColor(200,200,200));
+	const int BASE_X = 100;
+	const int BASE_Y = 100;
+	const int LINE_HEIGHT = 25;
+	const int COL0_X = 300; 
+	const int COL1_X = 480;
+
+	DrawString(BASE_X, 30, "---Key Config---", GetColor(255, 255, 255));
+	DrawString(BASE_X, 60, "          キーボード/マウス      コントローラー", GetColor(200, 200, 200));
 
 	auto& allBind = ConfigManager::GetIns().Bindings();
 
 	for (int i = 0; i < GAMEPLAY_ACTION.size(); i++) {
 		ActionID act = GAMEPLAY_ACTION[i];
-		int y = 100 + i * 25;
+		int y = BASE_Y + i * LINE_HEIGHT;
 		int color = (i == selectNum) ? GetColor(255, 255, 0) : GetColor(255, 255, 255);
 
 		const char* actName = TextManager::GetIns().GetActionName(act);
-		DrawString(80, y, (i == selectNum) ? ">" : " ", color);
-		DrawString(100, y, actName ? actName : "Unknown", color);
+
+		
+		DrawString(BASE_X - 20, y, (i == selectNum) ? ">" : " ", color);
+		DrawString(BASE_X, y, actName ? actName : "Unknown", color);
 
 		int kbCode = -1;
 		int padCode = -1;
 
 		if (allBind.count(act)) {
 			for (auto& b : allBind[act]) {
-				if (b.type == InputType::KEYBOARD || b.type == InputType::MOUSE)kbCode = b.KeyCode;
-				if (b.type == InputType::JOY)padCode = b.KeyCode;
+				if (b.type == InputType::KEYBOARD || b.type == InputType::MOUSE) kbCode = b.KeyCode;
+				if (b.type == InputType::JOY) padCode = b.KeyCode;
 			}
 		}
 
+		
 		int col0Color = (i == selectNum && columnidx == 0) ? GetColor(255, 100, 100) : color;
-		if (isWaitingKey && i == selectNum && columnidx == 0) DrawString(300, y, "キー入力待ち", GetColor(255, 50, 50));
-		else if (kbCode != -1)DrawFormatString(300, y, col0Color, "%d", kbCode);
+		if (isWaitingKey && i == selectNum && columnidx == 0) {
+			DrawString(COL0_X, y, "キー入力待ち", GetColor(255, 50, 50));
+		}
+		else if (kbCode != -1) {
+			DrawFormatString(COL0_X, y, col0Color, "%d", kbCode);
+		}
+		else {
+			DrawString(COL0_X, y, "NONE", col0Color);
+		}
 
-		else DrawString(300, y, "NONE", col0Color);
-
-
+		
 		int col1Color = (i == selectNum && columnidx == 1) ? GetColor(255, 100, 100) : color;
-		if (isWaitingKey && i == selectNum && columnidx == 1) DrawString(480, y, "ボタン入力待ち", GetColor(255, 50, 50));
-		else if (padCode != -1)DrawFormatString(480, y, col1Color, "%d", padCode);
-
-		else DrawString(480, y, "NONE", col1Color);
+		if (isWaitingKey && i == selectNum && columnidx == 1) {
+			DrawString(COL1_X, y, "ボタン入力待ち", GetColor(255, 50, 50));
+		}
+		else if (padCode != -1) {
+			DrawFormatString(COL1_X, y, col1Color, "%d", padCode);
+		}
+		else {
+			DrawString(COL1_X, y, "NONE", col1Color);
+		}
 	}
-
 }
-
 void TitleScene::Control() {
 	int max = 0;
 	switch (currentState) {
@@ -301,17 +369,27 @@ void TitleScene::Control() {
 
 void TitleScene::ModifySetting(SettingItem item, int direction) {
 	auto& settings = ConfigManager::GetIns().Settings();
-	float dt = direction * 0.1f;
+	float dt = direction * 1.0f;
 	switch (item) {
+	case SettingItem::BGM_VOLUME:
+		settings.bgmVolume += dt * 0.05f;
+		if (settings.bgmVolume < 0.00f) settings.bgmVolume = 0.00f;
+		if (settings.bgmVolume > 1.00f)settings.bgmVolume = 1.00f;
+		break;
+	case SettingItem::SE_VOLUME:
+		settings.seVolume += dt * 0.05f;
+		if (settings.seVolume < 0.00f) settings.seVolume = 0.00f;
+		if (settings.seVolume > 1.00f)settings.seVolume = 1.00f;
+		break;
 	case SettingItem::MOUSE_SENSITIVITY:
-		settings.mouseSensitivity += dt * 0.5f;
-		if (settings.mouseSensitivity < 0.01f) settings.mouseSensitivity = 0.01f;
-		if (settings.mouseSensitivity > 5.0f) settings.mouseSensitivity = 5.0f;
+		settings.mouseSensitivity += dt * 0.05f;
+		if (settings.mouseSensitivity < 0.05f) settings.mouseSensitivity = 0.05f;
+		if (settings.mouseSensitivity > 1.0f) settings.mouseSensitivity = 1.0f;
 		break;
 	case SettingItem::PAD_SENSITIVITY:
-		settings.padSensitivity += dt * 0.001f;
-		if (settings.padSensitivity < 0.001f)settings.padSensitivity = 0.001f;
-		if (settings.padSensitivity > 2.0f)settings.padSensitivity = 2.0f;
+		settings.padSensitivity += dt * 0.0001f;
+		if (settings.padSensitivity < 0.0001f)settings.padSensitivity = 0.0001f;
+		if (settings.padSensitivity > 0.0100f)settings.padSensitivity = 0.0100f;
 		break;
 	case SettingItem::BASE_FOV:
 		settings.basefov += direction * 1.0f;
@@ -328,18 +406,23 @@ void TitleScene::ModifySetting(SettingItem item, int direction) {
 	}
 	ConfigManager::GetIns().Save();
 }
+
 void TitleScene::ChangeState(TitleState next) {
 	currentState = next;
 	selectNum = 0;
 	columnidx = 0;
 	isWaitingKey = false;
 }
+
 void TitleScene::RemoveDuplicateBind(InputType type, int code) {
 	auto& allBinding = ConfigManager::GetIns().Bindings();
-	for (auto& pair : allBinding) {
-		auto& vec = pair.second;
-		vec.erase(std::remove_if(vec.begin(), vec.end(), [&](const KeyBind& b) {
-			return b.type == type && b.KeyCode == code;
-			}), vec.end());
+	for (ActionID act : GAMEPLAY_ACTION) {
+		if (allBinding.count(act)) {
+			auto& vec = allBinding[act];
+			//同じキーを使う操作があれば削除する
+			vec.erase(std::remove_if(vec.begin(), vec.end(), [&](const KeyBind& b) {
+				return b.type == type && b.KeyCode == code;
+				}), vec.end());
+		}
 	}
 }

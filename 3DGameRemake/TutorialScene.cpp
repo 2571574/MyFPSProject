@@ -10,6 +10,8 @@
 #include "RifleEnemy.h"
 #include "SniperEnemy.h"
 #include "RollingEnemy.h"
+#include "ResourceManager.h"
+
 TutorialScene::TutorialScene(SceneManager* manager)
 	:BaseScene(manager)
 	, player(VGet(20.0f, 0.0f, 28.0f), &camera, PlayMode::MODE_TUTORIAL)
@@ -28,24 +30,30 @@ void TutorialScene::Init() {
 	currentPhase = TutorialPhase::MOVEMENT;
 	currentEnemyInfo = -1;
 
-	stageHandle = MV1LoadModel("Resource/TutorialArena.mv1");
+	stageHandle = ResourceManager::GetIns().GetModel("Resource/TutorialArena.mv1");
 
+	//ステージセット
 	MV1SetPosition(stageHandle, VGet(0.0f, 0.0f, 0.0f));
 	MV1SetScale(stageHandle, VGet(0.02f, 0.02f, 0.02f));
 	MV1SetupCollInfo(stageHandle, -1, 8, 8, 8);
+
 	player.SetStageHandle(stageHandle);
 	CollisionManager::GetIns().SetStageHandle(stageHandle);
 	EnemyManager::GetIns().SetStageHandle(stageHandle);
 	ItemManager::GetIns().SetStageHandle(stageHandle);
 
+	//武器スポナー
 	std::vector<VECTOR>spawnerPos = {
 		VGet(-15.0f,0.4f,-16.0f),VGet(-10.0f,0.4f,-16.0f),VGet(0.0f,0.4f,-16.0f),VGet(5.0f,0.4f,-16.0f) };
 	ItemManager::GetIns().InitSpawners(spawnerPos);
 
+	//的ダミー
 	for (int i = 0; i < 3; ++i) {
 		auto Target = std::make_unique<Dummy>(VGet(-26.0f + i * 15.0f, 0.0f, -5.0f + i * 15.0f), &player, true);
 		target.push_back(std::move(Target));
 	}
+
+	//ボタンダミー
 	for (int i = 0; i < 4; i++) {
 		SpawnButton btn;
 		btn.pos = VGet(28.0f + i * -5.0f, 0.0f, -28.0f);
@@ -60,6 +68,8 @@ void TutorialScene::Update() {
 	Time::GetIns().Update();
 	Debug::Update();
 	float dt = Time::GetIns().GetDelta();
+
+	//ポーズ処理
 	if (InputManager::GetIns().IsActionTrigger(ActionID::PAUSE)) {
 		isPaused = !isPaused;
 		pauseSelectNum = 0;
@@ -68,7 +78,10 @@ void TutorialScene::Update() {
 		PauseUpdate();
 		return;
 	}
+
 	player.Update();
+
+	//ダミー更新処理
 	for (auto& btn : button) {
 		if (btn.spawnCT > 0.0f)
 			btn.spawnCT -= dt;
@@ -80,12 +93,22 @@ void TutorialScene::Update() {
 			if (t->GetHP() <= 0) t->revive();
 		}
 	}
+
+
 	VECTOR pPos = player.GetPos();
+
+	//ステート更新箇所の座標
 	bool isPlayerCombatArea = (pPos.x >= -22.0f && pPos.x <= 9.0f && pPos.z >= -30.0f && pPos.z <= -20.0f);
+	bool MovementToCombat = (pPos.x >= 11.0f && pPos.x <= 30.0f && pPos.z < -20.0f);
+	bool CombatToMovement = (pPos.x >= 11.0f && pPos.x <= 30.0f && pPos.z > -18.0f);
+	bool CombatToFreerange = (pPos.x >= -30.0f && pPos.x <= -24.0f && pPos.z > -18.0f);
+	bool FreerangeToCombat = (pPos.x >= -30.0f && pPos.x <= -24.0f && pPos.z < -20.0f);
+
+
 	if (isPlayerCombatArea) {
 		EnemyManager::GetIns().Update();
 	}
-	CollisionManager::GetIns().Update(&player, &EnemyManager::GetIns());
+	CollisionManager::GetIns().Update();
 	ProjectileManager::GetIns().Update();
 	ItemManager::GetIns().Update(&player);
 	if (player.GetHP() <= 0) {
@@ -94,7 +117,7 @@ void TutorialScene::Update() {
 	
 	switch (currentPhase) {
 	case TutorialPhase::MOVEMENT:
-		if (pPos.x >=11.0f&&pPos.x<=30.0f&&pPos.z<-20.0f) {
+		if (MovementToCombat) {
 			currentPhase = TutorialPhase::COMBAT;
 			EnemyManager::GetIns().Clear();
 			currentEnemyInfo = -1;
@@ -109,17 +132,18 @@ void TutorialScene::Update() {
 			EnemyManager::GetIns().Clear();
 			entered = false;
 		}
-		if (pPos.x >= 11.0f && pPos.x <= 30.0f && pPos.z > -18.0f) {
+		if (CombatToMovement) {
 			currentPhase = TutorialPhase::MOVEMENT;
 			EnemyManager::GetIns().Clear();
 			currentEnemyInfo = -1;
 		}
-		if (pPos.x >= -30.0f && pPos.x <= -24.0f && pPos.z > -18.0f) {
+		if (CombatToFreerange) {
 			currentPhase = TutorialPhase::FREERANGE;
 			EnemyManager::GetIns().Clear();
 			currentEnemyInfo = -1;
 		}
 
+		//スポーンボタンの処理
 		for (auto& btn : button) {
 			if (btn.dummy && btn.dummy->GetHP() < btn.dummy->GetStatus().maxHP) {
 				btn.dummy->revive();
@@ -142,7 +166,7 @@ void TutorialScene::Update() {
 		break;
 	}
 	case TutorialPhase::FREERANGE:
-		if (pPos.x >= -30.0f && pPos.x <= -24.0f && pPos.z < -20.0f) {
+		if (FreerangeToCombat) {
 			currentPhase = TutorialPhase::COMBAT;
 			EnemyManager::GetIns().Clear();
 			currentEnemyInfo = -1;
@@ -166,6 +190,7 @@ void TutorialScene::PauseUpdate() {
 		else if (pauseSelectNum == RETURN_TITLE) manager->ChangeScene(std::make_unique<TitleScene>(manager));
 	}
 }
+
 
 void TutorialScene::Draw() {
 	if (stageHandle != -1) MV1DrawModel(stageHandle);
@@ -203,66 +228,71 @@ void TutorialScene::Draw() {
 	Debug::Draw();
 
 	// --- HUD描画 ---
-	int textColor = GetColor(0, 255, 0);
-	DrawString(20, 20, "- TUTORIAL -", textColor);
+	const int colorTitle = GetColor(0, 255, 0);
+	const int colorText = GetColor(0, 0, 0);
+	const int colorWarning = GetColor(255, 100, 100);
+	const int colorAlert = GetColor(255, 255, 0);
+	const int colorInfo = GetColor(255, 200, 0);
+
+	DrawString(20, 20, "- TUTORIAL -", colorTitle);
 
 	switch (currentPhase) {
 	case TutorialPhase::MOVEMENT:
-		DrawString(20, 50, "[Movement Room]", textColor);
-		DrawString(20, 80, "Move: [W][A][S][D] / L-Stick", GetColor(0, 0, 0));
-		DrawString(20, 100, "Sprint: [Shift] / PAD 2", GetColor(0, 0, 0));
-		DrawString(20, 120, "Jump: [Space] / PAD 5", GetColor(0, 0, 0));
-		DrawString(20, 140, "Slide: Sprint + [Ctrl] / PAD 6", GetColor(0, 0, 0));
-		DrawString(20, 180, ">> Proceed through the Gate", GetColor(255, 255, 0));
+		DrawString(20, 50, "[Movement Room]", colorTitle);
+		DrawString(20, 80, "Move: [W][A][S][D] / L-Stick", colorText);
+		DrawString(20, 100, "Sprint: [Shift] / PAD 2", colorText);
+		DrawString(20, 120, "Jump: [Space] / PAD 5", colorText);
+		DrawString(20, 140, "Slide: Sprint + [Ctrl] / PAD 6", colorText);
+		DrawString(20, 180, ">> Proceed through the Gate", colorAlert);
 		break;
 
 	case TutorialPhase::COMBAT:
-		DrawString(20, 50, "[Combat Room]", textColor);
-		DrawString(20, 80, "Shoot the Target to spawn enemy.", GetColor(0, 0, 0));
-		DrawString(20, 200, ">> Proceed through the Gate", GetColor(255, 255, 0));
+		DrawString(20, 50, "[Combat Room]", colorTitle);
+		DrawString(20, 80, "Shoot the Target to spawn enemy.", colorText);
+		DrawString(20, 200, ">> Proceed through the Gate", colorAlert);
 
 		// スポーンした敵の情報
 		if (currentEnemyInfo == 0) {
-			DrawString(20, 110, "< Melee Enemy >", GetColor(255, 100, 100));
-			DrawString(20, 130, "Chases and attacks from close range.", GetColor(0, 0, 0));
+			DrawString(20, 110, "< Melee Enemy >", colorWarning);
+			DrawString(20, 130, "Chases and attacks from close range.", colorText);
 		}
 		else if (currentEnemyInfo == 1) {
-			DrawString(20, 110, "< Rifle Enemy >", GetColor(255, 100, 100));
-			DrawString(20, 130, "Shoots bullets from mid-range.", GetColor(0, 0, 0));
+			DrawString(20, 110, "< Rifle Enemy >", colorWarning);
+			DrawString(20, 130, "Shoots bullets from mid-range.", colorText);
 		}
 		else if (currentEnemyInfo == 2) {
-			DrawString(20, 110, "< Sniper Enemy >", GetColor(255, 100, 100));
-			DrawString(20, 130, "High damage from long distance. Watch out for red laser.", GetColor(0, 0, 0));
+			DrawString(20, 110, "< Sniper Enemy >", colorWarning);
+			DrawString(20, 130, "High damage from long distance. Watch out for red laser.", colorText);
 		}
 		else if (currentEnemyInfo == 3) {
-			DrawString(20, 110, "< Rolling Enemy >", GetColor(255, 100, 100));
-			DrawString(20, 130, "Fast movement. Head hitbox is inside its body.", GetColor(0, 0, 0));
+			DrawString(20, 110, "< Rolling Enemy >", colorWarning);
+			DrawString(20, 130, "Fast movement. Head hitbox is inside its body.", colorText);
 		}
 		break;
 
 	case TutorialPhase::FREERANGE:
-		DrawString(20, 50, "[Free Range]", textColor);
+		DrawString(20, 50, "[Free Range]", colorTitle);
 
 		// 武器情報HUD（持っている武器に応じて変化）
 		if (Weapon* w = player.GetWeapon()) {
 			auto id = w->GetSpec().id;
-			DrawString(20, 80, "Current Weapon Info:", GetColor(255, 200, 0));
+			DrawString(20, 80, "Current Weapon Info:", colorInfo);
 
 			switch (id) {
 				case WeaponID::PIS:
-				DrawString(20, 100, "PISTOL: Basic sidearm. Infinite ammo.", GetColor(0, 0, 0)); break;
+				DrawString(20, 100, "PISTOL: Basic sidearm. Infinite ammo.", colorText); break;
 				case WeaponID::AR:
-				DrawString(20, 100, "ASSAULT RIFLE: Good fire rate and medium range.", GetColor(0, 0, 0)); break;
+				DrawString(20, 100, "ASSAULT RIFLE: Good fire rate and medium range.", colorText); break;
 			case WeaponID::SR:
-				DrawString(20, 100, "SNIPER RIFLE: High damage, slow fire rate. Good for headshots.", GetColor(0, 0, 0)); break;
+				DrawString(20, 100, "SNIPER RIFLE: High damage, slow fire rate. Good for headshots.", colorText); break;
 			case WeaponID::SMG:
-				DrawString(20, 100, "SMG: Very high fire rate, high recoil. Close range.", GetColor(0, 0, 0)); break;
+				DrawString(20, 100, "SMG: Very high fire rate, high recoil. Close range.", colorText); break;
 			case WeaponID::LR:
-				DrawString(20, 100, "ROCKET LAUNCHER: Area of effect damage. Deals splash damage.", GetColor(0, 0, 0)); break;
+				DrawString(20, 100, "ROCKET LAUNCHER: Area of effect damage. Deals splash damage.", colorText); break;
 			}
 		}
-		DrawString(20, 150, "Pick up weapons from spawners and practice on targets.", GetColor(0, 0, 0));
-		DrawString(20, 180, "Press [ESC] / [START] to Pause and Return to Title.", GetColor(0, 0, 0));
+		DrawString(20, 150, "Pick up weapons from spawners and practice on targets.", colorText);
+		DrawString(20, 180, "Press [ESC] / [START] to Pause and Return to Title.", colorText);
 		break;
 	}
 

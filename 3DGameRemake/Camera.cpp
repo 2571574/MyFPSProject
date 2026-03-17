@@ -1,44 +1,64 @@
 ﻿#include "Camera.h"
-#include "math.h"
 #include "Debug.h"
 #include "Time.h"
+#include "ConfigManager.h"
+
+#include <cmath>
+
+
 /*コンストラクタ*/
-Camera::Camera() :yaw(0.0f), pitch(0.0f),pendingRecoilYaw(0.0f), pendingRecoilPitch(0.0f), recoilYaw(0.0f), recoilPitch(0.0f), camPos(VGet(0.0f, 0.0f, 0.0f)),recovery(true) {
+Camera::Camera() 
+	: camPos(VGet(0.0f, 0.0f, 0.0f)) 
+	, yaw(0.0f)
+	, pitch(0.0f)
+	, recoilYaw(0.0f)
+	, recoilPitch(0.0f)
+	, pendingRecoilYaw(0.0f)
+	, pendingRecoilPitch(0.0f){
 }
 
-/*カメラの更新*/
 void Camera::Update(VECTOR Pos) {
+
 	//座標を得る
 	camPos = Pos;
 	float dt = Time::GetIns().GetDelta();
 	float dt60 = 60.0f * dt;
+
 	//カメラの操作入力を得る
 	int mouseX, mouseY, stickX, stickY;
 	CheckKey::GetIns().GetMousePosition(mouseX, mouseY);
 	CheckKey::GetIns().GetRightStick(stickX, stickY);
+
+	//ConfigManagerより設定の取得
+	float mouseSens = ConfigManager::GetIns().Settings().mouseSensitivity;
+	float padSens = ConfigManager::GetIns().Settings().padSensitivity;
+	recovery = ConfigManager::GetIns().Settings().recovery;
+
 	//マウス
 	int deltaX = CENTER_X - mouseX;
 	int deltaY = CENTER_Y - mouseY;
-	yaw -= deltaX * _SENSITIVITY;
-	pitch += deltaY * _SENSITIVITY;
+	yaw -= deltaX * mouseSens;
+	pitch += deltaY * mouseSens;
 	SetMousePoint(CENTER_X, CENTER_Y);
 
 	//コントローラー　
-	yaw += stickX * _PAD_SENSITIVITY * dt60;
-	pitch -= stickY * _PAD_SENSITIVITY * dt60;
+	yaw += stickX * padSens * dt60;
+	pitch -= stickY * padSens * dt60;
 
+	//リコイルの追加
 	float moveY = pendingRecoilYaw * RECOIL_SPEED * dt;
 	float moveP = pendingRecoilPitch * RECOIL_SPEED * dt;
 
+	//適用
 	recoilYaw += moveY;
 	recoilPitch += moveP;
 	pendingRecoilYaw -= moveY;
 	pendingRecoilPitch -= moveP;
-
 	if (recovery) {
 		recoilYaw -= recoilYaw * RECOVERY_SPEED * dt;
 		recoilPitch -= recoilPitch * RECOVERY_SPEED * dt;
 	}
+
 	//補正
 	if (pitch > CAM_ANGLESNAP_PITCH)pitch = CAM_ANGLESNAP_PITCH;
 	if (pitch < -CAM_ANGLESNAP_PITCH)pitch = -CAM_ANGLESNAP_PITCH;
@@ -47,10 +67,12 @@ void Camera::Update(VECTOR Pos) {
 	if (yaw < -CAM_ANGLESNAP_YAW)yaw += YAW_SNAP;
 
 }
-void Camera::SetPos(VECTOR pos) {
-	camPos = pos;
+
+void Camera::AddAngle(float deltaYaw, float deltaPitch){
+	pendingRecoilYaw += deltaYaw;
+	pendingRecoilPitch += deltaPitch;
 }
-/*カメラの更新を反映*/
+
 void Camera::Move(float fov) {
 	float camYaw = yaw + recoilYaw;
 	float camPitch = pitch + recoilPitch;
@@ -63,6 +85,10 @@ void Camera::Move(float fov) {
 	SetCameraPositionAndTarget_UpVecY(camPos, targetPos);	//カメラ位置と注視点をセット
 }
 
+
+void Camera::SetPos(VECTOR pos) {
+	camPos = pos;
+}
 /*プレイヤーから見た前のベクトルの方向を得る*/
 void Camera::GetForwardVec(VECTOR& forward, VECTOR& right) {
 	forward = VGet(sinf(yaw * (DX_PI_F / 180)), 0, cosf(yaw * (DX_PI_F / 180)));
@@ -82,9 +108,4 @@ VECTOR Camera::GetLookDirection(){
 	out.z = cp * cosf(radY);
 	out = VNorm(out);
 	return out;
-}
-
-void Camera::AddAngle(float deltaYaw, float deltaPitch){
-	pendingRecoilYaw += deltaYaw;
-	pendingRecoilPitch += deltaPitch;
 }

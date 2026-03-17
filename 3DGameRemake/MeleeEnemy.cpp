@@ -4,7 +4,17 @@
 #include <cmath>
 #include "Parameter.h"
 #include "EnemyManager.h"
-MeleeEnemy::MeleeEnemy(VECTOR pos, Player* target) :Enemy(pos, CHARA_STATUS::MELEE_ENEMY, target,ENEMYTYPE::MELEE), attackTimer(0.0f), range(3.0f), moveSpeed(3.0f) {}
+
+namespace {
+	constexpr float ATTACK_WINDUP_TIME = 0.3f;
+	constexpr float ATTACK_RECOVERY_TIME = 0.5f;
+}
+
+MeleeEnemy::MeleeEnemy(VECTOR pos, Player* target)
+	:Enemy(pos, CHARA_STATUS::MELEE_ENEMY, target,ENEMYTYPE::MELEE)
+	, attackTimer(0.0f) {
+	melee = ENEMY_GUN::MELEE;
+}
 
 void MeleeEnemy::Update() {
 	float dt = Time::GetIns().GetDelta();
@@ -32,16 +42,16 @@ void MeleeEnemy::Update() {
 
 		VECTOR targetPos = target->GetPos();
 		float distToTarget = VSize(VSub(targetPos, position));
-		if (distToTarget > range * 0.9f) {
+		if (distToTarget > melee.range* 0.9f) {
 			ApplyMovement(dir, stageHandle);
 		}
 		else {
 			ApplyMovement(VGet(0, 0, 0), stageHandle);
 		}
 
-		if (distToTarget <= range && std::abs(target->GetPos().y - position.y) <= currentHeight && attackTimer <= 0.0f) {
+		if (distToTarget <= melee.range && std::abs(target->GetPos().y - position.y) <= currentHeight && attackTimer <= 0.0f) {
 			state = MeleeState::ATTACK_WIND;
-			stateTimer = 0.3f;
+			stateTimer = ATTACK_WINDUP_TIME;
 		}
 		break;
 	}
@@ -53,7 +63,7 @@ void MeleeEnemy::Update() {
 		if (stateTimer <= 0.0f) {
 			Action();
 			state = MeleeState::ATTACK_RECOVERY;
-			stateTimer = 0.5f;
+			stateTimer = ATTACK_RECOVERY_TIME;
 		}
 		break;
 	}
@@ -63,7 +73,7 @@ void MeleeEnemy::Update() {
 		stateTimer -= dt;
 		if (stateTimer <= 0.0f) {
 			state = MeleeState::IDLE;
-			attackTimer = 1.0f;
+			attackTimer = 1.0f / melee.fireRate;
 		}
 		break;
 	}
@@ -93,9 +103,6 @@ void MeleeEnemy::Action() {
 
 	VECTOR attackPos = VAdd(position, VScale(toTarget, 1.0f));
 
-	float attackRadius = 2.5f;
-	int damage = 1;
-	float knockbackPower = 0.0f;
-	CollisionManager::GetIns().ProcessExplotion(attackPos, attackRadius, damage, knockbackPower, false, GetID(), WeaponID::ENEMY_KNIFE);
+	CollisionManager::GetIns().ProcessExplotion(attackPos, melee.explodeArea, melee.damage, melee.knockbackP, false, GetID(), WeaponID::ENEMY_KNIFE);
 	Debug::Log("EnemyAttack");
 }

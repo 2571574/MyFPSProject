@@ -1,5 +1,8 @@
 ﻿#include "Dummy.h"
 #include "Time.h"
+constexpr float TEXT_LIFETIME = 1.0f;
+constexpr float TEXT_HEIGHT_OFFSET = 0.5f;
+constexpr float ACCUMULATE_TIME_MAX = 0.2f;
 /*コンストラクタ*/
 Dummy::Dummy(VECTOR pos, Player* _target,bool _damageText) :Enemy(pos, CHARA_STATUS::DUMMY, _target, ENEMYTYPE::DUMMY), accumulateTimer(0.0f), damageText(_damageText) {};
 
@@ -52,13 +55,13 @@ void Dummy::OnHit(int damage, WeaponID id) {
 		DamageText& lastText = damageTexts.back();
 
 		lastText.damage += damage;
-		lastText.lifeTime = 1.0f;
-		lastText.pos = VAdd(position, VGet(0, currentHeight + 0.5f, 0));
+		lastText.lifeTime = TEXT_LIFETIME;
+		lastText.pos = VAdd(position, VGet(0, currentHeight + TEXT_HEIGHT_OFFSET, 0));
 	}
 	else {
-		VECTOR textPos = VAdd(position, VGet(0, currentHeight + 0.5f, 0));
-		damageTexts.push_back({ damage,textPos,1.0f });
+		VECTOR textPos = VAdd(position, VGet(0, currentHeight + TEXT_HEIGHT_OFFSET, 0));
+		damageTexts.push_back({ damage,textPos,TEXT_LIFETIME });
 	}
 
-	accumulateTimer = 0.2f;
+	accumulateTimer = ACCUMULATE_TIME_MAX;
 }

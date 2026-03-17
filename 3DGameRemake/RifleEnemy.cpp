@@ -4,13 +4,15 @@
 #include "EnemyManager.h"
 #include "Status.h"
 
+namespace {
+	constexpr float STOP_DISTANCE_RATIO = 0.6f;
+}
 RifleEnemy::RifleEnemy(VECTOR pos,Player*target)
-	: Enemy(pos,CHARA_STATUS::RIFLE_ENEMY,target,ENEMYTYPE::RIFLE)
-	,moveSpeed(2.0f){
+	: Enemy(pos,CHARA_STATUS::RIFLE_ENEMY,target,ENEMYTYPE::RIFLE){
 	
 	rifle = std::make_unique<Weapon>(ENEMY_GUN::RIFLE);
 	range = rifle->GetSpec().range;
-	stopDist = range * 0.6f;
+	stopDist = range * STOP_DISTANCE_RATIO;
 }
 
 void RifleEnemy::Update() {

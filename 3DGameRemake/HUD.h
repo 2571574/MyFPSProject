@@ -2,6 +2,9 @@
 #include "DxLib.h"
 class Player;
 
+/// <summary>
+/// HUD全般を管理するクラス
+/// </summary>
 class HUD
 {
 private:

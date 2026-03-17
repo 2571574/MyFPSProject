@@ -48,24 +48,6 @@
     <ClCompile Include="Debug.cpp">
       <Filter>3.TOOL</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
-    </ClCompile>
-    <ClCompile Include="Dummy.cpp">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClCompile>
-    <ClCompile Include="MeleeEnemy.cpp">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClCompile>
-    <ClCompile Include="RifleEnemy.cpp">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClCompile>
-    <ClCompile Include="SniperEnemy.cpp">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClCompile>
-    <ClCompile Include="RollingEnemy.cpp">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClCompile>
     <ClCompile Include="CheckKey.cpp">
       <Filter>チェック済み</Filter>
     </ClCompile>
@@ -141,28 +123,28 @@
     <ClCompile Include="HUD.cpp">
       <Filter>チェック済み</Filter>
     </ClCompile>
+    <ClCompile Include="Dummy.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="RollingEnemy.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="RifleEnemy.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="SniperEnemy.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeEnemy.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Debug.h">
       <Filter>3.TOOL</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
-    </ClInclude>
-    <ClInclude Include="Dummy.h">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClInclude>
-    <ClInclude Include="MeleeEnemy.h">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClInclude>
-    <ClInclude Include="RifleEnemy.h">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClInclude>
-    <ClInclude Include="SniperEnemy.h">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClInclude>
-    <ClInclude Include="RollingEnemy.h">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClInclude>
     <ClInclude Include="CheckKey.h">
       <Filter>チェック済み</Filter>
@@ -240,6 +222,24 @@
       <Filter>チェック済み</Filter>
     </ClInclude>
     <ClInclude Include="HUD.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="Dummy.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="RifleEnemy.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="RollingEnemy.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="SniperEnemy.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeEnemy.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
       <Filter>チェック済み</Filter>
     </ClInclude>
   </ItemGroup>

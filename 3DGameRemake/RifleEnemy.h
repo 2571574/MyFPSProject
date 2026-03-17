@@ -7,7 +7,6 @@ class RifleEnemy :
 private:
 	float range;
 	float stopDist;		//止まる距離
-	float moveSpeed;
 
 	std::unique_ptr<Weapon> rifle;
 

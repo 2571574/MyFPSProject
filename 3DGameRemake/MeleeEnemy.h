@@ -17,8 +17,7 @@ private:
     MeleeState state = MeleeState::IDLE;
     float stateTimer = 0.0f;
 	float attackTimer;  //攻撃のクールタイム
-    float range;        //攻撃射程
-	float moveSpeed;    //移動速度
+    GunStatus melee;
 public:
     /// <summary>
     /// コンストラクタ

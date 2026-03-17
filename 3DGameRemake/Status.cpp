@@ -15,6 +15,7 @@ namespace PLAYER_GUN {
 	GunStatus PISTOL = { WeaponID::PIS, false, false, false, true, 1, 20.0f, 8, 0, 2.0f, 8.0f, 0.1f, 0.005f, 3.0f,VGet(0.3f,-0.2f,0.0f),1.0f,0.8f,60.0f,0.06f,1.0f };
 }
 namespace ENEMY_GUN {
+	GunStatus MELEE = { WeaponID::ENEMY_KNIFE,false,false,false,true, 1, 3.0f, 0, 0, 0.0f, 1.0f, 0.0f,0.0f,0.0f,VGet(0.0f,0.0f,0.0f),1.0f,1.0f,0.0f,0.0f,0.0f,2.5f,0.0f };
 	GunStatus RIFLE = {WeaponID::ENEMY_AR, false, false, true, true, 1, 20.0f, 20, 0, 5.0f, 1.0f, 0.001f, 0.001f, 0.0f, VGet(0.0f,-0.4f,0.0f), 1.0f,1.0f,50.0f,0.1f,0.3f };
 	GunStatus SNIPER = {WeaponID::ENEMY_SR, false, false, true, true,1, 30.0f, 3, 0, 10.0f, 0.2f, 0.0001f, 0.0001f, 0.0f,VGet(0.0f,-0.4f,0.0f), 1.0f, 0.5f, 40.0f, 0.06f, 0.8f };
 	GunStatus DESTRUCT = {WeaponID::ENEMY_EXPLOSION, false, false, false, true,10, 0.0f, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, VGet(0.0f, 0.0f, 0.0f), 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 10.0f,0.5f };

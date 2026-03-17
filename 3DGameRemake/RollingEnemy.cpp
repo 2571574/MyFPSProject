@@ -2,11 +2,29 @@
 #include "Player.h"
 #include "EnemyManager.h"
 
+namespace {
+	constexpr float EXPLODE_TIME = 2.0f;
+	constexpr float TRIGGER_DISTANCE = 5.0f;
+
+	constexpr float GRAVITY = -0.008f;
+	constexpr float STEP_RAY_SIDE_OFFSET = 0.8f;
+	constexpr float STEP_RAY_START_OFFSET = 0.1f;
+	constexpr float STEP_RAY_END_OFFSET = -0.2f;
+	constexpr float GROUND_NORMAL_MIN = 0.3f;
+	constexpr float WALL_NORMAL_MAX = 0.4f;
+	constexpr float CEILING_NORMAL_MAX = -0.1f;
+
+	constexpr float PATH_UPDATE_BASE_TIME = 0.5f;
+	constexpr int PATH_UPDATE_RANDOM_RANGE = 50;
+	constexpr float PATH_NODE_REACHED_DIST_SQ = 1.0f * 1.0f;
+}
+
+
 RollingEnemy::RollingEnemy(VECTOR pos, Player* target)
 	:Enemy(pos, CHARA_STATUS::ROLL_ENEMY, target,ENEMYTYPE::ROLLING)
 	, isExploding(false)
-	, explodeTimer(2.0f)
-	, triggerDist(5.0f) {
+	, explodeTimer(EXPLODE_TIME)
+	, triggerDist(TRIGGER_DISTANCE) {
 	explodeSpec = ENEMY_GUN::DESTRUCT;
 }
 
@@ -21,7 +39,7 @@ void RollingEnemy::Update() {
 	}
 	if (hp <= 0 && !isExploding) {
 		isExploding = true;
-		explodeTimer = 2.0f;
+		explodeTimer = EXPLODE_TIME;
 	}
 
 	float distToPlayer = VSize(VSub(target->GetPos(), position));
@@ -57,7 +75,7 @@ void RollingEnemy::Action() {
 void RollingEnemy::Draw() {
 	int color = GetColor(255, 165, 0);
 	if (isExploding) {
-		if ((int)(explodeTimer * 10) % 2 == 0)color = GetColor(255, 0, 0);
+		if (static_cast<int>(explodeTimer * 10) % 2 == 0)color = GetColor(255, 0, 0);
 	}
 	float bodyRad = status.width / 2.0f;
 	VECTOR bottom = VAdd(position, VGet(0.0f, bodyRad, 0.0f));
@@ -72,32 +90,30 @@ void RollingEnemy::UpdatePhysics() {
 	float dt60 = dt * 60.0f;
 	float radius = status.width / 2.0f;
 
-	velocity.y += -0.008f * dt60;
+	velocity.y += GRAVITY * dt60;
 
 	VECTOR nextPos = VAdd(position, VScale(velocity, dt60));
 
 	if (velocity.y <= 0.0f) {
-		float offset = radius * 0.8f;
+		float offset = radius * STEP_RAY_SIDE_OFFSET;
 
 		VECTOR rayOffsets[5] = {
-			VGet(0.0f,0.0f,0.0f),
-			VGet(offset,0.0f,0.0f),
-			VGet(-offset,0.0f,0.0f),
-			VGet(0.0f,0.0f,offset),
-			VGet(0.0f,0.0f,-offset),
+			VGet(0.0f, 0.0f, 0.0f),
+			VGet(offset, 0.0f, 0.0f),
+			VGet(-offset, 0.0f, 0.0f),
+			VGet(0.0f, 0.0f, offset),
+			VGet(0.0f, 0.0f, -offset),
 		};
 		bool hitGroundThisFrame = false;
-		float highestY = -999;
+		float highestY = -999.0f;
+
 		for (int i = 0; i < 5; i++) {
 			VECTOR basePos = VAdd(nextPos, rayOffsets[i]);
-			//足元からレイを打つ
-			VECTOR start = VAdd(basePos, VGet(0, radius + 0.1f, 0));
-			VECTOR end = VAdd(basePos, VGet(0, -0.2f, 0));
-			//床と当たったか判定する
+			VECTOR start = VAdd(basePos, VGet(0.0f, radius + STEP_RAY_START_OFFSET, 0.0f));
+			VECTOR end = VAdd(basePos, VGet(0.0f, STEP_RAY_END_OFFSET, 0.0f));
 			MV1_COLL_RESULT_POLY groundHit = MV1CollCheck_Line(stageHandle, -1, start, end);
 
-			//当たっていた時、その面の法線が上を向いていたら地面とみなす
-			if (groundHit.HitFlag == 1 && groundHit.Normal.y > 0.3f) {
+			if (groundHit.HitFlag == 1 && groundHit.Normal.y > GROUND_NORMAL_MIN) {
 				if (groundHit.HitPosition.y > highestY) {
 					highestY = groundHit.HitPosition.y;
 					hitGroundThisFrame = true;
@@ -105,35 +121,29 @@ void RollingEnemy::UpdatePhysics() {
 			}
 		}
 		if (hitGroundThisFrame) {
-			//地面の高さにして、落下をなくす
 			nextPos.y = highestY;
-			velocity.y = 0;
+			velocity.y = 0.0f;
 		}
 	}
 
-	VECTOR sphereCenter = VAdd(nextPos, VGet(0, radius, 0));
+	VECTOR sphereCenter = VAdd(nextPos, VGet(0.0f, radius, 0.0f));
 	MV1_COLL_RESULT_POLY_DIM wallHitDim = MV1CollCheck_Sphere(stageHandle, -1, sphereCenter, radius);
-	
-	//ぶつかっているポリゴンの数だけループ
+
 	for (int i = 0; i < wallHitDim.HitNum; i++) {
-		//当たっているポリゴンの法線ベクトルを取得
 		VECTOR normal = wallHitDim.Dim[i].Normal;
 
-		if (normal.y >= 0.4f) continue;
-		//カプセルの下を基準
+		if (normal.y >= WALL_NORMAL_MAX) continue;
+
 		VECTOR checkPos = nextPos;
-		// 法線ベクトルが下を向いているときのみ上を基準に計算
-		if (normal.y < -0.1f)checkPos = VAdd(nextPos, VGet(0, currentHeight - radius, 0));
+		if (normal.y < CEILING_NORMAL_MAX) {
+			checkPos = VAdd(nextPos, VGet(0.0f, currentHeight - radius, 0.0f));
+		}
 
-		//カプセルの中心から壁の面の最短距離
 		float distance = VDot(VSub(checkPos, wallHitDim.Dim[i].Position[0]), normal);
-		//距離が半径より短い時
+
 		if (distance < radius && distance >= 0.0f) {
-			//めり込んだ分だけ押し出す
 			float pushOver = radius - distance;
-
 			VECTOR pushVec = VScale(normal, pushOver);
-
 			pushVec.y = 0.0f;
 
 			nextPos = VAdd(nextPos, pushVec);
@@ -142,13 +152,9 @@ void RollingEnemy::UpdatePhysics() {
 				velocity.x -= normal.x * dotVec;
 				velocity.z -= normal.z * dotVec;
 			}
-
-
 		}
 	}
-	//当たり判定で使ったメモリを解放
 	DxLib::MV1CollResultPolyDimTerminate(wallHitDim);
-
 	position = nextPos;
 }
 
@@ -163,7 +169,7 @@ VECTOR RollingEnemy::UpdateNavigation(const Character* target, float dt) {
 		if (!isDirectPathSafe) {
 			SetPath(EnemyManager::GetIns().CalculatePath(position, target->GetPos()));
 		}
-		pathUpdateTimer = 0.5f + (GetRand(50) / 100.0f);
+		pathUpdateTimer = PATH_UPDATE_BASE_TIME + (GetRand(PATH_UPDATE_RANDOM_RANGE) / 100.0f);
 	}
 
 	VECTOR moveTarget = target->GetPos();
@@ -174,7 +180,7 @@ VECTOR RollingEnemy::UpdateNavigation(const Character* target, float dt) {
 		float distSq = VSquareSize(toNode);
 
 		bool reached = false;
-		if (distSq < 1.0f * 1.0f) {
+		if (distSq <PATH_NODE_REACHED_DIST_SQ) {
 			reached = true;
 		}
 		else {

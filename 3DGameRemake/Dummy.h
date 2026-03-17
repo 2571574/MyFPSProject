@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Enemy.h"
 class Player;
+//ダメージテキスト
 struct DamageText {
 	int damage;
 	VECTOR pos;

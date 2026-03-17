@@ -3,10 +3,15 @@
 #include "Status.h"
 #include "Time.h"
 
+namespace {
+	constexpr float ATTACK_DISTANCE_RATIO = 0.8f;
+	constexpr float ESCAPE_DISTANCE_RATIO = 0.4f;
+	constexpr float ESCAPE_CHECK_DIST = 2.0f;
+}
 SniperEnemy::SniperEnemy(VECTOR pos, Player* target) : Enemy(pos, CHARA_STATUS::SNIPER_ENEMY, target,ENEMYTYPE::SNIPER), targetingTimer(0.0f) {
 	sniper = std::make_unique<Weapon>(ENEMY_GUN::SNIPER);
-	attackDist = sniper->GetSpec().range * 0.8f;
-	escapeDist = sniper->GetSpec().range * 0.4f;
+	attackDist = sniper->GetSpec().range * ATTACK_DISTANCE_RATIO;
+	escapeDist = sniper->GetSpec().range * ESCAPE_DISTANCE_RATIO;
 }
 
 void SniperEnemy::Update() {
@@ -34,7 +39,7 @@ void SniperEnemy::Update() {
 	if (distToPlayer < escapeDist) {
 		VECTOR escapeDir = VNorm(VSub(position, target->GetPos()));
 
-		if(CheckPathSafety(VAdd(position,VScale(escapeDir,2.0f)))){
+		if(CheckPathSafety(VAdd(position,VScale(escapeDir,ESCAPE_CHECK_DIST)))){
 			moveDir = escapeDir;
 		}
 		else {
@@ -106,7 +111,7 @@ void SniperEnemy::Draw() {
 			VECTOR e = VAdd(target->GetPos(), VGet(0.0f, target->GetCurrentHeight() * 0.5f, 0.0f));
 
 			Debug::Watch("laser.y", e.y);
-			int a = (int)((targetingTimer / TARGET_TIME) * 255);
+			int a = static_cast<int>((targetingTimer / TARGET_TIME) * 255);
 			DrawLine3D(s, e, GetColor(a, 0, 0));
 		}
 	}

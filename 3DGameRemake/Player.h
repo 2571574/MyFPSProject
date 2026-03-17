@@ -4,7 +4,10 @@
 #include "InputManager.h"
 #include "Weapon.h"
 #include "HUD.h"
+
 #include <memory>
+#include <vector>
+
 
 /// <summary>
 /// プレイヤーを管理するクラス
@@ -39,7 +42,7 @@ public:
 	///	playerのコンストラクタ 座標にplayerを生成
 	/// </summary>
 	/// <param name="pos">playerの初期座標</param>
-	Player(VECTOR pos,Camera* camera,PlayMode mode);	//コンストラクタ
+	Player(VECTOR pos, Camera* camera, PlayMode mode);	//コンストラクタ
 
 	/// <summary>
 	/// playerのデストラクタ　使用していたハンドルの削除
@@ -78,20 +81,25 @@ public:
 	}
 	//getter
 
+
+
+	void SetStageHandle(int handle) { stageHandle = handle; }
+
+	Weapon* GetWeapon() const { 
+		if (slot.empty() || currentWeaponIndex < 0 || currentWeaponIndex >= slot.size()) return nullptr;
+		return slot[currentWeaponIndex].get();
+	}
+	int GetWeaponIndex()const { return currentWeaponIndex; }
+
+	void AddTargeted(VECTOR pos) { TargetedPos.push_back(pos); }
+	const std::vector<VECTOR>& GetTargeted()const { return TargetedPos; }
+	void ClearTargeted() { TargetedPos.clear();}
+
 	/// <summary>
 	/// 現在のカメラの注視方向（視線ベクトル）を取得
 	/// </summary>
 	/// <returns>カメラの注視方向を返す</returns>
-	VECTOR GetCamDirection();
-	void SetStageHandle(int handle) { stageHandle = handle; }
-	Weapon* GetWeapon() { 
-		if (slot.empty() || currentWeaponIndex < 0 || currentWeaponIndex >= slot.size()) return nullptr;
-		return slot[currentWeaponIndex].get();
-	}
-	int GetWeaponIndex() { return currentWeaponIndex; }
-	void AddTargeted(VECTOR pos) { TargetedPos.push_back(pos); }
-	const std::vector<VECTOR>& GetTargeted()const { return TargetedPos; }
-	void ClearTargeted() { TargetedPos.clear();}
+	VECTOR GetCamDirection()const;
 	Camera* GetCam()const { return cam; }
 
 	int GetShots()const { return Shot; }

@@ -6,7 +6,30 @@
 #include <cmath>
 
 namespace {
+	constexpr float CROUCH_ACCEL_RATE = 0.08f;    
+	constexpr float CROUCH_FRICTION_ADD = 0.08f;   
+	constexpr float SLIDE_MIN_SPEED = 0.18f;        
+	constexpr float SLIDE_BOOST = 2.5f;          
+	constexpr float SLIDE_COOLDOWN = 5.0f;
+
+	constexpr float RUN_ACCEL_ADD = 0.02f;        
+	constexpr float RUN_FRICTION_SUB = 0.05f;
+	constexpr float JUMP_POWER = 0.25f;
+
+	constexpr float AIR_ACCEL_RATE = 0.1f;      
+	constexpr float AIR_FRICTION = 0.98f;     
+
+	constexpr float FOV_LERP_RATE = 0.1f;        
+	constexpr float FOV_SPEED_BASE = 0.75f;
 	constexpr float MAX_FOV = 110.0f * DX_PI_F / 180;
+
+	constexpr float BOBBING_SPEED_MULT = 1.3f;  
+	constexpr float BOBBING_AMPLITUDE = 0.05f;   
+	constexpr float BOBBING_DECAY = 0.7f;       
+	constexpr float BOBBING_MIN_SPEED = 0.01f;    
+	constexpr float BOBBING_CROUCH_MIN_SPEED = 0.06f;
+
+	constexpr float DROP_ITEM_Y_OFFSET = 0.4f;
 }
 Player::Player(VECTOR pos, Camera* camera,PlayMode mode)
 	: Character(pos, CHARA_STATUS::PLAYER)
@@ -18,7 +41,7 @@ Player::Player(VECTOR pos, Camera* camera,PlayMode mode)
 	,slidingCT(0.0f)
 	, isAds(false)
 	,running(false)
-	, headBob(true)
+	, headBob(false)
 	, bobbingTimer(0)
 	,currentWeaponIndex(0)
 	,currentMode(mode)
@@ -117,12 +140,12 @@ void Player::Update() {
 
 	//しゃがんでいる場合、加速しにくく滑りやすい
 	if (crouch) {
-		accel *= 0.08f;
-		friction += 0.08f;
-		if (VSize(velocity) > 0.18f) {
+		accel *= CROUCH_ACCEL_RATE;
+		friction += CROUCH_FRICTION_ADD;
+		if (VSize(velocity) > SLIDE_MIN_SPEED) {
 			if (slidingCT <= 0.0f&&onGround) {
-				velocity = VScale(velocity, 2.5f);
-				slidingCT = 5.0f;
+				velocity = VScale(velocity, SLIDE_BOOST);
+				slidingCT = SLIDE_COOLDOWN;
 			}
 		}
 	}
@@ -139,22 +162,22 @@ void Player::Update() {
 	if(!crouch) {
 		if (!isAds) {
 			if (running) {
-				accel += 0.02f;
-				friction -= 0.05f;
+				accel += RUN_ACCEL_ADD;
+				friction -= RUN_FRICTION_SUB;
 			}
 		}
 		
 		//ジャンプの入力で瞬間的に上に加速
 		if (InputManager::GetIns().IsActionHold(ActionID::JUMP)&&onGround){
-			velocity.y += 0.25f;
+			velocity.y += JUMP_POWER;
 		}
 	}
 
 	//空中にいる場合
 	if (!onGround) {
 		//加速しにくく慣性を残す
-		accel *= 0.1f;
-		friction = 0.98f;
+		accel *= AIR_ACCEL_RATE;
+		friction = AIR_FRICTION;
 	}
 
 
@@ -189,7 +212,7 @@ void Player::Update() {
 	float targetcamHeight = crouch ? status.crouchEyeHeight:status.eyeHeight;
 	float targetBodyHeight = crouch ? status.crouchHeight :status.height;
 	//現在のカメラの高さを目標に徐々に近づける
-	float lerp = 1.0f - std::pow(1.0f - 0.1f, dt60);
+	float lerp = 1.0f - std::pow(1.0f - FOV_LERP_RATE, dt60);
 
 	currentEyeHeight += (targetcamHeight - currentEyeHeight) * lerp;
 	currentHeight += (targetBodyHeight - currentHeight) * lerp;
@@ -200,7 +223,7 @@ void Player::Update() {
 	//視野角を変える処理
 	float baseFov = ConfigManager::GetIns().Settings().basefov;
 	float speed = VSize(velocity);
-	float speedRate = speed / 0.75f;
+	float speedRate = speed / FOV_SPEED_BASE;
 	if (speedRate > 1.0f) speedRate = 1.0f;
 	//速度に応じて視野角を広げる
 	float targetFov = baseFov + (MAX_FOV - baseFov) * speedRate;
@@ -212,21 +235,22 @@ void Player::Update() {
 	//徐々に目標の視野角に近づける
 	fov += (targetFov - fov) * lerp;
 
+	headBob = ConfigManager::GetIns().Settings().headbob;
 	//揺れをonにしている、覗いていない、着地時
 	if (headBob && onGround&&!isAds) {
 		float speed = VSize(velocity);
 		//一定のスピードを維持している間(歩いている間)
-		if(!(crouch&&speed>0.06f))
-		if (speed > 0.01f) {
+		if(!(crouch&&speed>BOBBING_CROUCH_MIN_SPEED))
+		if (speed > BOBBING_MIN_SPEED) {
 			//sin波でカメラを上下させる
-			bobbingTimer += speed * 1.3f * dt60;
-			float bobbingOffset = sinf(bobbingTimer) * 0.05f;
+			bobbingTimer += speed * BOBBING_SPEED_MULT * dt60;
+			float bobbingOffset = sinf(bobbingTimer) * BOBBING_AMPLITUDE;
 			camPos.y += bobbingOffset;
 		}
 
 		//揺らさなければ少しずつ元に戻す
 		else {
-			bobbingTimer *= 0.7f;
+			bobbingTimer *= BOBBING_DECAY;
 		}
 	}
 
@@ -270,7 +294,7 @@ void Player::SwitchWeapon(int next) {
 	currentWeaponIndex = next;
 }
 
-VECTOR Player::GetCamDirection() {
+VECTOR Player::GetCamDirection()const {
 	return cam->GetLookDirection();
 }
 
@@ -298,7 +322,7 @@ bool Player::AddWeapon(std::unique_ptr<Weapon>& newWeapon) {
 
 	int totalAmmo = slot[dropIndex]->GetAmmo() + slot[dropIndex]->GetReserveAmmo();
 	if (totalAmmo > 0) {
-		VECTOR dropPos = VAdd(position, VGet(0.0f, 0.4f, 0.0f));
+		VECTOR dropPos = VAdd(position, VGet(0.0f, DROP_ITEM_Y_OFFSET, 0.0f));
 
 		auto dropItem = std::make_unique<WeaponItem>(dropPos, std::move(slot[dropIndex]));
 		ItemManager::GetIns().SpawnDroppedItem(std::move(dropItem));

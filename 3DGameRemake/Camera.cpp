@@ -5,6 +5,13 @@
 
 #include <cmath>
 
+namespace {
+	constexpr float CAM_ANGLESNAP_PITCH = 89.9f;		//カメラのy軸制限
+	constexpr float CAM_ANGLESNAP_YAW = 180.0f;		//カメラのx軸制限
+	constexpr float YAW_SNAP = 360.0f;				//x軸のスナップ用
+	constexpr float RECOIL_SPEED = 15.0f;
+	constexpr float RECOVERY_SPEED = 3.0f;
+}
 
 /*コンストラクタ*/
 Camera::Camera() 

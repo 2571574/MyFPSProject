@@ -6,8 +6,8 @@ class WeaponItem
 {
 private:
 	VECTOR position;
-	std::unique_ptr<Weapon> droppedWeapon;
-	float bobbingTimer;
+	std::unique_ptr<Weapon> droppedWeapon;	//アイテム情報
+	float bobbingTimer;	//縦揺れのタイマー
 	bool alive;
 
 public:
@@ -17,14 +17,14 @@ public:
 	void Update();
 	void Draw();
 
-	VECTOR GetPos()const { return position; }
-	bool IsAlive()const { return alive; }
 
 	std::unique_ptr<Weapon>PickUp() {
 		alive = false;
 		return std::move(droppedWeapon);
 	}
 
+	VECTOR GetPos()const { return position; }
+	bool IsAlive()const { return alive; }
 	const GunStatus* GetSpec()const {
 		if (droppedWeapon)return &droppedWeapon->GetSpec();
 		return nullptr;

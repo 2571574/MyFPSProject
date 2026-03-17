@@ -5,17 +5,38 @@
 #include "Time.h"
 #include "TextManager.h"
 #include "ItemManager.h"
+#include <cmath>
 
-HUD::HUD(Player* player) : pplayer(player),cancelReloadTimer(0.0f) {}
+namespace {
+	constexpr int CROSSHAIR_DOT_SIZE = 4;
+
+	constexpr float HITMARK_DURATION = 0.2f;
+	constexpr int HITMARK_OFFSET = 8;
+	constexpr int HITMARK_LENGTH = 8;
+	constexpr int HITMARK_THICKNESS = 3;
+
+	constexpr int PICKUP_UI_OFFSET_X = -120;
+	constexpr int PICKUP_UI_OFFSET_Y = 120;
+
+	constexpr int HP_UI_X = 50;
+	constexpr int HP_UI_OFFSET_Y = -80;
+
+	constexpr int WEAPON_UI_OFFSET_X = -200;
+	constexpr int WEAPON_NAME_OFFSET_Y = -110;
+	constexpr int AMMO_UI_OFFSET_Y = -80;
+	constexpr int RESERVE_UI_OFFSET_Y = -50;
+
+	constexpr int RELOAD_UI_OFFSET_X = -40;
+	constexpr int RELOAD_UI_OFFSET_Y = 40;
+
+	constexpr float INDICATOR_RADIUS = 100;
+	constexpr int INDICATOR_DOT_SIZE = 5;
+}
+
+HUD::HUD(Player* player) : pplayer(player){}
 
 void HUD::Update() {
 	float dt = Time::GetIns().GetDelta();
-	if (cancelReloadTimer >= 0) {
-		cancelReloadTimer -= dt;
-		if (cancelReloadTimer < 0) {
-			cancelReloadTimer = 0;
-		}
-	}
 
 	if (hitMarkTimer > 0.0f) {
 		hitMarkTimer -= dt;
@@ -24,21 +45,18 @@ void HUD::Update() {
 
 void HUD::Draw() {
 	if (pplayer) {
-		int dotSize = 4;
-		DrawCircle(CENTER_X, CENTER_Y, dotSize, GetColor(0, 0, 0), true);
+		DrawCircle(CENTER_X, CENTER_Y, CROSSHAIR_DOT_SIZE, GetColor(0, 0, 0), true);
 
 		if (hitMarkTimer > 0.0f) {
 			int cx = CENTER_X;
 			int cy = CENTER_Y;
-			int offset = 8;
-			int length = 8;
 
 			int color = lastHitWasHS ? GetColor(255, 0, 0) : GetColor(255, 255, 255);
 
-			DrawLine(cx - offset - length, cy - offset - length, cx - offset, cy - offset, color,3);
-			DrawLine(cx + offset + length, cy - offset - length, cx + offset, cy - offset, color,3);
-			DrawLine(cx - offset - length, cy + offset + length, cx - offset, cy + offset, color,3);
-			DrawLine(cx + offset + length, cy + offset + length, cx + offset, cy + offset, color,3);
+			DrawLine(cx - HITMARK_OFFSET - HITMARK_LENGTH, cy - HITMARK_OFFSET - HITMARK_LENGTH, cx - HITMARK_OFFSET, cy - HITMARK_OFFSET, color,3);
+			DrawLine(cx + HITMARK_OFFSET + HITMARK_LENGTH, cy - HITMARK_OFFSET - HITMARK_LENGTH, cx + HITMARK_OFFSET, cy - HITMARK_OFFSET, color,3);
+			DrawLine(cx - HITMARK_OFFSET - HITMARK_LENGTH, cy + HITMARK_OFFSET + HITMARK_LENGTH, cx - HITMARK_OFFSET, cy + HITMARK_OFFSET, color,3);
+			DrawLine(cx + HITMARK_OFFSET + HITMARK_LENGTH, cy + HITMARK_OFFSET + HITMARK_LENGTH, cx + HITMARK_OFFSET, cy + HITMARK_OFFSET, color,3);
 		}
 
 		WeaponItem* nearItem = ItemManager::GetIns().GetNearItem();
@@ -47,13 +65,13 @@ void HUD::Draw() {
 			if (spec) {
 				const char* weaponName = TextManager::GetIns().GetWeaponName(spec->id);
 
-				DrawFormatString(CENTER_X - 120, CENTER_Y + 120, GetColor(0, 0, 0), "PickUp : %s", weaponName);
+				DrawFormatString(CENTER_X + PICKUP_UI_OFFSET_X, CENTER_Y + PICKUP_UI_OFFSET_Y, GetColor(0, 0, 0), "PickUp : %s", weaponName);
 			}
 		}
 		int hp = pplayer->GetHP();
 		int maxHP = pplayer->GetStatus().maxHP;
 
-		DrawFormatString(50, WINDOW_HEIGHT - 80, GetColor(0, 0, 0), "HP:%d / %d", hp, maxHP);
+		DrawFormatString(HP_UI_X, WINDOW_HEIGHT + HP_UI_OFFSET_Y, GetColor(0, 0, 0), "HP:%d / %d", hp, maxHP);
 
 		Weapon* weapon = pplayer->GetWeapon();
 
@@ -62,29 +80,23 @@ void HUD::Draw() {
 			int mag = weapon->GetSpec().magAmmo;
 			int reserve = weapon->GetReserveAmmo();
 			const char* weaponName = TextManager::GetIns().GetWeaponName(pplayer->GetWeapon()->GetSpec().id);
-			DrawFormatString(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 110, GetColor(0, 0, 0), "%s", weaponName);
-			DrawFormatString(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 80, GetColor(0, 0, 0), "AMMO: %d / %d", ammo, mag);
+			int weaponUIX = WINDOW_WIDTH + WEAPON_UI_OFFSET_X;
+			DrawFormatString(weaponUIX, WINDOW_HEIGHT + WEAPON_NAME_OFFSET_Y, GetColor(0, 0, 0), "%s", weaponName);
+			DrawFormatString(weaponUIX, WINDOW_HEIGHT + AMMO_UI_OFFSET_Y, GetColor(0, 0, 0), "AMMO: %d / %d", ammo, mag);
 
 			if (!weapon->IsInfinite()) {
-				DrawFormatString(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 50, GetColor(0, 0, 0), "RESERVE: %d", reserve);
+				DrawFormatString(weaponUIX, WINDOW_HEIGHT + RESERVE_UI_OFFSET_Y, GetColor(0, 0, 0), "RESERVE: %d", reserve);
 			}
 
 			if (weapon->Reloading()) {
-				DrawString(CENTER_X - 40, CENTER_Y + 40, "RELOADING", GetColor(0, 0, 0));
+				DrawString(CENTER_X + RELOAD_UI_OFFSET_X, CENTER_Y + RELOAD_UI_OFFSET_Y, "RELOADING", GetColor(0, 0, 0));
 			}
 
-	/* 
-			if (weapon->IsReloadCanceled() || cancelReloadTimer > 0) {
-				DrawString(CENTER_X - 40, CENTER_Y + 60, "CANCELED", GetColor(0, 0, 0));
-				weapon->SetReloadCanceled();
-				cancelReloadTimer = 1.5f;
-			}
-	*/
 			const auto& attackers = pplayer->GetTargeted();
 			if (attackers.empty())return;
 
 			float playerYaw = pplayer->GetCam()->GetYaw() * (DX_PI_F / 180.0f);
-			float radius = 100.0f;
+		
 
 			for (const auto& enemyPos : attackers) {
 				VECTOR screenPos = ConvWorldPosToScreenPos(enemyPos);
@@ -98,16 +110,16 @@ void HUD::Draw() {
 
 				float relativeAngle = enemyAngle - playerYaw;
 
-				int drawX = CENTER_X + (int)(sinf(relativeAngle) * radius);
-				int drawY = CENTER_Y - (int)(cosf(relativeAngle) * radius);
+				int drawX = CENTER_X + static_cast<int>(sinf(relativeAngle) * INDICATOR_RADIUS);
+				int drawY = CENTER_Y - static_cast<int>(cosf(relativeAngle) * INDICATOR_RADIUS);
 
-				DrawCircle(drawX, drawY, 5, GetColor(255, 0, 0),TRUE);
+				DrawCircle(drawX, drawY, INDICATOR_DOT_SIZE, GetColor(255, 0, 0),TRUE);
 			}
 		}
 	}
 }
 
 void HUD::OnHitTarget(bool isHeadShot) {
-	hitMarkTimer = 0.2f;
+	hitMarkTimer = HITMARK_DURATION;
 	lastHitWasHS = isHeadShot;
 }

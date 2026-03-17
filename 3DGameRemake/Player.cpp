@@ -1,9 +1,13 @@
 ﻿#include "Player.h"
 #include "Debug.h"
 #include "ItemManager.h"
-#include "cmath"
+#include "ConfigManager.h"
 
+#include <cmath>
 
+namespace {
+	constexpr float MAX_FOV = 110.0f * DX_PI_F / 180;
+}
 Player::Player(VECTOR pos, Camera* camera,PlayMode mode)
 	: Character(pos, CHARA_STATUS::PLAYER)
 	, cam(camera)
@@ -194,11 +198,12 @@ void Player::Update() {
 	camPos.y += currentEyeHeight;
 	
 	//視野角を変える処理
+	float baseFov = ConfigManager::GetIns().Settings().basefov;
 	float speed = VSize(velocity);
 	float speedRate = speed / 0.75f;
 	if (speedRate > 1.0f) speedRate = 1.0f;
 	//速度に応じて視野角を広げる
-	float targetFov = _BASE_FOV + (MAX_FOV - _BASE_FOV) * speedRate;
+	float targetFov = baseFov + (MAX_FOV - baseFov) * speedRate;
 	if (currentWeapon) {
 		//覗いていれば武器のズームを適用
 		if (isAds)

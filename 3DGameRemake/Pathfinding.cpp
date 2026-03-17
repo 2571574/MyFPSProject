@@ -1,8 +1,39 @@
 ﻿#include "Pathfinding.h"
+#include "Debug.h"
+
 #include <queue>
 #include<unordered_map>
 #include<algorithm>
-#include "Debug.h"
+#include<cfloat>
+
+namespace {
+	constexpr float GRID_SIZE = 2.0f;
+	constexpr float CHARA_HEIGHT = 2.0f;
+	constexpr float CHARA_RADIUS = 0.5f;
+
+	constexpr float MAP_START_Y = 30.0f;
+	constexpr float MAP_END_Y = 10.0f;
+	constexpr float MAX_SLOPE_NORMAL = 0.6f;
+
+	constexpr float MAP_MIN_X = -30.0f;
+	constexpr float MAP_MAX_X = 30.0f;
+	constexpr float MAP_MIN_Z = -30.0f;
+	constexpr float MAP_MAX_Z = 30.0f;
+
+	constexpr float RAY_Y_OFFSET = 1.0f;
+	constexpr float GROUND_CHECK_DIST = 0.4f;
+
+	//ノード探索のための情報
+	struct NodeRecord {
+		bool isClosed = false;
+		int parentID = -1;
+		float costF = FLT_MAX;
+		float costG = FLT_MAX;
+
+		bool operator>(const NodeRecord& other) const {
+			return costF > other.costF;
+		}
+	};
 bool IsSafePlace(int modelhandle, VECTOR pos, float charaRadius, float charaHeight, float maxSlope) {
 	VECTOR rayStart = VAdd(pos, VGet(0.0f, 1.0f, 0.0f));
 	VECTOR rayEnd = VAdd(pos, VGet(0.0f, -1.0f, 0.0f));
@@ -35,35 +66,24 @@ bool IsSafePlace(int modelhandle, VECTOR pos, float charaRadius, float charaHeig
 
 	return hasSpace;
 }
+}
 
 void InitNode(int modelhandle, std::vector<Node>& mapnode) {
 	mapnode.clear();
 
-	float gridSize = 2.0f;
-	float charaHeight = 2.0f;
-	float charaRadius = 0.5f;
-
-	float startY = 30.0f;
-	float endY = -10.0f;
-	float maxSlopeNormal = 0.6f;
-	float maxStepHeight = 1.5f;
-
-	float minX = -30.0f;	float maxX = 30.0f;
-	float minZ = -30.0f;	float maxZ = 30.0f;
-
-	for (float x = minX; x <= maxX; x += gridSize) {
-		for (float z = minZ; z <= maxZ; z += gridSize) {
-			VECTOR rayStart = VGet(x, startY, z);
-			VECTOR rayEnd = VGet(x, endY, z);
+	for (float x =MAP_MIN_X; x <= MAP_MAX_X; x += GRID_SIZE) {
+		for (float z = MAP_MIN_Z; z <= MAP_MAX_Z; z += GRID_SIZE) {
+			VECTOR rayStart = VGet(x, MAP_START_Y, z);
+			VECTOR rayEnd = VGet(x, MAP_END_Y, z);
 
 
-			while (1) {
+			while (true) {
 				MV1_COLL_RESULT_POLY hit = MV1CollCheck_Line(modelhandle, -1, rayStart, rayEnd);
 				if (hit.HitFlag == 0) {
 					break;
 				}
 
-				if (IsSafePlace(modelhandle, hit.HitPosition, charaRadius, charaHeight, maxSlopeNormal)) {
+				if (IsSafePlace(modelhandle, hit.HitPosition, CHARA_RADIUS, CHARA_HEIGHT, MAX_SLOPE_NORMAL)) {
 					Node node;
 					node.position = VAdd(hit.HitPosition, VGet(0.0f, 0.1f, 0.0f));
 					mapnode.push_back(node);
@@ -78,7 +98,7 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode) {
 
 	}
 
-	float connectDistMax = gridSize * 1.8f;
+	float connectDistMax = GRID_SIZE * 1.8f;
 
 	for (size_t i = 0; i < mapnode.size(); ++i) {
 		for (size_t j = i + 1; j < mapnode.size(); ++j) {
@@ -88,18 +108,18 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode) {
 			float dist = GetDistance(posA, posB);
 			if (dist > connectDistMax) continue;
 
-			float walkableTan = sqrtf(1.0f / (maxSlopeNormal * maxSlopeNormal) - 1.0f);
+			float walkableTan = sqrtf(1.0f / (MAX_SLOPE_NORMAL * MAX_SLOPE_NORMAL) - 1.0f);
 			float maxWalkableDiff = dist * walkableTan + 0.2f;
 			if (std::abs(posA.y - posB.y) > maxWalkableDiff)continue;
 
-			VECTOR capStart = VAdd(posA, VGet(0, charaHeight * 0.5f, 0));
-			VECTOR capEnd = VAdd(posB, VGet(0, charaHeight * 0.5f, 0));
+			VECTOR capStart = VAdd(posA, VGet(0, CHARA_HEIGHT * 0.5f, 0));
+			VECTOR capEnd = VAdd(posB, VGet(0, CHARA_HEIGHT * 0.5f, 0));
 
-			MV1_COLL_RESULT_POLY_DIM wallHit = MV1CollCheck_Capsule(modelhandle, -1, capStart, capEnd, charaRadius);
+			MV1_COLL_RESULT_POLY_DIM wallHit = MV1CollCheck_Capsule(modelhandle, -1, capStart, capEnd, CHARA_RADIUS);
 			bool isBlockedByWall = false;
 			if (wallHit.HitNum > 0) {
 				for (int k = 0; k < wallHit.HitNum; k++) {
-					if (wallHit.Dim[k].Normal.y < maxSlopeNormal) {
+					if (wallHit.Dim[k].Normal.y < MAX_SLOPE_NORMAL) {
 						isBlockedByWall = true;
 						break;
 					}
@@ -122,7 +142,7 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode) {
 				VECTOR e = VGet(checkPos.x, prevY - 0.5f, checkPos.z);
 				MV1_COLL_RESULT_POLY groundHit = MV1CollCheck_Line(modelhandle, -1, s, e);
 
-				if (groundHit.HitFlag == 0 || groundHit.Normal.y < maxSlopeNormal) {
+				if (groundHit.HitFlag == 0 || groundHit.Normal.y < MAX_SLOPE_NORMAL) {
 					isGroundContinuous = false;
 					break;
 				}
@@ -136,7 +156,7 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode) {
 		}
 	}
 }
-int GetNearestNodeIndex(VECTOR pos, std::vector<Node>& mapnode) {
+int GetNearestNodeIndex(VECTOR pos, const std::vector<Node>& mapnode) {
 	int nearestID = -1;
 	float minDistSq = 99999.0f;
 
@@ -151,7 +171,7 @@ int GetNearestNodeIndex(VECTOR pos, std::vector<Node>& mapnode) {
 	return nearestID;
 }
 
-VECTOR GetNodePosition(int nodeID, std::vector<Node>& mapnode) {
+VECTOR GetNodePosition(int nodeID, const std::vector<Node>& mapnode) {
 	if (nodeID >= 0 && nodeID < mapnode.size()) {
 		return mapnode[nodeID].position;
 	}
@@ -160,7 +180,7 @@ VECTOR GetNodePosition(int nodeID, std::vector<Node>& mapnode) {
 
 float GetDistance(VECTOR a, VECTOR b) { return VSize(VSub(a, b)); };
 
-std::vector<VECTOR>FindPath(VECTOR startPos, VECTOR goalPos, std::vector<Node>&mapnode) {
+std::vector<VECTOR>FindPath(VECTOR startPos, VECTOR goalPos, const std::vector<Node>&mapnode) {
 	std::vector<VECTOR> path;
 	if (mapnode.empty()) return path;
 	int startIndex = GetNearestNodeIndex(startPos, mapnode);

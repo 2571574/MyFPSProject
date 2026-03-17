@@ -3,9 +3,22 @@
 #include "EnemyManager.h"
 #include "Player.h"
 
+namespace {
+	constexpr float FPS_BASE = 60.0f;
+	constexpr int HEADSHOT_MULTIPLIER = 2;
+}
+BaseProjectile::BaseProjectile(VECTOR start, TEAMID _id, const GunStatus& _spec, VECTOR direction)
+	: startpos(start)
+	, pos(start)
+	, dir(direction)
+	, id(_id)
+	, spec(_spec)
+	, alive(true) {
+	dir = VNorm(dir);
+}
 /*弾の更新*/
 void BaseProjectile::Update() {
-	float move = spec.projectileSpeed * Time::GetIns().GetDelta()*60;		//進む量
+	float move = spec.projectileSpeed * Time::GetIns().GetDelta()* FPS_BASE;		//進む量
 	VECTOR nextpos = VAdd(pos, VScale(dir, move));		//次のフレームの時の位置
 
 	HitInfo hit =
@@ -25,7 +38,7 @@ void BaseProjectile::Update() {
 		else if (hit.character) {
 			hitEnemy = true;
 			isHeadShot = hit.isHeadShot;
-			int lastDamage = hit.isHeadShot ? spec.damage * 2 : spec.damage;
+			int lastDamage = hit.isHeadShot ? spec.damage * HEADSHOT_MULTIPLIER : spec.damage;
 			if (hit.isHeadShot)Debug::Log("Headshot");
 			else Debug::Log("hit");
 			hit.character->OnHit(lastDamage,spec.id);
@@ -55,6 +68,5 @@ void BaseProjectile::Draw() {
 
 
 bool BaseProjectile::Explode(VECTOR hitPos) {
-	DrawSphere3D(hitPos, spec.explodeArea, CIRCLE_DIVNUM, GetColor(255, 150, 0), GetColor(255, 150, 0), FALSE);
 	return CollisionManager::GetIns().ProcessExplotion(hitPos, spec.explodeArea, spec.damage, spec.knockbackP, false, id, spec.id);
 }

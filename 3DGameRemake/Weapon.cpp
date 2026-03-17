@@ -6,7 +6,24 @@
 
 namespace {
 	constexpr float SPREAD_RANDOM_PRECISION = 1000.0f;
+	constexpr float RAY_MAX_DISTANCE = 100.0f;
+	constexpr float RECOIL_RANDOM_PRECISION = 100.0f;
 }
+
+Weapon::Weapon(const GunStatus _spec)
+	: spec(_spec)
+	, ammo(_spec.magAmmo)
+	, reserveAmmo(_spec.bagAmmo)
+	, infinite(_spec.isInfinite)
+	, currentState(WeaponState::IDLE)
+	, reloadCT(0)
+	, fireCT(0)
+	, aim(false)
+	, gunModelHandle(-1)
+	, bulletModelHandle(-1)
+	, effectHandle(-1)
+	, soundHandle(-1){}
+
 /*武器の更新*/
 void Weapon::Update() {
 	//リロード、射撃後のタイマーを減らす
@@ -33,7 +50,7 @@ void Weapon::Update() {
 				add = (reserveAmmo < need) ? reserveAmmo : need;
 			ammo += add;
 			reserveAmmo -= add;
-			currentState == WeaponState::IDLE;
+			currentState = WeaponState::IDLE;
 		}
 	}
 }
@@ -45,8 +62,8 @@ void Weapon::Fired(Character& user) {
 
 	//反動の処理
 	float recoilP = spec.recoil;
-	int randMax = (int)(spec.recoil * 100.0f);
-	float recoilY = (randMax>0) ?(((float)GetRand(randMax) / 100.0f) - (spec.recoil/2.0)) : 0.0f;
+	int randMax = static_cast<int>(spec.recoil * RECOIL_RANDOM_PRECISION);
+	float recoilY = (randMax>0) ?(((float)GetRand(randMax) / RECOIL_RANDOM_PRECISION) - (spec.recoil/2.0)) : 0.0f;
 	user.AddRecoil(recoilY, recoilP);
 }
 
@@ -89,8 +106,9 @@ void Weapon::Fire(Character& user, VECTOR direction) {
 	}
 		VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), direction));
 		VECTOR up = VNorm(VCross(direction, right));
-		float randX = ((float)GetRand(2000) - 1000.0f) / 1000.0f;
-		float randY = ((float)GetRand(2000) - 1000.0f) / 1000.0f;
+
+		float randX = ((float)GetRand(2000) - SPREAD_RANDOM_PRECISION) / SPREAD_RANDOM_PRECISION;
+		float randY = ((float)GetRand(2000) - SPREAD_RANDOM_PRECISION) / SPREAD_RANDOM_PRECISION;
 		dir = VAdd(direction, VScale(right, randX * currentSpread));
 		dir = VAdd(dir, VScale(up, randY * currentSpread));
 		dir = VNorm(dir);
@@ -146,7 +164,6 @@ void Weapon::FireHitScan(Character& user, VECTOR direction) {
 	//始点と終点をセット
 	VECTOR start = spawnPos;
 	VECTOR end = VAdd(start, VScale(lastDir, spec.range));
-	DrawLine3D(start, end, GetColor(255, 255, 0));
 	//始点から終点までで当たったか判定する
 	HitInfo hit = CollisionManager::GetIns().CheckHitScan(start, end, user.GetID());
 	if (hit.character != nullptr) {
@@ -161,7 +178,7 @@ void Weapon::FireHitScan(Character& user, VECTOR direction) {
 /*リロード*/
 void Weapon::Reload() {
 	if (!CanReload()) return;	//できなければreturn
-	reloading = true;			
+	currentState = WeaponState::RELOADING;
 	reloadCT = spec.reloadTime;
 }
 

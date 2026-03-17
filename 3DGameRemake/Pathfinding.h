@@ -8,18 +8,6 @@ struct Node {
 	std::vector <int> connectedNode;
 };
 
-//ノード探索のための情報
-struct NodeRecord {
-	bool isClosed = false;
-	int parentID = -1;
-	float costF = 99999.0f;
-	float costG = 99999.0f;
-
-	bool operator>(const NodeRecord& other) const {
-		return costF > other.costF;
-	}
-};
-
 /// <summary>
 /// ノードの初期化　マップ上にノードを配置し、繋げる
 /// </summary>
@@ -35,10 +23,10 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode);
 /// <param name="goalPos">ゴール地点</param>
 /// <param name="mapnode">ノード情報</param>
 /// <returns>通るノードの位置の配列</returns>
-std::vector<VECTOR> FindPath(VECTOR startPos, VECTOR goalPos, std::vector<Node>& mapnode);
+std::vector<VECTOR> FindPath(VECTOR startPos, VECTOR goalPos, const std::vector<Node>& mapnode);
 
 //getter
 
-VECTOR GetNodePosition(int nodeID, std::vector<Node>& mapnode);
+VECTOR GetNodePosition(int nodeID, const std::vector<Node>& mapnode);
 float GetDistance(VECTOR a, VECTOR b);
-int GetNearestNodeIndex(VECTOR pos, std::vector<Node>& mapnode);
+int GetNearestNodeIndex(VECTOR pos, const std::vector<Node>& mapnode);

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Character.h"
 #include "Debug.h"
+
 class Player;
 
 /// <summary>
@@ -22,17 +23,10 @@ protected:
 	ENEMYTYPE type;
 public:
 
-	Enemy(VECTOR pos, CharacterStatus& status, Player* _target, ENEMYTYPE type);
+	Enemy(VECTOR pos, const CharacterStatus& status, Player* _target, ENEMYTYPE type);
 	virtual ~Enemy(){}
 
-	/// <summary>
-	/// 更新処理
-	/// </summary>
 	virtual void Update() override = 0;
-
-	/// <summary>
-	/// 描画処理
-	/// </summary>
 	virtual void Draw() override = 0;
 
 
@@ -68,16 +62,16 @@ public:
 
 	//移動
 	
-	bool CheckLineSight(const Character* target,float height);
+	bool CheckLineSight(const Character* target,float height)const;
 
-	bool CheckPathSafety(VECTOR targetPos);
+	bool CheckPathSafety(VECTOR targetPos)const;
 
 	VECTOR UpdateNavigation(const Character* target, float dt);
 	
 	ENEMYTYPE GetType()const { return type; }
 
-	bool CheckFall() { return position.y < -10.0f; }
+	bool CheckFall()const;
 
-	bool NowSpawned() { return nowSpawned; }
+	bool NowSpawned()const; { return nowSpawned; }
 };
 

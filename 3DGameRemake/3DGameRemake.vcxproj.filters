@@ -51,28 +51,10 @@
     <ClCompile Include="Player.cpp">
       <Filter>2.OBJECT\1.ENTITY</Filter>
     </ClCompile>
-    <ClCompile Include="ProjectileManager.cpp">
-      <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
-    </ClCompile>
-    <ClCompile Include="Status.cpp">
-      <Filter>1.GAME</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemyManager.cpp">
-      <Filter>1.GAME</Filter>
-    </ClCompile>
-    <ClCompile Include="Weapon.cpp">
-      <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseProjectile.cpp">
-      <Filter>2.OBJECT\3.BASE</Filter>
-    </ClCompile>
     <ClCompile Include="Dummy.cpp">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClCompile>
     <ClCompile Include="MeleeEnemy.cpp">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClCompile>
-    <ClCompile Include="Pathfinding.cpp">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClCompile>
     <ClCompile Include="HUD.cpp">
@@ -81,26 +63,11 @@
     <ClCompile Include="RifleEnemy.cpp">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClCompile>
     <ClCompile Include="SniperEnemy.cpp">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClCompile>
     <ClCompile Include="RollingEnemy.cpp">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClCompile>
-    <ClCompile Include="Character.cpp">
-      <Filter>2.OBJECT\3.BASE</Filter>
-    </ClCompile>
-    <ClCompile Include="ItemManager.cpp">
-      <Filter>2.OBJECT\2.WEAPON</Filter>
-    </ClCompile>
-    <ClCompile Include="WeaponItem.cpp">
-      <Filter>2.OBJECT\2.WEAPON</Filter>
-    </ClCompile>
-    <ClCompile Include="TextManager.cpp">
-      <Filter>2.OBJECT\3.BASE</Filter>
     </ClCompile>
     <ClCompile Include="CheckKey.cpp">
       <Filter>チェック済み</Filter>
@@ -110,12 +77,6 @@
     </ClCompile>
     <ClCompile Include="Time.cpp">
       <Filter>チェック済み</Filter>
-    </ClCompile>
-    <ClCompile Include="ConfigManager.cpp">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
       <Filter>チェック済み</Filter>
@@ -141,34 +102,52 @@
     <ClCompile Include="CollisionManager.cpp">
       <Filter>チェック済み</Filter>
     </ClCompile>
+    <ClCompile Include="Status.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="TextManager.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemManager.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectileManager.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyManager.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigManager.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseProjectile.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="Pathfinding.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
+    <ClCompile Include="WeaponItem.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Parameter.h">
-      <Filter>1.GAME</Filter>
-    </ClInclude>
     <ClInclude Include="Debug.h">
       <Filter>3.TOOL</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>2.OBJECT\1.ENTITY</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseProjectile.h">
-      <Filter>2.OBJECT\3.BASE</Filter>
-    </ClInclude>
-    <ClInclude Include="Character.h">
-      <Filter>2.OBJECT\3.BASE</Filter>
-    </ClInclude>
-    <ClInclude Include="Status.h">
-      <Filter>1.GAME</Filter>
-    </ClInclude>
-    <ClInclude Include="EnemyManager.h">
-      <Filter>1.GAME</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileManager.h">
-      <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemy.h">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClInclude>
     <ClInclude Include="Dummy.h">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
@@ -176,14 +155,8 @@
     <ClInclude Include="MeleeEnemy.h">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClInclude>
-    <ClInclude Include="Pathfinding.h">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClInclude>
     <ClInclude Include="HUD.h">
       <Filter>2.OBJECT\1.ENTITY</Filter>
-    </ClInclude>
-    <ClInclude Include="Weapon.h">
-      <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
     </ClInclude>
     <ClInclude Include="RifleEnemy.h">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
@@ -194,26 +167,11 @@
     <ClInclude Include="RollingEnemy.h">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClInclude>
-    <ClInclude Include="ItemManager.h">
-      <Filter>2.OBJECT\2.WEAPON</Filter>
-    </ClInclude>
-    <ClInclude Include="WeaponItem.h">
-      <Filter>1.GAME</Filter>
-    </ClInclude>
-    <ClInclude Include="TextManager.h">
-      <Filter>2.OBJECT\3.BASE</Filter>
-    </ClInclude>
     <ClInclude Include="CheckKey.h">
       <Filter>チェック済み</Filter>
     </ClInclude>
     <ClInclude Include="Time.h">
       <Filter>チェック済み</Filter>
-    </ClInclude>
-    <ClInclude Include="ConfigManager.h">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>1.GAME</Filter>
     </ClInclude>
     <ClInclude Include="InputManager.h">
       <Filter>チェック済み</Filter>
@@ -240,6 +198,48 @@
       <Filter>チェック済み</Filter>
     </ClInclude>
     <ClInclude Include="CollisionManager.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapon.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="TextManager.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemManager.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileManager.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyManager.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigManager.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseProjectile.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="Status.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="Parameter.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="Pathfinding.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="WeaponItem.h">
       <Filter>チェック済み</Filter>
     </ClInclude>
   </ItemGroup>

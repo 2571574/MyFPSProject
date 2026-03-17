@@ -6,7 +6,6 @@ class HUD
 {
 private:
 	Player* pplayer;
-	float cancelReloadTimer;
 
 	float hitMarkTimer = 0.0f;
 	bool lastHitWasHS = false;

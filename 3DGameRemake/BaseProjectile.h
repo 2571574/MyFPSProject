@@ -15,8 +15,6 @@ protected:
 	GunStatus spec;		//武器性能
 	TEAMID id;			//射手のチームID
 	bool alive;			//生存タグ
-
-	int stageHandle;
 public:
 	/// <summary>
 	/// コンストラクタ
@@ -25,28 +23,21 @@ public:
 	/// <param name="_id">射手のチームID</param>
 	/// <param name="_spec">撃った銃の性能</param>
 	/// <param name="direction">射撃方向のベクトル</param>
-	BaseProjectile(VECTOR start,TEAMID _id,const GunStatus& _spec, VECTOR direction):startpos(start),pos(start), dir(direction), id(_id), spec(_spec), alive(true) {
-		dir = VNorm(dir);
-	}
+	BaseProjectile(VECTOR start, TEAMID _id, const GunStatus& _spec, VECTOR direction);
 	
+	 ~BaseProjectile() {}
+
 	
-	virtual ~BaseProjectile() {}
+	void Update();
 
-	/// <summary>
-	/// 更新処理
-	/// </summary>
-	virtual void Update();
-
-	/// <summary>
-	/// 描画処理
-	/// </summary>
-	virtual void Draw();
+	
+	void Draw();
 
 	/// <summary>
 	/// 着弾点で爆発させる　AOE=trueの武器の場合のみ
 	/// </summary>
 	/// <param name="hitPos">着弾位置</param>
-	virtual bool Explode(VECTOR hitPos);
+	 bool Explode(VECTOR hitPos);
 
 	//Getter
 	const GunStatus& GetBulletStatus() const { return spec; }

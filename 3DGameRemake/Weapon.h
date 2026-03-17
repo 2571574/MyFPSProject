@@ -44,68 +44,52 @@ protected:
 	void Fired(Character& user);
 	
 public:
-	Weapon(const GunStatus _spec)
-		: spec(_spec)
-		, ammo(_spec.magAmmo)
-		, reserveAmmo(_spec.bagAmmo)
-		, currentState(WeaponState::IDLE)
-		, reloadCT(0)
-		, fireCT(0)
-		, aim(false)
-		, gunModelHandle(-1)
-		, bulletModelHandle(-1)
-		, effectHandle(-1)
-		, soundHandle(-1)
-	{
-		infinite = (reserveAmmo == 0);
-	}
-
-	
+	Weapon(const GunStatus _spec);
 	virtual ~Weapon() {}
 
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	virtual void Update();
+	void Update();
 
 	/// <summary>
 	/// 射撃の入力を得る
 	/// </summary>
 	/// <param name="user">射手</param>
 	/// <param name="direction">射撃方向のベクトル</param>
-	virtual void FireInput(Character& user, VECTOR direction);
+	void FireInput(Character& user, VECTOR direction);
 
 	/// <summary>
 	/// ADSの入力を得る
 	/// </summary>
-	virtual void AdsInput();
+	void AdsInput();
 
 	/// <summary>
 	/// リロードの入力を得る
 	/// </summary>
-	virtual void ReloadInput();
+	void ReloadInput();
 
 	/// <summary>
 	/// 射撃処理
 	/// </summary>
 	/// <param name="user">射手</param>
 	/// <param name="direction">射撃方向のベクトル</param>
-	virtual void Fire(Character& user, VECTOR direction);
+	void Fire(Character& user, VECTOR direction);
 
 	/// <summary>
 	/// ADSの処理
 	/// </summary>
-	virtual void Ads();
+	void Ads();
 	
 	/// <summary>
 	/// リロードの処理
 	/// </summary>
-	virtual void Reload();
+	void Reload();
 
 	/// <summary>
 	/// 描画処理
 	/// </summary>
-	virtual void Draw();
+	void Draw();
 
 	bool CanFire() const {
 		return (fireCT <= 0 && currentState == WeaponState::IDLE && ammo > 0);
@@ -125,14 +109,14 @@ public:
 	}
 	
 
-	virtual void CancelAds() {
+	void CancelAds() {
 		aim = false;
 	}
 
 	/// <summary>
 	/// リロード中のリロードキャンセル処理
 	/// </summary>
-	virtual void CancelReload() {
+	void CancelReload() {
 		if (currentState == WeaponState::RELOADING) {
 			reloadCT = 0.0f;
 			currentState = WeaponState::IDLE;

@@ -14,21 +14,12 @@ enum class ENEMYTYPE {
 	MAX_TYPE
 };
 
-enum PlayMode {
+enum class PlayMode {
 	MODE_TUTORIAL,
 	MODE_EASY,
 	MODE_NORMAL,
 	MODE_HARD,
 	MODE_MAX
-};
-
-enum GUNNAME {
-	AssaultRifle,
-	Sniper,
-	RocketLauncher,
-	SubMashineGun,
-	HandGun,
-	
 };
 
 enum class WeaponID {
@@ -52,9 +43,9 @@ struct CharacterStatus { //エンティティの性能
 	int mass;			 //重量
 	float width;		 //幅
 	float height;		 //高さ
-	float crouchHeight;
-	float eyeHeight;
-	float crouchEyeHeight;
+	float crouchHeight;	 //しゃがみ時の高さ
+	float eyeHeight;	 //目の高さ
+	float crouchEyeHeight;//しゃがみ時の目の高さ
 	TEAMID teamID;		 //チームID
 	int score;
 };
@@ -64,6 +55,7 @@ struct GunStatus {		 //武器の性能
 	bool hitscan;		//ヒットスキャン
 	bool AOE;			//範囲攻撃武器
 	bool fullAuto;		//フルオート
+	bool isInfinite;	//弾薬無限
 	int damage;			 //ダメージ
 	float range;		 //射程
 	int magAmmo;		 //弾数

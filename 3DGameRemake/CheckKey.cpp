@@ -1,6 +1,9 @@
 ﻿#include "CheckKey.h"
 #include "Debug.h"
 
+namespace {
+	constexpr float STICK_DEADZONE = 0.01f;			//スティックのデッドゾーン
+}
 
 /*コンストラクタ*/
 CheckKey::CheckKey() {

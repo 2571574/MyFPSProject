@@ -57,9 +57,6 @@
     <ClCompile Include="MeleeEnemy.cpp">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClCompile>
-    <ClCompile Include="HUD.cpp">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
-    </ClCompile>
     <ClCompile Include="RifleEnemy.cpp">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClCompile>
@@ -141,6 +138,9 @@
     <ClCompile Include="WeaponItem.cpp">
       <Filter>チェック済み</Filter>
     </ClCompile>
+    <ClCompile Include="HUD.cpp">
+      <Filter>チェック済み</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Debug.h">
@@ -154,9 +154,6 @@
     </ClInclude>
     <ClInclude Include="MeleeEnemy.h">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClInclude>
-    <ClInclude Include="HUD.h">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
     </ClInclude>
     <ClInclude Include="RifleEnemy.h">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
@@ -240,6 +237,9 @@
       <Filter>チェック済み</Filter>
     </ClInclude>
     <ClInclude Include="WeaponItem.h">
+      <Filter>チェック済み</Filter>
+    </ClInclude>
+    <ClInclude Include="HUD.h">
       <Filter>チェック済み</Filter>
     </ClInclude>
   </ItemGroup>

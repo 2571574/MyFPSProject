@@ -6,6 +6,9 @@
 #include <algorithm>
 #include <functional>
 
+namespace {
+	constexpr float FADE_SPEED = 2.0f;
+}
 SceneManager::SceneManager()
 	: exitTag(false)
 	, currentMode(PlayMode::MODE_NORMAL){
@@ -15,11 +18,39 @@ SceneManager::SceneManager()
 }
 
 void SceneManager::ChangeScene(std::unique_ptr<BaseScene> nextscene) {
-	currentScene = std::move(nextscene);
-	currentScene->Init();
+	if (fadeState != FadeState::NONE)return;
+
+	if (currentScene == nullptr) {
+		currentScene = std::move(nextscene);
+		currentScene->Init();
+		fadeState = FadeState::FADEIN;
+		fadeAlpha = 1.0f;
+		return;
+	}
+	nextScenePending = std::move(nextscene);
+	fadeState = FadeState::FADEOUT;
+	fadeAlpha = 0.0f;
 }
 
 void SceneManager::Update() {
+	float dt = Time::GetIns().GetDelta();
+	if (fadeState == FadeState::FADEOUT) {
+		fadeAlpha += FADE_SPEED * dt;
+		if (fadeAlpha >= 1.0f) {
+			fadeAlpha = 1.0f;
+
+			currentScene = std::move(nextScenePending);
+			currentScene->Init();
+			fadeState = FadeState::FADEIN;
+		}
+	}
+	else if (fadeState == FadeState::FADEIN) {
+		fadeAlpha -= FADE_SPEED * dt;
+		if (fadeAlpha <= 0.0f) {
+			fadeAlpha = 0.0f;
+			fadeState = FadeState::NONE;
+		}
+	}
 	if (currentScene) {
 		currentScene->Update();
 	}
@@ -28,6 +59,12 @@ void SceneManager::Update() {
 void SceneManager::Draw() {
 	if (currentScene) {
 		currentScene->Draw();
+	}
+
+	if(fadeState != FadeState::NONE){
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, (int)(fadeAlpha * 255));
+		DrawBox(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GetColor(0, 0, 0), TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 }
 

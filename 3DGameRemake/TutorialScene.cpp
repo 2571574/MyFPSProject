@@ -60,7 +60,7 @@ void TutorialScene::Init() {
 		target.push_back(std::move(Target));
 	}
 
-	//ボタンダミー
+	//ボタンダミー 
 	for (int i = 0; i < 4; i++) {
 		SpawnButton btn;
 		btn.pos = VGet(28.0f + i * -5.0f, 0.0f, -28.0f);
@@ -72,7 +72,6 @@ void TutorialScene::Init() {
 }
 
 void TutorialScene::Update() {
-	Time::GetIns().Update();
 	Debug::Update();
 	float dt = Time::GetIns().GetDelta();
 

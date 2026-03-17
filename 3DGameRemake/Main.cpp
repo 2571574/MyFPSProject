@@ -3,6 +3,7 @@
 #include "SceneManager.h"
 #include "CheckKey.h"
 #include "ConfigManager.h"
+#include "Time.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -28,6 +29,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// メインループ
 	while (ProcessMessage() == 0) {
+		Time::GetIns().Update();
 		CheckKey::GetIns().Input();	//入力を取得
 		ClearDrawScreen();	//画面をクリア
 		ins.Update();		//更新

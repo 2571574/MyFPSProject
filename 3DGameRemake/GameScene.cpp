@@ -57,7 +57,6 @@ void GameScene::Init() {
 }
 
 void GameScene::Update() {
-	Time::GetIns().Update();    //時間の更新
 	Debug::Update();
 
 

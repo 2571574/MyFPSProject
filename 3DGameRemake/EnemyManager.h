@@ -77,7 +77,7 @@ public:
 		return it != killCounts.end() ? it->second : 0;
 	}
 	Player* GetPlayer()const { return target; }
-	void SetStageHandle(int handle) { stageHandle = handle; }
+	void NoPathInit(int handle, Player* player) { stageHandle = handle; target = player; }
 
 	int GetTotalScore()const { return totalScore; }
 };

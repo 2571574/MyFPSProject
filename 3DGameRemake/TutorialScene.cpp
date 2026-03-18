@@ -45,7 +45,7 @@ void TutorialScene::Init() {
 
 	player.SetStageHandle(stageHandle);
 	CollisionManager::GetIns().SetStageHandle(stageHandle);
-	EnemyManager::GetIns().SetStageHandle(stageHandle);
+	EnemyManager::GetIns().NoPathInit(stageHandle,&player);
 	ItemManager::GetIns().SetStageHandle(stageHandle);
 
 	//武器スポナー

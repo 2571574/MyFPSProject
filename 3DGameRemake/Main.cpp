@@ -8,7 +8,7 @@
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     SetGraphMode(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_COLORBIT);	//ウィンドウサイズの設定
-	SetMainWindowText("MyFps");
+	SetMainWindowText("Killing Arena");
 	// DXライブラリの初期化
 	if (DxLib_Init() == -1) {
 		return -1; 

@@ -247,8 +247,6 @@ void TutorialScene::Draw() {
 	const int TEXT_X = 20;
 	const int TEXT_Y = 300;
 	const int LINE = 30;
-	DrawString(20, 20, "- チュートリアル -", colorTitle);
-
 	switch (currentPhase) {
 	case TutorialPhase::MOVEMENT:
 		DrawString(TEXT_X, TEXT_Y, "[Movement]", colorTitle);

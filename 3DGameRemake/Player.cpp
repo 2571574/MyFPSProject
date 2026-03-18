@@ -1,5 +1,4 @@
 ﻿#include "Player.h"
-#include "Debug.h"
 #include "ItemManager.h"
 #include "ConfigManager.h"
 
@@ -259,10 +258,6 @@ void Player::Update() {
 	cam->Move(fov);
 
 	hud->Update();
-
-	Debug::Watch("X", position.x);
-	Debug::Watch("Y", position.y);
-	Debug::Watch("Z", position.z);
 }
 
 void Player::Draw() {

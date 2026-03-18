@@ -169,8 +169,6 @@ void Weapon::FireHitScan(Character& user, VECTOR direction) {
 	if (hit.character != nullptr) {
 		user.HitRecord(hit.isHeadShot);
 		int lastdamage = hit.isHeadShot ? spec.damage * 2 : spec.damage;
-		if (hit.isHeadShot)Debug::Log("Headshot");
-		else Debug::Log("hit");
 		hit.character->OnHit(lastdamage,spec.id);	//当たった場合の被弾処理
 	}
 }

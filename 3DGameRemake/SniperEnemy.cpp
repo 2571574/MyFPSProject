@@ -109,8 +109,6 @@ void SniperEnemy::Draw() {
 
 			VECTOR s = VAdd(position, gunOffset);
 			VECTOR e = VAdd(target->GetPos(), VGet(0.0f, target->GetCurrentHeight() * 0.5f, 0.0f));
-
-			Debug::Watch("laser.y", e.y);
 			int a = static_cast<int>((targetingTimer / TARGET_TIME) * 255);
 			DrawLine3D(s, e, GetColor(a, 0, 0));
 		}

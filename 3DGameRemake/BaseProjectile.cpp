@@ -39,8 +39,6 @@ void BaseProjectile::Update() {
 			hitEnemy = true;
 			isHeadShot = hit.isHeadShot;
 			int lastDamage = hit.isHeadShot ? spec.damage * HEADSHOT_MULTIPLIER : spec.damage;
-			if (hit.isHeadShot)Debug::Log("Headshot");
-			else Debug::Log("hit");
 			hit.character->OnHit(lastDamage, spec.id);
 			if (hitEnemy && id == TEAMID::ID_FRIENDLY) {
 				if (Player* p = EnemyManager::GetIns().GetPlayer()) {

@@ -1,5 +1,4 @@
 ﻿#include "ResourceManager.h"
-#include "Debug.h"
 ResourceManager& ResourceManager::GetIns() {
 	static ResourceManager instance;
 	return instance;
@@ -13,11 +12,6 @@ int ResourceManager::GetModel(const std::string& path) {
 	int handle = MV1LoadModel(path.c_str());
 	if (handle != -1) {
 		models[path] = handle;
-		Debug::Log("ModelLoaded:" + path);
-	}
-	else {
-		Debug::Log("ModelLoadFail:" + path);
-
 	}
 	return handle;
 }
@@ -37,7 +31,6 @@ int ResourceManager::GetGraph(const std::string& path) {
 	int handle = LoadGraph(path.c_str());
 	if (handle != -1) {
 		graphics[path] = handle;
-		Debug::Log("graphLoaded:" + path);
 	}
 	return handle;
 }
@@ -50,7 +43,6 @@ int ResourceManager::GetSound(const std::string& path) {
 	int handle = LoadSoundMem(path.c_str());
 	if (handle != -1) {
 		sounds[path] = handle;
-		Debug::Log("Sound Loaded: " + path);
 	}
 	return handle;
 }

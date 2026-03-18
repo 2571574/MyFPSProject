@@ -75,7 +75,6 @@ void TutorialScene::Init() {
 }
 
 void TutorialScene::Update() {
-	Debug::Update();
 	float dt = Time::GetIns().GetDelta();
 
 	//ポーズ処理
@@ -234,7 +233,6 @@ void TutorialScene::Draw() {
 	ProjectileManager::GetIns().Draw();
 	ItemManager::GetIns().Draw();
 	player.Draw();
-	Debug::Draw();
 
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
 	DrawBox(0, CENTER_Y - DIALOG_Y, DIALOG_X2, CENTER_Y + DIALOG_Y, GetColor(0, 0, 0),true);

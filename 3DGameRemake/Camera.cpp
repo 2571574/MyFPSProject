@@ -1,5 +1,4 @@
 ﻿#include "Camera.h"
-#include "Debug.h"
 #include "Time.h"
 #include "ConfigManager.h"
 

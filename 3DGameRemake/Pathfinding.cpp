@@ -1,5 +1,4 @@
 ﻿#include "Pathfinding.h"
-#include "Debug.h"
 
 #include <queue>
 #include<unordered_map>

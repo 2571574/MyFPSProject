@@ -61,7 +61,6 @@ void GameScene::Init() {
 }
 
 void GameScene::Update() {
-	Debug::Update();
 
 
 
@@ -145,7 +144,6 @@ void GameScene::Draw() {
 	else {
 		player.Draw();                        //プレイヤーの描画
 	}
-	Debug::Draw();
 	if (isPaused) {
 		PauseDraw();
 	}

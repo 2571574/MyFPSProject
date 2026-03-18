@@ -5,7 +5,6 @@
 #include "RifleEnemy.h"
 #include "SniperEnemy.h"
 #include "RollingEnemy.h"
-#include "Debug.h"
 
 #include <algorithm>
 
@@ -72,7 +71,6 @@ int EnemyManager::Update() {
 	//配列の敵を1体ずつ更新させる
 	for (int i = enemies.size() - 1; i >= 0; i--) {
 		enemies[i]->Update();
-		Debug::Watch("BotHP", enemies[i]->GetHP());
 
 		if (enemies[i]->CheckFall()) {
 			enemies[i]->SetAlive(false);
@@ -169,7 +167,6 @@ int EnemyManager::Update() {
 
 			if (newEnemy) {
 				Spawn(std::move(newEnemy));
-				Debug::Log("Spawned");
 			}
 		}
 	}

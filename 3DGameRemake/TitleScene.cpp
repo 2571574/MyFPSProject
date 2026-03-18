@@ -5,7 +5,6 @@
 #include "ConfigManager.h"
 #include "TextManager.h"
 #include "ResourceManager.h"
-#include "Debug.h"
 
 #include <memory>
 #include<algorithm>

@@ -2,7 +2,6 @@
 #include "DxLib.h"
 #include "Status.h"
 #include "Parameter.h"
-#include "Debug.h"
 #include "CollisionManager.h"
 /// <summary>
 /// ゲーム内キャラすべての基底クラス

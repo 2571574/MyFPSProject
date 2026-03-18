@@ -104,5 +104,4 @@ void MeleeEnemy::Action() {
 	VECTOR attackPos = VAdd(position, VScale(toTarget, 1.0f));
 
 	CollisionManager::GetIns().ProcessExplotion(attackPos, melee.explodeArea, melee.damage, melee.knockbackP, false, GetID(), WeaponID::ENEMY_KNIFE,melee.friendlyFire);
-	Debug::Log("EnemyAttack");
 }

@@ -68,5 +68,5 @@ void BaseProjectile::Draw() {
 
 
 bool BaseProjectile::Explode(VECTOR hitPos) {
-	return CollisionManager::GetIns().ProcessExplotion(hitPos, spec.explodeArea, spec.damage, spec.knockbackP, false, id, spec.id);
+	return CollisionManager::GetIns().ProcessExplotion(hitPos, spec.explodeArea, spec.damage, spec.knockbackP, true, id, spec.id,spec.friendlyFire);
 }

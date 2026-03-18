@@ -6,7 +6,9 @@
 #include "ResultScene.h"
 #include "ResourceManager.h"
 
-
+namespace {
+	constexpr float DEATH_DURATION = 2.5f;
+}
 GameScene::GameScene(SceneManager* manager)
 	: BaseScene(manager)
 	, player(VGet(0,0,25),&camera,manager->GetcurrentMode())
@@ -52,7 +54,9 @@ void GameScene::Init() {
 	if (manager->GetcurrentMode() == PlayMode::MODE_EASY) {
 		ItemManager::GetIns().Clear();
 	}
-
+	monochromeHandle = MakeGraph(WINDOW_WIDTH, WINDOW_HEIGHT, FALSE);
+	isDeadSequence = false;
+	deathTimer = 0.0f;
 	score = 0;
 }
 
@@ -60,6 +64,9 @@ void GameScene::Update() {
 	Debug::Update();
 
 
+
+
+	if (!isDeadSequence) {
 	if (InputManager::GetIns().IsActionTrigger(ActionID::PAUSE)) {
 		isPaused = !isPaused;
 		pauseSelectNum = 0;
@@ -69,21 +76,29 @@ void GameScene::Update() {
 		PauseUpdate();
 		return;
 	}
-
-
-	player.Update();							//プレイヤーを更新
+		player.Update();
+	}						//プレイヤーを更新
 	score += EnemyManager::GetIns().Update();    //敵の更新
 	CollisionManager::GetIns().Update();
 	ProjectileManager::GetIns().Update();   //弾の更新
 	ItemManager::GetIns().Update(&player);
 
-
-	//死亡時のリザルト画面遷移
-	if (player.GetHP() <= 0) {
+	if (!isDeadSequence) {
+		//死亡時のリザルト画面遷移
+		if (player.GetHP() <= 0) {
+			isDeadSequence = true;
+			deathTimer = 0.0f;
+		}
+	}
+	else {
+		deathTimer += Time::GetIns().GetDelta();
+		if (deathTimer >= DEATH_DURATION) {
 			manager->SetScore(score);
 			manager->SetAccuracy(player.GetShots(), player.GetHits(), player.GetHeadShot());
 			manager->SetCauseOfDeath(player.GetLastHitWeapon());
 			manager->ChangeScene(std::make_unique<ResultScene>(manager));
+
+		}
 	}
 }
 
@@ -109,15 +124,27 @@ void GameScene::PauseUpdate() {
 }
 
 void GameScene::Draw() {
-	ItemManager::GetIns().SetCamPos(camera.GetPos());
+	if (!isDeadSequence) {
+		ItemManager::GetIns().SetCamPos(camera.GetPos());
+	}
+		MV1DrawModel(stageHandle);
+		ItemManager::GetIns().Draw();
+		ProjectileManager::GetIns().Draw();     //弾の描画
+		EnemyManager::GetIns().Draw();          //敵の描画
+	if (isDeadSequence) {
+		GetDrawScreenGraph(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, monochromeHandle);
+		GraphFilter(monochromeHandle, DX_GRAPH_FILTER_MONO,0,0);
 
-	MV1DrawModel(stageHandle);
+		DrawGraph(0, 0, monochromeHandle, FALSE);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 50);
+		DrawBox(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GetColor(0, 0, 0), true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-	ItemManager::GetIns().Draw();
-	ProjectileManager::GetIns().Draw();     //弾の描画
-	EnemyManager::GetIns().Draw();          //敵の描画
-	player.Draw();                        //プレイヤーの描画
-
+		
+	}
+	else {
+		player.Draw();                        //プレイヤーの描画
+	}
 	Debug::Draw();
 	if (isPaused) {
 		PauseDraw();

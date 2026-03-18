@@ -33,7 +33,7 @@ void InputManager::SetDefaultBinding() {
 	SetBind(ActionID::MENU_DOWN, InputType::KEYBOARD, KEY_INPUT_S);
 	SetBind(ActionID::MENU_RIGHT, InputType::KEYBOARD, KEY_INPUT_D);
 	SetBind(ActionID::MENU_SELECT, InputType::KEYBOARD, KEY_INPUT_F);
-	SetBind(ActionID::MENU_BACK, InputType::MOUSE, MOUSE_INPUT_RIGHT);
+	SetBind(ActionID::MENU_BACK, InputType::KEYBOARD, KEY_INPUT_LSHIFT);
 	SetBind(ActionID::PAUSE, InputType::KEYBOARD, KEY_INPUT_ESCAPE);
 
 	//コントローラー

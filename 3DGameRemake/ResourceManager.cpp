@@ -37,7 +37,7 @@ int ResourceManager::GetGraph(const std::string& path) {
 	int handle = LoadGraph(path.c_str());
 	if (handle != -1) {
 		graphics[path] = handle;
-		Debug::Log("ModelLoaded:" + path);
+		Debug::Log("graphLoaded:" + path);
 	}
 	return handle;
 }

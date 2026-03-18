@@ -45,6 +45,8 @@ void HUD::Update() {
 
 void HUD::Draw() {
 	if (pplayer) {
+
+		if(prepareTime)
 		DrawCircle(CENTER_X, CENTER_Y, CROSSHAIR_DOT_SIZE, GetColor(0, 0, 0), true);
 
 		if (hitMarkTimer > 0.0f) {

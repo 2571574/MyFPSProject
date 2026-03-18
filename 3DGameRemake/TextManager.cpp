@@ -30,6 +30,26 @@ TextManager::TextManager() {
 		{WeaponID::ENEMY_EXPLOSION,"死因:爆発"},
 		{WeaponID::LR,"死因:自爆"}
 	};
+
+	menuDescription = {
+		{0,"ゲームを開始します。"},
+		{1,"設定を変更します。"},
+		{2,"クレジットを表示します。"},
+		{3,"ゲームを終了します。"},
+		{4,"BGMの音量を変更します。"},
+		{5,"SEの音量を変更します。"},
+		{6,"マウスの感度を変更します。"},
+		{7,"コントローラーの感度を変更します。"},
+		{8,"視野角を変更します。"},
+		{9,"移動時の画面の揺れを変更します。"},
+		{10,"銃の反動がある程度戻るようになります。"},
+		{11,"キーバインドを編集します。"},
+		{12,""},
+		{13,"チュートリアル"},
+		{14," イージー\n 最初から武器を持ち、弾が無限になります。"},
+		{15," ノーマル\n 拾った武器で戦います。"},
+		{16," ハード\n 持てる武器が１つまでになります。"},
+	};
 }
 
 TextManager& TextManager::GetIns() {
@@ -59,4 +79,12 @@ const char* TextManager::GetCauseName(WeaponID id)const {
 		return it->second.c_str();
 	}
 	return "Unknown";
+}
+
+const char* TextManager::GetMenuDescription(int id)const {
+	auto it = menuDescription.find(id);
+	if (it != menuDescription.end()) {
+		return it->second.c_str();
+	}
+	return "";
 }

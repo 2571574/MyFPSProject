@@ -4,6 +4,8 @@
 #include "InputManager.h"
 #include "ConfigManager.h"
 #include "TextManager.h"
+#include "ResourceManager.h"
+#include "Debug.h"
 
 #include <memory>
 #include<algorithm>
@@ -11,6 +13,13 @@
 namespace {
 	constexpr int KEY_MAX = 256;
 	constexpr int BUTTON_MAX = 0x8000;
+	constexpr float BG_SCROLL_X = 50.0f;
+	constexpr float BOBSPEED = 10.0f;
+
+	constexpr int DIALOG_X1 = CENTER_X + 50;
+	constexpr int DIALOG_Y1 = CENTER_Y + 100;
+	constexpr int DIALOG_X2 = WINDOW_WIDTH - 50;
+	constexpr int DIALOG_Y2 = WINDOW_HEIGHT - 50;
 }
 //キーバインド可能なアクション
 static const std::vector<ActionID> GAMEPLAY_ACTION = {
@@ -30,15 +39,20 @@ TitleScene::~TitleScene() {
 
 
 void TitleScene::Init() {
+	titleLogoHandle = ResourceManager::GetIns().GetGraph("Resource/titleLogo.png");
+	titleBG = ResourceManager::GetIns().GetGraph("Resource/titlebg.png");
 	ChangeState(TitleState::TOP);
 }
 
 
 void TitleScene::Update() {
 	Control();
+	float dt = Time::GetIns().GetDelta();
+	BGscrollX += BG_SCROLL_X * dt;
 	if (selectNum < 0) selectNum = 0;
 	switch (currentState) {
 	case TitleState::TOP:
+
 		if (selectNum >= MENU_MAX) {
 			selectNum = MENU_MAX - 1;
 		}
@@ -200,27 +214,67 @@ void TitleScene::Draw() {
 	const int CHOOSE_X = BASE_X - 20;
 	const int BASE_Y = 100;
 	const int LINE_HEIGHT = 30;
+	const int LOGO_X = WINDOW_WIDTH - 200;
+
+	
+
+
+	if (titleBG != -1) {
+		int bgWidth, bgHeight;
+		GetGraphSize(titleBG, &bgWidth, &bgHeight);
+
+		int drawOffset = (int)BGscrollX % bgWidth;
+		for (int x = -drawOffset; x < WINDOW_WIDTH; x += bgWidth) {
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+			DrawGraph(x, 0, titleBG, true);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		}
+	}
 
 	switch (currentState) {
-	case TitleState::TOP:
+	case TitleState::TOP: {
+
+		if (titleLogoHandle != -1) {
+			int margin = 100;
+			int x2 = WINDOW_WIDTH - 300;
+			int x1 = x2 - 500;
+			int y1 = margin;
+			int y2 = y1 + 500;
+			SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
+			DrawExtendGraph(x1, y1, x2, y2, titleLogoHandle, true);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		}
 		DrawString(CHOOSE_X, BASE_Y + LINE_HEIGHT * selectNum, ">", GetColor(255, 255, 255));
 		DrawString(BASE_X, BASE_Y, "Play", GetColor(255, 255, 255));
 		DrawString(BASE_X, BASE_Y + LINE_HEIGHT, "Settings", GetColor(255, 255, 255));
 		DrawString(BASE_X, BASE_Y + LINE_HEIGHT * 2, "Credit", GetColor(255, 255, 255));
 		DrawString(BASE_X, BASE_Y + LINE_HEIGHT * 3, "Exit", GetColor(255, 255, 255));
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+		DrawBox(DIALOG_X1, DIALOG_Y1, DIALOG_X2, DIALOG_Y2, GetColor(255, 255, 255), true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+		const char* description = TextManager::GetIns().GetMenuDescription(selectNum);
+		DrawString(DIALOG_X1 + 30, DIALOG_Y1 + 30, description, GetColor(0, 0, 0));
 		break;
-	case TitleState::MODE_SELECT:
+	}
+	case TitleState::MODE_SELECT: {
 		DrawString(CHOOSE_X, 100 + 30 * selectNum, ">", GetColor(255, 255, 255));
 		DrawString(BASE_X, BASE_Y, "Tutorial", GetColor(255, 255, 255));
 		DrawString(BASE_X, BASE_Y + LINE_HEIGHT, "Easy", GetColor(255, 255, 255));
 		DrawString(BASE_X, BASE_Y + LINE_HEIGHT * 2, "Normal", GetColor(255, 255, 255));
 		DrawString(BASE_X, BASE_Y + LINE_HEIGHT * 3, "Hard", GetColor(255, 255, 255));
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+		DrawBox(DIALOG_X1, DIALOG_Y1, DIALOG_X2, DIALOG_Y2, GetColor(255, 255, 255), true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+		const char* description = TextManager::GetIns().GetMenuDescription(selectNum + 13);
+		DrawString(DIALOG_X1 + 30, DIALOG_Y1 + 30, description, GetColor(0, 0, 0));
 		break;
+	}
 	case TitleState::SETTINGS:
 		DrawSettings();
 		break;
 	case TitleState::CREDIT:
-		DrawKeyConfig();
 		DrawString(100, 100, "Credit", GetColor(255, 255, 255));
 		break;
 	case TitleState::KEY_CONFIG:
@@ -228,6 +282,8 @@ void TitleScene::Draw() {
 		break;
 
 	}
+	
+	DrawFormatString(WINDOW_WIDTH - 600, WINDOW_HEIGHT - 30, GetColor(255, 255, 255), "WASD : メニュー操作 , F : 決定, SHIFT : 戻る");
 }
 
 void TitleScene::DrawSettings() {
@@ -289,6 +345,12 @@ void TitleScene::DrawSettings() {
 			break;
 		}
 	}
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+	DrawBox(DIALOG_X1, DIALOG_Y1, DIALOG_X2, DIALOG_Y2, GetColor(255, 255, 255), true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	const char* description = TextManager::GetIns().GetMenuDescription(selectNum + 4);
+	DrawString(DIALOG_X1 + 30, DIALOG_Y1 + 30, description, GetColor(0, 0, 0));
 }
 
 void TitleScene::DrawKeyConfig() {

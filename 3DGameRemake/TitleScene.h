@@ -50,6 +50,9 @@ private:
 	int selectNum;				//現在選んでいる行
 	int columnidx = 0;			//現在選んでいる列
 	bool isWaitingKey = false;	//入力待ち　キーバインド用
+	int titleLogoHandle = -1;
+	int titleBG = -1;
+	float BGscrollX = 0.0f;
 
 	/// <summary>
 	/// メニュー操作の入力処理

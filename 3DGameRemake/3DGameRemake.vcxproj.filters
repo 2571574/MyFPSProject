@@ -230,14 +230,14 @@
     <ClInclude Include="WeaponItem.h">
       <Filter>2.OBJECT\2.WEAPON</Filter>
     </ClInclude>
-    <ClInclude Include="BaseProjectile.h">
-      <Filter>3.SINGLE MANAGER</Filter>
-    </ClInclude>
     <ClInclude Include="Time.h">
       <Filter>1.GAME</Filter>
     </ClInclude>
     <ClInclude Include="Parameter.h">
       <Filter>1.GAME</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseProjectile.h">
+      <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

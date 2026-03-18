@@ -207,15 +207,16 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 	return result;
 }
 
-bool CollisionManager::ProcessExplotion(VECTOR hitPos, float radius, int damage,float knockbackPower,bool distanceFallOff, TEAMID shooter, WeaponID id) {
+bool CollisionManager::ProcessExplotion(VECTOR hitPos, float radius, int damage,float knockbackPower,bool distanceFallOff, TEAMID shooter, WeaponID id,bool friendlyFire) {
 	if (radius <= 0.0f)return false;
 	bool hit = false;
 
 	for (auto* chara : characters) {
 		if (!chara->IsAlive())continue;
 
-		if (chara->GetID() == shooter)continue;
-
+		if (!friendlyFire) {
+			if (chara->GetID() == shooter)continue;
+		}
 		float dist = VSize(VSub(chara->GetPos(), hitPos));
 		if (dist <= radius) {
 			hit = true;

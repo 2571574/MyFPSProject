@@ -67,7 +67,7 @@ void RollingEnemy::Update() {
 }
 
 void RollingEnemy::Action() {
-	CollisionManager::GetIns().ProcessExplotion(position, explodeSpec.explodeArea, explodeSpec.damage,explodeSpec.knockbackP,false, status.teamID,explodeSpec.id);
+	CollisionManager::GetIns().ProcessExplotion(position, explodeSpec.explodeArea, explodeSpec.damage,explodeSpec.knockbackP,true, status.teamID,explodeSpec.id,explodeSpec.friendlyFire);
 
 	alive = false;
 }
@@ -82,7 +82,9 @@ void RollingEnemy::Draw() {
 	VECTOR top = VAdd(position, VGet(0, currentHeight - bodyRad, 0));
 	DrawCapsule3D(bottom, top, bodyRad, 16, color, color, true);
 
-	
+	if (isExploding) {
+		DrawSphere3D(position, explodeSpec.explodeArea, CIRCLE_DIVNUM, color, color, false);
+	}
 }
 
 void RollingEnemy::UpdatePhysics() {

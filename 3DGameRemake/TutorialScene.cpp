@@ -11,9 +11,12 @@
 #include "SniperEnemy.h"
 #include "RollingEnemy.h"
 #include "ResourceManager.h"
+#include "TextManager.h"
 
 namespace {
 	constexpr float TUTORIAL_SPAWN_TIMER = 0.5f;
+	constexpr int DIALOG_X2 = 350;
+	constexpr int DIALOG_Y = 250;
 }
 TutorialScene::TutorialScene(SceneManager* manager)
 	:BaseScene(manager)
@@ -218,7 +221,7 @@ void TutorialScene::Draw() {
 						else if (btn.enemyType == 1) name = "Rifle";
 						else if (btn.enemyType == 2) name = "Sniper";
 						else if (btn.enemyType == 3) name = "Rolling";
-						DrawFormatString((int)sp.x - 40, (int)sp.y, GetColor(0, 255, 255), "Shoot: %s", name);
+						DrawFormatString((int)sp.x - 40, (int)sp.y, GetColor(0, 0, 0), "Spawn: %s", name);
 					}
 				}
 			}
@@ -233,73 +236,87 @@ void TutorialScene::Draw() {
 	player.Draw();
 	Debug::Draw();
 
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+	DrawBox(0, CENTER_Y - DIALOG_Y, DIALOG_X2, CENTER_Y + DIALOG_Y, GetColor(0, 0, 0),true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	// --- HUD描画 ---
 	const int colorTitle = GetColor(0, 255, 0);
-	const int colorText = GetColor(0, 0, 0);
+	const int colorText = GetColor(255, 255, 255);
 	const int colorWarning = GetColor(255, 100, 100);
 	const int colorAlert = GetColor(255, 255, 0);
 	const int colorInfo = GetColor(255, 200, 0);
 
-	DrawString(20, 20, "- TUTORIAL -", colorTitle);
+	const int TEXT_X = 20;
+	const int TEXT_Y = 300;
+	const int LINE = 30;
+	DrawString(20, 20, "- チュートリアル -", colorTitle);
 
 	switch (currentPhase) {
 	case TutorialPhase::MOVEMENT:
-		DrawString(20, 50, "[Movement Room]", colorTitle);
-		DrawString(20, 80, "Move: [W][A][S][D] / L-Stick", colorText);
-		DrawString(20, 100, "Sprint: [Shift] / PAD 2", colorText);
-		DrawString(20, 120, "Jump: [Space] / PAD 5", colorText);
-		DrawString(20, 140, "Slide: Sprint + [Ctrl] / PAD 6", colorText);
-		DrawString(20, 180, ">> Proceed through the Gate", colorAlert);
+		DrawString(TEXT_X, TEXT_Y, "[Movement]", colorTitle);
+		DrawString(TEXT_X, TEXT_Y + LINE, "移動 : WASD", colorText);
+		DrawString(TEXT_X, TEXT_Y + LINE * 2, "走る : Shift", colorText);
+		DrawString(TEXT_X, TEXT_Y + LINE * 3, "ジャンプ : Space", colorText);
+		DrawString(TEXT_X, TEXT_Y + LINE * 4, "しゃがむ : Control", colorText);
+		DrawString(TEXT_X, TEXT_Y + LINE * 5, "一定速度でしゃがむとスライディング", colorText);
 		break;
 
 	case TutorialPhase::COMBAT:
-		DrawString(20, 50, "[Combat Room]", colorTitle);
-		DrawString(20, 80, "Shoot the Target to spawn enemy.", colorText);
-		DrawString(20, 200, ">> Proceed through the Gate", colorAlert);
+		DrawString(TEXT_X, TEXT_Y, "[Combat]", colorTitle);
+		DrawString(TEXT_X, TEXT_Y + LINE, "射撃 : 左クリック", colorText);
+		DrawString(TEXT_X, TEXT_Y + LINE * 2, "狙う : 右クリック", colorText);
+		DrawString(TEXT_X, TEXT_Y + LINE * 3, "的を撃つと対応する敵がスポーン", colorText);
 
 		// スポーンした敵の情報
 		if (currentEnemyInfo == 0) {
-			DrawString(20, 110, "< Melee Enemy >", colorWarning);
-			DrawString(20, 130, "Chases and attacks from close range.", colorText);
+			DrawString(TEXT_X, TEXT_Y + LINE * 5, "< 近接 >", colorWarning);
+			DrawString(TEXT_X, TEXT_Y + LINE * 6, "普通の敵", colorText);
+			DrawString(TEXT_X, TEXT_Y + LINE * 7, "まっすぐ追いかけて攻撃してきます。", colorText);
 		}
 		else if (currentEnemyInfo == 1) {
-			DrawString(20, 110, "< Rifle Enemy >", colorWarning);
-			DrawString(20, 130, "Shoots bullets from mid-range.", colorText);
+			DrawString(TEXT_X, TEXT_Y + LINE * 5, "< ライフル >", colorWarning);
+			DrawString(TEXT_X, TEXT_Y + LINE * 6, "中距離を保って弾を撃ってきます。", colorText);
 		}
 		else if (currentEnemyInfo == 2) {
-			DrawString(20, 110, "< Sniper Enemy >", colorWarning);
-			DrawString(20, 130, "High damage from long distance. Watch out for red laser.", colorText);
+			DrawString(TEXT_X, TEXT_Y + LINE * 5, "< スナイパー >", colorWarning);
+			DrawString(TEXT_X, TEXT_Y + LINE * 6, "長距離から撃ってきます。レーザーに注意", colorText);
 		}
 		else if (currentEnemyInfo == 3) {
-			DrawString(20, 110, "< Rolling Enemy >", colorWarning);
-			DrawString(20, 130, "Fast movement. Head hitbox is inside its body.", colorText);
+			DrawString(TEXT_X, TEXT_Y + LINE * 5, "< 爆弾 >", colorWarning);
+			DrawString(TEXT_X, TEXT_Y + LINE * 6, "近づいて少し経つと爆発します。", colorText);
 		}
 		break;
 
 	case TutorialPhase::FREERANGE:
-		DrawString(20, 50, "[Free Range]", colorTitle);
-
+		DrawString(TEXT_X, TEXT_Y, "[Free Range]", colorTitle);
+		DrawString(TEXT_X, TEXT_Y + LINE, "武器を拾う : F", colorText);
+		DrawString(TEXT_X, TEXT_Y + LINE * 2, "武器変更 : マウスホイール", colorText);
+		DrawString(TEXT_X, TEXT_Y + LINE * 3, "自由に射撃できます。", colorText);
+		DrawString(TEXT_X, TEXT_Y + LINE * 4, "戻るときはメニュー(esc)から", colorText);
+		DrawString(TEXT_X, TEXT_Y + LINE * 5, "タイトルに戻ってください。", colorText);
 		// 武器情報HUD（持っている武器に応じて変化）
 		if (Weapon* w = player.GetWeapon()) {
 			auto id = w->GetSpec().id;
-			DrawString(20, 80, "Current Weapon Info:", colorInfo);
+			DrawString(TEXT_X, TEXT_Y + LINE * 7, "現在の武器:", colorInfo);
 
 			switch (id) {
 				case WeaponID::PIS:
-				DrawString(20, 100, "PISTOL: Basic sidearm. Infinite ammo.", colorText); break;
+				DrawString(TEXT_X, TEXT_Y + LINE * 8, "ハンドガン", colorWarning); 
+				DrawString(TEXT_X, TEXT_Y + LINE * 9, "デフォルト武器。　弾が無限", colorText); break;
 				case WeaponID::AR:
-				DrawString(20, 100, "ASSAULT RIFLE: Good fire rate and medium range.", colorText); break;
+				DrawString(TEXT_X, TEXT_Y + LINE * 8, "アサルトライフル", colorWarning);
+				DrawString(TEXT_X, TEXT_Y + LINE * 9, "火力、弾速、連射速度全て標準。", colorText); break;
 			case WeaponID::SR:
-				DrawString(20, 100, "SNIPER RIFLE: High damage, slow fire rate. Good for headshots.", colorText); break;
+				DrawString(TEXT_X, TEXT_Y + LINE * 8, "スナイパーライフル", colorWarning);
+				DrawString(TEXT_X, TEXT_Y + LINE * 9, "単発高火力。弱点ヒットで1撃", colorText); break;
 			case WeaponID::SMG:
-				DrawString(20, 100, "SMG: Very high fire rate, high recoil. Close range.", colorText); break;
+				DrawString(TEXT_X, TEXT_Y + LINE * 8, "サブマシンガン", colorWarning);
+				DrawString(TEXT_X, TEXT_Y + LINE * 9, "近距離最強。遠距離は苦手", colorText); break;
 			case WeaponID::LR:
-				DrawString(20, 100, "ROCKET LAUNCHER: Area of effect damage. Deals splash damage.", colorText); break;
+				DrawString(TEXT_X, TEXT_Y + LINE * 8, "ロケットランチャー", colorWarning);
+				DrawString(TEXT_X, TEXT_Y + LINE * 9, "範囲高火力武器。自爆に注意", colorText); break;
 			}
 		}
-		DrawString(20, 150, "Pick up weapons from spawners and practice on targets.", colorText);
-		DrawString(20, 180, "Press [ESC] / [START] to Pause and Return to Title.", colorText);
-		break;
 	}
 
 	if (isPaused) PauseDraw();

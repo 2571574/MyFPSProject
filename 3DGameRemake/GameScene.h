@@ -32,6 +32,10 @@ private:
 		PAUSE_MAX
 	};
 	
+	bool isDeadSequence = false;
+	float deathTimer = 0.0f;
+	int monochromeHandle = -1;
+
 	void PauseUpdate();
 	void PauseDraw();
 public:

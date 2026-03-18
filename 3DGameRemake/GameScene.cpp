@@ -21,7 +21,7 @@ GameScene::~GameScene() {
 
 
 void GameScene::Init() {
-	stageHandle = ResourceManager::GetIns().GetModel("Resource/ArenaV5.mv1");
+	stageHandle = ResourceManager::GetIns().GetModel("Resource/Arena.mv1");
 	MV1SetPosition(stageHandle, VGet(0.0f, 0.0f, 0.0f));
 	MV1SetScale(stageHandle, VGet(0.02f, 0.02f, 0.02f));
 	MV1SetupCollInfo(stageHandle, -1, 8, 8, 8);

@@ -13,6 +13,9 @@ private:
 	float hitMarkTimer = 0.0f;
 	bool lastHitWasHS = false;
 
+	bool isGameStarted = false;
+	float scoreFadeAlpha = 0.0f;
+
 public:
 	HUD(Player* player);
 	~HUD() = default;

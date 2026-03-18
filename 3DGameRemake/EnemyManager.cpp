@@ -42,11 +42,13 @@ void EnemyManager::Init(int modelhandle,Player * _target){
 	InitNode(stageHandle,mapNode);
 	target = _target;
 	currentSpawnInterval = INIT_SPAWN_INTERVAL;
-	spawnTimer = currentSpawnInterval;
+	spawnTimer = 0.0f;
 	difficultyTimer = 0.0f;
 	prepareTimer = PREPARE_TIME;
 	killCounts.clear();
 	spawnPoints.clear();
+
+	totalScore = 0;
 }
 
 int EnemyManager::CountEnemyType(ENEMYTYPE type) {
@@ -79,6 +81,7 @@ int EnemyManager::Update() {
 		//生存タグが消えたら消去する
 		if (!enemies[i]->IsAlive()) {
 			earnScore += enemies[i]->GetStatus().score;
+			totalScore += enemies[i]->GetStatus().score;
 			killCounts[enemies[i]->GetType()]++;
 			enemies[i] = std::move(enemies.back());
 			enemies.pop_back();

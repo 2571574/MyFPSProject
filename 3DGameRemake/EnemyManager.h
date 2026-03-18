@@ -25,6 +25,7 @@ private:
 	float spawnTimer;			//スポーンタイマー
 	float difficultyTimer;		//難易度上昇のタイマー
 	float prepareTimer;			//スタート前タイマー
+	int totalScore;
 
 	/// <summary>
 	/// 指定した種類の敵が何体生存中かカウントする
@@ -77,4 +78,6 @@ public:
 	}
 	Player* GetPlayer()const { return target; }
 	void SetStageHandle(int handle) { stageHandle = handle; }
+
+	int GetTotalScore()const { return totalScore; }
 };

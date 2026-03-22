@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "DxLib.h"
+#include <string>
 enum class TEAMID {
 	ID_FRIENDLY,
 	ID_ENEMY,
@@ -50,6 +51,14 @@ struct CharacterStatus { //エンティティの性能
 	int score;
 };
 
+
+struct WeaponVisual {
+	std::string modelPath;
+	float scale;
+	VECTOR drawOffset;
+	VECTOR adsDrawOffset;
+};
+
 struct GunStatus {		 //武器の性能
 	WeaponID id;			//武器ID 
 	bool hitscan;		//ヒットスキャン
@@ -69,11 +78,12 @@ struct GunStatus {		 //武器の性能
 	float hasDampingRatio;		//持った時の移動速度減衰率
 	float adsDampingRatio;		//覗いた時の移動速度減衰率
 	float adsFov;		 //覗いた時の視野角
-	float projectileSize = 0;	//弾のサイズ
-	float projectileSpeed = 0;	//弾速
-	int explodeArea = 0; //AOE=trueの場合　爆発範囲
-	float knockbackP = 0;
-	bool friendlyFire = false;
+	float projectileSize;	//弾のサイズ
+	float projectileSpeed;	//弾速
+	int explodeArea; //AOE=trueの場合　爆発範囲
+	float knockbackP;
+	bool friendlyFire;
+	WeaponVisual visual;
 };
 
 //ステータスのテンプレート

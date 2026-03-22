@@ -20,7 +20,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetUseZBuffer3D(TRUE);// 3D描画を有効にする
 	SetWriteZBuffer3D(TRUE); // Zバッファへの書き込みを有効にする
 
-    SetCameraNearFar(0.1f, 1000.0f);//オブジェクトを描画する距離を設定
+    SetCameraNearFar(0.01f, 1000.0f);//オブジェクトを描画する距離を設定
 	
 	
 	ConfigManager::GetIns().Load();	//Configの読み込み

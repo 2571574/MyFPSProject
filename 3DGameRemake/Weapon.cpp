@@ -1,6 +1,8 @@
 ﻿#include"Weapon.h"
 #include"Character.h"
 #include "CollisionManager.h"
+#include "ResourceManager.h"
+#include "Camera.h"
 
 #include <memory>
 
@@ -22,7 +24,21 @@ Weapon::Weapon(const GunStatus _spec)
 	, gunModelHandle(-1)
 	, bulletModelHandle(-1)
 	, effectHandle(-1)
-	, soundHandle(-1){}
+	, soundHandle(-1)
+{
+	if (!spec.visual.modelPath.empty()) {
+		gunModelHandle = ResourceManager::GetIns().DuplicateModel(spec.visual.modelPath);
+	}
+	else {
+		gunModelHandle = -1;
+	}
+}
+
+Weapon::~Weapon() {
+	if (gunModelHandle != -1) {
+		MV1DeleteModel(gunModelHandle);
+	}
+}
 
 /*武器の更新*/
 void Weapon::Update() {
@@ -186,6 +202,29 @@ void Weapon::Ads() {
 }
 
 //描画
-void Weapon::Draw() {
+void Weapon::Draw(VECTOR basePos, VECTOR forward, VECTOR right, VECTOR up, bool isAds, bool isFPP) {
+	if (gunModelHandle == -1)return;
+	float s = spec.visual.scale;
+	MATRIX scaleMat = MGetScale(VGet(s, s, s));
 
+	MATRIX rot = MGetIdent();
+	rot.m[0][0] = right.x;		rot.m[0][1] = right.y;		rot.m[0][2] = right.z;
+	rot.m[1][0] = up.x;			rot.m[1][1] = up.y;			rot.m[1][2] = up.z;
+	rot.m[2][0] = forward.x;	rot.m[2][1] = forward.y;	rot.m[2][2] = forward.z;
+
+	VECTOR offset = isAds ? adsDrawOffset : drawOffset;
+	VECTOR drawPos = basePos;
+	drawPos = VAdd(drawPos, VScale(right, offset.x));
+	drawPos = VAdd(drawPos, VScale(up, offset.y));
+	drawPos = VAdd(drawPos, VScale(forward, offset.z));
+	MATRIX transMat = MGetTranslate(drawPos);
+
+	MATRIX worldMat = MMult(MMult(scaleMat,rot), transMat);
+
+	MV1SetMatrix(gunModelHandle, worldMat);
+
+	if (isFPP) {
+		ClearDrawScreenZBuffer();
+	}
+	MV1DrawModel(gunModelHandle);
 }

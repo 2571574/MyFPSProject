@@ -6,6 +6,8 @@
 #include "Character.h"
 #include "InputManager.h"
 
+class Camera;
+
 //武器の状態を表す列挙型
 enum class WeaponState {
 	IDLE,
@@ -29,6 +31,10 @@ protected:
 	float fireCT;		 //次の射撃までのタイマー
 	bool aim;
 	//演出用
+	float modelScale;
+	VECTOR drawOffset;
+	VECTOR adsDrawOffset;
+
 	int gunModelHandle;	 //銃のモデルハンドル
 	int bulletModelHandle; //弾のモデルハンドル
 	int effectHandle;	 //発射時のエフェクト
@@ -45,7 +51,7 @@ protected:
 	
 public:
 	Weapon(const GunStatus _spec);
-	virtual ~Weapon() {}
+	virtual ~Weapon();
 
 	/// <summary>
 	/// 更新処理
@@ -89,7 +95,7 @@ public:
 	/// <summary>
 	/// 描画処理
 	/// </summary>
-	void Draw();
+	void Draw(VECTOR basePos, VECTOR forward, VECTOR right, VECTOR up, bool isAds, bool isFPP);
 
 	bool CanFire() const {
 		return (fireCT <= 0 && currentState == WeaponState::IDLE && ammo > 0);

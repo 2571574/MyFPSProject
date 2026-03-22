@@ -267,6 +267,16 @@ void Player::Update() {
 
 void Player::Draw() {
 	if (hud)hud->Draw();
+	Weapon* currentWeapon = GetWeapon();
+	if (currentWeapon) {
+		VECTOR forward = cam->GetLookDirection();
+		VECTOR hforward, right;
+		cam->GetForwardVec(hforward, right);
+		VECTOR up = VNorm(VCross(forward, right));
+		right = VNorm(VCross(up, forward));
+
+		currentWeapon->Draw(cam->GetPos(), forward, right, up, isAds, true);
+	}
 }
 
 

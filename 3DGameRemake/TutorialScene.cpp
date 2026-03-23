@@ -12,6 +12,7 @@
 #include "RollingEnemy.h"
 #include "ResourceManager.h"
 #include "TextManager.h"
+#include "EffectManager.h"
 
 namespace {
 	constexpr float TUTORIAL_SPAWN_TIMER = 0.5f;
@@ -30,6 +31,7 @@ TutorialScene::~TutorialScene() {
 	EnemyManager::GetIns().Clear();
 	ProjectileManager::GetIns().Clear();
 	ItemManager::GetIns().Clear();
+	EffectManager::GetIns().Clear();
 } 
 
 void TutorialScene::Init() {
@@ -37,7 +39,7 @@ void TutorialScene::Init() {
 	currentEnemyInfo = -1;
 
 	stageHandle = ResourceManager::GetIns().GetModel("Resource/TutorialArena.mv1");
-
+	EffectManager::GetIns().Clear();
 	//ステージセット
 	MV1SetPosition(stageHandle, VGet(0.0f, 0.0f, 0.0f));
 	MV1SetScale(stageHandle, VGet(0.02f, 0.02f, 0.02f));
@@ -117,6 +119,7 @@ void TutorialScene::Update() {
 	if (isPlayerCombatArea) {
 		EnemyManager::GetIns().Update();
 	}
+	EffectManager::GetIns().Update();
 	CollisionManager::GetIns().Update();
 	ProjectileManager::GetIns().Update();
 	ItemManager::GetIns().Update(&player);
@@ -230,6 +233,7 @@ void TutorialScene::Draw() {
 
 	for (auto& t : target) if (t) t->Draw();
 	EnemyManager::GetIns().Draw();
+	EffectManager::GetIns().Draw();
 
 	ProjectileManager::GetIns().Draw();
 	ItemManager::GetIns().Draw();

@@ -5,6 +5,7 @@
 #include "ItemManager.h"
 #include "ResultScene.h"
 #include "ResourceManager.h"
+#include "EffectManager.h"
 
 namespace {
 	constexpr float DEATH_DURATION = 2.5f;
@@ -17,6 +18,7 @@ GameScene::GameScene(SceneManager* manager)
 GameScene::~GameScene() {
 	EnemyManager::GetIns().Clear();
 	ProjectileManager::GetIns().Clear();
+	EffectManager::GetIns().Clear();
 }
 
 
@@ -54,6 +56,7 @@ void GameScene::Init() {
 	if (manager->GetcurrentMode() == PlayMode::MODE_EASY) {
 		ItemManager::GetIns().Clear();
 	}
+	EffectManager::GetIns().Clear();
 	monochromeHandle = MakeGraph(WINDOW_WIDTH, WINDOW_HEIGHT, FALSE);
 	isDeadSequence = false;
 	deathTimer = 0.0f;
@@ -61,11 +64,9 @@ void GameScene::Init() {
 	isSceneChange = false;
 }
 
+
 void GameScene::Update() {
 	Debug::Update();
-
-
-
 
 	if (!isDeadSequence) {
 	if (InputManager::GetIns().IsActionTrigger(ActionID::PAUSE)) {
@@ -80,6 +81,7 @@ void GameScene::Update() {
 		player.Update();
 	}						//プレイヤーを更新
 	score += EnemyManager::GetIns().Update();    //敵の更新
+	EffectManager::GetIns().Update();
 	CollisionManager::GetIns().Update();
 	ProjectileManager::GetIns().Update();   //弾の更新
 	ItemManager::GetIns().Update(&player);
@@ -133,6 +135,7 @@ void GameScene::Draw() {
 		ItemManager::GetIns().Draw();
 		ProjectileManager::GetIns().Draw();     //弾の描画
 		EnemyManager::GetIns().Draw();          //敵の描画
+		EffectManager::GetIns().Draw();
 	if (isDeadSequence) {
 		GetDrawScreenGraph(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, monochromeHandle);
 		GraphFilter(monochromeHandle, DX_GRAPH_FILTER_MONO,0,0);

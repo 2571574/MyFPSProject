@@ -6,6 +6,7 @@
 #include "SniperEnemy.h"
 #include "RollingEnemy.h"
 #include "Debug.h"
+#include "EffectManager.h"
 
 #include <algorithm>
 
@@ -83,6 +84,11 @@ int EnemyManager::Update() {
 			earnScore += enemies[i]->GetStatus().score;
 			totalScore += enemies[i]->GetStatus().score;
 			killCounts[enemies[i]->GetType()]++;
+
+			VECTOR deathPos = VAdd(enemies[i]->GetPos(), VGet(0.0f, enemies[i]->GetCurrentHeight() * 0.5f, 0.0f));
+			float floorY = enemies[i]->GetPos().y;
+			EffectManager::GetIns().CreateDeathParticle(deathPos, floorY, enemies[i]->GetType());
+
 			enemies[i] = std::move(enemies.back());
 			enemies.pop_back();
 		}

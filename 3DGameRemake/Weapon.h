@@ -40,10 +40,10 @@ protected:
 	int soundHandle;	 //サウンドハンドル
 
 	//弾速のある弾を生成する　user=射手　direction=射撃方向のベクトル
-	virtual void FireProjectile(Character& user, VECTOR direction);
+	virtual void FireProjectile(Character& user, VECTOR baseDir, VECTOR shootDir);
 
 	//即着の弾の処理　中でヒットスキャンの判定を行う　user=射手　direction=射撃方向のベクトル
-	virtual void FireHitScan(Character& user, VECTOR direction);		//ヒットスキャンの発射
+	virtual void FireHitScan(Character& user, VECTOR baseDir, VECTOR shootDir);		//ヒットスキャンの発射
 
 	//射撃後の処理　クールタイムのセットや弾数の減少など　user=射手
 	void Fired(Character& user);

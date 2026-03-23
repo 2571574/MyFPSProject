@@ -137,6 +137,8 @@
     <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Dummy.cpp" />
+    <ClCompile Include="Effect.cpp" />
+    <ClCompile Include="EffectManager.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="GameScene.cpp" />
@@ -170,6 +172,8 @@
     <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Dummy.h" />
+    <ClInclude Include="Effect.h" />
+    <ClInclude Include="EffectManager.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="Character.h" />

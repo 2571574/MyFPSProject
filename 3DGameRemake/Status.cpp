@@ -9,23 +9,30 @@ namespace CHARA_STATUS {
 }
 
 namespace PLAYER_GUN {
-	GunStatus RIFLE = { WeaponID::AR , true, false,true, false, 25, 50.0f, 20, 120, 2.0f, 12.0f, 0.15f, 0.005f, 2.0f, VGet(0.5f,-0.55f,0.4f),VGet(0.0f,0.0f,1.0f), 1.0f,0.4f,50.0f ,0,0,0,0,false,
-						{"Resource/Weapon/AR.mv1",0.005f,VGet(0.5f,-0.55f,0.4f),VGet(0.0f,-0.43f,0.4f)} };
-	GunStatus SNIPER = { WeaponID::SR, true, false,false, false, 80, 80.0f, 3, 12, 3.0f, 0.6f, 0.2f, 0.0001f, 7.0f,VGet(0.5f,-0.55f,0.6f), VGet(0.0f,0.0f,1.0f),0.9f, 0.2f, 40.0f,0,0,0,0,false,
-						{"Resource/Weapon/SR.mv1",0.005f,VGet(0.5f,-0.55f,0.6f),VGet(0.0f,-0.28f,0.4f)} };
-	GunStatus LAUNCHER = { WeaponID::LR, false, true, false, false, 120, 40.0f, 1, 5, 2.5f, 10.0f, 0.001f,0.001f, 14.0f,VGet(0.4f,-0.32f,0.5f),VGet(0.4f,-0.32f,0.5f),0.5f,0.5f,65.0f,0.1f,0.5f,10.0f, 0.3f,true,
-						{"Resource/Weapon/LR.mv1",0.005f,VGet(0.4f,-0.32f,0.5f),VGet(0.4f,-0.32f,0.5f)} };
-	GunStatus SMG = { WeaponID::SMG, false, false, true, false, 15, 40.0f, 40, 240, 1.8f, 20.0f, 0.1f, 0.03f, 1.5f, VGet(0.5f,-0.2f,1.2f),VGet(0.0f,0.0f,1.0f), 1.0f, 0.7f, 60.0f,0.06f,1.0f,0,0,false,
-						{"Resource/Weapon/SMG.mv1",0.005f,VGet(0.5f,-0.6f,0.5f),VGet(0.0f,-0.49f,0.7f)} };
-	GunStatus PISTOL = { WeaponID::PIS, false, false, false, true, 35, 40.0f, 8, 0, 2.0f, 8.0f, 0.05f, 0.005f, 3.0f,VGet(0.5f,-0.3f,1.2f),VGet(0.0f,0.0f,1.0f),1.0f,0.8f,60.0f,0.06f,1.0f,0,0,false,
-						{"Resource/Weapon/PIS.mv1",0.005f,VGet(0.5f,-0.55f,0.6f),VGet(0.0f,-0.36f,0.4f)} };
+	GunStatus RIFLE = { WeaponID::AR , true, false,true, false, 25, 50.0f, 20, 120, 2.0f, 12.0f, 0.15f, 0.005f, 2.0f, VGet(0.5f,-0.25f,2.34f),VGet(0.0f,0.0f,1.0f), 1.0f,0.4f,50.0f ,0,0,0,0,false,
+						{"Resource/Weapon/AR.mv1",0.005f,VGet(0.5f,-0.55f,0.4f),VGet(0.0f,-0.43f,0.4f), VGet(0.5f,-0.25f,2.34f),VGet(0.0f,-0.2f,2.34f)} };
+
+	GunStatus SNIPER = { WeaponID::SR, true, false,false, false, 80, 80.0f, 3, 12, 3.0f, 0.6f, 0.2f, 0.0001f, 7.0f,VGet(0.5f,-0.4f,3.3f), VGet(0.0f,0.0f,1.0f),0.9f, 0.2f, 40.0f,0,0,0,0,false,
+						{"Resource/Weapon/SR.mv1",0.005f,VGet(0.5f,-0.55f,0.6f),VGet(0.0f,-0.28f,0.4f), VGet(0.5f,-0.4f,3.3f),VGet(0.0f, -1.2f, 3.3f)} };
+
+	GunStatus LAUNCHER = { WeaponID::LR, false, true, false, false, 120, 40.0f, 1, 5, 2.5f, 10.0f, 0.001f,0.001f, 14.0f,VGet(0.4f,-0.2f,0.94f),VGet(0.4f,-0.2f,0.89f),0.5f,0.5f,65.0f,0.1f,0.5f,10.0f, 0.3f,true,
+						{"Resource/Weapon/LR.mv1",0.005f,VGet(0.4f,-0.32f,0.5f),VGet(0.4f,-0.32f,0.5f), VGet(0.4f,-0.2f,0.94f),VGet(0.4f,-0.2f,0.89f)} };
+
+	GunStatus SMG = { WeaponID::SMG, false, false, true, false, 15, 40.0f, 40, 240, 1.8f, 20.0f, 0.1f, 0.03f, 1.5f, VGet(0.4f,-0.2f,1.55f),VGet(0.0f,0.0f,1.0f), 1.0f, 0.7f, 60.0f,0.06f,1.0f,0,0,false,
+						{"Resource/Weapon/SMG.mv1",0.005f,VGet(0.5f,-0.6f,0.5f),VGet(0.0f,-0.49f,0.7f), VGet(0.4f,-0.2f, 1.55f),VGet(0.0f,-0.12f,1.55f)} };
+
+	GunStatus PISTOL = { WeaponID::PIS, false, false, false, true, 35, 40.0f, 8, 0, 2.0f, 8.0f, 0.05f, 0.005f, 3.0f,VGet(0.5f,-0.25f,1.3f),VGet(0.0f,0.0f,1.0f),1.0f,0.8f,60.0f,0.06f,1.0f,0,0,false,
+						{"Resource/Weapon/PIS.mv1",0.005f,VGet(0.5f,-0.55f,0.6f),VGet(0.0f,-0.36f,0.4f), VGet(0.5f,-0.25f,1.3f),VGet(0.0f ,-0.1f ,2.34f)} };
 }
 namespace ENEMY_GUN {
 	GunStatus MELEE = { WeaponID::ENEMY_KNIFE,false,false,false,true, 25, 3.0f, 0, 0, 0.0f, 1.0f, 0.0f,0.0f,0.0f,VGet(0.0f,0.0f,0.0f),VGet(0.0f,0.0f,0.0f),1.0f,1.0f,0.0f,0.0f,0.0f,2.5f,0.0f,false ,
-						{"Resource/Weapon/EnemyKnife.mv1", 0.008f, VGet(0.4f, 0.0f, 0.5f), VGet(0.0f,0.0f,0.0f)} };
+						{"Resource/Weapon/EnemyKnife.mv1", 0.008f, VGet(0.4f, 0.0f, 0.5f), VGet(0.0f,0.0f,0.0f), VGet(0.0f,0.0f,0.0f), VGet(0.0f,0.0f,0.0f)} };
+
 	GunStatus RIFLE = {WeaponID::ENEMY_AR, false, false, true, true, 10, 20.0f, 20, 0, 5.0f, 1.0f, 0.001f, 0.001f, 0.0f, VGet(0.0f,-0.4f,0.0f),VGet(0.0f,0.0f,0.0f), 1.0f,1.0f,50.0f,0.1f,0.3f,0,0,false ,
-						{"Resource/Weapon/EnemyAR.mv1", 0.007f, VGet(0.0f, -0.2f, 0.6f), VGet(0.0f,0.0f,0.0f)} };
-	GunStatus SNIPER = {WeaponID::ENEMY_SR, false, false, true, true,30, 30.0f, 3, 0, 10.0f, 0.2f, 0.0001f, 0.0001f, 0.0f,VGet(0.0f,-0.4f,0.0f),VGet(0.0f,0.0f,0.0f), 1.0f, 0.5f, 40.0f, 0.06f, 0.8f,0,0,false,					  {"Resource/Weapon/EnemySniper.mv1", 0.007f, VGet(0.0f, -0.2f, 0.7f), VGet(0.0f,0.0f,0.0f)} };
+						{"Resource/Weapon/EnemyAR.mv1", 0.007f, VGet(0.0f, -0.2f, 0.6f), VGet(0.0f,0.0f,0.0f), VGet(0.0f,0.0f,0.0f), VGet(0.0f,0.0f,0.0f)} };
+
+	GunStatus SNIPER = {WeaponID::ENEMY_SR, false, false, true, true,30, 30.0f, 3, 0, 10.0f, 0.2f, 0.0001f, 0.0001f, 0.0f,VGet(0.0f,-0.4f,0.0f),VGet(0.0f,0.0f,0.0f), 1.0f, 0.5f, 40.0f, 0.06f, 0.8f,0,0,false,					  {"Resource/Weapon/EnemySniper.mv1", 0.007f, VGet(0.0f, -0.2f, 0.7f), VGet(0.0f,0.0f,0.0f), VGet(0.0f,0.0f,0.0f), VGet(0.0f,0.0f,0.0f)} };
+
 	GunStatus DESTRUCT = {WeaponID::ENEMY_EXPLOSION, false, false, false, true,50, 0.0f, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, VGet(0.0f, 0.0f, 0.0f),VGet(0.0f,0.0f,0.0f), 1.0f, 1.0f, 0.0f, 0.0f,0.0f,10.0f,0.5f, true,{} };
 }
 /*

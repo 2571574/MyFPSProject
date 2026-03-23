@@ -57,6 +57,8 @@ struct WeaponVisual {
 	float scale;
 	VECTOR drawOffset;
 	VECTOR adsDrawOffset;
+	VECTOR drawMuzzleOffset;
+	VECTOR drawAdsMuzzleOffset;
 };
 
 struct GunStatus {		 //武器の性能

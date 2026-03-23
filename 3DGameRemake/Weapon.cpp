@@ -4,6 +4,7 @@
 #include "ResourceManager.h"
 #include "Camera.h"
 #include "Parameter.h"
+#include "EffectManager.h"
 
 #include <memory>
 
@@ -148,31 +149,39 @@ void Weapon::Fire(Character& user, VECTOR direction) {
 		dir = VNorm(dir);
 	//specのhitscanによって判別
 	if (spec.hitscan) {
-		FireHitScan(user, dir);
+		FireHitScan(user, direction, dir);
 	}
 	else {
-		FireProjectile(user, dir);
+		FireProjectile(user, direction, dir);
 	}
 	//射撃後の処理
 	Fired(user);
 }
 
 /*弾速のある弾を発射する関数*/
-void Weapon::FireProjectile(Character& user, VECTOR direction) {
+void Weapon::FireProjectile(Character& user, VECTOR baseDir, VECTOR shootDir) {
 	//射撃位置の取得
 	VECTOR userEyePos = VAdd(user.GetPos(), VGet(0, user.GetCurrentEyeHeight(), 0));
-	VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), direction));				//右のベクトル
-	VECTOR up = VNorm(VCross(direction, right));					//上のベクトル
-	VECTOR offset = VAdd(VScale(spec.visual.drawOffset, 1.0f - adsWeight), VScale(spec.visual.adsDrawOffset, adsWeight));				//銃口のオフセット
+	VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), baseDir));				//右のベクトル
+	VECTOR up = VNorm(VCross(baseDir, right));					//上のベクトル
+	VECTOR fireOffset = VAdd(VScale(spec.muzzleOffset, 1.0f - adsWeight), VScale(spec.adsMuzzleOffset, adsWeight));				//銃口のオフセット
 
 	//回転に応じてオフセット分ずらす
-	VECTOR finalOffset;
-	finalOffset = VAdd(VScale(right, offset.x), VScale(up, offset.y));
-	finalOffset = VAdd(finalOffset, VScale(direction, offset.z));
-	VECTOR spawnPos = VAdd(userEyePos, finalOffset);
+	VECTOR fireFinal;
+	fireFinal = VAdd(VScale(right, fireOffset.x), VScale(up, fireOffset.y));
+	fireFinal = VAdd(fireFinal, VScale(baseDir, fireOffset.z));
+	VECTOR spawnPos = VAdd(userEyePos, fireFinal);
 
-	VECTOR targetPos = VAdd(userEyePos, VScale(direction, 100.0f));
+	VECTOR targetPos = VAdd(userEyePos, VScale(shootDir, 100.0f));
 	VECTOR lastDir = VNorm(VSub(targetPos, spawnPos));
+
+	VECTOR visualOffset = VAdd(VScale(spec.visual.drawMuzzleOffset, 1.0f - adsWeight), VScale(spec.visual.drawAdsMuzzleOffset, adsWeight));
+	VECTOR visualFinal;
+	visualFinal = VAdd(VScale(right, visualOffset.x), VScale(up, visualOffset.y));
+	visualFinal = VAdd(visualFinal, VScale(baseDir, visualOffset.z));
+	VECTOR visualMuzzlePos = VAdd(userEyePos, visualFinal);
+
+	EffectManager::GetIns().CreateMuzzleFlash(visualMuzzlePos, baseDir, 0.5f);
 
 	//弾の生成
 	auto p = std::make_unique<BaseProjectile>(spawnPos, user.GetID(), spec, lastDir);
@@ -180,20 +189,29 @@ void Weapon::FireProjectile(Character& user, VECTOR direction) {
 }
 
 /*即着の弾を発射する関数*/
-void Weapon::FireHitScan(Character& user, VECTOR direction) {
+void Weapon::FireHitScan(Character& user, VECTOR baseDir, VECTOR shootDir) {
 	//射撃位置の取得
 	VECTOR userEyePos = VAdd(user.GetPos(), VGet(0, user.GetCurrentEyeHeight(), 0));
-	VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), direction));
-	VECTOR up = VNorm(VCross(direction, right));
-	VECTOR offset = VAdd(VScale(spec.visual.drawOffset, 1.0f - adsWeight), VScale(spec.visual.adsDrawOffset, adsWeight));
-	//回転に応じてオフセット分ずらす
-	VECTOR finalOffset;
-	finalOffset = VAdd(VScale(right, offset.x), VScale(up, offset.y));
-	finalOffset = VAdd(finalOffset, VScale(direction, offset.z));
-	VECTOR spawnPos = VAdd(userEyePos, finalOffset);
+	VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), baseDir));
+	VECTOR up = VNorm(VCross(baseDir, right));
 
-	VECTOR targetPos = VAdd(userEyePos, VScale(direction, 100.0f));
+	//回転に応じてオフセット分ずらす
+	VECTOR fireOffset = VAdd(VScale(spec.muzzleOffset, 1.0f - adsWeight), VScale(spec.adsMuzzleOffset, adsWeight));
+	VECTOR fireFinal;
+	fireFinal = VAdd(VScale(right, fireOffset.x), VScale(up, fireOffset.y));
+	fireFinal = VAdd(fireFinal, VScale(baseDir, fireOffset.z));
+	VECTOR spawnPos = VAdd(userEyePos, fireFinal);
+
+	VECTOR targetPos = VAdd(userEyePos, VScale(shootDir, 100.0f));
 	VECTOR lastDir = VNorm(VSub(targetPos, spawnPos));
+
+	VECTOR visualOffset = VAdd(VScale(spec.visual.drawMuzzleOffset, 1.0f - adsWeight), VScale(spec.visual.drawAdsMuzzleOffset, adsWeight));
+	VECTOR visualFinal;
+	visualFinal = VAdd(VScale(right, visualOffset.x), VScale(up, visualOffset.y));
+	visualFinal = VAdd(visualFinal, VScale(baseDir, visualOffset.z));
+	VECTOR visualMuzzlePos = VAdd(userEyePos, visualFinal);
+
+	EffectManager::GetIns().CreateMuzzleFlash(visualMuzzlePos, baseDir, 0.5f);
 
 	//始点と終点をセット
 	VECTOR start = spawnPos;

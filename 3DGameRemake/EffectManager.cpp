@@ -58,5 +58,48 @@ void EffectManager::CreateDeathParticle(VECTOR pos, float floorY, ENEMYTYPE type
 }
 
 void EffectManager::CreateMuzzleFlash(VECTOR pos, VECTOR dir, float size) {
-	AddEffect(std::make_unique<MuzzleFlashEffect>(pos, dir, 0.1f, size, GetColor(255, 255, 0)));
+	AddEffect(std::make_unique<MuzzleFlashEffect>(pos, dir, 0.05f, size, GetColor(255, 255, 0)));
+}
+
+void EffectManager::CreateHitEffect(VECTOR pos, VECTOR normal, bool isEnemy) {
+	int color = isEnemy ? GetColor(255, 100, 0) : GetColor(255,255,255);
+	int particleCount = isEnemy ? 12 : 6;
+
+	if (VSquareSize(normal) < 0.01f)normal = VGet(0, 1, 0);
+	normal = VNorm(normal);
+
+	VECTOR up = VGet(0, 1, 0);
+	VECTOR right = VCross(up, normal);
+	if (VSquareSize(right) < 0.01f) {
+		right = VGet(1, 0, 0);
+	}
+	else {
+		right = VNorm(right);
+	}
+	up = VNorm(VCross(normal, right));
+
+	for (int i = 0; i < particleCount; ++i) {
+		// 法線を中心とした半球状にランダムなベクトルを生成
+		float theta = (GetRand(314) / 100.0f) * 2.0f;
+		float phi = acosf(1.0f - (GetRand(100) / 100.0f));
+
+		float speed = (GetRand(100) / 100.0f) * 0.25f + 0.1f;
+
+		float localX = sinf(phi) * cosf(theta);
+		float localY = sinf(phi) * sinf(theta);
+		float localZ = cosf(phi);
+
+		VECTOR vel;
+		vel.x = right.x * localX + up.x * localY + normal.x * localZ;
+		vel.y = right.y * localX + up.y * localY + normal.y * localZ;
+		vel.z = right.z * localX + up.z * localY + normal.z * localZ;
+
+		vel = VScale(vel, speed);
+
+		float life = 0.4f + (GetRand(40) / 100.0f);
+		float size = 0.04f + (GetRand(3) / 100.0f);
+
+		// 床の高さはステージ下限として一旦 -10.0f 固定（空中で当たっても奈落に落ちて消える）
+		AddEffect(std::make_unique<HitEffect>(pos, vel, life, size, -10.0f, color));
+	}
 }

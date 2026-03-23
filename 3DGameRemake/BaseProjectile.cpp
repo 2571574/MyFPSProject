@@ -2,6 +2,7 @@
 #include "CollisionManager.h"
 #include "EnemyManager.h"
 #include "Player.h"
+#include "EffectManager.h"
 
 namespace {
 	constexpr float FPS_BASE = 60.0f;
@@ -47,6 +48,12 @@ void BaseProjectile::Update() {
 					p->HitRecord(isHeadShot);
 				}
 			}
+			Debug::Log("EffectSpawn true");
+			EffectManager::GetIns().CreateHitEffect(hit.hitPos, hit.hitNormal, true);
+		}
+		else if (hit.isWallHit) {
+			Debug::Log("EffectSpawn false");
+			EffectManager::GetIns().CreateHitEffect(hit.hitPos, hit.hitNormal, false);
 		}
 		alive = false;		//弾の生存タグを消す
 	}

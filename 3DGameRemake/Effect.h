@@ -22,7 +22,7 @@ class DeathEffect : public Effect {
 private:
 	VECTOR velocity;
 	float size;
-	unsigned int color;
+	int color;
 	float floorY;
 
 	VECTOR rotAxis;
@@ -42,6 +42,18 @@ private:
 	int color;
 public:
 	MuzzleFlashEffect(VECTOR pos, VECTOR dir, float life, float s, int c);
+	void Update() override;
+	void Draw() override;
+};
+
+class HitEffect : public Effect {
+private:
+	VECTOR velocity;
+	float size;
+	int color;
+	float floorY;
+public:
+	HitEffect(VECTOR pos, VECTOR vel, float life, float s, float fY, int c);
 	void Update() override;
 	void Draw() override;
 };

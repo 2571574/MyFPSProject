@@ -20,5 +20,6 @@ public:
 
 	void CreateDeathParticle(VECTOR pos, float floorY, ENEMYTYPE type);
 	void CreateMuzzleFlash(VECTOR pos, VECTOR dir, float size);
+	void CreateHitEffect(VECTOR pos, VECTOR normal, bool isEnemy);
 };
 

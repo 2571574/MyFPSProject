@@ -98,3 +98,60 @@ void MuzzleFlashEffect::Draw() {
 
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
+
+HitEffect::HitEffect(VECTOR pos, VECTOR vel, float life, float s, float fY, int c)
+	: Effect(pos, life)
+	, velocity(vel)
+	, size(c)
+	, floorY(fY)
+	, color(c) {}
+
+
+void HitEffect::Update() {
+	float dt = Time::GetIns().GetDelta();
+	float dt60 = dt * 60.0f;
+
+	lifeTime -= dt;
+	if (lifeTime <= 0.0f) {
+		alive = false;
+		return;
+	}
+
+	velocity.y -= 0.025f * dt60;
+	position = VAdd(position, VScale(velocity, dt60));
+
+	if (position.y - size < floorY) {
+		position.y = floorY + size;
+		velocity.y *= -0.5f;
+
+		velocity.x *= std::pow(0.7f, dt60);
+		velocity.z *= std::pow(0.7f, dt60);
+
+		if (std::abs(velocity.y) < 0.05f) {
+			velocity.y = 0.0f;
+		}
+	}
+	else {
+		float friction = std::pow(0.98f, dt60);
+		velocity.x *= friction;
+		velocity.z *= friction;
+	}
+}
+
+
+void HitEffect::Draw() {
+	float scale = lifeTime / maxLifeTime;
+	if (scale < 0.0f)scale = 0.0f;
+
+	float currentSize = size * scale;
+
+	int alpha = static_cast<int>(255 * (scale * scale));
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+
+	VECTOR pos1 = VAdd(position, VGet(-currentSize, -currentSize, -currentSize));
+	VECTOR pos2 = VAdd(position, VGet(currentSize, currentSize, currentSize));
+
+	DrawCube3D(pos1, pos2, color, color, TRUE);
+
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+}

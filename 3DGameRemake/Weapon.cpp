@@ -224,6 +224,12 @@ void Weapon::FireHitScan(Character& user, VECTOR baseDir, VECTOR shootDir) {
 		if (hit.isHeadShot)Debug::Log("Headshot");
 		else Debug::Log("hit");
 		hit.character->OnHit(lastdamage,spec.id);	//当たった場合の被弾処理
+		Debug::Log("EffectSpawn true");
+		EffectManager::GetIns().CreateHitEffect(hit.hitPos, hit.hitNormal, true);
+	}
+	else if (hit.isWallHit) {
+		Debug::Log("EffectSpawn false");
+		EffectManager::GetIns().CreateHitEffect(hit.hitPos, hit.hitNormal, false);
 	}
 }
 

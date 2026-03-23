@@ -13,6 +13,7 @@ struct HitInfo {
 	bool isHeadShot = false;
 	bool isWallHit = false;
 	VECTOR hitPos = VGet(0.0f, 0.0f, 0.0f);
+	VECTOR hitNormal = VGet(0.0f, 1.0f, 0.0f);
 };
 
 /// <summary>

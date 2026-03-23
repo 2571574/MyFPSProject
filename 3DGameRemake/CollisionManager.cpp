@@ -90,6 +90,7 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 			minDistance = VSize(VSub(wallHit.HitPosition, start));
 			result.isWallHit = true;
 			result.hitPos = wallHit.HitPosition;
+			result.hitNormal = wallHit.Normal;
 		}
 	}
 
@@ -115,6 +116,7 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 				result.isHeadShot = true;
 				result.isWallHit = false;
 				result.hitPos = headPos;
+				result.hitNormal = VNorm(VSub(start, end));
 			}
 			continue;
 		}
@@ -132,6 +134,7 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 				result.isHeadShot = false;
 				result.isWallHit = false;
 				result.hitPos = approxBodyHitPos;
+				result.hitNormal = VNorm(VSub(start, end));
 			}
 		}
 	}
@@ -152,6 +155,7 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 			minDistance = VSize(VSub(wallHit.HitPosition, pos));
 			result.isWallHit = true;
 			result.hitPos = wallHit.HitPosition;
+			result.hitNormal = wallHit.Normal;
 		}
 	}
 
@@ -185,6 +189,7 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 				result.isHeadShot = true;
 				result.isWallHit = false;
 				result.hitPos = headPos;
+				result.hitNormal = VNorm(VSub(pos, nextPos));
 			}
 			continue;
 		}
@@ -201,6 +206,7 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 				result.isHeadShot = false;
 				result.isWallHit = false;
 				result.hitPos = approxBodyHitPos;
+				result.hitNormal = VNorm(VSub(pos, nextPos));
 			}
 		}
 	}

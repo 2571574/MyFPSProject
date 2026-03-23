@@ -17,6 +17,7 @@ RifleEnemy::RifleEnemy(VECTOR pos,Player*target)
 
 void RifleEnemy::Update() {
 	float dt = Time::GetIns().GetDelta();
+	if (onHitFlashTimer > 0.0f) onHitFlashTimer -= dt;
 	if (nowSpawned) {
 		spawnedTimer -= dt;
 		if (spawnedTimer <= 0.0f) {
@@ -76,9 +77,37 @@ void RifleEnemy::Draw() {
 	VECTOR bottom = VAdd(position, VGet(0.0f, bodyRad, 0.0f));
 	float neck = status.eyeHeight - headRad;
 	VECTOR bodyTop = VAdd(cPos, VGet(0.0f, neck - bodyRad, 0.0f));
-
-	DrawCapsule3D(bottom, bodyTop, bodyRad, 16, GetColor(0, 0, 255), GetColor(0, 0, 255), true);
 	VECTOR headPos = VAdd(cPos, VGet(0.0f, currentEyeHeight, 0.0f));
-	DrawSphere3D(headPos, headRad, 16, GetColor(0, 0, 255), GetColor(0, 0, 255), true);
 
+	VECTOR leanMax = VGet(velocity.x, 0.0f, velocity.z);
+	constexpr float LEAN_FACTOR = 1.5f;
+	leanMax = VScale(leanMax, LEAN_FACTOR);
+
+	float headHeight = currentEyeHeight - bodyRad;
+	float bodyTopHeight = (neck - bodyRad) - bodyRad;
+
+	VECTOR bodyTopLean = VScale(leanMax, bodyTopHeight / headHeight);
+
+	bodyTop = VAdd(bodyTop, bodyTopLean);
+	headPos = VAdd(headPos, leanMax);
+	int color = GetColor(0, 0, 255);
+	if (onHitFlashTimer > 0.0f)color = GetColor(255, 255, 255);
+	DrawCapsule3D(bottom, bodyTop, bodyRad, 16, color, color, true);
+	DrawSphere3D(headPos, headRad, 16, color, color, true);
+
+	if (rifle) {
+		VECTOR forward = VGet(0, 0, 1);
+		if (target) {
+			forward = VNorm(VSub(target->GetPos(), position));
+			forward.y = 0.0f;
+			if (VSize(forward) < 0.01f) forward = VGet(0, 0, 1);
+		}
+		VECTOR right = VNorm(VCross(VGet(0, 1, 0), forward));
+		VECTOR up = VNorm(VCross(forward, right));
+
+		VECTOR drawPos = VAdd(position, VGet(0, status.height * 0.5f, 0));
+		float weaponHeight = (status.height * 0.5f) - bodyRad;
+		drawPos = VAdd(drawPos, VScale(leanMax, weaponHeight / headHeight));
+		rifle->Draw(drawPos, forward, right, up, false, false);
+	}
 }

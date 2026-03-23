@@ -3,6 +3,7 @@
 #include "CollisionManager.h"
 #include "ResourceManager.h"
 #include "Camera.h"
+#include "Parameter.h"
 
 #include <memory>
 
@@ -361,10 +362,18 @@ void Weapon::Draw(VECTOR basePos, VECTOR forward, VECTOR right, VECTOR up, bool 
 
 	MATRIX worldMat = MMult(MMult(MMult(MMult(scaleMat, localRot), animRot), rot), transMat);
 
-	DxLib::MV1SetMatrix(gunModelHandle, worldMat);
-
-	if (isFPP) {
-		ClearDrawScreenZBuffer();
+	if (isAds && spec.id == WeaponID::SR && isFPP) {
+		int scopeGraph = ResourceManager::GetIns().GetGraph("Resource/SniperScope.png");
+		if(scopeGraph != -1){
+			DrawExtendGraph(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, scopeGraph, TRUE);
+		}
 	}
-	MV1DrawModel(gunModelHandle);
+	else {
+		DxLib::MV1SetMatrix(gunModelHandle, worldMat);
+
+		if (isFPP) {
+			ClearDrawScreenZBuffer();
+		}
+		MV1DrawModel(gunModelHandle);
+	}
 }

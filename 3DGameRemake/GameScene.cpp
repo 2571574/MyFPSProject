@@ -58,6 +58,7 @@ void GameScene::Init() {
 	isDeadSequence = false;
 	deathTimer = 0.0f;
 	score = 0;
+	isSceneChange = false;
 }
 
 void GameScene::Update() {
@@ -93,7 +94,8 @@ void GameScene::Update() {
 	}
 	else {
 		deathTimer += Time::GetIns().GetDelta();
-		if (deathTimer >= DEATH_DURATION) {
+		if (deathTimer >= DEATH_DURATION && !isSceneChange) {
+			isSceneChange = true;
 			manager->SetScore(score);
 			manager->SetAccuracy(player.GetShots(), player.GetHits(), player.GetHeadShot());
 			manager->ChangeScene(std::make_unique<ResultScene>(manager));

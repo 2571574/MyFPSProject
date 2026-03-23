@@ -74,7 +74,6 @@ void HUD::Draw() {
 		DrawFormatString(cenX - 40, topY, textColor, "スコア : %6d", EnemyManager::GetIns().GetTotalScore());
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
-		DrawCircle(CENTER_X, CENTER_Y, CROSSHAIR_DOT_SIZE, GetColor(0, 0, 0), true);
 
 	if (hitMarkTimer > 0.0f) {
 		int cx = CENTER_X;
@@ -105,6 +104,9 @@ void HUD::Draw() {
 	Weapon* weapon = pplayer->GetWeapon();
 
 	if (weapon) {
+		if (!weapon->TakingAim()) {
+			DrawCircle(CENTER_X, CENTER_Y, CROSSHAIR_DOT_SIZE, GetColor(0, 0, 0), true);
+		}
 		int ammo = weapon->GetAmmo();
 		int mag = weapon->GetSpec().magAmmo;
 		int reserve = weapon->GetReserveAmmo();

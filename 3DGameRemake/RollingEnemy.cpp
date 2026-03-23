@@ -30,6 +30,7 @@ RollingEnemy::RollingEnemy(VECTOR pos, Player* target)
 
 void RollingEnemy::Update() {
 	float dt = Time::GetIns().GetDelta();
+	if (onHitFlashTimer > 0.0f) onHitFlashTimer -= dt;
 	if (nowSpawned) {
 		spawnedTimer -= dt;
 		if (spawnedTimer <= 0.0f) {
@@ -74,6 +75,7 @@ void RollingEnemy::Action() {
 
 void RollingEnemy::Draw() {
 	int color = GetColor(255, 165, 0);
+	if (onHitFlashTimer > 0.0f) color = GetColor(255, 255, 255);
 	if (isExploding) {
 		if (static_cast<int>(explodeTimer * 10) % 2 == 0)color = GetColor(255, 0, 0);
 	}

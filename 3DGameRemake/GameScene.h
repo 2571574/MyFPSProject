@@ -36,6 +36,8 @@ private:
 	float deathTimer = 0.0f;
 	int monochromeHandle = -1;
 
+	bool isSceneChange = false;
+
 	void PauseUpdate();
 	void PauseDraw();
 public:

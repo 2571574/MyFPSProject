@@ -9,6 +9,7 @@ Dummy::Dummy(VECTOR pos, Player* _target,bool _damageText) :Enemy(pos, CHARA_STA
 /*更新*/
 void Dummy::Update() {
 	float dt = Time::GetIns().GetDelta();
+	if (onHitFlashTimer > 0.0f) {onHitFlashTimer -= dt;}
 	if (accumulateTimer > 0.0f) { accumulateTimer -= dt; }
 	for (auto n = damageTexts.begin(); n != damageTexts.end();) {
 		n->lifeTime -= dt;
@@ -34,7 +35,8 @@ void Dummy::Draw() {
 	float neck = status.eyeHeight - headRad;
 	VECTOR bodyTop = VAdd(cPos, VGet(0.0f, neck - bodyRad, 0.0f));
 	VECTOR headPos = VAdd(cPos, VGet(0.0f, currentEyeHeight, 0.0f));
-	unsigned int color =GetColor(255, 50, 50);	//色
+	unsigned int color =GetColor(255, 50, 50);
+	if (onHitFlashTimer > 0.0f)color = GetColor(255, 255, 255);
 	//カプセルを描画
 	DrawCapsule3D(bottom, bodyTop, bodyRad, 16, color, color, true);
 	DrawSphere3D(headPos, headRad, 16, color, color, true);
@@ -55,6 +57,7 @@ void Dummy::Action() {
 void Dummy::OnHit(int damage, WeaponID id) {
 	if (!alive) return;
 	TakeDamage(damage, id);
+	onHitFlashTimer = 0.1f;
 	if (!damageText)return;
 	if (accumulateTimer > 0.0f && !damageTexts.empty()) {
 		DamageText& lastText = damageTexts.back();

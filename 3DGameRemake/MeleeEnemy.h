@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "Enemy.h"
+#include "Weapon.h"
+#include <memory>
 
 enum class MeleeState {
     IDLE,
@@ -17,7 +19,7 @@ private:
     MeleeState state = MeleeState::IDLE;
     float stateTimer = 0.0f;
 	float attackTimer;  //攻撃のクールタイム
-    GunStatus melee;
+    std::unique_ptr<Weapon> melee;
 public:
     /// <summary>
     /// コンストラクタ

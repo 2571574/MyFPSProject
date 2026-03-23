@@ -21,6 +21,8 @@ protected:
 
 	bool isDirectPathSafe;	//直接攻撃しても安全かどうか
 	ENEMYTYPE type;
+
+	float onHitFlashTimer;
 public:
 
 	Enemy(VECTOR pos, const CharacterStatus& status, Player* _target, ENEMYTYPE type);

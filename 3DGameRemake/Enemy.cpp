@@ -24,13 +24,15 @@ Enemy::Enemy(VECTOR pos,const CharacterStatus& status, Player* _target, ENEMYTYP
 	, isDirectPathSafe(false)
 	, type(type)
 	, nowSpawned(true)
-	, spawnedTimer(SPAWN_INVINCIBLE_TIME){ 
+	, spawnedTimer(SPAWN_INVINCIBLE_TIME)
+	, onHitFlashTimer(0.0f){ 
 	pathUpdateTimer = (GetRand(PATH_UPDATE_RANDOM) / 100.0f);
 }
 
 void Enemy::OnHit(int damage,WeaponID id) {
 	if (!alive || nowSpawned) return;
 	TakeDamage(damage,id);
+	onHitFlashTimer = 0.1f;
 }
 
 VECTOR Enemy::GetNextNodeID()const {

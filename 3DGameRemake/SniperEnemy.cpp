@@ -115,8 +115,19 @@ void SniperEnemy::Draw() {
 
 	int color = GetColor(0, 255, 0);
 	if (onHitFlashTimer > 0.0f) color = GetColor(255, 255, 255);
-	DrawCapsule3D(bottom, bodyTop, bodyRad, 16, color, color, true);
-	DrawSphere3D(headPos, headRad, 16, color, color, true);
+
+	int fillFlag = nowSpawned ? FALSE : TRUE;
+
+	if (!nowSpawned) {
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+		VECTOR shadowPos1 = VAdd(position, VGet(0.0f, 0.02f, 0.0f));
+		VECTOR shadowPos2 = VAdd(position, VGet(0.0f, 0.01f, 0.0f));
+		DrawCone3D(shadowPos1, shadowPos2, status.width / 1.5f, 16, GetColor(0, 0, 0), GetColor(0, 0, 0), TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
+
+	DrawCapsule3D(bottom, bodyTop, bodyRad, CIRCLE_DIVNUM, color, color, fillFlag);
+	DrawSphere3D(headPos, headRad, CIRCLE_DIVNUM, color, color, fillFlag);
 	
 	if (sniper) {
 		VECTOR forward = VGet(0, 0, 1);

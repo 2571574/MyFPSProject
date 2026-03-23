@@ -4,7 +4,9 @@ constexpr float TEXT_LIFETIME = 1.0f;
 constexpr float TEXT_HEIGHT_OFFSET = 0.5f;
 constexpr float ACCUMULATE_TIME_MAX = 0.2f;
 /*コンストラクタ*/
-Dummy::Dummy(VECTOR pos, Player* _target,bool _damageText) :Enemy(pos, CHARA_STATUS::DUMMY, _target, ENEMYTYPE::DUMMY), accumulateTimer(0.0f), damageText(_damageText) {};
+Dummy::Dummy(VECTOR pos, Player* _target,bool _damageText) :Enemy(pos, CHARA_STATUS::DUMMY, _target, ENEMYTYPE::DUMMY), accumulateTimer(0.0f), damageText(_damageText) {
+	nowSpawned = false;
+};
 
 /*更新*/
 void Dummy::Update() {
@@ -37,9 +39,19 @@ void Dummy::Draw() {
 	VECTOR headPos = VAdd(cPos, VGet(0.0f, currentEyeHeight, 0.0f));
 	unsigned int color =GetColor(255, 50, 50);
 	if (onHitFlashTimer > 0.0f)color = GetColor(255, 255, 255);
+
+	int fillFlag = nowSpawned ? FALSE : TRUE;
+
+	if (!nowSpawned) {
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+		VECTOR shadowPos1 = VAdd(position, VGet(0.0f, 0.02f, 0.0f));
+		VECTOR shadowPos2 = VAdd(position, VGet(0.0f, 0.01f, 0.0f));
+		DrawCone3D(shadowPos1, shadowPos2, status.width / 1.5f, 16, GetColor(0, 0, 0), GetColor(0, 0, 0), TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
 	//カプセルを描画
-	DrawCapsule3D(bottom, bodyTop, bodyRad, 16, color, color, true);
-	DrawSphere3D(headPos, headRad, 16, color, color, true);
+	DrawCapsule3D(bottom, bodyTop, bodyRad, CIRCLE_DIVNUM, color, color, fillFlag);
+	DrawSphere3D(headPos, headRad, CIRCLE_DIVNUM, color, color, fillFlag);
 
 	for (const auto& text : damageTexts) {
 		VECTOR screenPos = ConvWorldPosToScreenPos(text.pos);

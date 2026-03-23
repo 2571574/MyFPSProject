@@ -82,7 +82,17 @@ void RollingEnemy::Draw() {
 	float bodyRad = status.width / 2.0f;
 	VECTOR bottom = VAdd(position, VGet(0.0f, bodyRad, 0.0f));
 	VECTOR top = VAdd(position, VGet(0, currentHeight - bodyRad, 0));
-	DrawCapsule3D(bottom, top, bodyRad, 16, color, color, true);
+	int fillFlag = nowSpawned ? FALSE : TRUE;
+
+	if (!nowSpawned) {
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+		VECTOR shadowPos1 = VAdd(position, VGet(0.0f, 0.02f, 0.0f));
+		VECTOR shadowPos2 = VAdd(position, VGet(0.0f, 0.01f, 0.0f));
+		DrawCone3D(shadowPos1, shadowPos2, status.width / 1.5f, 16, GetColor(0, 0, 0), GetColor(0, 0, 0), TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
+
+	DrawCapsule3D(bottom, top, bodyRad, CIRCLE_DIVNUM, color, color, fillFlag);
 
 	if (isExploding) {
 		DrawSphere3D(position, explodeSpec.explodeArea, CIRCLE_DIVNUM, color, color, false);

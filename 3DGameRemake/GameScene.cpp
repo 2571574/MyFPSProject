@@ -86,6 +86,7 @@ void GameScene::Update() {
 	if (!isDeadSequence) {
 		//死亡時のリザルト画面遷移
 		if (player.GetHP() <= 0) {
+			manager->SetCauseOfDeath(player.GetLastHitWeapon());
 			isDeadSequence = true;
 			deathTimer = 0.0f;
 		}
@@ -95,7 +96,6 @@ void GameScene::Update() {
 		if (deathTimer >= DEATH_DURATION) {
 			manager->SetScore(score);
 			manager->SetAccuracy(player.GetShots(), player.GetHits(), player.GetHeadShot());
-			manager->SetCauseOfDeath(player.GetLastHitWeapon());
 			manager->ChangeScene(std::make_unique<ResultScene>(manager));
 
 		}

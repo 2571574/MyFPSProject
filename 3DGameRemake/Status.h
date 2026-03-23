@@ -75,6 +75,7 @@ struct GunStatus {		 //武器の性能
 	float adsSpread;
 	float recoil;	     //反動
 	VECTOR muzzleOffset; //銃口のオフセット
+	VECTOR adsMuzzleOffset;	
 	float hasDampingRatio;		//持った時の移動速度減衰率
 	float adsDampingRatio;		//覗いた時の移動速度減衰率
 	float adsFov;		 //覗いた時の視野角

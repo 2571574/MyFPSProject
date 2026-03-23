@@ -31,20 +31,24 @@ namespace {
 
 	constexpr float DROP_ITEM_Y_OFFSET = 0.4f;
 }
-Player::Player(VECTOR pos, Camera* camera,PlayMode mode)
+Player::Player(VECTOR pos, Camera* camera, PlayMode mode)
 	: Character(pos, CHARA_STATUS::PLAYER)
 	, cam(camera)
 	, stageHandle(-1)
 	, forwardVec({ 0,0,0 })
 	, rightVec({ 0,0,0 })
 	, fov(0)
-	,slidingCT(0.0f)
+	, slidingCT(0.0f)
 	, isAds(false)
-	,running(false)
+	, running(false)
 	, headBob(false)
 	, bobbingTimer(0)
-	,currentWeaponIndex(0)
-	,currentMode(mode)
+	, currentWeaponIndex(0)
+	, currentMode(mode)
+	, lastCamYaw(0.0f)
+	, lastCamPitch(0.0f)
+	,currentSwayX(0.0f)
+	,currentSwayY(0.0f)
 	
 {
 	hud = std::make_unique<HUD>(this);
@@ -122,7 +126,6 @@ void Player::Update() {
 	if (currentWeapon) {
 		if (running) {
 			currentWeapon->CancelAds();
-			currentWeapon->CancelReload();
 		}
 		else{
 			currentWeapon->FireInput(*this, GetCamDirection());
@@ -258,6 +261,34 @@ void Player::Update() {
 	cam->Update(camPos);
 	cam->Move(fov);
 
+	float currentYaw = cam->GetYaw();
+	float currentPitch = cam->GetPitch();
+
+	float deltaYaw = currentYaw - lastCamYaw;
+
+	if (deltaYaw > 180.0f)deltaYaw -= 360.0f;
+	if (deltaYaw < -180.0f)deltaYaw += 360.0f;
+
+	float deltaPitch = currentPitch - lastCamPitch;
+
+	constexpr float SWAY_MULTIPLIER = 0.02f;
+	constexpr float MAX_SWAY = 0.5f;
+
+	float targetSwayX = -deltaYaw * SWAY_MULTIPLIER;
+	float targetSwayY = deltaPitch * SWAY_MULTIPLIER;
+
+	if (targetSwayX > MAX_SWAY) targetSwayX = MAX_SWAY;
+	if (targetSwayX < -MAX_SWAY) targetSwayX = -MAX_SWAY;
+	if (targetSwayY > MAX_SWAY) targetSwayY = MAX_SWAY;
+	if (targetSwayY < -MAX_SWAY) targetSwayY = -MAX_SWAY;
+
+	constexpr float SWAY_LERP_SPEED = 0.2f; 
+	float swayLerp = 1.0f - std::pow(1.0f - SWAY_LERP_SPEED, dt60);
+	currentSwayX += (targetSwayX - currentSwayX) * swayLerp;
+	currentSwayY += (targetSwayY - currentSwayY) * swayLerp;
+
+	lastCamYaw = currentYaw;
+	lastCamPitch = currentPitch;
 	hud->Update();
 
 	Debug::Watch("X", position.x);
@@ -266,7 +297,6 @@ void Player::Update() {
 }
 
 void Player::Draw() {
-	if (hud)hud->Draw();
 	Weapon* currentWeapon = GetWeapon();
 	if (currentWeapon) {
 		VECTOR forward = cam->GetLookDirection();
@@ -275,8 +305,25 @@ void Player::Draw() {
 		VECTOR up = VNorm(VCross(forward, right));
 		right = VNorm(VCross(up, forward));
 
-		currentWeapon->Draw(cam->GetPos(), forward, right, up, isAds, true);
+		VECTOR drawPos = cam->GetPos();
+
+		if (!isAds) {
+			float bobAmp = 0.015f;
+			float bobX = cosf(bobbingTimer * 0.5f) * bobAmp;
+			float bobY = sinf(bobbingTimer) * bobAmp;
+
+			drawPos = VAdd(drawPos, VScale(right, bobX));
+			drawPos = VAdd(drawPos, VScale(up, bobY));
+		}
+
+		float swayX = isAds ? currentSwayX * 0.1f : currentSwayX;
+		float swayY = isAds ? currentSwayY * 0.1f : currentSwayY;
+
+		drawPos = VAdd(drawPos, VScale(right, swayX));
+		drawPos = VAdd(drawPos, VScale(up, swayY));
+		currentWeapon->Draw(drawPos, forward, right, up, isAds, true);
 	}
+	if (hud)hud->Draw();
 }
 
 
@@ -297,6 +344,7 @@ void Player::SwitchWeapon(int next) {
 	if (next < 0 || next >= slot.size())return;
 
 	if (Weapon* current = GetWeapon()) {
+		current->OnEquip();
 		current->CancelAds();
 		current->CancelReload();
 	}

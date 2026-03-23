@@ -29,11 +29,10 @@ protected:
 
 	float reloadCT;	     //リロード中タイマー     
 	float fireCT;		 //次の射撃までのタイマー
+	float equipCT;
 	bool aim;
-	//演出用
-	float modelScale;
-	VECTOR drawOffset;
-	VECTOR adsDrawOffset;
+
+	float adsWeight;
 
 	int gunModelHandle;	 //銃のモデルハンドル
 	int bulletModelHandle; //弾のモデルハンドル
@@ -141,4 +140,8 @@ public:
 	int GetAmmo() const { return ammo; }
 	int GetReserveAmmo() const { return reserveAmmo; }
 	bool IsInfinite() const { return infinite; }
+	
+	void OnEquip() {
+		equipCT = 0.15f;
+	}
 };

@@ -37,6 +37,11 @@ private:
 	std::vector<VECTOR> TargetedPos;
 
 	PlayMode currentMode;
+
+	float lastCamYaw;
+	float lastCamPitch;
+	float currentSwayX;
+	float currentSwayY;
 public:
 	/// <summary>
 	///	playerのコンストラクタ 座標にplayerを生成

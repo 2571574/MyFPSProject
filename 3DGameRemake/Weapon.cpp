@@ -10,6 +10,7 @@ namespace {
 	constexpr float SPREAD_RANDOM_PRECISION = 1000.0f;
 	constexpr float RAY_MAX_DISTANCE = 100.0f;
 	constexpr float RECOIL_RANDOM_PRECISION = 100.0f;
+	constexpr float EQUIP_TIME = 0.15f;
 }
 
 Weapon::Weapon(const GunStatus _spec)
@@ -20,7 +21,9 @@ Weapon::Weapon(const GunStatus _spec)
 	, currentState(WeaponState::IDLE)
 	, reloadCT(0)
 	, fireCT(0)
+	, equipCT(EQUIP_TIME)
 	, aim(false)
+	, adsWeight(0.0f)
 	, gunModelHandle(-1)
 	, bulletModelHandle(-1)
 	, effectHandle(-1)
@@ -44,6 +47,12 @@ Weapon::~Weapon() {
 void Weapon::Update() {
 	//リロード、射撃後のタイマーを減らす
 	float delta = Time::GetIns().GetDelta();
+	float dt60 = delta * 60.0f;
+	constexpr float ADS_SPEED = 0.6f;
+	float lerpRate = 1.0f - std::pow(1.0f - ADS_SPEED, dt60);
+	float targetAds = aim ? 1.0f : 0.0f;
+
+	adsWeight += (targetAds - adsWeight) * lerpRate;
 	if (reloadCT > 0) {
 		reloadCT -= delta;
 		if (reloadCT <= 0)
@@ -53,6 +62,10 @@ void Weapon::Update() {
 		fireCT -= delta;
 		if (fireCT <= 0)
 			fireCT = 0;
+	}
+	if (equipCT > 0) {
+		equipCT -= delta;
+		if (equipCT <= 0) equipCT = 0;
 	}
 
 	// リロード中かつタイマーが尽きたときだけ弾を補充
@@ -105,6 +118,10 @@ void Weapon::ReloadInput() {
 }
 
 void Weapon::AdsInput() {
+	if (currentState == WeaponState::RELOADING) {
+		aim = false;
+		return;
+	}
 	aim = InputManager::GetIns().IsActionHold(ActionID::ADS);
 	if (aim) {
 		Ads();
@@ -145,7 +162,7 @@ void Weapon::FireProjectile(Character& user, VECTOR direction) {
 	VECTOR userEyePos = VAdd(user.GetPos(), VGet(0, user.GetCurrentEyeHeight(), 0));
 	VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), direction));				//右のベクトル
 	VECTOR up = VNorm(VCross(direction, right));					//上のベクトル
-	VECTOR offset = aim ? VGet(0.0f, 0.0f, 1.0f) : spec.muzzleOffset;				//銃口のオフセット
+	VECTOR offset = VAdd(VScale(spec.visual.drawOffset, 1.0f - adsWeight), VScale(spec.visual.adsDrawOffset, adsWeight));				//銃口のオフセット
 
 	//回転に応じてオフセット分ずらす
 	VECTOR finalOffset;
@@ -167,7 +184,7 @@ void Weapon::FireHitScan(Character& user, VECTOR direction) {
 	VECTOR userEyePos = VAdd(user.GetPos(), VGet(0, user.GetCurrentEyeHeight(), 0));
 	VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), direction));
 	VECTOR up = VNorm(VCross(direction, right));
-	VECTOR offset = aim ? VGet(0.0f, 0.0f, 1.0f) : spec.muzzleOffset;
+	VECTOR offset = VAdd(VScale(spec.visual.drawOffset, 1.0f - adsWeight), VScale(spec.visual.adsDrawOffset, adsWeight));
 	//回転に応じてオフセット分ずらす
 	VECTOR finalOffset;
 	finalOffset = VAdd(VScale(right, offset.x), VScale(up, offset.y));
@@ -207,21 +224,144 @@ void Weapon::Draw(VECTOR basePos, VECTOR forward, VECTOR right, VECTOR up, bool 
 	float s = spec.visual.scale;
 	MATRIX scaleMat = MGetScale(VGet(s, s, s));
 
+	MATRIX localRot = MGetRotY(-DX_PI_F / 2.0f);
+
+	VECTOR animOffset = VGet(0.0f, 0.0f, 0.0f);
+	MATRIX animRot = MGetIdent();
+	if (equipCT > 0.0f) {
+		float progress = 1.0f - (equipCT / EQUIP_TIME);
+		float easeOut = sinf(progress * DX_PI_F / 2.0f);
+
+		// スケール: 0.5倍から1.0倍(元のサイズ)へ
+		s *= (0.5f + 0.5f * easeOut);
+
+		// 位置と回転: 下＆手前から定位置へ
+		float startOffsetY = -0.6f;
+		float startOffsetZ = -0.3f;
+		float startRotX = DX_PI_F / 4.0f;
+
+		animOffset = VGet(0.0f, startOffsetY * (1.0f - easeOut), startOffsetZ * (1.0f - easeOut));
+		animRot = MGetRotX(startRotX * (1.0f - easeOut));
+	}
+	else if (currentState == WeaponState::RELOADING && spec.reloadTime > 0.0f) {
+		float progress = 1.0f - (reloadCT / spec.reloadTime);	
+		switch (spec.id) {
+		case WeaponID::PIS:
+		case WeaponID::SMG:
+		{
+			float phase1End = 0.15f;
+			float phase2End = 0.85f;
+
+			float windUpOffsetY = -0.1f;
+			float windUpRotX = DX_PI_F / 4.0f;
+
+			float spinRotations = 6.0f;
+			float pullBackOffsetZ = -0.2f;
+
+			float overshootOffsetY = 0.1f;
+			float overshootRotX = -DX_PI_F / 8.0f;
+
+			if (progress < phase1End) {
+				float t = progress / phase1End;
+				float ease = sinf(t * DX_PI_F / 2.0f);
+
+				animOffset = VGet(0.0f, windUpOffsetY * ease, (pullBackOffsetZ * 0.3f) * ease);
+				animRot = MGetRotX(windUpRotX * ease);
+			}
+			else if (progress < phase2End) {
+				float t = (progress - phase1End) / (phase2End - phase1End);
+
+				float zEase = sinf(t * DX_PI_F);
+				float currentZ = (pullBackOffsetZ * 0.3f) * (1.0f - t) + pullBackOffsetZ * zEase;
+
+				animOffset = VGet(0.0f, windUpOffsetY * (1.0f - t), currentZ);
+
+				float targetRot = -DX_PI_F * 2.0f * spinRotations;
+				float currentRot = windUpRotX * (1.0f - t) + targetRot * t;
+
+				animRot = MGetRotX(currentRot);
+			}
+			else {
+				float t = (progress - phase2End) / (1.0f - phase2End);
+				float ease = sinf(t * DX_PI_F);
+
+				animOffset = VGet(0.0f, overshootOffsetY * ease, 0.0f);
+				animRot = MGetRotX(overshootRotX * ease);
+			}
+			break;
+		}
+		case WeaponID::LR:
+		{
+			float phase1End = 0.3f;
+			float phase2End = 0.7f;
+
+			float shoulderOffsetY = 0.8f;
+			float shoulderOffsetX = 0.3f;
+			float shoulderOffsetZ = -0.2f;
+
+			float shoulderRotX = -DX_PI_F / 2.5f;
+
+			if (progress < phase1End) {
+				float t = progress / phase1End;
+				float easeIn = 1.0f - cosf(t * DX_PI_F / 2.0f);
+
+				animOffset = VGet(shoulderOffsetX * easeIn, shoulderOffsetY * easeIn, shoulderOffsetZ * easeIn);
+				animRot = MGetRotX(shoulderRotX * easeIn);
+			}
+			else if (progress < phase2End) {
+				animOffset = VGet(shoulderOffsetX, shoulderOffsetY, shoulderOffsetZ);
+				animRot = MGetRotX(shoulderRotX);
+			}
+			else {
+				float t = (progress - phase2End) / (1.0f - phase2End);
+				float easeOut = sinf(t * DX_PI_F / 2.0f);
+
+				animOffset = VGet(
+					shoulderOffsetX * (1.0f - easeOut),
+					shoulderOffsetY * (1.0f - easeOut),
+					shoulderOffsetZ * (1.0f - easeOut)
+				);
+				animRot = MGetRotX(shoulderRotX * (1.0f - easeOut));
+			}
+			break;
+		}
+		default:
+			float transitionRatio = 0.07f;
+			float lerpFactor = 0.0f;
+
+			if (progress < transitionRatio) {
+				lerpFactor = sinf((progress / transitionRatio) * DX_PI_F / 2.0f);
+			}
+			else if (progress > 1.0f - transitionRatio) {
+				lerpFactor = sinf(((1.0f - progress) / transitionRatio) * DX_PI_F / 2.0f);
+			}
+			else {
+				lerpFactor = 1.0f;
+			}
+
+			float targetRotY = (-DX_PI_F / 2.0f) * lerpFactor;
+
+			animRot = MGetRotY(targetRotY * lerpFactor);
+			break;
+		}
+	}
+
 	MATRIX rot = MGetIdent();
 	rot.m[0][0] = right.x;		rot.m[0][1] = right.y;		rot.m[0][2] = right.z;
 	rot.m[1][0] = up.x;			rot.m[1][1] = up.y;			rot.m[1][2] = up.z;
 	rot.m[2][0] = forward.x;	rot.m[2][1] = forward.y;	rot.m[2][2] = forward.z;
 
-	VECTOR offset = isAds ? adsDrawOffset : drawOffset;
+	VECTOR worldOffset = VAdd(VScale(spec.visual.drawOffset, 1.0f - adsWeight), VScale(spec.visual.adsDrawOffset, adsWeight));
+	worldOffset = VAdd(worldOffset, animOffset);
 	VECTOR drawPos = basePos;
-	drawPos = VAdd(drawPos, VScale(right, offset.x));
-	drawPos = VAdd(drawPos, VScale(up, offset.y));
-	drawPos = VAdd(drawPos, VScale(forward, offset.z));
+	drawPos = VAdd(drawPos, VScale(right, worldOffset.x));
+	drawPos = VAdd(drawPos, VScale(up, worldOffset.y));
+	drawPos = VAdd(drawPos, VScale(forward, worldOffset.z));
 	MATRIX transMat = MGetTranslate(drawPos);
 
-	MATRIX worldMat = MMult(MMult(scaleMat,rot), transMat);
+	MATRIX worldMat = MMult(MMult(MMult(MMult(scaleMat, localRot), animRot), rot), transMat);
 
-	MV1SetMatrix(gunModelHandle, worldMat);
+	DxLib::MV1SetMatrix(gunModelHandle, worldMat);
 
 	if (isFPP) {
 		ClearDrawScreenZBuffer();

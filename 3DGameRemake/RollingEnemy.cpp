@@ -1,6 +1,7 @@
 ﻿#include "RollingEnemy.h"
 #include "Player.h"
 #include "EnemyManager.h"
+#include "EffectManager.h"
 
 namespace {
 	constexpr float EXPLODE_TIME = 2.0f;
@@ -68,8 +69,8 @@ void RollingEnemy::Update() {
 }
 
 void RollingEnemy::Action() {
-	CollisionManager::GetIns().ProcessExplotion(position, explodeSpec.explodeArea, explodeSpec.damage,explodeSpec.knockbackP,true, status.teamID,explodeSpec.id,explodeSpec.friendlyFire);
-
+	CollisionManager::GetIns().ProcessExplosion(position, explodeSpec.explodeArea, explodeSpec.damage,explodeSpec.knockbackP,true, status.teamID,explodeSpec.id,explodeSpec.friendlyFire);
+	EffectManager::GetIns().CreateExplosionEffect(position, explodeSpec.explodeArea, GetColor(255, 100, 0));
 	alive = false;
 }
 

@@ -213,7 +213,7 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 	return result;
 }
 
-bool CollisionManager::ProcessExplotion(VECTOR hitPos, float radius, int damage,float knockbackPower,bool distanceFallOff, TEAMID shooter, WeaponID id,bool friendlyFire) {
+bool CollisionManager::ProcessExplosion(VECTOR hitPos, float radius, int damage,float knockbackPower,bool distanceFallOff, TEAMID shooter, WeaponID id,bool friendlyFire) {
 	if (radius <= 0.0f)return false;
 	bool hit = false;
 

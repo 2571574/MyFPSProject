@@ -74,7 +74,7 @@ public:
 	/// <param name="shooter">射手のID</param>
 	/// <param name="id">武器ID</param>
 	/// <returns>誰かに当たったか</returns>
-	bool ProcessExplotion(VECTOR hitPos, float radius, int damage, float knockbackPower, bool distanceFallOff, TEAMID shooter, WeaponID id = WeaponID::UNKNOWN, bool friendlyFire = true);
+	bool ProcessExplosion(VECTOR hitPos, float radius, int damage, float knockbackPower, bool distanceFallOff, TEAMID shooter, WeaponID id = WeaponID::UNKNOWN, bool friendlyFire = true);
 
 	void SetStageHandle(int handle) { stageHandle = handle; }
 };

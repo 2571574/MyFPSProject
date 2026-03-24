@@ -21,5 +21,9 @@ public:
 	void CreateDeathParticle(VECTOR pos, float floorY, ENEMYTYPE type);
 	void CreateMuzzleFlash(VECTOR pos, VECTOR dir, float size);
 	void CreateHitEffect(VECTOR pos, VECTOR normal, bool isEnemy);
+	void CreateSpawnEffect(VECTOR pos, float height, float radius, float life);
+	void CreateExplosionEffect(VECTOR pos, float radius, int color);
+	void CreateHitScanTrail(VECTOR start, VECTOR end, int color);
+	void CreateProjectileTrail(VECTOR start, VECTOR end, float radius, int color);
 };
 

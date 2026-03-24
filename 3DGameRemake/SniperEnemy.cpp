@@ -147,14 +147,46 @@ void SniperEnemy::Draw() {
 
 	if (targetingTimer > 0.0f) {
 		if (sniper && target) {
-			VECTOR gunOffset =VAdd(sniper->GetSpec().muzzleOffset,VGet(0.0f,currentEyeHeight,0.0f));
-
+			VECTOR gunOffset = VAdd(sniper->GetSpec().muzzleOffset, VGet(0.0f, currentEyeHeight, 0.0f));
 			VECTOR s = VAdd(position, gunOffset);
 			VECTOR e = VAdd(target->GetPos(), VGet(0.0f, target->GetCurrentHeight() * 0.5f, 0.0f));
 
-			Debug::Watch("laser.y", e.y);
-			int a = static_cast<int>((targetingTimer / TARGET_TIME) * 255);
-			DrawLine3D(s, e, GetColor(a, 0, 0));
+			float progress = targetingTimer / TARGET_TIME;
+
+			int outerColor;
+			int innerColor = GetColor(255, 255, 255);
+			float outerRad = 0.0f;
+			float innerRad = 0.0f;
+			int outerAlpha = 0;
+
+			if (progress < 0.6f) {
+				float t = progress / 0.6f;
+				outerColor = GetColor(0, 200, 255);
+				outerRad = 0.03f;
+				innerRad = 0.01f;
+				outerAlpha = static_cast<int>(150 * t); 
+			}
+			else {
+				float t = (progress - 0.6f) / 0.4f;
+				int r = 255;
+				int g = static_cast<int>(100 * (1.0f - t));
+				int b = 0;
+				outerColor = GetColor(r, g, b);
+
+				outerRad = 0.05f + sinf(t * DX_PI_F * 8.0f) * 0.02f;
+				innerRad = 0.02f;
+				outerAlpha = 200;
+			}
+
+			SetWriteZBuffer3D(FALSE);
+
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, outerAlpha);
+			DrawCapsule3D(s, e, outerRad, 8, outerColor, outerColor, TRUE);
+
+			SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
+			DrawCapsule3D(s, e, innerRad, 8, innerColor, innerColor, TRUE);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+			SetWriteZBuffer3D(TRUE);
 		}
 	}
 }

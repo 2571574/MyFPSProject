@@ -124,13 +124,13 @@ void Player::Update() {
 	if (crouch)running = false;
 	//武器の更新と入力を検知
 	if (currentWeapon) {
+		currentWeapon->ReloadInput();
 		if (running) {
 			currentWeapon->CancelAds();
 		}
 		else{
 			currentWeapon->FireInput(*this, GetCamDirection());
 			currentWeapon->AdsInput();
-			currentWeapon->ReloadInput();
 		}
 		currentWeapon->Update();
 		isAds = currentWeapon->TakingAim();

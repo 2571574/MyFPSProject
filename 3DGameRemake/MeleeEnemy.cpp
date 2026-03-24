@@ -180,6 +180,6 @@ void MeleeEnemy::Action() {
 
 	VECTOR attackPos = VAdd(position, VScale(toTarget, 1.0f));
 	auto spec = melee->GetSpec();
-	CollisionManager::GetIns().ProcessExplotion(attackPos, spec.explodeArea, spec.damage, spec.knockbackP, false, GetID(), WeaponID::ENEMY_KNIFE,spec.friendlyFire);
+	CollisionManager::GetIns().ProcessExplosion(attackPos, spec.explodeArea, spec.damage, spec.knockbackP, false, GetID(), WeaponID::ENEMY_KNIFE,spec.friendlyFire);
 	Debug::Log("EnemyAttack");
 }

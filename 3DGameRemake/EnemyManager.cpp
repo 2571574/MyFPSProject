@@ -63,6 +63,19 @@ int EnemyManager::CountEnemyType(ENEMYTYPE type) {
 
 void EnemyManager::Spawn(std::unique_ptr<Enemy>enemy) {
 	enemy->SetStageHandle(stageHandle);
+
+	bool isTutorial = (target && target->GetCurrentMode() == PlayMode::MODE_TUTORIAL);
+
+	if (!isTutorial) {
+		VECTOR ePos = enemy->GetPos();
+		float eHeight = enemy->GetCurrentHeight();
+		float eRadius = enemy->GetRadius();
+
+		EffectManager::GetIns().CreateSpawnEffect(ePos, eHeight, eRadius, 1.5f);
+	}
+	else {
+		enemy->SkipSpawnPhase();
+	}
 	if (enemy)enemies.push_back(std::move(enemy));
 }
 

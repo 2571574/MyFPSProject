@@ -62,6 +62,10 @@ public:
 		currentNodeID++;
 	}
 
+	void SkipSpawnPhase() {
+		nowSpawned = false;
+		spawnedTimer = 0.0f;
+	}
 	//移動
 	
 	bool CheckLineSight(const Character* target,float height)const;

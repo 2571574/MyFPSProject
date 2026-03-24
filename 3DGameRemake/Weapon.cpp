@@ -216,6 +216,9 @@ void Weapon::FireHitScan(Character& user, VECTOR baseDir, VECTOR shootDir) {
 	//始点と終点をセット
 	VECTOR start = spawnPos;
 	VECTOR end = VAdd(start, VScale(lastDir, spec.range));
+
+	VECTOR actualEnd = end;
+
 	//始点から終点までで当たったか判定する
 	HitInfo hit = CollisionManager::GetIns().CheckHitScan(start, end, user.GetID());
 	if (hit.character != nullptr) {
@@ -231,6 +234,9 @@ void Weapon::FireHitScan(Character& user, VECTOR baseDir, VECTOR shootDir) {
 		Debug::Log("EffectSpawn false");
 		EffectManager::GetIns().CreateHitEffect(hit.hitPos, hit.hitNormal, false);
 	}
+
+	int trailColor = GetColor(200, 200, 200);
+	EffectManager::GetIns().CreateHitScanTrail(visualMuzzlePos, actualEnd, trailColor);
 }
 
 /*リロード*/

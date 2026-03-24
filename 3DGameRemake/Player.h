@@ -101,6 +101,7 @@ public:
 	}
 	int GetWeaponIndex()const { return currentWeaponIndex; }
 
+	PlayMode GetCurrentMode() const { return currentMode; }
 	void AddTargeted(VECTOR pos) { TargetedPos.push_back(pos); }
 	const std::vector<VECTOR>& GetTargeted()const { return TargetedPos; }
 	void ClearTargeted() { TargetedPos.clear();}

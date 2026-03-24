@@ -20,9 +20,11 @@ void EffectManager::Update() {
 }
 
 void EffectManager::Draw() {
+	SetWriteZBuffer3D(FALSE);
 	for (const auto& e : effects) {
 		e->Draw();
 	}
+	SetWriteZBuffer3D(TRUE);
 }
 
 void EffectManager::Clear() {
@@ -102,4 +104,20 @@ void EffectManager::CreateHitEffect(VECTOR pos, VECTOR normal, bool isEnemy) {
 		// 床の高さはステージ下限として一旦 -10.0f 固定（空中で当たっても奈落に落ちて消える）
 		AddEffect(std::make_unique<HitEffect>(pos, vel, life, size, -10.0f, color));
 	}
+}
+
+void EffectManager::CreateSpawnEffect(VECTOR pos, float height, float radius, float life) {
+	AddEffect(std::make_unique<SpawnEffect>(pos, height, radius, life));
+}
+
+void EffectManager::CreateExplosionEffect(VECTOR pos, float radius, int color) {
+	AddEffect(std::make_unique<ExplosionEffect>(pos, radius, color, 0.6f));
+}
+
+void EffectManager::CreateHitScanTrail(VECTOR start, VECTOR end, int color) {
+	AddEffect(std::make_unique<HitScanTrail>(start, end, color, 0.25f));
+}
+
+void EffectManager::CreateProjectileTrail(VECTOR start, VECTOR end, float radius, int color) {
+	AddEffect(std::make_unique<ProjectileTrailEffect>(start, end, radius, color, 0.12f));
 }

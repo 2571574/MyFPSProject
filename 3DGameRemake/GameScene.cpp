@@ -28,6 +28,9 @@ void GameScene::Init() {
 	MV1SetScale(stageHandle, VGet(0.02f, 0.02f, 0.02f));
 	MV1SetupCollInfo(stageHandle, -1, 8, 8, 8);
 
+	fontLarge = ResourceManager::GetIns().GetFont("Century Gothic", 36, 2);
+	fontMedium = ResourceManager::GetIns().GetFont("メイリオ", 20, 1);
+
 	player.SetStageHandle(stageHandle);
 	CollisionManager::GetIns().SetStageHandle(stageHandle);
 	ItemManager::GetIns().SetStageHandle(stageHandle);
@@ -97,11 +100,7 @@ void GameScene::Update() {
 	else {
 		deathTimer += Time::GetIns().GetDelta();
 		if (deathTimer >= DEATH_DURATION && !isSceneChange) {
-			isSceneChange = true;
-			manager->SetScore(score);
-			manager->SetAccuracy(player.GetShots(), player.GetHits(), player.GetHeadShot());
-			manager->ChangeScene(std::make_unique<ResultScene>(manager));
-
+			reqTransition = true;
 		}
 	}
 }
@@ -154,6 +153,17 @@ void GameScene::Draw() {
 	if (isPaused) {
 		PauseDraw();
 	}
+	if (reqTransition && !isSceneChange) {
+		isSceneChange = true;
+
+		int bgHandle = MakeGraph(WINDOW_WIDTH, WINDOW_HEIGHT, FALSE);
+		GetDrawScreenGraph(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, bgHandle);
+		GraphFilter(bgHandle, DX_GRAPH_FILTER_GAUSS, 16, 1000);
+
+		manager->SetScore(score);
+		manager->SetAccuracy(player.GetShots(), player.GetHits(), player.GetHeadShot());
+		manager->ChangeScene(std::make_unique<ResultScene>(manager, bgHandle));
+	}
 }
 
 void GameScene::PauseDraw() {
@@ -164,13 +174,10 @@ void GameScene::PauseDraw() {
 	const int yellow = GetColor(255, 255, 0);
 	const int white = GetColor(255, 255, 255);
 
-	DrawString(CENTER_X - 40, CENTER_Y - 100, "PAUSE", white);
-
-	int colorResume = (pauseSelectNum == RESUME) ? yellow : white;
-	int colorTitle = (pauseSelectNum == RETURN_TITLE) ? yellow : white;
-	
-	
-	DrawString(CENTER_X - 80, CENTER_Y + 40 * pauseSelectNum, ">", white);
-	DrawString(CENTER_X - 60, CENTER_Y, "Resume", colorResume);
-	DrawString(CENTER_X - 60, CENTER_Y + 40, "Return Title", colorTitle);
+	DrawStringToHandle(CENTER_X - 40, CENTER_Y - 100, "PAUSE", GetColor(255, 255, 255), fontLarge);
+	int colorResume = (pauseSelectNum == RESUME) ? GetColor(255, 255, 0) : GetColor(255, 255, 255);
+	int colorTitle = (pauseSelectNum == RETURN_TITLE) ? GetColor(255, 255, 0) : GetColor(255, 255, 255);
+	DrawStringToHandle(CENTER_X - 80, CENTER_Y + 60 * pauseSelectNum, ">", GetColor(255, 255, 0), fontMedium);
+	DrawStringToHandle(CENTER_X - 60, CENTER_Y, "Resume", colorResume, fontMedium);
+	DrawStringToHandle(CENTER_X - 60, CENTER_Y + 60, "Return Title", colorTitle, fontMedium);
 }

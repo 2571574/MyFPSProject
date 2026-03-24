@@ -19,19 +19,19 @@ BaseProjectile::BaseProjectile(VECTOR start, TEAMID _id, const GunStatus& _spec,
 }
 /*弾の更新*/
 void BaseProjectile::Update() {
-	float move = spec.projectileSpeed * Time::GetIns().GetDelta() * FPS_BASE;		//進む量
-	VECTOR nextpos = VAdd(pos, VScale(dir, move));		//次のフレームの時の位置
+	float move = spec.projectileSpeed * Time::GetIns().GetDelta() * FPS_BASE;		
+	VECTOR nextpos = VAdd(pos, VScale(dir, move));
 
 	HitInfo hit =
-		CollisionManager::GetIns().CheckProjectile(pos, nextpos, spec.projectileSize, id);	//弾が敵に当たったか判定
+		CollisionManager::GetIns().CheckProjectile(pos, nextpos, spec.projectileSize, id);
 
-	VECTOR actualNextPos = nextpos; // 軌跡を引くための「実際の到達点」
+	VECTOR actualNextPos = nextpos;
 
 	//当たっていた場合
 	if (hit.character != nullptr || hit.isWallHit) {
 
 		VECTOR hitPoint = hit.hitPos;
-		actualNextPos = hitPoint; // ★修正: 壁の表面や敵の表面を最終到達点にする（突き抜けない）
+		actualNextPos = hitPoint;
 
 		bool hitEnemy = false;
 		bool isHeadShot = false;
@@ -49,9 +49,11 @@ void BaseProjectile::Update() {
 			if (hit.isHeadShot)Debug::Log("Headshot");
 			else Debug::Log("hit");
 			hit.character->OnHit(lastDamage, spec.id);
+			bool isKill = (hit.character->GetHP() <= 0);
+
 			if (hitEnemy && id == TEAMID::ID_FRIENDLY) {
 				if (Player* p = EnemyManager::GetIns().GetPlayer()) {
-					p->HitRecord(isHeadShot);
+					p->HitRecord(isHeadShot, isKill);
 				}
 			}
 			Debug::Log("EffectSpawn true");

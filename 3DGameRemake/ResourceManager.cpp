@@ -55,17 +55,12 @@ int ResourceManager::GetSound(const std::string& path) {
 	return handle;
 }
 
-int ResourceManager::GetFont(const std::string& path, int size, int thickness) {
-	std::string key = path + std::to_string(size) + std::to_string(thickness);
-	if (fonts.find(key) != fonts.end()) {
-		return fonts[key];
+int ResourceManager::GetFont(const std::string& path) {
+	if (fonts.find(path) == fonts.end()) {
+		int handle = ::LoadFontDataToHandle(path.c_str());
+		fonts[path] = handle;
 	}
-
-	int handle = CreateFontToHandle(path.c_str(), size, thickness, DX_FONTTYPE_ANTIALIASING_8X8);
-	if (handle != -1) {
-		fonts[key] = handle;
-	}
-	return handle;
+	return fonts[path];
 }
 
 void ResourceManager::ClearAll() {

@@ -39,7 +39,12 @@ namespace {
 	constexpr float FADE_DURATION = 0.3f;
 }
 
-HUD::HUD(Player* player) : pplayer(player){}
+HUD::HUD(Player* player) : pplayer(player){
+	fontJpLarge = ResourceManager::GetIns().GetFont("メイリオ", 32, 1);
+	fontJpMedium = ResourceManager::GetIns().GetFont("メイリオ", 20, 1);
+	fontEnLarge = ResourceManager::GetIns().GetFont("Century Gothic", 28, 2);
+	fontEnSmall = ResourceManager::GetIns().GetFont("Century Gothic", 20, 2);
+}
 
 void HUD::Update() {
 	float dt = Time::GetIns().GetDelta();
@@ -78,60 +83,60 @@ void HUD::Draw() {
 	else {
 		snprintf(topTextBuf, sizeof(topTextBuf), "スコア : %d", EnemyManager::GetIns().GetTotalScore());
 	}
-	int textWidth = GetDrawStringWidth(topTextBuf, static_cast<int>(strlen(topTextBuf)));
+
+	// ★修正: GetDrawStringWidthToHandle を使用し、fontJpLarge を指定
+	int textWidth = GetDrawStringWidthToHandle(topTextBuf, static_cast<int>(strlen(topTextBuf)), fontJpLarge);
 	int drawX = CENTER_X - (textWidth / 2);
 
-
 	if (prepareTime > 0.0f) {
-		DrawString(drawX, topY, topTextBuf, textColor);
+		::DrawStringToHandle(drawX, topY, topTextBuf, textColor, fontJpLarge);
 	}
 	else {
 		int alpha = static_cast<int>(scoreFadeAlpha * 255);
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-		DrawString(drawX, topY, topTextBuf, textColor);
+		::DrawStringToHandle(drawX, topY, topTextBuf, textColor, fontJpLarge);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 
 	if (hitMarkTimer > 0.0f) {
-		// 定数（必要に応じて cpp の上部 anonymous namespace に移動させても構いません）
 		const float HITMARK_DURATION = 0.2f;
-
-		// 進行度とイージング（徐々に減速しながら広がる Cubic Ease-Out）
-		float progress = 1.0f - (hitMarkTimer / HITMARK_DURATION); // 0.0 -> 1.0
+		float progress = 1.0f - (hitMarkTimer / HITMARK_DURATION);
 		float easeOut = 1.0f - std::powf(1.0f - progress, 3.0f);
 
 		int cx = CENTER_X;
 		int cy = CENTER_Y;
 
-		// 通常ヒットは白、ヘッドショット時は赤色に設定
-		int baseColor = lastHitWasHS ? GetColor(255, 50, 50) : GetColor(255, 255, 255);
+		// 3段階の状態に応じたパラメータ設定
+		int baseColor = GetColor(255, 255, 255); // 通常: 白
+		int thickness = 2;
+		float lineLength = 8.0f;
+		float offsetMultiplier = 12.0f;
 
-		// 線の太さ（HS時は太くする）
-		int thickness = lastHitWasHS ? 4 : 2;
+		if (lastHitWasKill) {
+			baseColor = GetColor(255, 50, 50); // キル: 赤
+			thickness = 4;
+			lineLength = 18.0f;       // キル時は線を一番長くする
+			offsetMultiplier = 24.0f; // キル時は一番大きく弾ける
+		}
+		else if (lastHitWasHS) {
+			baseColor = GetColor(255, 200, 0); // ヘッドショット: 黄色
+			thickness = 4;
+			lineLength = 14.0f;
+			offsetMultiplier = 20.0f;
+		}
 
-		// 線の長さ（HS時は長くする）
-		float lineLength = lastHitWasHS ? 14.0f : 8.0f;
-
-		// 透明度（スッと消える）
 		int alpha = static_cast<int>(255 * (1.0f - easeOut));
-
-		// 外側へ弾けるオフセット計算（HS時の方がより遠くへ弾ける）
-		float baseOffset = 8.0f; // 中心からの初期距離
-		float expandOffset = baseOffset + (lastHitWasHS ? 20.0f : 12.0f) * easeOut;
+		float baseOffset = 8.0f;
+		float expandOffset = baseOffset + offsetMultiplier * easeOut;
 
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 
-		// 4本の斜め線を計算して描画（外側に向かって移動する）
-		// 左上
 		DrawLine(cx - static_cast<int>(expandOffset + lineLength), cy - static_cast<int>(expandOffset + lineLength),
 			cx - static_cast<int>(expandOffset), cy - static_cast<int>(expandOffset), baseColor, thickness);
-		// 右上
 		DrawLine(cx + static_cast<int>(expandOffset + lineLength), cy - static_cast<int>(expandOffset + lineLength),
 			cx + static_cast<int>(expandOffset), cy - static_cast<int>(expandOffset), baseColor, thickness);
-		// 左下
 		DrawLine(cx - static_cast<int>(expandOffset + lineLength), cy + static_cast<int>(expandOffset + lineLength),
 			cx - static_cast<int>(expandOffset), cy + static_cast<int>(expandOffset), baseColor, thickness);
-		// 右下
 		DrawLine(cx + static_cast<int>(expandOffset + lineLength), cy + static_cast<int>(expandOffset + lineLength),
 			cx + static_cast<int>(expandOffset), cy + static_cast<int>(expandOffset), baseColor, thickness);
 
@@ -167,7 +172,52 @@ void HUD::Draw() {
 		if (spec) {
 			const char* weaponName = TextManager::GetIns().GetWeaponName(spec->id);
 
-			DrawFormatString(CENTER_X + PICKUP_UI_OFFSET_X, CENTER_Y + PICKUP_UI_OFFSET_Y, GetColor(0, 0, 0), "PickUp : %s", weaponName);
+			// 1. コンテンツの描画幅を計算
+			int nameWidth = GetDrawStringWidthToHandle(weaponName, static_cast<int>(strlen(weaponName)), fontJpMedium);
+			int subTextWidth = GetDrawStringWidthToHandle("PickUp : F", static_cast<int>(strlen("PickUp : F")), fontEnSmall);
+			int textMaxWidth = (nameWidth > subTextWidth) ? nameWidth : subTextWidth;
+
+			// 2. アイコンの有無とサイズ
+			int iconSize = spec->visual.uiPath.empty() ? 0 : 100;
+			int gap = (iconSize > 0) ? 20 : 0; // アイコンとテキストの隙間
+
+			// 3. 全体の幅から、完全に中央となるX座標を逆算
+			int paddingX = 25;
+			int paddingY = 15;
+			int contentWidth = iconSize + gap + textMaxWidth;
+			int boxWidth = contentWidth + paddingX * 2;
+			int boxHeight = (iconSize > 0) ? iconSize + paddingY * 2 : 70;
+
+			// ★これで画面中央に完全なシンメトリーで配置されます
+			int boxStartX = CENTER_X - (boxWidth / 2);
+			int boxStartY = CENTER_Y + 120;
+
+			// 背景ボックス描画
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150);
+			DrawBox(boxStartX, boxStartY, boxStartX + boxWidth, boxStartY + boxHeight, GetColor(0, 0, 0), TRUE);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+			int currentX = boxStartX + paddingX;
+			int white = GetColor(255, 255, 255);
+
+			// アイコン描画
+			if (iconSize > 0) {
+				int iconHandle = ResourceManager::GetIns().GetGraph(spec->visual.uiPath);
+				if (iconHandle != -1) {
+					SetDrawBright(255, 255, 255);
+					SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+					DrawExtendGraph(currentX, boxStartY + paddingY, currentX + iconSize, boxStartY + paddingY + iconSize, iconHandle, TRUE);
+					SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+				}
+				currentX += iconSize + gap; // テキストの開始位置を右へズラす
+			}
+
+			// テキスト描画 (アイコンがある場合は上下中央付近に寄せる)
+			int textStartY = boxStartY + paddingY + (iconSize / 2) - 25;
+			if (iconSize == 0) textStartY = boxStartY + 10;
+
+			::DrawStringToHandle(currentX, textStartY, weaponName, white, fontJpMedium);
+			::DrawStringToHandle(currentX, textStartY + 30, "PickUp : F", white, fontEnSmall);
 		}
 	}
 
@@ -205,29 +255,27 @@ void HUD::Draw() {
 		int uiBaseX = WINDOW_WIDTH - iconSize - 30;
 		int uiBaseY = WINDOW_HEIGHT - iconSize - 20;
 
-		// 1. 武器画像が存在する場合のみ、背景（ウォーターマーク）としてグレー・半透明で描画
 		if (!spec.visual.uiPath.empty()) {
 			int iconHandle = ResourceManager::GetIns().GetGraph(spec.visual.uiPath);
 			if (iconHandle != -1) {
 				SetDrawBright(0, 0, 0);
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150);
-
 				DrawExtendGraph(uiBaseX, uiBaseY, uiBaseX + iconSize, uiBaseY + iconSize, iconHandle, TRUE);
-
 				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 				SetDrawBright(255, 255, 255);
 			}
 		}
 
-		
 		int textX = uiBaseX + 20;
 		int textY = uiBaseY + iconSize - 100;
 
-		DrawFormatString(textX, textY, GetColor(255, 255, 255), "%s", weaponName);
-		DrawFormatString(textX, textY + 30, GetColor(255, 255, 255), "AMMO  %02d / %02d", ammo, mag);
+		// ★修正: それぞれ適切なフォントハンドルを指定
+		::DrawFormatStringToHandle(textX, textY, GetColor(255, 255, 255), fontJpMedium, "%s", weaponName);
+		::DrawFormatStringToHandle(textX, textY + 30, GetColor(255, 255, 255), fontEnLarge, "AMMO  %02d / %02d", ammo, mag);
 
 		if (!weapon->IsInfinite()) {
-			DrawFormatString(textX, textY + 55, GetColor(200, 200, 200), "      %03d", reserve);
+			// 行間はフォントサイズに合わせて少し広め(60)に調整しています
+			::DrawFormatStringToHandle(textX, textY + 60, GetColor(200, 200, 200), fontEnSmall, "      %03d", reserve);
 		}
 
 		if (weapon->Reloading()) {
@@ -237,10 +285,8 @@ void HUD::Draw() {
 			int radius = 128;
 			int segments = 128;
 
-			
 			DrawCircle(cx, cy, radius, GetColor(80, 80, 80), FALSE);
 
-			
 			int arcColor = GetColor(255, 200, 0);
 			for (int i = 0; i < static_cast<int>(segments * prog); ++i) {
 				float a1 = -DX_PI_F / 2.0f + (DX_PI_F * 2.0f * i / segments);
@@ -254,10 +300,10 @@ void HUD::Draw() {
 				DrawLine(x1, y1, x2, y2, arcColor, 3);
 			}
 
-			// RELOADING の文字は、視界中心の邪魔にならないよう円グラフの下に少し離して配置
 			const char* reloadText = "RELOADING";
-			int rWidth = GetDrawStringWidth(reloadText, static_cast<int>(strlen(reloadText)));
-			DrawString(cx - (rWidth / 2), cy + radius + 15, reloadText, arcColor);
+			// ★修正: fontEnSmall を使用してセンタリング計算
+			int rWidth = GetDrawStringWidthToHandle(reloadText, static_cast<int>(strlen(reloadText)), fontEnSmall);
+			::DrawStringToHandle(cx - (rWidth / 2), cy + radius + 15, reloadText, arcColor, fontEnSmall);
 		}
 
 		const auto& attackers = pplayer->GetTargeted();
@@ -300,9 +346,10 @@ void HUD::Draw() {
 
 }
 
-void HUD::OnHitTarget(bool isHeadShot) {
+void HUD::OnHitTarget(bool isHeadShot,bool isKill) {
 	hitMarkTimer = HITMARK_DURATION;
 	lastHitWasHS = isHeadShot;
+	lastHitWasKill = isKill;
 }
 
 void HUD::OnPlayerTakeDamage() {

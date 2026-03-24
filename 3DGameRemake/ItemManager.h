@@ -35,6 +35,8 @@ private:
 	VECTOR camPos;
 
 	ItemManager() = default;
+
+	GunStatus GetPlayerGunStatus(WeaponID id);
 public:
 	static ItemManager& GetIns();
 

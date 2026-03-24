@@ -46,6 +46,7 @@ private:
 	};
 
 	
+	float introTimer = 0.0f;
 	TitleState currentState;	//現在のステート
 	int selectNum;				//現在選んでいる行
 	int columnidx = 0;			//現在選んでいる列
@@ -54,6 +55,11 @@ private:
 	int titleBG = -1;
 	float BGscrollX = 0.0f;
 
+	// サイズ調整用のフォントハンドル
+	int fontMenuLarge = -1;  // メニュー項目用（大）
+	int fontMenuSmall = -1;  // サブメニュー・設定項目用（中）
+	int fontDesc = -1;       // 日本語説明文用（小）
+	
 	/// <summary>
 	/// メニュー操作の入力処理
 	/// </summary>

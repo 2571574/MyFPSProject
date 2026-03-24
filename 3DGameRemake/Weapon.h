@@ -35,8 +35,6 @@ protected:
 	float adsWeight;
 
 	int gunModelHandle;	 //銃のモデルハンドル
-	int bulletModelHandle; //弾のモデルハンドル
-	int effectHandle;	 //発射時のエフェクト
 	int soundHandle;	 //サウンドハンドル
 
 	//弾速のある弾を生成する　user=射手　direction=射撃方向のベクトル
@@ -148,4 +146,6 @@ public:
 	void OnEquip() {
 		equipCT = 0.15f;
 	}
+
+	int GetModelHandle()const { return gunModelHandle; }
 };

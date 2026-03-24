@@ -80,12 +80,12 @@ public:
 	bool AddWeapon(std::unique_ptr<Weapon>& newWeapon);
 
 	void ShotRecord()override { Shot++; }
-	void HitRecord(bool isHeadShot)override {
+	void HitRecord(bool isHeadShot, bool isKill = false)override {
 		totalHit++;
 		if (isHeadShot)totalHeadHit++;
 
 		if (hud) {
-			hud->OnHitTarget(isHeadShot);
+			hud->OnHitTarget(isHeadShot,isKill);
 		}
 	}
 	

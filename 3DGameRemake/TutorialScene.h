@@ -24,6 +24,9 @@ private:
     Camera camera;
 
     int stageHandle;
+    int fontLarge = -1;  // タイトル、PAUSE用 (36)
+    int fontMedium = -1; // ダミー上のボタンテキスト用 (20)
+    int fontSmall = -1;  // 説明文用 (16)
 
     bool isPaused;
     int pauseSelectNum;

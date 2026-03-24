@@ -37,6 +37,10 @@ private:
 	int monochromeHandle = -1;
 
 	bool isSceneChange = false;
+	bool reqTransition = false;
+
+	int fontLarge = -1;
+	int fontMedium = -1;
 
 	void PauseUpdate();
 	void PauseDraw();

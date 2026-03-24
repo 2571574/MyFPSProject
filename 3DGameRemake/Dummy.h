@@ -15,6 +15,8 @@ class Dummy:public Enemy
 private:
 	bool damageText;
 	std::vector<DamageText> damageTexts;	//ダメージテキストの配列
+	int fontDamage = -1;
+
 	float accumulateTimer;					//ダメージの累積を許す時間のタイマー
 public:
 	Dummy(VECTOR pos, Player* _target,bool damageText);

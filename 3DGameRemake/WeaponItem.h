@@ -10,6 +10,7 @@ private:
 	float bobbingTimer;	//縦揺れのタイマー
 	bool alive;
 
+	int fontItem = -1;
 public:
 	WeaponItem(VECTOR pos, std::unique_ptr<Weapon> weapon);
 	~WeaponItem() = default;

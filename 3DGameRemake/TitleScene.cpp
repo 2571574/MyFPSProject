@@ -11,6 +11,20 @@
 #include<algorithm>
 
 namespace {
+	constexpr float INTRO_DURATION = 0.5f;
+	constexpr float SLIDE_START_X = -500.0f;
+
+	constexpr int MENU_BASE_X = 150;		// メニューの基準X座標
+	constexpr int MENU_BASE_Y = 200;		// メニューの基準Y座標
+	constexpr int MENU_LINE_HEIGHT = 110;	// 行間
+	constexpr int MENU_SLANT_X = 40;
+
+	constexpr int MENU_BG_WIDTH = 400;   // 背景の横幅
+	constexpr int MENU_BG_HEIGHT = 75;  // 背景の高さ
+	constexpr int MENU_BG_SLANT = 35;   // 平行四辺形自体の傾斜量
+	constexpr int MENU_BG_OFFSET_X = -80; // テキストに対する背景のXオフセット
+	constexpr int MENU_BG_OFFSET_Y = -10; // テキストに対する背景のYオフセット
+
 	constexpr int KEY_MAX = 256;
 	constexpr int BUTTON_MAX = 0x8000;
 	constexpr float BG_SCROLL_X = 50.0f;
@@ -19,7 +33,7 @@ namespace {
 	constexpr int DIALOG_X1 = CENTER_X + 50;
 	constexpr int DIALOG_Y1 = CENTER_Y + 100;
 	constexpr int DIALOG_X2 = WINDOW_WIDTH - 50;
-	constexpr int DIALOG_Y2 = WINDOW_HEIGHT - 50;
+	constexpr int DIALOG_Y2 = WINDOW_HEIGHT - 100;
 }
 //キーバインド可能なアクション
 static const std::vector<ActionID> GAMEPLAY_ACTION = {
@@ -41,6 +55,10 @@ TitleScene::~TitleScene() {
 void TitleScene::Init() {
 	titleLogoHandle = ResourceManager::GetIns().GetGraph("Resource/titleLogo.png");
 	titleBG = ResourceManager::GetIns().GetGraph("Resource/titlebg.png");
+	fontMenuLarge = ResourceManager::GetIns().GetFont("Century Gothic", 40, 2);
+	fontMenuSmall = ResourceManager::GetIns().GetFont("Century Gothic", 28, 2);
+	fontDesc = ResourceManager::GetIns().GetFont("メイリオ", 22, 1);
+	introTimer = 0.0f;
 	ChangeState(TitleState::TOP);
 }
 
@@ -48,6 +66,9 @@ void TitleScene::Init() {
 void TitleScene::Update() {
 	Control();
 	float dt = Time::GetIns().GetDelta();
+	if (introTimer < INTRO_DURATION) {
+		introTimer += dt;
+	}
 	BGscrollX += BG_SCROLL_X * dt;
 	if (selectNum < 0) selectNum = 0;
 	switch (currentState) {
@@ -189,13 +210,32 @@ void TitleScene::Update() {
 		//メニュー操作
 		else {
 			if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_LEFT))columnidx = 0;
-			if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_RIGHT))columnidx = 1;
+
+			// ★修正: 右への移動時、移動アクションならブロックする
+			if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_RIGHT)) {
+				ActionID target = GAMEPLAY_ACTION[selectNum];
+				bool isMoveAction = (target == ActionID::MOVE_FORWARD || target == ActionID::MOVE_LEFT ||
+					target == ActionID::MOVE_BACK || target == ActionID::MOVE_RIGHT);
+				if (!isMoveAction) {
+					columnidx = 1;
+				}
+			}
+
 			if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_BACK)) {
 				ChangeState(TitleState::SETTINGS);
 				selectNum = (int)SettingItem::KEY_CONFIG;
 			}
 			if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_SELECT)) {
-				isWaitingKey = true;
+				ActionID target = GAMEPLAY_ACTION[selectNum];
+				bool isMoveAction = (target == ActionID::MOVE_FORWARD || target == ActionID::MOVE_LEFT ||
+					target == ActionID::MOVE_BACK || target == ActionID::MOVE_RIGHT);
+
+				if (columnidx == 1 && isMoveAction) {
+					// コントローラー列の移動アクション選択時は何もしない（一応残しておきます）
+				}
+				else {
+					isWaitingKey = true;
+				}
 			}
 		}
 		break;
@@ -216,8 +256,8 @@ void TitleScene::Draw() {
 	const int LINE_HEIGHT = 30;
 	const int LOGO_X = WINDOW_WIDTH - 200;
 
-	
 
+	
 
 	if (titleBG != -1) {
 		int bgWidth, bgHeight;
@@ -225,74 +265,138 @@ void TitleScene::Draw() {
 
 		int drawOffset = (int)BGscrollX % bgWidth;
 		for (int x = -drawOffset; x < WINDOW_WIDTH; x += bgWidth) {
-			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+			::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
 			DrawGraph(x, 0, titleBG, true);
-			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+			::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		}
+		if (currentState == TitleState::SETTINGS ||
+			currentState == TitleState::KEY_CONFIG ||
+			currentState == TitleState::CREDIT) {
+			::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200); // 100(通常) -> 200(深い暗闇)
+			::DrawBox(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, ::GetColor(0, 0, 0), TRUE);
+			::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 	}
+
+
+	// ★スライドインの計算 (Ease-out)
+	float rawProgress = introTimer / INTRO_DURATION;
+	float progress = (rawProgress > 1.0f) ? 1.0f : rawProgress;
+
+	float easeOut = 1.0f - std::pow(1.0f - progress, 3.0f);
+	float slideX = (1.0f - easeOut) * SLIDE_START_X;
+
+	auto DrawGeometricBG = [&](int x, int y, int color, int alpha) {
+		::SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+		// 4つの頂点を計算（右に傾いた平行四辺形）
+		int x1 = x;
+		int y1 = y;
+		int x2 = x + MENU_BG_WIDTH;
+		int y2 = y;
+		int x3 = x + MENU_BG_WIDTH + MENU_BG_SLANT;
+		int y3 = y + MENU_BG_HEIGHT;
+		int x4 = x + MENU_BG_SLANT;
+		int y4 = y + MENU_BG_HEIGHT;
+
+		// 三角形2つで四角形を構成
+		DrawTriangle(x1, y1, x2, y2, x3, y3, color, TRUE);
+		DrawTriangle(x1, y1, x3, y3, x4, y4, color, TRUE);
+		::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		};
 
 	switch (currentState) {
 	case TitleState::TOP: {
-
+		// ロゴ描画（既存）
 		if (titleLogoHandle != -1) {
-			int margin = 100;
-			int x2 = WINDOW_WIDTH - 300;
-			int x1 = x2 - 500;
-			int y1 = margin;
-			int y2 = y1 + 500;
-			SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
-			DrawExtendGraph(x1, y1, x2, y2, titleLogoHandle, true);
-			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+			::SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
+			DrawExtendGraph(WINDOW_WIDTH - 800, 100, WINDOW_WIDTH - 300, 600, titleLogoHandle, true);
+			::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
-		DrawString(CHOOSE_X, BASE_Y + LINE_HEIGHT * selectNum, ">", GetColor(255, 255, 255));
-		DrawString(BASE_X, BASE_Y, "Play", GetColor(255, 255, 255));
-		DrawString(BASE_X, BASE_Y + LINE_HEIGHT, "Settings", GetColor(255, 255, 255));
-		DrawString(BASE_X, BASE_Y + LINE_HEIGHT * 2, "Credit", GetColor(255, 255, 255));
-		DrawString(BASE_X, BASE_Y + LINE_HEIGHT * 3, "Exit", GetColor(255, 255, 255));
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
-		DrawBox(DIALOG_X1, DIALOG_Y1, DIALOG_X2, DIALOG_Y2, GetColor(255, 255, 255), true);
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
+		// 選択肢の描画
+		const char* menuLabels[MENU_MAX] = { "PLAY", "SETTINGS", "CREDIT", "EXIT" };
+		for (int i = 0; i < MENU_MAX; i++) {
+			int drawX = static_cast<int>(MENU_BASE_X + (i * MENU_SLANT_X) + slideX);
+			int drawY = MENU_BASE_Y + (i * MENU_LINE_HEIGHT);
+
+			bool isSelected = (i == selectNum);
+			int bgColor = GetColor(255, 255, 255);
+
+			// 選択中は不透明な白、非選択時は極めて薄い白（ガイドラインとして機能）
+			int bgAlpha = isSelected ? 255 : 40;
+			// ★ 選択中は背景が白なので、文字を黒にする（視認性の確保）
+			int textColor = isSelected ? GetColor(0, 0, 0) : GetColor(255, 255, 255);
+
+			// 背景描画
+			DrawGeometricBG(drawX + MENU_BG_OFFSET_X, drawY + MENU_BG_OFFSET_Y, bgColor, bgAlpha);
+
+			::DrawStringToHandle(drawX, drawY, menuLabels[i], textColor,fontMenuLarge);
+		}
+
+		// 説明ボックスの描画
+		::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+		::DrawBox(DIALOG_X1, DIALOG_Y1, DIALOG_X2, DIALOG_Y2, GetColor(255, 255, 255), true);
+		::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		
 		const char* description = TextManager::GetIns().GetMenuDescription(selectNum);
-		DrawString(DIALOG_X1 + 30, DIALOG_Y1 + 30, description, GetColor(0, 0, 0));
+		::DrawStringToHandle(DIALOG_X1 + 30, DIALOG_Y1 + 30, description, GetColor(0, 0, 0),fontDesc);
 		break;
 	}
 	case TitleState::MODE_SELECT: {
-		DrawString(CHOOSE_X, 100 + 30 * selectNum, ">", GetColor(255, 255, 255));
-		DrawString(BASE_X, BASE_Y, "Tutorial", GetColor(255, 255, 255));
-		DrawString(BASE_X, BASE_Y + LINE_HEIGHT, "Easy", GetColor(255, 255, 255));
-		DrawString(BASE_X, BASE_Y + LINE_HEIGHT * 2, "Normal", GetColor(255, 255, 255));
-		DrawString(BASE_X, BASE_Y + LINE_HEIGHT * 3, "Hard", GetColor(255, 255, 255));
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
-		DrawBox(DIALOG_X1, DIALOG_Y1, DIALOG_X2, DIALOG_Y2, GetColor(255, 255, 255), true);
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		// ★ TOPと同じ平行四辺形スタイルとアニメーションを適用
+		const char* modeLabels[] = { "TUTORIAL", "EASY", "NORMAL", "HARD" };
+		int modeMax = static_cast<int>(PlayMode::MODE_MAX);
+
+		for (int i = 0; i < modeMax; i++) {
+			int drawX = static_cast<int>(MENU_BASE_X + (i * MENU_SLANT_X) + slideX);
+			int drawY = MENU_BASE_Y + (i * MENU_LINE_HEIGHT);
+
+			bool isSelected = (i == selectNum);
+			int bgColor = GetColor(255, 255, 255);
+
+			// 選択中は不透明な白、非選択時は極めて薄い白（ガイドラインとして機能）
+			int bgAlpha = isSelected ? 255 : 40;
+			// ★ 選択中は背景が白なので、文字を黒にする（視認性の確保）
+			int textColor = isSelected ? GetColor(0, 0, 0) : GetColor(255, 255, 255);
+
+			// 背景描画
+			DrawGeometricBG(drawX + MENU_BG_OFFSET_X, drawY + MENU_BG_OFFSET_Y, bgColor, bgAlpha);
+
+			// テキスト描画
+			::DrawStringToHandle(drawX, drawY, modeLabels[i], textColor, fontMenuLarge);
+		}
+
+		// 説明ボックスの描画
+		::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+		::DrawBox(DIALOG_X1, DIALOG_Y1, DIALOG_X2, DIALOG_Y2, GetColor(255, 255, 255), true);
+		::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 		const char* description = TextManager::GetIns().GetMenuDescription(selectNum + 13);
-		DrawString(DIALOG_X1 + 30, DIALOG_Y1 + 30, description, GetColor(0, 0, 0));
+		::DrawStringToHandle(DIALOG_X1 + 30, DIALOG_Y1 + 30, description, GetColor(0, 0, 0), fontDesc);
 		break;
 	}
 	case TitleState::SETTINGS:
 		DrawSettings();
 		break;
 	case TitleState::CREDIT:
-		DrawString(100, 100, "Credit", GetColor(255, 255, 255));
+		::DrawStringToHandle(150, 100, "Credit", GetColor(255, 255, 255), fontMenuLarge);
 		break;
 	case TitleState::KEY_CONFIG:
 		DrawKeyConfig();
 		break;
-
 	}
-	
-	DrawFormatString(WINDOW_WIDTH - 600, WINDOW_HEIGHT - 30, GetColor(255, 255, 255), "WASD : メニュー操作 , F : 決定, SHIFT : 戻る");
+
+	::DrawBox(0, WINDOW_HEIGHT - 50, WINDOW_WIDTH, WINDOW_HEIGHT, GetColor(0, 0, 0), TRUE);
+	::DrawStringToHandle(WINDOW_WIDTH - 600, WINDOW_HEIGHT - 30, "WASD : メニュー操作  |  F : 決定  |  SHIFT : 戻る", GetColor(255, 255, 255), fontDesc);
 }
 
 void TitleScene::DrawSettings() {
-	const int BASE_X = 100;
+	const int BASE_X = 150;
 	const int CHOOSE_X = BASE_X - 20;
-	const int BASE_Y = 100;
-	const int LINE_HEIGHT = 30;
+	const int BASE_Y = 200;
+	const int LINE_HEIGHT = 50;
 
-	DrawString(BASE_X, 50, "Settings", GetColor(255, 255, 255));
+	::DrawStringToHandle(BASE_X, 100, "Settings", GetColor(255, 255, 255), fontMenuLarge);
 	auto& s = ConfigManager::GetIns().Settings();
 
 	//設定項目の文字列
@@ -310,58 +414,68 @@ void TitleScene::DrawSettings() {
 		int drawY = BASE_Y + i * LINE_HEIGHT;
 
 		
-		DrawString(CHOOSE_X, drawY, (i == selectNum) ? ">" : " ", color);
+		::DrawStringToHandle(CHOOSE_X, drawY, (i == selectNum) ? ">" : " ", color, fontMenuSmall);
 
 		//描画
 		switch ((SettingItem)i) {
 		case SettingItem::BGM_VOLUME:
-			DrawFormatString(BASE_X, drawY, color, "%-20s : %d%%", labels[i], (int)(s.bgmVolume * 100));
+			::DrawFormatStringToHandle(BASE_X, drawY, color, fontMenuSmall, "%-20s : %d%%", labels[i], (int)(s.bgmVolume * 100));
 			break;
 		case SettingItem::SE_VOLUME:
-			DrawFormatString(BASE_X, drawY, color, "%-20s : %d%%", labels[i], (int)(s.seVolume * 100));
+			::DrawFormatStringToHandle(BASE_X, drawY, color, fontMenuSmall, "%-20s : %d%%", labels[i], (int)(s.seVolume * 100));
 			break;
 		case SettingItem::MOUSE_SENSITIVITY:
-			DrawFormatString(BASE_X, drawY, color, "%-20s : %.1f", labels[i], s.mouseSensitivity * 2.0f);
+			::DrawFormatStringToHandle(BASE_X, drawY, color, fontMenuSmall, "%-20s : %.0f", labels[i], s.mouseSensitivity * 1000.0f);
 			break;
 		case SettingItem::PAD_SENSITIVITY:
-			DrawFormatString(BASE_X, drawY, color, "%-20s : %.1f", labels[i], s.padSensitivity * 1000.0f);
+			::DrawFormatStringToHandle(BASE_X, drawY, color, fontMenuSmall, "%-20s : %.0f", labels[i], s.padSensitivity * 10000.0f);
 			break;
 		case SettingItem::BASE_FOV:
-			DrawFormatString(BASE_X, drawY, color, "%-20s : %.0f", labels[i], s.basefov);
+			::DrawFormatStringToHandle(BASE_X, drawY, color, fontMenuSmall, "%-20s : %.0f", labels[i], s.basefov);
 			break;
 		case SettingItem::HEAD_BOB:
-			DrawFormatString(BASE_X, drawY, color, "%-20s : %s", labels[i], s.headbob ? "ON" : "OFF");
+			::DrawFormatStringToHandle(BASE_X, drawY, color, fontMenuSmall, "%-20s : %s", labels[i], s.headbob ? "ON" : "OFF");
 			break;
 		case SettingItem::RECOVERY:
-			DrawFormatString(BASE_X, drawY, color, "%-20s : %s", labels[i], s.recovery ? "ON" : "OFF");
+			::DrawFormatStringToHandle(BASE_X, drawY, color, fontMenuSmall, "%-20s : %s", labels[i], s.recovery ? "ON" : "OFF");
 			break;
 		case SettingItem::KEY_CONFIG:
-			DrawFormatString(BASE_X, drawY, color, "%-20s : >>>", labels[i]);
+			::DrawFormatStringToHandle(BASE_X, drawY, color, fontMenuSmall, "%-20s : >>>", labels[i]);
 			break;
 		case SettingItem::BACK:
-			DrawFormatString(BASE_X, drawY, color, "%s", labels[i]);
+			::DrawFormatStringToHandle(BASE_X, drawY, color, fontMenuSmall, "%s", labels[i]);
 			break;
 		default:
 			break;
 		}
 	}
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
-	DrawBox(DIALOG_X1, DIALOG_Y1, DIALOG_X2, DIALOG_Y2, GetColor(255, 255, 255), true);
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+	::DrawBox(DIALOG_X1, DIALOG_Y1, DIALOG_X2, DIALOG_Y2, GetColor(255, 255, 255), true);
+	::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	const char* description = TextManager::GetIns().GetMenuDescription(selectNum + 4);
-	DrawString(DIALOG_X1 + 30, DIALOG_Y1 + 30, description, GetColor(0, 0, 0));
+	::DrawStringToHandle(DIALOG_X1 + 30, DIALOG_Y1 + 30, description, GetColor(0, 0, 0), fontDesc);
 }
 
 void TitleScene::DrawKeyConfig() {
-	const int BASE_X = 100;
-	const int BASE_Y = 100;
-	const int LINE_HEIGHT = 25;
-	const int COL0_X = 300; 
-	const int COL1_X = 480;
+	// 1920x1080 の画面全体を贅沢に使うためのレイアウト定数
+	const int BASE_X = 400;         // アクション名の左端（左に寄りすぎないよう中央へ）
+	const int BASE_Y = 250;         // リストの開始Y座標
+	const int LINE_HEIGHT = 50;     // 行間を広く取る（13項目 * 50 = 650px なので画面に綺麗に収まる）
+	const int COL0_X = 900;         // キーボード/マウス列のX座標
+	const int COL1_X = 1400;        // コントローラー列のX座標
 
-	DrawString(BASE_X, 30, "---Key Config---", GetColor(255, 255, 255));
-	DrawString(BASE_X, 60, "          キーボード/マウス      コントローラー", GetColor(200, 200, 200));
+	// タイトル（左上に大きく配置）
+	::DrawStringToHandle(150, 100, "Key Config", GetColor(255, 255, 255), fontMenuLarge);
+
+	// ヘッダーテキスト（それぞれの列の真上に配置）
+	::DrawStringToHandle(COL0_X, 180, "キーボード/マウス", GetColor(150, 150, 150), fontMenuSmall);
+	::DrawStringToHandle(COL1_X, 180, "コントローラー", GetColor(150, 150, 150), fontMenuSmall);
+
+	// ヘッダーの下に区切り線を引いてソリッド感を出す
+	::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+	::DrawLine(BASE_X, 220, WINDOW_WIDTH - 200, 220, GetColor(255, 255, 255), 2);
+	::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	auto& allBind = ConfigManager::GetIns().Bindings();
 
@@ -372,9 +486,17 @@ void TitleScene::DrawKeyConfig() {
 
 		const char* actName = TextManager::GetIns().GetActionName(act);
 
-		
-		DrawString(BASE_X - 20, y, (i == selectNum) ? ">" : " ", color);
-		DrawString(BASE_X, y, actName ? actName : "Unknown", color);
+		// 選択カーソルとハイライト
+		if (i == selectNum) {
+			::DrawStringToHandle(BASE_X - 40, y, ">", color, fontMenuSmall);
+			// 選択中の行の背景に薄いハイライトを入れて視認性を上げる
+			::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 30);
+			::DrawBox(BASE_X - 50, y - 5, WINDOW_WIDTH - 200, y + LINE_HEIGHT - 5, GetColor(255, 255, 255), TRUE);
+			::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		}
+
+		// アクション名
+		::DrawStringToHandle(BASE_X, y, actName ? actName : "Unknown", color, fontMenuSmall);
 
 		int kbCode = -1;
 		int padCode = -1;
@@ -386,31 +508,38 @@ void TitleScene::DrawKeyConfig() {
 			}
 		}
 
-		
-		int col0Color = (i == selectNum && columnidx == 0) ? GetColor(255, 100, 100) : color;
+		int col0Color = (i == selectNum && columnidx == 0) ? GetColor(255, 255, 0) : GetColor(255, 255, 255);
+		int col1Color = (i == selectNum && columnidx == 1) ? GetColor(255, 255, 0) : GetColor(255, 255, 255);
+		// キーボード列の描画
 		if (isWaitingKey && i == selectNum && columnidx == 0) {
-			DrawString(COL0_X, y, "キー入力待ち", GetColor(255, 50, 50));
+			::DrawStringToHandle(COL0_X, y, "入力待ち...", GetColor(255, 50, 50), fontDesc);
 		}
 		else if (kbCode != -1) {
-			DrawFormatString(COL0_X, y, col0Color, "%d", kbCode);
+			::DrawFormatStringToHandle(COL0_X, y, col0Color, fontMenuSmall, "%d", kbCode);
 		}
 		else {
-			DrawString(COL0_X, y, "NONE", col0Color);
+			::DrawStringToHandle(COL0_X, y, "NONE", GetColor(100, 100, 100), fontMenuSmall);
 		}
 
-		
-		int col1Color = (i == selectNum && columnidx == 1) ? GetColor(255, 100, 100) : color;
-		if (isWaitingKey && i == selectNum && columnidx == 1) {
-			DrawString(COL1_X, y, "ボタン入力待ち", GetColor(255, 50, 50));
-		}
-		else if (padCode != -1) {
-			DrawFormatString(COL1_X, y, col1Color, "%d", padCode);
-		}
-		else {
-			DrawString(COL1_X, y, "NONE", col1Color);
+		bool isMoveAction = (act == ActionID::MOVE_FORWARD || act == ActionID::MOVE_LEFT ||
+			act == ActionID::MOVE_BACK || act == ActionID::MOVE_RIGHT);
+
+		// コントローラー列の描画
+		if (!isMoveAction) {
+			if (isWaitingKey && i == selectNum && columnidx == 1) {
+				::DrawStringToHandle(COL1_X, y, "入力待ち...", GetColor(255, 50, 50), fontDesc);
+			}
+			else if (padCode != -1) {
+				::DrawFormatStringToHandle(COL1_X, y, col1Color, fontMenuSmall, "%d", padCode);
+			}
+			else {
+				::DrawStringToHandle(COL1_X, y, "NONE", GetColor(100, 100, 100), fontMenuSmall);
+			}
 		}
 	}
 }
+
+
 void TitleScene::Control() {
 	int max = 0;
 	switch (currentState) {
@@ -422,13 +551,30 @@ void TitleScene::Control() {
 	}
 
 	if (!isWaitingKey) {
-		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_UP))
-			selectNum--;
-		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_DOWN))
-			selectNum++;
-		if (max > 0) {
-			if (selectNum < 0)selectNum = max - 1;
-			if (selectNum >= max)selectNum = 0;
+		int moveDir = 0;
+		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_UP)) moveDir = -1;
+		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_DOWN)) moveDir = 1;
+
+		// ★修正: 上下移動時に無効な行をスキップするロジック
+		if (moveDir != 0 && max > 0) {
+			do {
+				selectNum += moveDir;
+				if (selectNum < 0) selectNum = max - 1;
+				if (selectNum >= max) selectNum = 0;
+
+				// KEY_CONFIGステートで、コントローラー列にいる場合
+				if (currentState == TitleState::KEY_CONFIG && columnidx == 1) {
+					ActionID target = GAMEPLAY_ACTION[selectNum];
+					bool isMoveAction = (target == ActionID::MOVE_FORWARD || target == ActionID::MOVE_LEFT ||
+						target == ActionID::MOVE_BACK || target == ActionID::MOVE_RIGHT);
+
+					// 移動アクションでなければループを抜ける（ここで停止）
+					if (!isMoveAction) break;
+				}
+				else {
+					break; // その他のステート、または左列の場合は通常通り1回の移動で抜ける
+				}
+			} while (true);
 		}
 	}
 }
@@ -439,21 +585,25 @@ void TitleScene::ModifySetting(SettingItem item, int direction) {
 	switch (item) {
 	case SettingItem::BGM_VOLUME:
 		settings.bgmVolume += dt * 0.05f;
+		settings.bgmVolume = std::round(settings.bgmVolume * 100.0f) / 100.0f;
 		if (settings.bgmVolume < 0.00f) settings.bgmVolume = 0.00f;
 		if (settings.bgmVolume > 1.00f)settings.bgmVolume = 1.00f;
 		break;
 	case SettingItem::SE_VOLUME:
 		settings.seVolume += dt * 0.05f;
+		settings.seVolume = std::round(settings.seVolume * 100.0f) / 100.0f;
 		if (settings.seVolume < 0.00f) settings.seVolume = 0.00f;
 		if (settings.seVolume > 1.00f)settings.seVolume = 1.00f;
 		break;
 	case SettingItem::MOUSE_SENSITIVITY:
-		settings.mouseSensitivity += dt * 0.05f;
-		if (settings.mouseSensitivity < 0.05f) settings.mouseSensitivity = 0.05f;
-		if (settings.mouseSensitivity > 1.0f) settings.mouseSensitivity = 1.0f;
+		settings.mouseSensitivity += dt * 0.001f;
+		settings.mouseSensitivity = std::round(settings.mouseSensitivity * 1000.0f) / 1000.0f;
+		if (settings.mouseSensitivity < 0.001f) settings.mouseSensitivity = 0.001f;
+		if (settings.mouseSensitivity > 0.10f) settings.mouseSensitivity = 0.10f;
 		break;
 	case SettingItem::PAD_SENSITIVITY:
 		settings.padSensitivity += dt * 0.0001f;
+		settings.padSensitivity = std::round(settings.padSensitivity * 10000.0f) / 10000.0f;
 		if (settings.padSensitivity < 0.0001f)settings.padSensitivity = 0.0001f;
 		if (settings.padSensitivity > 0.0100f)settings.padSensitivity = 0.0100f;
 		break;
@@ -477,6 +627,7 @@ void TitleScene::ChangeState(TitleState next) {
 	currentState = next;
 	selectNum = 0;
 	columnidx = 0;
+	introTimer = 0.0f;
 	isWaitingKey = false;
 }
 

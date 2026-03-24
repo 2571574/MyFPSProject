@@ -138,11 +138,11 @@
     <ClCompile Include="Main.cpp">
       <Filter>1.GAME</Filter>
     </ClCompile>
-    <ClCompile Include="Effect.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="EffectManager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>2.OBJECT\1.ENTITY</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -242,14 +242,14 @@
     <ClInclude Include="BaseProjectile.h">
       <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
     </ClInclude>
-    <ClInclude Include="Effect.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="EffectManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="SniperEnemy.h">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectManager.h">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect.h">
+      <Filter>2.OBJECT\1.ENTITY</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

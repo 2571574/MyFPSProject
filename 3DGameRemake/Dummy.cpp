@@ -1,11 +1,13 @@
 ﻿#include "Dummy.h"
 #include "Time.h"
+#include "ResourceManager.h"
 constexpr float TEXT_LIFETIME = 1.0f;
 constexpr float TEXT_HEIGHT_OFFSET = 0.5f;
 constexpr float ACCUMULATE_TIME_MAX = 0.2f;
 /*コンストラクタ*/
 Dummy::Dummy(VECTOR pos, Player* _target,bool _damageText) :Enemy(pos, CHARA_STATUS::DUMMY, _target, ENEMYTYPE::DUMMY), accumulateTimer(0.0f), damageText(_damageText) {
 	nowSpawned = false;
+	fontDamage = ResourceManager::GetIns().GetFont("Century Gothic", 24, 2);
 };
 
 /*更新*/
@@ -57,7 +59,14 @@ void Dummy::Draw() {
 		VECTOR screenPos = ConvWorldPosToScreenPos(text.pos);
 
 		if (screenPos.z >= 0.0f && screenPos.z <= 1.0f) {
-			DrawFormatString(screenPos.x, screenPos.y, GetColor(0, 0, 0), "%d", text.damage);
+			float alphaRate = text.lifeTime / 1.0f; 
+			if (alphaRate < 0.0f) alphaRate = 0.0f;
+			int alpha = static_cast<int>(255 * alphaRate);
+
+			::SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+			// フォントハンドルを指定し、色は白に変更
+			::DrawFormatStringToHandle(static_cast<int>(screenPos.x), static_cast<int>(screenPos.y), GetColor(255, 255, 255), fontDamage, "%d", text.damage);
+			::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 	}
 }

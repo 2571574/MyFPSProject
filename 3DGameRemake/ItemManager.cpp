@@ -9,30 +9,73 @@
 namespace {
 	constexpr size_t MAX_DROPPED = 10;
 	constexpr float ITEM_PICKUP_RAD = 2.0f;
-
-	GunStatus GetPlayerGunStatus(WeaponID id) {
-		switch (id) {
-		case WeaponID::AR: return PLAYER_GUN::RIFLE;
-		case WeaponID::SR: return PLAYER_GUN::SNIPER;
-		case WeaponID::LR: return PLAYER_GUN::LAUNCHER;
-		case WeaponID::SMG: return PLAYER_GUN::SMG;
-		case WeaponID::PIS: return PLAYER_GUN::PISTOL;
-		default:break;
-		}
-
-		std::vector<GunStatus>pool = {
-		PLAYER_GUN::RIFLE,
-		PLAYER_GUN::SNIPER,
-		PLAYER_GUN::LAUNCHER,
-		PLAYER_GUN::SMG,
-		};
-		int randomIndex = GetRand((int)pool.size() - 1);
-		return pool[randomIndex];
-	}
 }
 ItemManager& ItemManager::GetIns() {
 	static ItemManager ins;
 	return ins;
+}
+
+GunStatus ItemManager::GetPlayerGunStatus(WeaponID id) {
+	// 指定がある場合はそのまま返す
+	switch (id) {
+	case WeaponID::AR: return PLAYER_GUN::RIFLE;
+	case WeaponID::SR: return PLAYER_GUN::SNIPER;
+	case WeaponID::LR: return PLAYER_GUN::LAUNCHER;
+	case WeaponID::SMG: return PLAYER_GUN::SMG;
+	case WeaponID::PIS: return PLAYER_GUN::PISTOL;
+	default:break;
+	}
+
+	// 全武器のプール
+	std::vector<GunStatus> pool = {
+		PLAYER_GUN::RIFLE,
+		PLAYER_GUN::SNIPER,
+		PLAYER_GUN::LAUNCHER,
+		PLAYER_GUN::SMG,
+	};
+
+	// 1. 現在マップに存在している武器のIDを収集する
+	std::vector<WeaponID> activeWeapons;
+
+	// スポナー上に配置されている武器
+	for (const auto& spawner : spawners) {
+		if (spawner.item && spawner.item->IsAlive()) {
+			const GunStatus* spec = spawner.item->GetSpec();
+			if (spec) activeWeapons.push_back(spec->id);
+		}
+	}
+
+	// ドロップアイテムとして転がっている武器
+	for (const auto& item : droppedItem) {
+		if (item && item->IsAlive()) {
+			const GunStatus* spec = item->GetSpec();
+			if (spec) activeWeapons.push_back(spec->id);
+		}
+	}
+
+	// 2. 全プールから、現在マップにある武器を除外したリストを作成する
+	std::vector<GunStatus> availablePool;
+	for (const auto& gun : pool) {
+		bool found = false;
+		for (auto activeId : activeWeapons) {
+			if (gun.id == activeId) {
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			availablePool.push_back(gun);
+		}
+	}
+
+	// 安全策: もし全種類の武器がマップに出払っていた場合は、全体からランダムに選ぶ
+	if (availablePool.empty()) {
+		availablePool = pool;
+	}
+
+	// 3. 絞り込まれたリストの中からランダムに抽選
+	int randomIndex = GetRand(static_cast<int>(availablePool.size()) - 1);
+	return availablePool[randomIndex];
 }
 
 void ItemManager::InitSpawners(const std::vector<SpawnerSetup>& setup) {

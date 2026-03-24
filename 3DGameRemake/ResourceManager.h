@@ -54,7 +54,7 @@ public:
 	/// <returns>ハンドル</returns>
 	int GetSound(const std::string& path);
 
-	int GetFont(const std::string& path,int size,int thickness);
+	int GetFont(const std::string& path);
 
 
 	void ClearAll();

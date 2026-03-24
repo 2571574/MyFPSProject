@@ -113,7 +113,7 @@ public:
 	/// 命中をカウントする
 	/// </summary>
 	/// <param name="isHeadShot">ヘッドショット</param>
-	virtual void HitRecord(bool isHeadShot){}
+	virtual void HitRecord(bool isHeadShot, bool isKill = false) {}
 
 	/// <summary>
 	/// 壁との当たり判定をチェックする

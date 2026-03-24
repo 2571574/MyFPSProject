@@ -27,8 +27,6 @@ Weapon::Weapon(const GunStatus _spec)
 	, aim(false)
 	, adsWeight(0.0f)
 	, gunModelHandle(-1)
-	, bulletModelHandle(-1)
-	, effectHandle(-1)
 	, soundHandle(-1)
 {
 	if (!spec.visual.modelPath.empty()) {
@@ -226,12 +224,13 @@ void Weapon::FireHitScan(Character& user, VECTOR baseDir, VECTOR shootDir) {
 		int lastdamage = hit.isHeadShot ? spec.damage * 2 : spec.damage;
 		if (hit.isHeadShot)Debug::Log("Headshot");
 		else Debug::Log("hit");
-		hit.character->OnHit(lastdamage,spec.id);	//当たった場合の被弾処理
-		Debug::Log("EffectSpawn true");
+		hit.character->OnHit(lastdamage,spec.id);
+		bool isKill = (hit.character->GetHP() <= 0);
+		user.HitRecord(hit.isHeadShot, isKill);
+
 		EffectManager::GetIns().CreateHitEffect(hit.hitPos, hit.hitNormal, true);
 	}
 	else if (hit.isWallHit) {
-		Debug::Log("EffectSpawn false");
 		EffectManager::GetIns().CreateHitEffect(hit.hitPos, hit.hitNormal, false);
 	}
 

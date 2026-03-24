@@ -68,7 +68,9 @@ void SniperEnemy::Update() {
 	if (sniper->CanFire() && CheckLineSight(target,target->GetCurrentHeight() * 0.5f) && distToPlayer <= sniper->GetSpec().range) {
 		targetingTimer += dt;
 		if (target) {
-			target->AddTargeted(position);
+			float progress = targetingTimer / TARGET_TIME;
+			if (progress > 1.0f)progress = 1.0f;
+			target->AddTargeted(position,progress);
 		}
 		if (targetingTimer >= TARGET_TIME) {
 			Action();

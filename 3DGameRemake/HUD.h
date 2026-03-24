@@ -16,6 +16,8 @@ private:
 	bool isGameStarted = false;
 	float scoreFadeAlpha = 0.0f;
 
+	float damageFlashTimer = 0.0f;
+	const float DAMAGE_FLASH_DURATION = 1.0f;
 public:
 	HUD(Player* player);
 	~HUD() = default;
@@ -23,5 +25,6 @@ public:
 	void Draw();
 
 	void OnHitTarget(bool isHeadShot);
+	void OnPlayerTakeDamage();
 };
 

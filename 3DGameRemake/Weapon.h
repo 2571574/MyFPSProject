@@ -108,6 +108,10 @@ public:
 	bool Reloading()const {
 		return currentState == WeaponState::RELOADING;
 	}
+	float GetReloadProgress() const {
+		if (currentState != WeaponState::RELOADING || spec.reloadTime <= 0.0f) return 0.0f;
+		return 1.0f - (reloadCT / spec.reloadTime);
+	}
 
 	bool TakingAim()const {
 		return aim;

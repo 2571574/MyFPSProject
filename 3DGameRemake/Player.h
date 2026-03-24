@@ -8,6 +8,10 @@
 #include <memory>
 #include <vector>
 
+struct TargetInfo {
+	VECTOR pos;
+	float progress;
+};
 
 /// <summary>
 /// プレイヤーを管理するクラス
@@ -34,7 +38,7 @@ private:
 	int totalHeadHit = 0;
 
 	int stageHandle;	//ステージのモデルハンドル
-	std::vector<VECTOR> TargetedPos;
+	std::vector<TargetInfo> targetInfo;
 
 	PlayMode currentMode;
 
@@ -89,6 +93,7 @@ public:
 		Character::OnHit(damage, id);
 		if (damage > 0) {
 			lastHit = id;
+			if (hud) hud->OnPlayerTakeDamage();
 		}
 	}
 
@@ -102,9 +107,9 @@ public:
 	int GetWeaponIndex()const { return currentWeaponIndex; }
 
 	PlayMode GetCurrentMode() const { return currentMode; }
-	void AddTargeted(VECTOR pos) { TargetedPos.push_back(pos); }
-	const std::vector<VECTOR>& GetTargeted()const { return TargetedPos; }
-	void ClearTargeted() { TargetedPos.clear();}
+	void AddTargeted(VECTOR pos, float progress) { targetInfo.push_back({ pos, progress }); }
+	const std::vector<TargetInfo>& GetTargeted()const { return targetInfo; }
+	void ClearTargeted() { targetInfo.clear();}
 
 	/// <summary>
 	/// 現在のカメラの注視方向（視線ベクトル）を取得

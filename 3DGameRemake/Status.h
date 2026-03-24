@@ -59,6 +59,7 @@ struct WeaponVisual {
 	VECTOR adsDrawOffset;
 	VECTOR drawMuzzleOffset;
 	VECTOR drawAdsMuzzleOffset;
+	std::string uiPath;
 };
 
 struct GunStatus {		 //武器の性能

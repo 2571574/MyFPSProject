@@ -224,9 +224,6 @@
     <ClInclude Include="RollingEnemy.h">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClInclude>
-    <ClInclude Include="SniperEnemy.h">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
-    </ClInclude>
     <ClInclude Include="Status.h">
       <Filter>2.OBJECT\1.ENTITY</Filter>
     </ClInclude>
@@ -250,6 +247,9 @@
     </ClInclude>
     <ClInclude Include="EffectManager.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="SniperEnemy.h">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -127,11 +127,11 @@ void Player::Update() {
 	//武器の更新と入力を検知
 	if (currentWeapon) {
 		currentWeapon->ReloadInput(*this);
+		currentWeapon->FireInput(*this, GetCamDirection());
 		if (running) {
 			currentWeapon->CancelAds();
 		}
 		else{
-			currentWeapon->FireInput(*this, GetCamDirection());
 			currentWeapon->AdsInput();
 		}
 		currentWeapon->Update(*this);

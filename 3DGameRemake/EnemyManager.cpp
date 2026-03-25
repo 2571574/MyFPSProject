@@ -109,12 +109,13 @@ int EnemyManager::Update() {
 	}
 
 	if (target == nullptr || spawnPoints.empty())return earnScore;
+	if (target->GetCurrentMode() == PlayMode::MODE_TUTORIAL) return earnScore;
 
-	//準備時間中スポーンしない
-	if (prepareTimer > 0.0f) {
-		prepareTimer -= dt;
-		return earnScore;
-	}
+		//準備時間中スポーンしない
+		if (prepareTimer > 0.0f) {
+			prepareTimer -= dt;
+			return earnScore;
+		}
 
 	//難易度上昇
 	difficultyTimer += dt;
@@ -145,7 +146,7 @@ int EnemyManager::Update() {
 			VECTOR checkEnd = VGet(sPos.x, sPos.y + SPAWN_RAY_END_OFFSET, sPos.z);
 			MV1_COLL_RESULT_POLY ground = MV1CollCheck_Line(stageHandle, -1, checkStart, checkEnd);
 
-			if(ground.HitFlag == 1 && ground.Normal.y > SPAWN_GROUND_NORMAL_MIN){
+			if (ground.HitFlag == 1 && ground.Normal.y > SPAWN_GROUND_NORMAL_MIN) {
 				sPos.y = ground.HitPosition.y;
 			}
 			else {
@@ -194,7 +195,6 @@ int EnemyManager::Update() {
 			}
 		}
 	}
-
 	return earnScore;
 }
 

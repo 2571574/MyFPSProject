@@ -122,10 +122,10 @@ void SoundManager::PlaySEWithFadeOut(const std::string& path, float fadeTimeSec)
     }
 }
 
-void SoundManager::Play3DSE(const std::string& path, VECTOR position, float radius) {
+int SoundManager::Play3DSE(const std::string& path, VECTOR position, float radius) {
     SetCreate3DSoundFlag(TRUE);
     int baseHandle = ResourceManager::GetIns().GetSound(path);
-    if (baseHandle == -1) return;
+    if (baseHandle == -1) return -1;
 
     auto& pool = sePools[path];
     int playHandle = -1;
@@ -150,6 +150,7 @@ void SoundManager::Play3DSE(const std::string& path, VECTOR position, float radi
 
         PlaySoundMem(playHandle, DX_PLAYTYPE_BACK);
     }
+    return playHandle;
 }
 
 
@@ -164,6 +165,82 @@ void SoundManager::StopSE(const std::string& path) {
     }
 }
 
+void SoundManager::StopSE(int handle) {
+    if (handle != -1 && CheckSoundMem(handle) == 1) {
+        StopSoundMem(handle);
+    }
+}
+
+void SoundManager::PauseAll() {
+    pausedSEHandles.clear();
+
+    if (currentBGMHandle != -1 && CheckSoundMem(currentBGMHandle) == 1) {
+        StopSoundMem(currentBGMHandle);
+        isBGMPaused = true;
+    }
+    else {
+        isBGMPaused = false;
+    }
+
+    for (auto& fade : fadingSEs) {
+        if (CheckSoundMem(fade.handle) == 1) {
+            StopSoundMem(fade.handle);
+            pausedSEHandles.push_back(fade.handle);
+        }
+    }
+
+    for (auto& pair : sePools) {
+        for (int handle : pair.second.duplicateHandles) {
+            if (CheckSoundMem(handle) == 1) {
+                bool alreadyAdded = false;
+                for (int pHandle : pausedSEHandles) {
+                    if (pHandle == handle) {
+                        alreadyAdded = true;
+                        break;
+                    }
+                }
+                if (!alreadyAdded) {
+                    StopSoundMem(handle);
+                    pausedSEHandles.push_back(handle);
+                }
+            }
+        }
+    }
+}
+
+void SoundManager::ResumeAll() {
+    if (isBGMPaused && currentBGMHandle != -1) {
+        PlaySoundMem(currentBGMHandle, DX_PLAYTYPE_LOOP, FALSE);
+        isBGMPaused = false;
+    }
+
+    for (int handle : pausedSEHandles) {
+        PlaySoundMem(handle, DX_PLAYTYPE_BACK, FALSE);
+    }
+    pausedSEHandles.clear();
+}
+
+
+void SoundManager::StopAll() {
+    StopBGM();
+
+    for (auto& fade : fadingSEs) {
+        if (CheckSoundMem(fade.handle) == 1) {
+            StopSoundMem(fade.handle);
+        }
+    }
+    fadingSEs.clear();
+
+    for (auto& pair : sePools) {
+        for (int handle : pair.second.duplicateHandles) {
+            if (CheckSoundMem(handle) == 1) {
+                StopSoundMem(handle);
+            }
+        }
+    }
+    pausedSEHandles.clear();
+    isBGMPaused = false;
+}
 
 void SoundManager::UpdateListener(VECTOR pos, VECTOR front, VECTOR up) {
     Set3DSoundListenerPosAndFrontPosAndUpVec(pos, VAdd(pos, front), up);

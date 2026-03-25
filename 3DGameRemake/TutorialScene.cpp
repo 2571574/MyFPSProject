@@ -89,9 +89,17 @@ void TutorialScene::Update() {
 
 	//ポーズ処理
 	if (InputManager::GetIns().IsActionTrigger(ActionID::PAUSE)) {
-		SoundManager::GetIns().PlaySE("Resource/Sound/pause.ogg");
 		isPaused = !isPaused;
 		pauseSelectNum = 0;
+
+		if (isPaused) {
+			SoundManager::GetIns().PauseAll(); 
+			SoundManager::GetIns().PlaySE("Resource/Sound/pause.wav");
+		}
+		else {
+			SoundManager::GetIns().ResumeAll();
+			SoundManager::GetIns().PlaySE("Resource/Sound/pause.wav");
+		}
 	}
 	if (isPaused) {
 		PauseUpdate();
@@ -209,7 +217,11 @@ void TutorialScene::PauseUpdate() {
 	}
 	if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_SELECT)) {
 		SoundManager::GetIns().PlaySE("Resource/Sound/select.ogg");
-		if (pauseSelectNum == RESUME) isPaused = false;
+		if (pauseSelectNum == RESUME) {
+			isPaused = false;
+			SoundManager::GetIns().ResumeAll();
+		}
+
 		else if (pauseSelectNum == RETURN_TITLE) manager->ChangeScene(std::make_unique<TitleScene>(manager));
 	}
 }

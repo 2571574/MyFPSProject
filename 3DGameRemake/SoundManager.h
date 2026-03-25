@@ -30,6 +30,9 @@ private:
     };
     std::vector<FadeSE> fadingSEs;
 
+    bool isBGMPaused = false;
+    std::vector<int> pausedSEHandles;
+
     const int MAX_DUPLICATE = 8; // 同時再生の最大数
 
 public:
@@ -54,9 +57,15 @@ public:
     void PlaySEWithFadeOut(const std::string& path, float fadeTimeSec);
 
     // 銃声や足音など：空間の指定座標から聞こえる3Dサウンド
-    void Play3DSE(const std::string& path, VECTOR position, float radius = 30.0f);
+    int Play3DSE(const std::string& path, VECTOR position, float radius = 30.0f);
 
     void StopSE(const std::string& path);
+    void StopSE(int handle);
+
+    void PauseAll();
+    void ResumeAll();
+    void StopAll();
+
     // --- リスナー制御 ---
     // プレイヤーの耳（カメラ）の位置と向きを更新する
     void UpdateListener(VECTOR pos, VECTOR front, VECTOR up);

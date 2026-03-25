@@ -2,13 +2,17 @@
 #include "Player.h"
 #include "Status.h"
 #include "Time.h"
+#include "SoundManager.h"
 
 namespace {
 	constexpr float ATTACK_DISTANCE_RATIO = 0.8f;
 	constexpr float ESCAPE_DISTANCE_RATIO = 0.4f;
 	constexpr float ESCAPE_CHECK_DIST = 2.0f;
 }
-SniperEnemy::SniperEnemy(VECTOR pos, Player* target) : Enemy(pos, CHARA_STATUS::SNIPER_ENEMY, target,ENEMYTYPE::SNIPER), targetingTimer(0.0f) {
+SniperEnemy::SniperEnemy(VECTOR pos, Player* target)
+	: Enemy(pos, CHARA_STATUS::SNIPER_ENEMY, target,ENEMYTYPE::SNIPER)
+	, targetingTimer(0.0f)
+	, chargeSoundHandle(-1) {
 	sniper = std::make_unique<Weapon>(ENEMY_GUN::SNIPER);
 	attackDist = sniper->GetSpec().range * ATTACK_DISTANCE_RATIO;
 	escapeDist = sniper->GetSpec().range * ESCAPE_DISTANCE_RATIO;
@@ -25,6 +29,10 @@ void SniperEnemy::Update() {
 		return;
 	}
 	if (hp <= 0) {
+		if (chargeSoundHandle != -1) {
+			SoundManager::GetIns().StopSE(chargeSoundHandle);
+			chargeSoundHandle = -1;
+		}
 		alive = false;
 		return;
 	}
@@ -66,6 +74,11 @@ void SniperEnemy::Update() {
 		sniper->Reload(*this);
 	}
 	if (sniper->CanFire() && CheckLineSight(target,target->GetCurrentHeight() * 0.5f) && distToPlayer <= sniper->GetSpec().range) {
+
+		if (targetingTimer == 0.0f) {
+			chargeSoundHandle = SoundManager::GetIns().Play3DSE("Resource/Sound/SRCharge.wav", position, 40.0f);
+		}
+
 		targetingTimer += dt;
 		if (target) {
 			float progress = targetingTimer / TARGET_TIME;
@@ -78,6 +91,9 @@ void SniperEnemy::Update() {
 		}
 	}
 	else {
+		if (targetingTimer > 0.0f) {
+			SoundManager::GetIns().StopSE(chargeSoundHandle);
+		}
 		targetingTimer = 0.0f;
 	}
 
@@ -87,6 +103,7 @@ void SniperEnemy::Update() {
 void SniperEnemy::Action() {
 	if (!sniper || sniper->Reloading())return;
 
+	SoundManager::GetIns().StopSE("Resource/Sound/charge.wav");
 	VECTOR s = VAdd(position, VGet(0, status.eyeHeight, 0));
 	VECTOR e = VAdd(target->GetPos(), VGet(0.0f, target->GetCurrentHeight() * 0.5f, 0.0f));
 	VECTOR fireDir = VNorm(VSub(e, s));

@@ -9,7 +9,9 @@ private:
     float attackDist;
     float escapeDist;
     float targetingTimer;
-    const float TARGET_TIME = 3.0f;
+    const float TARGET_TIME = 4.5f;
+
+    int chargeSoundHandle;
 
 public:
     SniperEnemy(VECTOR pos, Player* target);

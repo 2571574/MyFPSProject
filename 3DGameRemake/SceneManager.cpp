@@ -1,6 +1,7 @@
 ﻿#include "SceneManager.h"
 #include "GameScene.h"
 #include "TitleScene.h"
+#include "SoundManager.h"
 
 #include <fstream>
 #include <algorithm>
@@ -38,6 +39,8 @@ void SceneManager::Update() {
 		fadeAlpha += FADE_SPEED * dt;
 		if (fadeAlpha >= 1.0f) {
 			fadeAlpha = 1.0f;
+
+			SoundManager::GetIns().StopAll();
 
 			currentScene = std::move(nextScenePending);
 			currentScene->Init();

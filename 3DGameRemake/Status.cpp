@@ -16,7 +16,7 @@ namespace PLAYER_GUN {
 	GunStatus SNIPER = { WeaponID::SR, true, false,false, false, 80, 80.0f, 3, 12, 3.0f, 0.6f, 0.2f, 0.0001f, 7.0f,VGet(0.5f,-0.4f,3.3f), VGet(0.0f,0.0f,1.0f),0.9f, 0.2f, 40.0f,0,0,0,0,false,
 						{"Resource/Weapon/SR.mv1",0.005f,VGet(0.5f,-0.55f,0.6f),VGet(0.0f,-0.28f,0.4f), VGet(0.5f,-0.4f,3.3f),VGet(0.0f, -1.2f, 3.3f),"Resource/WeaponUI/SR.png","Resource/Sound/FireSR.ogg","Resource/Sound/Reload.wav","Resource/Sound/Reloadend.wav"} };
 
-	GunStatus LAUNCHER = { WeaponID::LR, false, true, false, false, 120, 40.0f, 1, 5, 2.5f, 10.0f, 0.001f,0.001f, 14.0f,VGet(0.4f,-0.2f,0.94f),VGet(0.4f,-0.2f,0.89f),0.5f,0.5f,65.0f,0.1f,0.5f,10.0f, 0.3f,true,
+	GunStatus LAUNCHER = { WeaponID::LR, false, true, false, false, 180, 40.0f, 1, 5, 2.5f, 10.0f, 0.001f,0.001f, 14.0f,VGet(0.4f,-0.2f,0.94f),VGet(0.4f,-0.2f,0.89f),0.5f,0.5f,65.0f,0.1f,0.5f,10.0f, 0.3f,true,
 						{"Resource/Weapon/LR.mv1",0.005f,VGet(0.4f,-0.32f,0.5f),VGet(0.4f,-0.32f,0.5f), VGet(0.4f,-0.2f,0.94f),VGet(0.4f,-0.2f,0.89f),"Resource/WeaponUI/LR.png","Resource/Sound/FireLR.ogg","Resource/Sound/Reload.wav","Resource/Sound/Reloadend.wav"} };
 
 	GunStatus SMG = { WeaponID::SMG, false, false, true, false, 15, 40.0f, 40, 240, 1.8f, 20.0f, 0.1f, 0.03f, 1.5f, VGet(0.4f,-0.2f,1.55f),VGet(0.0f,0.0f,1.0f), 1.0f, 0.7f, 60.0f,0.06f,1.0f,0,0,false,
@@ -32,9 +32,9 @@ namespace ENEMY_GUN {
 	GunStatus RIFLE = {WeaponID::ENEMY_AR, false, false, true, true, 10, 20.0f, 20, 0, 5.0f, 1.0f, 0.001f, 0.001f, 0.0f, VGet(0.0f,-0.4f,0.0f),VGet(0.0f,0.0f,0.0f), 1.0f,1.0f,50.0f,0.1f,0.3f,0,0,false ,
 						{"Resource/Weapon/EnemyAR.mv1", 0.007f, VGet(0.0f, -0.2f, 0.6f), VGet(0.0f,0.0f,0.0f), VGet(0.0f,0.0f,0.0f), VGet(0.0f,0.0f,0.0f),"", "Resource/Sound/FireAR.ogg","Resource/Sound/Reload.wav","Resource/Sound/Reloadend.wav"}};
 
-	GunStatus SNIPER = {WeaponID::ENEMY_SR, false, false, true, true,30, 30.0f, 3, 0, 10.0f, 0.2f, 0.0001f, 0.0001f, 0.0f,VGet(0.0f,-0.4f,0.0f),VGet(0.0f,0.0f,0.0f), 1.0f, 0.5f, 40.0f, 0.06f, 0.8f,0,0,false,					  {"Resource/Weapon/EnemySniper.mv1", 0.007f, VGet(0.0f, -0.2f, 0.7f), VGet(0.0f,0.0f,0.0f), VGet(0.0f,0.0f,0.0f), VGet(0.0f,0.0f,0.0f),"","Resource/Sound/FireSR.ogg","Resource/Sound/Reload.wav","Resource/Sound/Reloadend.wav"}};
+	GunStatus SNIPER = {WeaponID::ENEMY_SR, false, false, true, true,30, 30.0f, 3, 0, 10.0f, 0.2f, 0.0001f, 0.0001f, 0.0f,VGet(0.0f,-0.4f,0.0f),VGet(0.0f,0.0f,0.0f), 1.0f, 0.5f, 40.0f, 0.06f, 0.8f,0,0,false,					  {"Resource/Weapon/EnemySniper.mv1", 0.007f, VGet(0.0f, -0.2f, 0.7f), VGet(0.0f,0.0f,0.0f), VGet(0.0f,0.0f,0.0f), VGet(0.0f,0.0f,0.0f),"","Resource/Sound/FireENEMYSR.ogg","Resource/Sound/Reload.wav","Resource/Sound/Reloadend.wav"}};
 
-	GunStatus DESTRUCT = {WeaponID::ENEMY_EXPLOSION, false, false, false, true,50, 0.0f, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, VGet(0.0f, 0.0f, 0.0f),VGet(0.0f,0.0f,0.0f), 1.0f, 1.0f, 0.0f, 0.0f,0.0f,10.0f,0.5f, true,{} };
+	GunStatus DESTRUCT = {WeaponID::ENEMY_EXPLOSION, false, false, false, true,90, 0.0f, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, VGet(0.0f, 0.0f, 0.0f),VGet(0.0f,0.0f,0.0f), 1.0f, 1.0f, 0.0f, 0.0f,0.0f,10.0f,0.5f, true,{} };
 }
 /*
   Entity						Gun

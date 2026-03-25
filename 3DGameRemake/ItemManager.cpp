@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Time.h"
 #include "InputManager.h"
+#include "SoundManager.h"
 
 #include<random>
 #include <algorithm>
@@ -16,7 +17,6 @@ ItemManager& ItemManager::GetIns() {
 }
 
 GunStatus ItemManager::GetPlayerGunStatus(WeaponID id) {
-	// 指定がある場合はそのまま返す
 	switch (id) {
 	case WeaponID::AR: return PLAYER_GUN::RIFLE;
 	case WeaponID::SR: return PLAYER_GUN::SNIPER;
@@ -34,7 +34,6 @@ GunStatus ItemManager::GetPlayerGunStatus(WeaponID id) {
 		PLAYER_GUN::SMG,
 	};
 
-	// 1. 現在マップに存在している武器のIDを収集する
 	std::vector<WeaponID> activeWeapons;
 
 	// スポナー上に配置されている武器
@@ -45,7 +44,6 @@ GunStatus ItemManager::GetPlayerGunStatus(WeaponID id) {
 		}
 	}
 
-	// ドロップアイテムとして転がっている武器
 	for (const auto& item : droppedItem) {
 		if (item && item->IsAlive()) {
 			const GunStatus* spec = item->GetSpec();
@@ -53,7 +51,6 @@ GunStatus ItemManager::GetPlayerGunStatus(WeaponID id) {
 		}
 	}
 
-	// 2. 全プールから、現在マップにある武器を除外したリストを作成する
 	std::vector<GunStatus> availablePool;
 	for (const auto& gun : pool) {
 		bool found = false;
@@ -68,12 +65,10 @@ GunStatus ItemManager::GetPlayerGunStatus(WeaponID id) {
 		}
 	}
 
-	// 安全策: もし全種類の武器がマップに出払っていた場合は、全体からランダムに選ぶ
 	if (availablePool.empty()) {
 		availablePool = pool;
 	}
 
-	// 3. 絞り込まれたリストの中からランダムに抽選
 	int randomIndex = GetRand(static_cast<int>(availablePool.size()) - 1);
 	return availablePool[randomIndex];
 }
@@ -138,6 +133,7 @@ void ItemManager::Update(Player* player) {
 		player->AddWeapon(w);
 
 		currentNearItem = nullptr;
+		SoundManager::GetIns().PlaySE("Resource/Sound/pick.ogg");
 	}
 
 	for (int i = (int)droppedItem.size() - 1; i >= 0; i--) {

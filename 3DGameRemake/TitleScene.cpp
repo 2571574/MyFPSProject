@@ -5,6 +5,7 @@
 #include "ConfigManager.h"
 #include "TextManager.h"
 #include "ResourceManager.h"
+#include "SoundManager.h"
 #include "Debug.h"
 
 #include <memory>
@@ -55,10 +56,11 @@ TitleScene::~TitleScene() {
 void TitleScene::Init() {
 	titleLogoHandle = ResourceManager::GetIns().GetGraph("Resource/titleLogo.png");
 	titleBG = ResourceManager::GetIns().GetGraph("Resource/titlebg.png");
-	fontMenuLarge = ResourceManager::GetIns().GetFont("Century Gothic", 40, 2);
-	fontMenuSmall = ResourceManager::GetIns().GetFont("Century Gothic", 28, 2);
-	fontDesc = ResourceManager::GetIns().GetFont("メイリオ", 22, 1);
+fontMenuLarge = ResourceManager::GetIns().GetFont("Resource/Font/JetBrainsMono_40.dft");
+	fontMenuSmall = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_28.dft");
+	fontDesc = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_22.dft");
 	introTimer = 0.0f;
+	SoundManager::GetIns().PlayBGM("Resource/Sound/TitleBGM.mp3");
 	ChangeState(TitleState::TOP);
 }
 
@@ -78,6 +80,7 @@ void TitleScene::Update() {
 			selectNum = MENU_MAX - 1;
 		}
 		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_SELECT)) {
+			SoundManager::GetIns().PlaySE("Resource/Sound/select.ogg");
 			if (selectNum == MENU_PLAY) {
 				ChangeState(TitleState::MODE_SELECT);
 				
@@ -100,9 +103,11 @@ void TitleScene::Update() {
 			selectNum = (int)PlayMode::MODE_MAX - 1;
 		}
 		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_BACK)) {
+			SoundManager::GetIns().PlaySE("Resource/Sound/back.ogg");
 			ChangeState(TitleState::TOP);
 		}
 		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_SELECT)) {
+			SoundManager::GetIns().PlaySE("Resource/Sound/select.ogg");
 			manager->SetCurrentMode((PlayMode)selectNum);
 			if ((PlayMode)selectNum == PlayMode::MODE_TUTORIAL) {
 				manager->ChangeScene(std::make_unique<TutorialScene>(manager));
@@ -115,15 +120,19 @@ void TitleScene::Update() {
 
 	case TitleState::SETTINGS:
 		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_LEFT)) {
+			SoundManager::GetIns().PlaySE("Resource/Sound/cursormove.ogg");
 			ModifySetting((SettingItem)selectNum, -1);
 		}
 		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_RIGHT)) {
+			SoundManager::GetIns().PlaySE("Resource/Sound/cursormove.ogg");
 			ModifySetting((SettingItem)selectNum, 1);
 		}
 		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_BACK)) {
+			SoundManager::GetIns().PlaySE("Resource/Sound/back.ogg");
 			ChangeState(TitleState::TOP);
 		}
 		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_SELECT)) {
+			SoundManager::GetIns().PlaySE("Resource/Sound/select.ogg");
 			if ((SettingItem)selectNum == SettingItem::KEY_CONFIG) {
 				ChangeState(TitleState::KEY_CONFIG);
 			}
@@ -209,7 +218,10 @@ void TitleScene::Update() {
 
 		//メニュー操作
 		else {
-			if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_LEFT))columnidx = 0;
+			if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_LEFT)) {
+				columnidx = 0;
+				SoundManager::GetIns().PlaySE("Resource/Sound/cursormove.ogg");
+			}
 
 			// ★修正: 右への移動時、移動アクションならブロックする
 			if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_RIGHT)) {
@@ -217,15 +229,18 @@ void TitleScene::Update() {
 				bool isMoveAction = (target == ActionID::MOVE_FORWARD || target == ActionID::MOVE_LEFT ||
 					target == ActionID::MOVE_BACK || target == ActionID::MOVE_RIGHT);
 				if (!isMoveAction) {
+					SoundManager::GetIns().PlaySE("Resource/Sound/cursormove.ogg");
 					columnidx = 1;
 				}
 			}
 
 			if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_BACK)) {
+				SoundManager::GetIns().PlaySE("Resource/Sound/back.ogg");
 				ChangeState(TitleState::SETTINGS);
 				selectNum = (int)SettingItem::KEY_CONFIG;
 			}
 			if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_SELECT)) {
+				SoundManager::GetIns().PlaySE("Resource/Sound/select.ogg");
 				ActionID target = GAMEPLAY_ACTION[selectNum];
 				bool isMoveAction = (target == ActionID::MOVE_FORWARD || target == ActionID::MOVE_LEFT ||
 					target == ActionID::MOVE_BACK || target == ActionID::MOVE_RIGHT);
@@ -242,6 +257,7 @@ void TitleScene::Update() {
 
 	case TitleState::CREDIT:
 		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_BACK)) {
+			SoundManager::GetIns().PlaySE("Resource/Sound/back.ogg");
 			ChangeState(TitleState::TOP);
 		}
 		break;
@@ -378,16 +394,80 @@ void TitleScene::Draw() {
 	case TitleState::SETTINGS:
 		DrawSettings();
 		break;
-	case TitleState::CREDIT:
-		::DrawStringToHandle(150, 100, "Credit", GetColor(255, 255, 255), fontMenuLarge);
+	case TitleState::CREDIT: {
+		const int BASE_X = 150;
+		const int TITLE_Y = 100;
+		const int START_Y = 200;
+		const int LINE_HEIGHT = 45; // 行間
+		const int SECTION_GAP = 30; // セクションごとの隙間
+		const int LINK_X_OFFSET = 350; // サイト名からリンクまでのX距離
+
+		int white = GetColor(255, 255, 255);
+		int yellow = GetColor(255, 255, 0);
+		int linkColor = GetColor(150, 200, 255);
+
+		// タイトル
+		::DrawStringToHandle(BASE_X, TITLE_Y, "CREDIT", white, fontMenuLarge);
+
+		int currentY = START_Y;
+
+		// --- 【3Dモデル】 ---
+		::DrawStringToHandle(BASE_X, currentY, "< モデル >", yellow, fontMenuSmall);
+		currentY += LINE_HEIGHT;
+		::DrawStringToHandle(BASE_X + 40, currentY, "・Quaternius", white, fontDesc);
+		::DrawStringToHandle(BASE_X + LINK_X_OFFSET, currentY, "https://quaternius.com/", linkColor, fontDesc);
+		currentY += LINE_HEIGHT + SECTION_GAP;
+
+
+		// --- 【サウンド (BGM・効果音)】 ---
+		::DrawStringToHandle(BASE_X, currentY, "< サウンド >", yellow, fontMenuSmall);
+		currentY += LINE_HEIGHT;
+		// BGM
+		::DrawStringToHandle(BASE_X + 40, currentY, "・PeriTune", white, fontDesc);
+		::DrawStringToHandle(BASE_X + LINK_X_OFFSET, currentY, "https://peritune.com/", linkColor, fontDesc);
+		currentY += LINE_HEIGHT;
+		::DrawStringToHandle(BASE_X + 40, currentY, "・Pixabay", white, fontDesc);
+		::DrawStringToHandle(BASE_X + LINK_X_OFFSET, currentY, "https://pixabay.com/", linkColor, fontDesc);
+		currentY += LINE_HEIGHT;
+		// SE
+		::DrawStringToHandle(BASE_X + 40, currentY, "・On-Jin ～音人～", white, fontDesc);
+		::DrawStringToHandle(BASE_X + LINK_X_OFFSET, currentY, "https://on-jin.com/", linkColor, fontDesc);
+		currentY += LINE_HEIGHT;
+		::DrawStringToHandle(BASE_X + 40, currentY, "・Kenney", white, fontDesc);
+		::DrawStringToHandle(BASE_X + LINK_X_OFFSET, currentY, "https://kenney.nl/", linkColor, fontDesc);
+		currentY += LINE_HEIGHT + SECTION_GAP;
+
+
+		// --- 【フォント】 ---
+		::DrawStringToHandle(BASE_X, currentY, "< フォント >", yellow, fontMenuSmall);
+		currentY += LINE_HEIGHT;
+		::DrawStringToHandle(BASE_X + 40, currentY, "・Google Fonts", white, fontDesc);
+		::DrawStringToHandle(BASE_X + LINK_X_OFFSET, currentY, "https://fonts.google.com/", linkColor, fontDesc);
+		currentY += LINE_HEIGHT + SECTION_GAP;
+
+
+		// --- 【開発ツール・UI画像】 ---
+		::DrawStringToHandle(BASE_X, currentY, "< 開発ツール・画像 >", yellow, fontMenuSmall);
+		currentY += LINE_HEIGHT;
+		::DrawStringToHandle(BASE_X + 40, currentY, "・Unity (マップ制作)", white, fontDesc);
+		currentY += LINE_HEIGHT;
+		::DrawStringToHandle(BASE_X + 40, currentY, "・Gemini (画像生成)", white, fontDesc);
+
 		break;
+	}
 	case TitleState::KEY_CONFIG:
 		DrawKeyConfig();
 		break;
 	}
-
 	::DrawBox(0, WINDOW_HEIGHT - 50, WINDOW_WIDTH, WINDOW_HEIGHT, GetColor(0, 0, 0), TRUE);
-	::DrawStringToHandle(WINDOW_WIDTH - 600, WINDOW_HEIGHT - 30, "WASD : メニュー操作  |  F : 決定  |  SHIFT : 戻る", GetColor(255, 255, 255), fontDesc);
+
+	std::string menuUp = TextManager::GetIns().GetActionKeyString(ActionID::MENU_UP);
+	std::string menuSel = TextManager::GetIns().GetActionKeyString(ActionID::MENU_SELECT);
+	std::string menuBack = TextManager::GetIns().GetActionKeyString(ActionID::MENU_BACK);
+	std::string helpText =  " 方向 : メニュー操作 | " + menuSel + " : 決定 | " + menuBack + " : 戻る";
+
+	int textWidth = GetDrawStringWidthToHandle(helpText.c_str(), static_cast<int>(helpText.length()), fontDesc);
+	::DrawStringToHandle(WINDOW_WIDTH - textWidth - 50, WINDOW_HEIGHT - 30, helpText.c_str(), GetColor(255, 255, 255), fontDesc);
 }
 
 void TitleScene::DrawSettings() {
@@ -396,7 +476,7 @@ void TitleScene::DrawSettings() {
 	const int BASE_Y = 200;
 	const int LINE_HEIGHT = 50;
 
-	::DrawStringToHandle(BASE_X, 100, "Settings", GetColor(255, 255, 255), fontMenuLarge);
+	::DrawStringToHandle(BASE_X, 100, "SETTINGS", GetColor(255, 255, 255), fontMenuLarge);
 	auto& s = ConfigManager::GetIns().Settings();
 
 	//設定項目の文字列
@@ -458,12 +538,12 @@ void TitleScene::DrawSettings() {
 }
 
 void TitleScene::DrawKeyConfig() {
-	// 1920x1080 の画面全体を贅沢に使うためのレイアウト定数
-	const int BASE_X = 400;         // アクション名の左端（左に寄りすぎないよう中央へ）
-	const int BASE_Y = 250;         // リストの開始Y座標
-	const int LINE_HEIGHT = 50;     // 行間を広く取る（13項目 * 50 = 650px なので画面に綺麗に収まる）
-	const int COL0_X = 900;         // キーボード/マウス列のX座標
-	const int COL1_X = 1400;        // コントローラー列のX座標
+	
+	const int BASE_X = 400;
+	const int BASE_Y = 250;
+	const int LINE_HEIGHT = 50;
+	const int COL0_X = 900;
+	const int COL1_X = 1400;
 
 	// タイトル（左上に大きく配置）
 	::DrawStringToHandle(150, 100, "Key Config", GetColor(255, 255, 255), fontMenuLarge);
@@ -501,10 +581,19 @@ void TitleScene::DrawKeyConfig() {
 		int kbCode = -1;
 		int padCode = -1;
 
+		InputType kbType = InputType::KEYBOARD;
+		InputType padType = InputType::JOY;
+
 		if (allBind.count(act)) {
 			for (auto& b : allBind[act]) {
-				if (b.type == InputType::KEYBOARD || b.type == InputType::MOUSE) kbCode = b.KeyCode;
-				if (b.type == InputType::JOY) padCode = b.KeyCode;
+				if (b.type == InputType::KEYBOARD || b.type == InputType::MOUSE) {
+					kbCode = b.KeyCode;
+					kbType = b.type;
+				}
+				if (b.type == InputType::JOY) {
+					padCode = b.KeyCode;
+					padType = b.type;
+				}
 			}
 		}
 
@@ -515,7 +604,8 @@ void TitleScene::DrawKeyConfig() {
 			::DrawStringToHandle(COL0_X, y, "入力待ち...", GetColor(255, 50, 50), fontDesc);
 		}
 		else if (kbCode != -1) {
-			::DrawFormatStringToHandle(COL0_X, y, col0Color, fontMenuSmall, "%d", kbCode);
+			const char* keyName = TextManager::GetIns().GetKeyName(kbType, kbCode);
+			::DrawStringToHandle(COL0_X, y, keyName, col0Color, fontMenuSmall);
 		}
 		else {
 			::DrawStringToHandle(COL0_X, y, "NONE", GetColor(100, 100, 100), fontMenuSmall);
@@ -530,7 +620,8 @@ void TitleScene::DrawKeyConfig() {
 				::DrawStringToHandle(COL1_X, y, "入力待ち...", GetColor(255, 50, 50), fontDesc);
 			}
 			else if (padCode != -1) {
-				::DrawFormatStringToHandle(COL1_X, y, col1Color, fontMenuSmall, "%d", padCode);
+				const char* padName = TextManager::GetIns().GetKeyName(padType, padCode);
+				::DrawStringToHandle(COL1_X, y, padName, col1Color, fontMenuSmall);
 			}
 			else {
 				::DrawStringToHandle(COL1_X, y, "NONE", GetColor(100, 100, 100), fontMenuSmall);
@@ -557,6 +648,7 @@ void TitleScene::Control() {
 
 		// ★修正: 上下移動時に無効な行をスキップするロジック
 		if (moveDir != 0 && max > 0) {
+			SoundManager::GetIns().PlaySE("Resource/Sound/cursormove.ogg");
 			do {
 				selectNum += moveDir;
 				if (selectNum < 0) selectNum = max - 1;

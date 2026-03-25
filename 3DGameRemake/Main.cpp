@@ -3,6 +3,7 @@
 #include "SceneManager.h"
 #include "CheckKey.h"
 #include "ConfigManager.h"
+#include "SoundManager.h"
 #include "Time.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -14,6 +15,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return -1; 
 	}
 
+	SetCreate3DSoundFlag(TRUE);
 	SetUseLighting(false);		 //ライティングの無効化
 	SetDrawScreen(DX_SCREEN_BACK); // 裏画面を描画対象にする
 
@@ -32,6 +34,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		Time::GetIns().Update();
 		CheckKey::GetIns().Input();	//入力を取得
 		ClearDrawScreen();	//画面をクリア
+		SoundManager::GetIns().Update();
 		ins.Update();		//更新
 		ins.Draw();		//描画
 		ScreenFlip();
@@ -39,7 +42,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			break;
 		}
 		CheckKey::GetIns().LateInput();	//入力を保持
-
 	}
 	// DXライブラリの終了処理
 	DxLib_End();

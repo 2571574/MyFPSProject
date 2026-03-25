@@ -1,5 +1,7 @@
 ﻿#include "Enemy.h"
 #include "EnemyManager.h"
+#include "Time.h"
+#include "SoundManager.h"
 
 #include <cmath>
 
@@ -15,6 +17,7 @@ namespace {
 	constexpr float PATH_SAFETY_HEIGHT_DIFF_MAX = 0.8f;
 	constexpr float PATH_SAFETY_TOTAL_HEIGHT_DIFF = 1.0f;
 	constexpr float FALL_DEATH_Y = -10.0f;
+	constexpr float STEP_LENGTH = 2.5f;
 }
 
 Enemy::Enemy(VECTOR pos,const CharacterStatus& status, Player* _target, ENEMYTYPE type)
@@ -25,7 +28,8 @@ Enemy::Enemy(VECTOR pos,const CharacterStatus& status, Player* _target, ENEMYTYP
 	, type(type)
 	, nowSpawned(true)
 	, spawnedTimer(SPAWN_INVINCIBLE_TIME)
-	, onHitFlashTimer(0.0f){ 
+	, onHitFlashTimer(0.0f)
+	, moveDistance(0.0f){ 
 	pathUpdateTimer = (GetRand(PATH_UPDATE_RANDOM) / 100.0f);
 }
 
@@ -103,3 +107,34 @@ VECTOR Enemy::UpdateNavigation(const Character* target, float dt) {
 }
 
 bool Enemy::CheckFall() const{ return position.y < FALL_DEATH_Y; }
+
+void Enemy::UpdateFootstep() {
+	if (!onGround || !alive || nowSpawned) return;
+
+	float dt = Time::GetIns().GetDelta();
+	float dt60 = dt * 60.0f; // 移動距離を算出するための係数
+
+	// XZ平面の移動速度（1フレームあたりの移動ベクトル量）
+	float speed = VSize(VGet(velocity.x, 0.0f, velocity.z));
+
+	// 僅かでも動いていれば距離を累積
+	if (speed > 0.01f) {
+		// 実際の移動距離を加算
+		moveDistance += speed * dt60;
+
+		// 1歩の歩幅（2.0f〜3.0fくらいで足音の頻度を調整できます。小さいほど頻繁に鳴ります）
+		constexpr float STEP_LENGTH = 2.5f;
+
+		if (moveDistance >= STEP_LENGTH) {
+			// 音が聞こえやすいように radius を 40.0f に少し広げています
+			SoundManager::GetIns().Play3DSE("Resource/Sound/footstep.ogg", position, 30.0f);
+
+			// 距離をリセット（歩幅分だけ引くことで、端数を持ち越して滑らかに鳴らします）
+			moveDistance -= STEP_LENGTH;
+		}
+	}
+	else {
+		// 完全に立ち止まったらリセット
+		moveDistance = 0.0f;
+	}
+}

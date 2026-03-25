@@ -5,6 +5,7 @@
 #include "Parameter.h"
 #include "ResourceManager.h"
 #include "TextManager.h"
+#include "SoundManager.h"
 
 ResultScene::ResultScene(SceneManager* manager,int bghandle)
 	: BaseScene(manager)
@@ -17,13 +18,14 @@ ResultScene::~ResultScene() {
 }
 
 void ResultScene::Init(){
-	fontLarge = ResourceManager::GetIns().GetFont("Century Gothic", 60, 2);
-	fontMedium = ResourceManager::GetIns().GetFont("メイリオ", 30, 1);
-	fontSmall = ResourceManager::GetIns().GetFont("メイリオ", 22, 1);
+	fontLarge = ResourceManager::GetIns().GetFont("Resource/Font/JetBrainsMono_60.dft");
+	fontMedium = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_30.dft");
+	fontSmall = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_22.dft");
 }
 
 void ResultScene::Update() {
 	if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_SELECT)) {
+		SoundManager::GetIns().PlaySE("Resource/Sound/select.ogg");
 		manager->ChangeScene(std::make_unique<TitleScene>(manager));
 	}
 }
@@ -57,20 +59,16 @@ void ResultScene::Draw() {
 
 	const GameResult& result = manager->GetResult();
 
-	// 1. タイトル位置に見出し
 	::DrawStringToHandle(TITLE_X, TITLE_Y, "Result", white, fontLarge);
 
-	// 2. 一番上にスコア（中央にデカく表示）
 	::DrawFormatStringToHandle(CENTER_X - 150, SCORE_Y, yellow, fontLarge, "Score : %d", result.currentScore);
 
 
-	// 3. 左上：死因
 	::DrawStringToHandle(COL_LEFT_X, ROW_TOP_Y, "- 死因 -", gray, fontMedium);
 	const char* causeStr = TextManager::GetIns().GetCauseName(result.causeOfDeath);
 	::DrawFormatStringToHandle(COL_LEFT_X + 40, ROW_TOP_Y + LINE_HEIGHT, red, fontMedium, "%s", causeStr);
 
 
-	// 4. 右上：射撃精度
 	::DrawStringToHandle(COL_RIGHT_X, ROW_TOP_Y, "- 射撃精度 -", gray, fontMedium);
 	int shot = result.Shot;
 	int hit = result.totalHit;
@@ -82,7 +80,6 @@ void ResultScene::Draw() {
 	::DrawFormatStringToHandle(COL_RIGHT_X + 40, ROW_TOP_Y + LINE_HEIGHT * 2, white, fontMedium, "ヘッドショット率 : %.1f%%", hsAccuracy);
 
 
-	// 5. 左下：キル数
 	::DrawStringToHandle(COL_LEFT_X, ROW_BOTTOM_Y, "- キル数 -", gray, fontMedium);
 	int killMelee = EnemyManager::GetIns().GetKillCount(ENEMYTYPE::MELEE);
 	int killRifle = EnemyManager::GetIns().GetKillCount(ENEMYTYPE::RIFLE);
@@ -95,7 +92,6 @@ void ResultScene::Draw() {
 	::DrawFormatStringToHandle(COL_LEFT_X + 40, ROW_BOTTOM_Y + LINE_HEIGHT * 4, white, fontMedium, "爆弾 : %d", killRoll);
 
 
-	// 6. 右下：ランキング
 	const char* modeString = "";
 	switch (manager->GetcurrentMode()) {
 	case PlayMode::MODE_EASY:modeString = "EASY"; break;
@@ -110,7 +106,6 @@ void ResultScene::Draw() {
 	bool highlight = false;
 	for (size_t i = 0; i < ranking.size(); ++i) {
 		int color = white;
-		// 今回のスコアがランクインしていたら赤色（目立つ色）でハイライト
 		if (!highlight && ranking[i] == result.currentScore) {
 			color = red;
 			highlight = true;
@@ -119,7 +114,11 @@ void ResultScene::Draw() {
 	}
 
 
-	// 7. 下部黒帯と操作説明（TitleSceneと完全に同じ座標・バランス）
 	::DrawBox(0, WINDOW_HEIGHT - 50, WINDOW_WIDTH, WINDOW_HEIGHT, GetColor(0, 0, 0), TRUE);
-	::DrawStringToHandle(WINDOW_WIDTH - 600, WINDOW_HEIGHT - 30, "F : タイトルに戻る", white, fontSmall);
+
+	std::string menuSel = TextManager::GetIns().GetActionKeyString(ActionID::MENU_SELECT);
+	std::string helpText = menuSel + " : タイトルに戻る";
+
+	int textWidth = GetDrawStringWidthToHandle(helpText.c_str(), static_cast<int>(helpText.length()), fontSmall);
+	::DrawStringToHandle(WINDOW_WIDTH - textWidth - 50, WINDOW_HEIGHT - 30, helpText.c_str(), white, fontSmall);
 }

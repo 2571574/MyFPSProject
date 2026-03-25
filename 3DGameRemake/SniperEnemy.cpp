@@ -29,7 +29,7 @@ void SniperEnemy::Update() {
 		return;
 	}
 
-	if (sniper)sniper->Update();
+	if (sniper)sniper->Update(*this);
 	if (target == nullptr)return;
 
 	VECTOR moveTarget = UpdateNavigation(target, dt);
@@ -63,7 +63,7 @@ void SniperEnemy::Update() {
 	ApplyMovement(moveDir, stageHandle);
 
 	if (sniper->GetAmmo() <= 0 && !sniper->Reloading()) {
-		sniper->Reload();
+		sniper->Reload(*this);
 	}
 	if (sniper->CanFire() && CheckLineSight(target,target->GetCurrentHeight() * 0.5f) && distToPlayer <= sniper->GetSpec().range) {
 		targetingTimer += dt;
@@ -80,6 +80,8 @@ void SniperEnemy::Update() {
 	else {
 		targetingTimer = 0.0f;
 	}
+
+	UpdateFootstep();
 }
 
 void SniperEnemy::Action() {

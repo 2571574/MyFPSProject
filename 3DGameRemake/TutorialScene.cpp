@@ -13,6 +13,7 @@
 #include "ResourceManager.h"
 #include "TextManager.h"
 #include "EffectManager.h"
+#include "SoundManager.h"
 
 namespace {
 	constexpr float TUTORIAL_SPAWN_TIMER = 0.5f;
@@ -50,9 +51,9 @@ void TutorialScene::Init() {
 	EnemyManager::GetIns().NoPathInit(stageHandle,&player);
 	ItemManager::GetIns().SetStageHandle(stageHandle);
 
-	fontLarge = ResourceManager::GetIns().GetFont("Century Gothic", 36, 2);
-	fontMedium = ResourceManager::GetIns().GetFont("メイリオ", 20, 1);
-	fontSmall = ResourceManager::GetIns().GetFont("メイリオ", 16, 1);
+	fontLarge = ResourceManager::GetIns().GetFont("Resource/Font/JetBrainsMono_36.dft");
+	fontMedium = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_20.dft");
+	fontSmall = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_16.dft");
 
 	//武器スポナー
 	std::vector<SpawnerSetup>spawnerSetups = {
@@ -78,6 +79,8 @@ void TutorialScene::Init() {
 		btn.spawnCT = 0.0f;
 		button.push_back(std::move(btn));
 	}
+
+	SoundManager::GetIns().PlayBGM("Resource/Sound/GameBGM.wav");
 }
 
 void TutorialScene::Update() {
@@ -86,6 +89,7 @@ void TutorialScene::Update() {
 
 	//ポーズ処理
 	if (InputManager::GetIns().IsActionTrigger(ActionID::PAUSE)) {
+		SoundManager::GetIns().PlaySE("Resource/Sound/pause.ogg");
 		isPaused = !isPaused;
 		pauseSelectNum = 0;
 	}
@@ -194,14 +198,17 @@ void TutorialScene::Update() {
 void TutorialScene::PauseUpdate() {
 	SetMousePoint(CENTER_X, CENTER_Y);
 	if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_UP)) {
+		SoundManager::GetIns().PlaySE("Resource/Sound/cursormove.ogg");
 		pauseSelectNum--;
 		if (pauseSelectNum < 0) pauseSelectNum = PAUSE_MAX - 1;
 	}
 	if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_DOWN)) {
+		SoundManager::GetIns().PlaySE("Resource/Sound/cursormove.ogg");
 		pauseSelectNum++;
 		if (pauseSelectNum >= PAUSE_MAX) pauseSelectNum = 0;
 	}
 	if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_SELECT)) {
+		SoundManager::GetIns().PlaySE("Resource/Sound/select.ogg");
 		if (pauseSelectNum == RESUME) isPaused = false;
 		else if (pauseSelectNum == RETURN_TITLE) manager->ChangeScene(std::make_unique<TitleScene>(manager));
 	}
@@ -267,21 +274,34 @@ void TutorialScene::Draw() {
 	const int TEXT_Y = 300;
 	const int LINE = 30;
 
+
+	std::string moveUpKey = TextManager::GetIns().GetActionKeyString(ActionID::MOVE_FORWARD);
+	std::string runKey = TextManager::GetIns().GetActionKeyString(ActionID::RUN);
+	std::string jumpKey = TextManager::GetIns().GetActionKeyString(ActionID::JUMP);
+	std::string crouchKey = TextManager::GetIns().GetActionKeyString(ActionID::CROUCH);
+	std::string fireKey = TextManager::GetIns().GetActionKeyString(ActionID::FIRE);
+	std::string adsKey = TextManager::GetIns().GetActionKeyString(ActionID::ADS);
+	std::string reloadKey = TextManager::GetIns().GetActionKeyString(ActionID::RELOAD);
+	std::string interactKey = TextManager::GetIns().GetActionKeyString(ActionID::INTERACT);
+	std::string nextWepKey = TextManager::GetIns().GetActionKeyString(ActionID::WEAPON_NEXT);
+	std::string pauseKey = TextManager::GetIns().GetActionKeyString(ActionID::PAUSE);
+
+
 	switch (currentPhase) {
 	case TutorialPhase::MOVEMENT:
 		DrawStringToHandle(TEXT_X, TEXT_Y, "[MOVEMENT]", colorTitle, fontLarge);
-		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 2, "移動 : WASD", colorText, fontSmall);
-		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 3, "走る : Shift", colorText, fontSmall);
-		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 4, "ジャンプ : Space", colorText, fontSmall);
-		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 5, "しゃがむ : Control", colorText, fontSmall);
+		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 2, ("移動 : " + moveUpKey + "等").c_str(), colorText, fontSmall);
+		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 3, ("走る : " + runKey).c_str(), colorText, fontSmall);
+		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 4, ("ジャンプ : " + jumpKey).c_str(), colorText, fontSmall);
+		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 5, ("しゃがむ : " + crouchKey).c_str(), colorText, fontSmall);
 		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 6, "一定速度でしゃがむとスライディング", colorText, fontSmall);
 		break;
 
 	case TutorialPhase::COMBAT:
 		DrawStringToHandle(TEXT_X, TEXT_Y, "[COMBAT]", colorTitle, fontLarge);
-		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 2, "射撃 : 左クリック", colorText, fontSmall);
-		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 3, "狙う : 右クリック", colorText, fontSmall);
-		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 4, "リロード : R", colorText, fontSmall);
+		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 2, ("射撃 : " + fireKey).c_str(), colorText, fontSmall);
+		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 3, ("狙う : " + adsKey).c_str(), colorText, fontSmall);
+		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 4, ("リロード : " + reloadKey).c_str(), colorText, fontSmall);
 		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 6, "しゃがむことで反動と拡散が軽減される", colorText, fontSmall);
 		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 7, "ヘッドショットするとダメージは２倍", colorText, fontSmall);
 		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 9, "的を撃つと対応する敵がスポーン", colorText, fontSmall);
@@ -311,13 +331,14 @@ void TutorialScene::Draw() {
 
 	case TutorialPhase::FREERANGE:
 		DrawStringToHandle(TEXT_X, TEXT_Y, "[FREE RANGE]", colorTitle, fontLarge);
-		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 2, "武器を拾う : F", colorText, fontSmall);
-		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 3, "武器切替 : マウスホイール", colorText, fontSmall);
+		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 2, ("武器を拾う : " + interactKey).c_str(), colorText, fontSmall);
+		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 3, ("武器切替 : " + nextWepKey + "等").c_str(), colorText, fontSmall);
 		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 4, "※所持上限時は手元の武器と交換します", colorAlert, fontSmall);
 		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 5, "自由に射撃できます。", colorText, fontSmall);
-		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 14, "戻るときはメニュー(esc)から", colorText, fontSmall);
+		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 14, ("戻るときはメニュー(" + pauseKey + ")から").c_str(), colorText, fontSmall);
 		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 15, "タイトルに戻ってください。", colorText, fontSmall);
-		// 武器情報HUD（持っている武器に応じて変化
+
+
 		if (Weapon* w = player.GetWeapon()) {
 			auto id = w->GetSpec().id;
 			DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 7, "現在の武器", colorInfo, fontSmall);

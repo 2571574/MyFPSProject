@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Parameter.h"
 #include "EffectManager.h"
+#include "SoundManager.h"
 
 #include <memory>
 
@@ -27,7 +28,7 @@ Weapon::Weapon(const GunStatus _spec)
 	, aim(false)
 	, adsWeight(0.0f)
 	, gunModelHandle(-1)
-	, soundHandle(-1)
+	, reloadEndPlayed(false)
 {
 	if (!spec.visual.modelPath.empty()) {
 		gunModelHandle = ResourceManager::GetIns().DuplicateModel(spec.visual.modelPath);
@@ -44,17 +45,23 @@ Weapon::~Weapon() {
 }
 
 /*武器の更新*/
-void Weapon::Update() {
+void Weapon::Update(Character& user) {
 	//リロード、射撃後のタイマーを減らす
 	float delta = Time::GetIns().GetDelta();
-	float dt60 = delta * 60.0f;
 	constexpr float ADS_SPEED = 0.6f;
+	float dt60 = delta * 60.0f;
 	float lerpRate = 1.0f - std::pow(1.0f - ADS_SPEED, dt60);
 	float targetAds = aim ? 1.0f : 0.0f;
 
 	adsWeight += (targetAds - adsWeight) * lerpRate;
 	if (reloadCT > 0) {
 		reloadCT -= delta;
+		if (currentState == WeaponState::RELOADING && !reloadEndPlayed && reloadCT <= 0.25f) {
+			if (!spec.visual.reloadSoundPath.empty()) {
+				SoundManager::GetIns().Play3DSE(spec.visual.ReloadEndSoundPath, user.GetPos(), 20.0f);
+			}
+			reloadEndPlayed = true;
+		}
 		if (reloadCT <= 0)
 			reloadCT = 0;
 	}
@@ -98,6 +105,12 @@ void Weapon::Fired(Character& user) {
 
 /*射撃の入力を得る関数*/
 void Weapon::FireInput(Character& user, VECTOR direction) {
+	if (ammo <= 0 && currentState == WeaponState::IDLE) {
+		if (InputManager::GetIns().IsActionTrigger(ActionID::FIRE)) {
+			// ステータスを経由せず、直接ファイルパスを指定して鳴らす
+			SoundManager::GetIns().Play3DSE("Resource/Sound/Fireempty.wav", user.GetPos(), 20.0f);
+		}
+	}
 	if (spec.fullAuto) {
 		if (InputManager::GetIns().IsActionHold(ActionID::FIRE)) {
 			Fire(user, direction);
@@ -111,9 +124,9 @@ void Weapon::FireInput(Character& user, VECTOR direction) {
 }
 
 /*リロードの入力を得る関数*/
-void Weapon::ReloadInput() {
+void Weapon::ReloadInput(Character& user) {
 	if (InputManager::GetIns().IsActionTrigger(ActionID::RELOAD)) {
-		Reload();
+		Reload(user);
 	}
 }
 
@@ -131,6 +144,11 @@ void Weapon::AdsInput() {
 /*射撃処理*/
 void Weapon::Fire(Character& user, VECTOR direction) {
 	if (!CanFire())return;		//撃てなかったらreturn
+
+	if (!spec.visual.fireSoundPath.empty()) {
+		SoundManager::GetIns().Play3DSE(spec.visual.fireSoundPath, user.GetPos(), 40.0f);
+	}
+
 	user.ShotRecord();
 	VECTOR dir = VNorm(direction);
 	float currentSpread = aim ? spec.adsSpread : spec.spread;
@@ -239,10 +257,16 @@ void Weapon::FireHitScan(Character& user, VECTOR baseDir, VECTOR shootDir) {
 }
 
 /*リロード*/
-void Weapon::Reload() {
+void Weapon::Reload(Character& user) {
 	if (!CanReload()) return;	//できなければreturn
 	currentState = WeaponState::RELOADING;
 	reloadCT = spec.reloadTime;
+	reloadEndPlayed = false; // フラグをリセット
+
+	// 追加：リロード開始音を再生
+	if (!spec.visual.reloadSoundPath.empty()) {
+		SoundManager::GetIns().Play3DSE(spec.visual.reloadSoundPath, user.GetPos(), 20.0f);
+	}
 }
 
 void Weapon::Ads() {

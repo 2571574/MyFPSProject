@@ -35,7 +35,7 @@ protected:
 	float adsWeight;
 
 	int gunModelHandle;	 //銃のモデルハンドル
-	int soundHandle;	 //サウンドハンドル
+	bool reloadEndPlayed;
 
 	//弾速のある弾を生成する　user=射手　direction=射撃方向のベクトル
 	virtual void FireProjectile(Character& user, VECTOR baseDir, VECTOR shootDir);
@@ -53,7 +53,7 @@ public:
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	void Update();
+	void Update(Character& user);
 
 	/// <summary>
 	/// 射撃の入力を得る
@@ -70,7 +70,7 @@ public:
 	/// <summary>
 	/// リロードの入力を得る
 	/// </summary>
-	void ReloadInput();
+	void ReloadInput(Character& user);
 
 	/// <summary>
 	/// 射撃処理
@@ -87,7 +87,7 @@ public:
 	/// <summary>
 	/// リロードの処理
 	/// </summary>
-	void Reload();
+	void Reload(Character& user);
 
 	/// <summary>
 	/// 描画処理

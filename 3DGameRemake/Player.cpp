@@ -2,6 +2,7 @@
 #include "Debug.h"
 #include "ItemManager.h"
 #include "ConfigManager.h"
+#include "SoundManager.h"
 
 #include <cmath>
 
@@ -47,6 +48,7 @@ Player::Player(VECTOR pos, Camera* camera, PlayMode mode)
 	, currentMode(mode)
 	, lastCamYaw(0.0f)
 	, lastCamPitch(0.0f)
+	, moveDistance(0.0f)
 	,currentSwayX(0.0f)
 	,currentSwayY(0.0f)
 	
@@ -124,7 +126,7 @@ void Player::Update() {
 	if (crouch)running = false;
 	//武器の更新と入力を検知
 	if (currentWeapon) {
-		currentWeapon->ReloadInput();
+		currentWeapon->ReloadInput(*this);
 		if (running) {
 			currentWeapon->CancelAds();
 		}
@@ -132,7 +134,7 @@ void Player::Update() {
 			currentWeapon->FireInput(*this, GetCamDirection());
 			currentWeapon->AdsInput();
 		}
-		currentWeapon->Update();
+		currentWeapon->Update(*this);
 		isAds = currentWeapon->TakingAim();
 	}
 
@@ -294,6 +296,13 @@ void Player::Update() {
 	Debug::Watch("X", position.x);
 	Debug::Watch("Y", position.y);
 	Debug::Watch("Z", position.z);
+
+	if (cam) {
+		VECTOR up = VGet(0.0f, 1.0f, 0.0f); // 基本的な上方向ベクトル
+		SoundManager::GetIns().UpdateListener(cam->GetPos(), cam->GetLookDirection(), up);
+	}
+
+	UpdateFootstep();
 }
 
 void Player::Draw() {
@@ -394,4 +403,27 @@ bool Player::AddWeapon(std::unique_ptr<Weapon>& newWeapon) {
 	SwitchWeapon(dropIndex);
 
 	return true;
+}
+
+void Player::UpdateFootstep() {
+	if (!onGround || !alive) return;
+
+	float dt = Time::GetIns().GetDelta();
+	float dt60 = dt * 60.0f;
+
+	float speed = VSize(VGet(velocity.x, 0.0f, velocity.z));
+
+	if (speed > 0.01f) {
+		moveDistance += speed * dt60;
+		
+		constexpr float STEP_LENGTH = 4.0f;
+
+		if (moveDistance >= STEP_LENGTH && !crouch) {
+			SoundManager::GetIns().PlaySE("Resource/Sound/footstep.ogg");
+			moveDistance -= STEP_LENGTH;
+		}
+	}
+	else {
+		moveDistance = 0.0f;
+	}
 }

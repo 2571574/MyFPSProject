@@ -95,7 +95,7 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 	}
 
 	for (auto* chara : characters) {
-		if (chara->GetID() == shooter || !chara->IsAlive())continue;
+		if (chara->GetID() == shooter || !chara->IsAlive() || chara->GetHP() <= 0) continue;
 
 		VECTOR cPos = chara->GetPos();
 		float hitY = start.y;
@@ -161,7 +161,7 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 
 
 	for (auto* chara : characters) {
-		if (chara->GetID() == shooter || !chara->IsAlive())continue;
+		if (chara->GetID() == shooter || !chara->IsAlive() || chara->GetHP() <= 0) continue;
 
 		VECTOR cPos = chara->GetPos();
 		float hitY = pos.y;
@@ -218,7 +218,7 @@ bool CollisionManager::ProcessExplosion(VECTOR hitPos, float radius, int damage,
 	bool hit = false;
 
 	for (auto* chara : characters) {
-		if (!chara->IsAlive())continue;
+		if (!chara->IsAlive() || chara->GetHP() <= 0) continue;
 
 		if (!friendlyFire) {
 			if (chara->GetID() == shooter)continue;

@@ -156,6 +156,7 @@
     <ClCompile Include="RollingEnemy.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SniperEnemy.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Status.cpp" />
     <ClCompile Include="TextManager.cpp" />
     <ClCompile Include="Time.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="RollingEnemy.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SniperEnemy.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Status.h" />
     <ClInclude Include="TextManager.h" />
     <ClInclude Include="Time.h" />

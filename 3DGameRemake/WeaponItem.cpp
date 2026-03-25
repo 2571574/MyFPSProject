@@ -25,7 +25,8 @@ WeaponItem::WeaponItem(VECTOR pos, std::unique_ptr<Weapon>weapon)
 	,droppedWeapon(std::move(weapon))
 	,bobbingTimer(0.0f)
 	,alive(true){ 
-	fontItem = ResourceManager::GetIns().GetFont("Century Gothic", 20, 2);
+	fontItemAmmo = ResourceManager::GetIns().GetFont("Resource/Font/RobotoMono_20.dft");
+	fontItemName = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_20.dft");
 }
 
 void WeaponItem::Update() {
@@ -123,8 +124,8 @@ void WeaponItem::Draw() {
 
 				::SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 				// ★修正: フォント指定＋白文字に変更
-				::DrawFormatStringToHandle(drawX, drawYAmmo, GetColor(255, 255, 255), fontItem, "AMMO: %d / %d", droppedWeapon->GetAmmo(), droppedWeapon->GetReserveAmmo());
-				::DrawFormatStringToHandle(drawX, drawYName, GetColor(255, 255, 255), fontItem, "%s", weaponName);
+				::DrawFormatStringToHandle(drawX, drawYAmmo, GetColor(255, 255, 255), fontItemAmmo, "AMMO: %d / %d", droppedWeapon->GetAmmo(), droppedWeapon->GetReserveAmmo());
+				::DrawFormatStringToHandle(drawX, drawYName, GetColor(255, 255, 255), fontItemName, "%s", weaponName);
 				::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 			}
 		}

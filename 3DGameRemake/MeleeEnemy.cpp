@@ -1,9 +1,11 @@
 ﻿#include "MeleeEnemy.h"
 #include "Player.h"
 #include "Time.h"
-#include <cmath>
 #include "Parameter.h"
 #include "EnemyManager.h"
+#include "SoundManager.h"
+
+#include <cmath>
 
 namespace {
 	constexpr float ATTACK_WINDUP_TIME = 0.3f;
@@ -34,7 +36,7 @@ void MeleeEnemy::Update() {
 	if (target == nullptr) return;
 
 	if (melee) {
-		melee->Update();
+		melee->Update(*this);
 	}
 
 	float range = 0.0f;
@@ -89,6 +91,9 @@ void MeleeEnemy::Update() {
 		break;
 	}
 	}
+
+
+	UpdateFootstep();
 }
 
 
@@ -181,5 +186,6 @@ void MeleeEnemy::Action() {
 	VECTOR attackPos = VAdd(position, VScale(toTarget, 1.0f));
 	auto spec = melee->GetSpec();
 	CollisionManager::GetIns().ProcessExplosion(attackPos, spec.explodeArea, spec.damage, spec.knockbackP, false, GetID(), WeaponID::ENEMY_KNIFE,spec.friendlyFire);
+	SoundManager::GetIns().Play3DSE("Resource/Sound/melee.wav", attackPos, 20.0f);
 	Debug::Log("EnemyAttack");
 }

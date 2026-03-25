@@ -60,6 +60,9 @@ struct WeaponVisual {
 	VECTOR drawMuzzleOffset;
 	VECTOR drawAdsMuzzleOffset;
 	std::string uiPath;
+	std::string fireSoundPath;
+	std::string reloadSoundPath;
+	std::string ReloadEndSoundPath;
 };
 
 struct GunStatus {		 //武器の性能

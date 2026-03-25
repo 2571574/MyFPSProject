@@ -32,7 +32,7 @@ void RifleEnemy::Update() {
 	}
 
 	if (rifle) {
-		rifle->Update();
+		rifle->Update(*this);
 	}
 	if (target == nullptr) return;
 
@@ -52,6 +52,8 @@ void RifleEnemy::Update() {
 	if (CheckLineSight(target,target->GetCurrentEyeHeight())) {
 		Action();
 	}
+
+	UpdateFootstep();
 }
 
 void RifleEnemy::Action() {
@@ -60,7 +62,7 @@ void RifleEnemy::Action() {
 	VECTOR fireDir = VNorm(VSub(targetEyePos, eyePos));
 	if (rifle) {
 		if (rifle->GetAmmo() <= 0) {
-			rifle->Reload();
+			rifle->Reload(*this);
 		}
 		if (!rifle->Reloading()) {
 			rifle->Fire(*this, fireDir);

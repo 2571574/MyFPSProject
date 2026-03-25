@@ -1,4 +1,5 @@
 #include "EffectManager.h"
+#include "SoundManager.h"
 #include <algorithm>
 
 EffectManager& EffectManager::GetIns() {
@@ -112,6 +113,7 @@ void EffectManager::CreateSpawnEffect(VECTOR pos, float height, float radius, fl
 
 void EffectManager::CreateExplosionEffect(VECTOR pos, float radius, int color) {
 	AddEffect(std::make_unique<ExplosionEffect>(pos, radius, color, 0.6f));
+	SoundManager::GetIns().Play3DSE("Resource/Sound/explode.ogg", pos, 50.0f);
 }
 
 void EffectManager::CreateHitScanTrail(VECTOR start, VECTOR end, int color) {

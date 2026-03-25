@@ -6,6 +6,7 @@
 #include "ResultScene.h"
 #include "ResourceManager.h"
 #include "EffectManager.h"
+#include "SoundManager.h"
 
 namespace {
 	constexpr float DEATH_DURATION = 2.5f;
@@ -28,8 +29,8 @@ void GameScene::Init() {
 	MV1SetScale(stageHandle, VGet(0.02f, 0.02f, 0.02f));
 	MV1SetupCollInfo(stageHandle, -1, 8, 8, 8);
 
-	fontLarge = ResourceManager::GetIns().GetFont("Century Gothic", 36, 2);
-	fontMedium = ResourceManager::GetIns().GetFont("メイリオ", 20, 1);
+	fontLarge = ResourceManager::GetIns().GetFont("Resource/Font/JetBrainsMono_36.dft");
+	fontMedium = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_20.dft");
 
 	player.SetStageHandle(stageHandle);
 	CollisionManager::GetIns().SetStageHandle(stageHandle);
@@ -65,6 +66,7 @@ void GameScene::Init() {
 	deathTimer = 0.0f;
 	score = 0;
 	isSceneChange = false;
+	SoundManager::GetIns().PlayBGM("Resource/Sound/GameBGM.wav");
 }
 
 
@@ -73,6 +75,7 @@ void GameScene::Update() {
 
 	if (!isDeadSequence) {
 	if (InputManager::GetIns().IsActionTrigger(ActionID::PAUSE)) {
+		SoundManager::GetIns().PlaySE("Resource/Sound/pause.ogg");
 		isPaused = !isPaused;
 		pauseSelectNum = 0;
 	}
@@ -95,6 +98,9 @@ void GameScene::Update() {
 			manager->SetCauseOfDeath(player.GetLastHitWeapon());
 			isDeadSequence = true;
 			deathTimer = 0.0f;
+
+			SoundManager::GetIns().StopBGM();
+			SoundManager::GetIns().PlaySEWithFadeOut("Resource/Sound/death.wav", 6.0f);
 		}
 	}
 	else {
@@ -108,15 +114,18 @@ void GameScene::Update() {
 void GameScene::PauseUpdate() {
 	SetMousePoint(CENTER_X, CENTER_Y);
 	if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_UP)) {
+		SoundManager::GetIns().PlaySE("Resource/Sound/cursormove.ogg");
 		pauseSelectNum--;
 		if (pauseSelectNum < 0) pauseSelectNum = PAUSE_MAX - 1;
 	}
 	if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_DOWN)) {
+		SoundManager::GetIns().PlaySE("Resource/Sound/cursormove.ogg");
 		pauseSelectNum++;
 		if (pauseSelectNum >= PAUSE_MAX) pauseSelectNum = 0;
 	}
 
 	if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_SELECT)) {
+		SoundManager::GetIns().PlaySE("Resource/Sound/select.ogg");
 		if (pauseSelectNum == RESUME) {
 			isPaused = false;
 		}

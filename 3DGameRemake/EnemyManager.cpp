@@ -7,6 +7,7 @@
 #include "RollingEnemy.h"
 #include "Debug.h"
 #include "EffectManager.h"
+#include "SoundManager.h"
 
 #include <algorithm>
 
@@ -187,6 +188,7 @@ int EnemyManager::Update() {
 			}
 
 			if (newEnemy) {
+				SoundManager::GetIns().Play3DSE("Resource/Sound/spawn.ogg", newEnemy->GetPos(), 30.0f);
 				Spawn(std::move(newEnemy));
 				Debug::Log("Spawned");
 			}

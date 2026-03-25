@@ -22,6 +22,8 @@ public:
 	const char* GetWeaponName(WeaponID id)const;
 	const char* GetActionName(ActionID id)const;
 	const char* GetCauseName(WeaponID id)const;
+	const char* GetKeyName(InputType type, int code)const;
+	std::string GetActionKeyString(ActionID id)const;
 
 	const char* GetMenuDescription(int id)const;
 };

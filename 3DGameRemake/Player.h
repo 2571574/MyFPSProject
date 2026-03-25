@@ -46,6 +46,8 @@ private:
 	float lastCamPitch;
 	float currentSwayX;
 	float currentSwayY;
+
+	float moveDistance;
 public:
 	/// <summary>
 	///	playerのコンストラクタ 座標にplayerを生成
@@ -97,6 +99,7 @@ public:
 		}
 	}
 
+	void UpdateFootstep();
 
 	void SetStageHandle(int handle) { stageHandle = handle; }
 

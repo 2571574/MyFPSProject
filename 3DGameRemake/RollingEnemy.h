@@ -12,6 +12,9 @@ private:
     float explodeTimer;
     float triggerDist;
     GunStatus explodeSpec;
+
+    float beepTimer;
+    float alertDuration;
 public:
 
     RollingEnemy(VECTOR pos, Player* target);

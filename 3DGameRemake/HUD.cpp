@@ -8,6 +8,7 @@
 #include "EnemyManager.h"
 #include "GameScene.h"
 #include "ResourceManager.h"
+#include "SoundManager.h"
 
 #include <cmath>
 
@@ -40,10 +41,10 @@ namespace {
 }
 
 HUD::HUD(Player* player) : pplayer(player){
-	fontJpLarge = ResourceManager::GetIns().GetFont("メイリオ", 32, 1);
-	fontJpMedium = ResourceManager::GetIns().GetFont("メイリオ", 20, 1);
-	fontEnLarge = ResourceManager::GetIns().GetFont("Century Gothic", 28, 2);
-	fontEnSmall = ResourceManager::GetIns().GetFont("Century Gothic", 20, 2);
+	fontJpLarge = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_32.dft");
+	fontJpMedium = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_20.dft");
+	fontEnLarge = ResourceManager::GetIns().GetFont("Resource/Font/RobotoMono_28.dft");
+	fontEnSmall = ResourceManager::GetIns().GetFont("Resource/Font/RobotoMono_20.dft");
 }
 
 void HUD::Update() {
@@ -160,7 +161,7 @@ void HUD::Draw() {
 		int o = static_cast<int>(offset);
 
 		DrawBox(0, -o, WINDOW_WIDTH, t - o, color, TRUE);
-		DrawBox(0, WINDOW_HEIGHT - t + o, WINDOW_WIDTH, WINDOW_HEIGHT + o, color, TRUE); // 下
+		DrawBox(0, WINDOW_HEIGHT - t + o, WINDOW_WIDTH, WINDOW_HEIGHT + o, color, TRUE);
 		DrawBox(-o, t - o, t - o, WINDOW_HEIGHT - t + o, color, TRUE); // 左
 		DrawBox(WINDOW_WIDTH - t + o, t - o, WINDOW_WIDTH + o, WINDOW_HEIGHT - t + o, color, TRUE); // 右
 
@@ -172,27 +173,27 @@ void HUD::Draw() {
 		if (spec) {
 			const char* weaponName = TextManager::GetIns().GetWeaponName(spec->id);
 
-			// 1. コンテンツの描画幅を計算
+			std::string interactKey = TextManager::GetIns().GetActionKeyString(ActionID::INTERACT);
+			std::string pickUpStr = "PickUp : " + interactKey;
+
 			int nameWidth = GetDrawStringWidthToHandle(weaponName, static_cast<int>(strlen(weaponName)), fontJpMedium);
-			int subTextWidth = GetDrawStringWidthToHandle("PickUp : F", static_cast<int>(strlen("PickUp : F")), fontEnSmall);
+			int subTextWidth = GetDrawStringWidthToHandle(pickUpStr.c_str(), static_cast<int>(pickUpStr.length()), fontEnSmall); // ★修正
 			int textMaxWidth = (nameWidth > subTextWidth) ? nameWidth : subTextWidth;
 
-			// 2. アイコンの有無とサイズ
 			int iconSize = spec->visual.uiPath.empty() ? 0 : 100;
-			int gap = (iconSize > 0) ? 20 : 0; // アイコンとテキストの隙間
+			int gap = (iconSize > 0) ? 20 : 0;
 
-			// 3. 全体の幅から、完全に中央となるX座標を逆算
 			int paddingX = 25;
 			int paddingY = 15;
 			int contentWidth = iconSize + gap + textMaxWidth;
 			int boxWidth = contentWidth + paddingX * 2;
 			int boxHeight = (iconSize > 0) ? iconSize + paddingY * 2 : 70;
 
-			// ★これで画面中央に完全なシンメトリーで配置されます
+	
 			int boxStartX = CENTER_X - (boxWidth / 2);
 			int boxStartY = CENTER_Y + 120;
 
-			// 背景ボックス描画
+
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150);
 			DrawBox(boxStartX, boxStartY, boxStartX + boxWidth, boxStartY + boxHeight, GetColor(0, 0, 0), TRUE);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
@@ -200,7 +201,7 @@ void HUD::Draw() {
 			int currentX = boxStartX + paddingX;
 			int white = GetColor(255, 255, 255);
 
-			// アイコン描画
+
 			if (iconSize > 0) {
 				int iconHandle = ResourceManager::GetIns().GetGraph(spec->visual.uiPath);
 				if (iconHandle != -1) {
@@ -209,15 +210,15 @@ void HUD::Draw() {
 					DrawExtendGraph(currentX, boxStartY + paddingY, currentX + iconSize, boxStartY + paddingY + iconSize, iconHandle, TRUE);
 					SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 				}
-				currentX += iconSize + gap; // テキストの開始位置を右へズラす
+				currentX += iconSize + gap; 
 			}
 
-			// テキスト描画 (アイコンがある場合は上下中央付近に寄せる)
+
 			int textStartY = boxStartY + paddingY + (iconSize / 2) - 25;
 			if (iconSize == 0) textStartY = boxStartY + 10;
 
 			::DrawStringToHandle(currentX, textStartY, weaponName, white, fontJpMedium);
-			::DrawStringToHandle(currentX, textStartY + 30, "PickUp : F", white, fontEnSmall);
+			::DrawStringToHandle(currentX, textStartY + 30, pickUpStr.c_str(), white, fontEnSmall);
 		}
 	}
 
@@ -231,21 +232,20 @@ void HUD::Draw() {
 	int hpStartX = CENTER_X - (hpBarWidth / 2);
 	int hpStartY = WINDOW_HEIGHT - 30;
 
-	// 背景の暗いライン
+
 	DrawBox(hpStartX, hpStartY, hpStartX + hpBarWidth, hpStartY + hpBarHeight, GetColor(40, 40, 40), TRUE);
 
-	// 現在のHPライン（通常は白、ピンチ時(30%以下)は赤）
 	int hpColor = (hpRatio > 0.3f) ? GetColor(255, 255, 255) : GetColor(255, 50, 50);
 	DrawBox(hpStartX, hpStartY, hpStartX + static_cast<int>(hpBarWidth * hpRatio), hpStartY + hpBarHeight, hpColor, TRUE);
 
 	Weapon* weapon = pplayer->GetWeapon();
 
 	if (weapon) {
-		if (!weapon->TakingAim()) {
-			DrawCircle(CENTER_X, CENTER_Y, CROSSHAIR_DOT_SIZE, GetColor(0, 0, 0), true);
-		}
-
 		const GunStatus& spec = weapon->GetSpec();
+
+		if (!weapon->TakingAim() || spec.id == WeaponID::LR || spec.id == WeaponID::SMG) {
+			DrawCircle(CENTER_X, CENTER_Y, CROSSHAIR_DOT_SIZE, GetColor(255, 255, 255), true);
+		}
 		int ammo = weapon->GetAmmo();
 		int mag = spec.magAmmo;
 		int reserve = weapon->GetReserveAmmo();
@@ -269,12 +269,10 @@ void HUD::Draw() {
 		int textX = uiBaseX + 20;
 		int textY = uiBaseY + iconSize - 100;
 
-		// ★修正: それぞれ適切なフォントハンドルを指定
 		::DrawFormatStringToHandle(textX, textY, GetColor(255, 255, 255), fontJpMedium, "%s", weaponName);
 		::DrawFormatStringToHandle(textX, textY + 30, GetColor(255, 255, 255), fontEnLarge, "AMMO  %02d / %02d", ammo, mag);
 
 		if (!weapon->IsInfinite()) {
-			// 行間はフォントサイズに合わせて少し広め(60)に調整しています
 			::DrawFormatStringToHandle(textX, textY + 60, GetColor(200, 200, 200), fontEnSmall, "      %03d", reserve);
 		}
 
@@ -301,7 +299,6 @@ void HUD::Draw() {
 			}
 
 			const char* reloadText = "RELOADING";
-			// ★修正: fontEnSmall を使用してセンタリング計算
 			int rWidth = GetDrawStringWidthToHandle(reloadText, static_cast<int>(strlen(reloadText)), fontEnSmall);
 			::DrawStringToHandle(cx - (rWidth / 2), cy + radius + 15, reloadText, arcColor, fontEnSmall);
 		}
@@ -350,8 +347,20 @@ void HUD::OnHitTarget(bool isHeadShot,bool isKill) {
 	hitMarkTimer = HITMARK_DURATION;
 	lastHitWasHS = isHeadShot;
 	lastHitWasKill = isKill;
+	if (isKill) {
+		SoundManager::GetIns().PlaySE("Resource/Sound/kill.ogg");
+	}
+	else if (isHeadShot) {
+		SoundManager::GetIns().PlaySE("Resource/Sound/hs.ogg");
+	}
+	else {
+		SoundManager::GetIns().PlaySE("Resource/Sound/hit.ogg");
+	}
 }
 
 void HUD::OnPlayerTakeDamage() {
 	damageFlashTimer = DAMAGE_FLASH_DURATION;
+	if (pplayer->GetHP() > 0) {
+		SoundManager::GetIns().PlaySE("Resource/Sound/damage.ogg");
+	}
 }

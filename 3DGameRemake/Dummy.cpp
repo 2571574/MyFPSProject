@@ -7,7 +7,7 @@ constexpr float ACCUMULATE_TIME_MAX = 0.2f;
 /*コンストラクタ*/
 Dummy::Dummy(VECTOR pos, Player* _target,bool _damageText) :Enemy(pos, CHARA_STATUS::DUMMY, _target, ENEMYTYPE::DUMMY), accumulateTimer(0.0f), damageText(_damageText) {
 	nowSpawned = false;
-	fontDamage = ResourceManager::GetIns().GetFont("Century Gothic", 24, 2);
+	fontDamage = ResourceManager::GetIns().GetFont("Resource/Font/RobotoMono_24.dft");
 };
 
 /*更新*/

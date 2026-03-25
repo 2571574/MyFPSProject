@@ -23,6 +23,7 @@ protected:
 	ENEMYTYPE type;
 
 	float onHitFlashTimer;
+	float moveDistance;
 public:
 
 	Enemy(VECTOR pos, const CharacterStatus& status, Player* _target, ENEMYTYPE type);
@@ -79,5 +80,7 @@ public:
 	bool CheckFall()const;
 
 	bool NowSpawned()const { return nowSpawned; }
+
+	void UpdateFootstep();
 };
 

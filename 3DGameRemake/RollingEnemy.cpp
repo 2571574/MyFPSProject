@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "EnemyManager.h"
 #include "EffectManager.h"
+#include "SoundManager.h"
 
 namespace {
 	constexpr float EXPLODE_TIME = 2.0f;
@@ -25,7 +26,9 @@ RollingEnemy::RollingEnemy(VECTOR pos, Player* target)
 	:Enemy(pos, CHARA_STATUS::ROLL_ENEMY, target,ENEMYTYPE::ROLLING)
 	, isExploding(false)
 	, explodeTimer(EXPLODE_TIME)
-	, triggerDist(TRIGGER_DISTANCE) {
+	, triggerDist(TRIGGER_DISTANCE)
+	, beepTimer(0.0f)
+	, alertDuration(0.0f) {
 	explodeSpec = ENEMY_GUN::DESTRUCT;
 }
 
@@ -56,12 +59,21 @@ void RollingEnemy::Update() {
 
 		if (distToPlayer < triggerDist) {
 			isExploding = true;
+			beepTimer = 0.0f;
+			alertDuration = SoundManager::GetIns().GetSoundDuration("Resource/Sound/alert.wav");
+			if (alertDuration <= 0.0f) alertDuration = 1.0f;
 		}
 	}
 	else {
 		ApplyMovement(VGet(0, 0, 0), stageHandle);
 		explodeTimer -= dt;
+		beepTimer -= dt;
 
+		if (beepTimer <= 0.0f && explodeTimer > 0.0f) {
+			SoundManager::GetIns().Play3DSE("Resource/Sound/alert.wav", position, 30.0f);
+
+			beepTimer = alertDuration;
+		}
 		if (explodeTimer <= 0.0f) {
 			Action();
 		}
@@ -69,6 +81,7 @@ void RollingEnemy::Update() {
 }
 
 void RollingEnemy::Action() {
+	SoundManager::GetIns().StopSE("Resource/Sound/alert.wav");
 	CollisionManager::GetIns().ProcessExplosion(position, explodeSpec.explodeArea, explodeSpec.damage,explodeSpec.knockbackP,true, status.teamID,explodeSpec.id,explodeSpec.friendlyFire);
 	EffectManager::GetIns().CreateExplosionEffect(position, explodeSpec.explodeArea, GetColor(255, 100, 0));
 	alive = false;

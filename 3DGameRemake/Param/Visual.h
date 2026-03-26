@@ -1,5 +1,5 @@
 #pragma once
-#include "Global.h"
+#include "Param/Global.h"
 
 namespace Visual {
 
@@ -7,7 +7,7 @@ namespace Visual {
         constexpr float ANIM_EQUIP_START_SCALE = 0.5f;
         constexpr float ANIM_EQUIP_OFFSET_Y = -0.6f;
         constexpr float ANIM_EQUIP_OFFSET_Z = -0.3f;
-        constexpr float ANIM_EQUIP_ROT_X = Global::Math::PI_QUARTER;
+        constexpr float ANIM_EQUIP_ROT_X = Global::Math::MATH_PI_QUARTER;
 
         constexpr float ANIM_RELOAD_SMG_PHASE1 = 0.15f;
         constexpr float ANIM_RELOAD_SMG_PHASE2 = 0.85f;
@@ -15,16 +15,16 @@ namespace Visual {
         constexpr float ANIM_RELOAD_SMG_SPINS = 6.0f;
         constexpr float ANIM_RELOAD_SMG_PULLBACK_Z = -0.2f;
         constexpr float ANIM_RELOAD_SMG_OVERSHOOT_Y = 0.1f;
-        constexpr float ANIM_RELOAD_SMG_OVERSHOOT_ROT_X = -Global::Math::PI_EIGHTH;
+        constexpr float ANIM_RELOAD_SMG_OVERSHOOT_ROT_X = -Global::Math::MATH_PI_EIGHTH;
 
         constexpr float ANIM_RELOAD_LR_PHASE1 = 0.3f;
         constexpr float ANIM_RELOAD_LR_PHASE2 = 0.7f;
         constexpr float ANIM_RELOAD_LR_SHOULDER_Y = 0.8f;
         constexpr float ANIM_RELOAD_LR_SHOULDER_X = 0.3f;
         constexpr float ANIM_RELOAD_LR_SHOULDER_Z = -0.2f;
-        constexpr float ANIM_RELOAD_LR_ROT_X = -DX_PI_F / 2.5f;
-
-        constexpr float MODEL_BASE_ROTATION_Y = -Global::Math::PI_HALF;
+        constexpr float ANIM_RELOAD_LR_ROT_X = -Global::Math::PI_VALUE / 2.5f;
+        constexpr float ANIM_RELOAD_DEFAULT_TRANSITION = 0.07f;
+        constexpr float MODEL_BASE_ROTATION_Y = -Global::Math::MATH_PI_HALF;
     }
 
     namespace ItemUI {
@@ -36,7 +36,7 @@ namespace Visual {
         constexpr float OUTER_RING_ROT_SPEED_MULT = -0.5f;
         constexpr float OUTER_RING_OFFSET_Y = -0.2f;
 
-        constexpr Global::ColorRGB COLOR_ITEM_RING = Global::Palette::AMBER;
+        constexpr Global::ColorRGB COLOR_FALLBACK_CUBE = Global::Palette::YELLOW;
 
         constexpr float UI_FADE_TRANSITION_RANGE = 5.0f;
 
@@ -102,8 +102,8 @@ namespace Visual {
 
         constexpr float INDICATOR_RADIUS = 100.0f;
         constexpr float INDICATOR_RADIUS_INCREASE = 80.0f;
-        constexpr float INDICATOR_ARC_ANGLE_SCALE = DX_PI_F / 4.0f;
-        constexpr float INDICATOR_ARC_ANGLE_OFFSET = DX_PI_F / 16.0f;
+        constexpr float INDICATOR_ARC_ANGLE_SCALE = Global::Math::PI_VALUE / 4.0f;
+        constexpr float INDICATOR_ARC_ANGLE_OFFSET = Global::Math::PI_VALUE / 16.0f;
         constexpr int INDICATOR_SEGMENTS = 16;
         constexpr int INDICATOR_LINE_THICKNESS = 3;
 
@@ -116,6 +116,11 @@ namespace Visual {
         constexpr int DAMAGE_FLASH_ALPHA_MAX = 180;
         constexpr float DAMAGE_FLASH_BASE_THICKNESS = 40.0f;
         constexpr float DAMAGE_FLASH_OFFSET_MAX = 60.0f;
+
+        constexpr int INDICATOR_ALPHA_MIN = 100;
+        constexpr int INDICATOR_ALPHA_RANGE = 155;
+        
+        constexpr int TOP_TEXT_BUF_SIZE = 128;
 
         constexpr int PICKUP_ICON_TEXT_GAP = 20;
         constexpr int PICKUP_PADDING_X = 25;
@@ -160,6 +165,7 @@ namespace Visual {
         constexpr float TRAIL_HITSCAN_LIFE = 0.25f;
         constexpr float TRAIL_PROJECTILE_LIFE = 0.12f;
 
+        constexpr float MUZZLE_FLASH_BASE_SIZE = 0.5f;
         constexpr float MUZZLE_FLASH_TOP_SCALE = 4.0f;
         constexpr float MUZZLE_FLASH_BOTTOM_SCALE = 0.5f;
         constexpr float MUZZLE_FLASH_SPHERE_SCALE = 0.6f;

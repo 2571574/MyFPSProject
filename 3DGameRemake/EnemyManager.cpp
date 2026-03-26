@@ -8,45 +8,26 @@
 #include "Debug.h"
 #include "EffectManager.h"
 #include "SoundManager.h"
+#include "Param/Global.h"
+#include "Param/Chara.h"
+#include "Param/System.h"
 
 #include <algorithm>
 
-namespace {
-	constexpr int MAXENEMY_ONMAP = 15;
-	constexpr int MAX_LIMIT_MELEE = 6;
-	constexpr int MAX_LIMIT_RIFLE = 4;
-	constexpr int MAX_LIMIT_SNIPER = 3;
-	constexpr int MAX_LIMIT_ROLLING = 2;
-
-	constexpr float INIT_SPAWN_INTERVAL = 8.0f;
-	constexpr float PREPARE_TIME = 10.0f;
-	constexpr float DIFFICULTY_UP_INTERVAL = 20.0f;
-	constexpr float DIFFICULTY_UP_AMOUNT = 0.5f;
-	constexpr float MIN_SPAWN_INTERVAL = 0.2f;
-	constexpr float BURST_SPAWN_THRESHOLD = 0.5f;
-	constexpr int NORMAL_SPAWNCOUNT = 3;
-
-	constexpr float SPAWNDIST_PLAYER = 10.0f;
-	constexpr float SPAWNDIST_ENEMY = 2.0f;
-
-	constexpr float SPAWN_RAY_START_OFFSET = 5.0f;
-	constexpr float SPAWN_RAY_END_OFFSET = -10.0f;
-	constexpr float SPAWN_GROUND_NORMAL_MIN = 0.3f;
-}
 
 EnemyManager& EnemyManager::GetIns() {
 	static EnemyManager ins;
 	return ins;
 }
 
-void EnemyManager::Init(int modelhandle,Player * _target){
+void EnemyManager::Init(int modelhandle, Player* _target) {
 	stageHandle = modelhandle;
-	InitNode(stageHandle,mapNode);
+	InitNode(stageHandle, mapNode);
 	target = _target;
-	currentSpawnInterval = INIT_SPAWN_INTERVAL;
+	currentSpawnInterval = Chara::EnemyManager::INIT_SPAWN_INTERVAL;
 	spawnTimer = 0.0f;
 	difficultyTimer = 0.0f;
-	prepareTimer = PREPARE_TIME;
+	prepareTimer = Chara::EnemyManager::PREPARE_TIME;
 	killCounts.clear();
 	spawnPoints.clear();
 
@@ -72,7 +53,7 @@ void EnemyManager::Spawn(std::unique_ptr<Enemy>enemy) {
 		float eHeight = enemy->GetCurrentHeight();
 		float eRadius = enemy->GetRadius();
 
-		EffectManager::GetIns().CreateSpawnEffect(ePos, eHeight, eRadius, 1.5f);
+		EffectManager::GetIns().CreateSpawnEffect(ePos, eHeight, eRadius, Chara::EnemyCommon::SPAWN_PROCESS_TIME);
 	}
 	else {
 		enemy->SkipSpawnPhase();
@@ -99,7 +80,7 @@ int EnemyManager::Update() {
 			totalScore += enemies[i]->GetStatus().score;
 			killCounts[enemies[i]->GetType()]++;
 
-			VECTOR deathPos = VAdd(enemies[i]->GetPos(), VGet(0.0f, enemies[i]->GetCurrentHeight() * 0.5f, 0.0f));
+			VECTOR deathPos = VAdd(enemies[i]->GetPos(), VGet(0.0f, enemies[i]->GetCurrentHeight() * Chara::Base::HALF_RATIO, 0.0f));
 			float floorY = enemies[i]->GetPos().y;
 			EffectManager::GetIns().CreateDeathParticle(deathPos, floorY, enemies[i]->GetType());
 
@@ -111,19 +92,19 @@ int EnemyManager::Update() {
 	if (target == nullptr || spawnPoints.empty())return earnScore;
 	if (target->GetCurrentMode() == PlayMode::MODE_TUTORIAL) return earnScore;
 
-		//準備時間中スポーンしない
-		if (prepareTimer > 0.0f) {
-			prepareTimer -= dt;
-			return earnScore;
-		}
+	//準備時間中スポーンしない
+	if (prepareTimer > 0.0f) {
+		prepareTimer -= dt;
+		return earnScore;
+	}
 
 	//難易度上昇
 	difficultyTimer += dt;
-	if (difficultyTimer >= DIFFICULTY_UP_INTERVAL) {
+	if (difficultyTimer >= Chara::EnemyManager::DIFFICULTY_UP_INTERVAL) {
 		difficultyTimer = 0.0f;
-		currentSpawnInterval -= DIFFICULTY_UP_AMOUNT;
-		if (currentSpawnInterval < MIN_SPAWN_INTERVAL) {
-			currentSpawnInterval = MIN_SPAWN_INTERVAL;
+		currentSpawnInterval -= Chara::EnemyManager::DIFFICULTY_UP_AMOUNT;
+		if (currentSpawnInterval < Chara::EnemyManager::MIN_SPAWN_INTERVAL) {
+			currentSpawnInterval = Chara::EnemyManager::MIN_SPAWN_INTERVAL;
 		}
 	}
 
@@ -133,31 +114,31 @@ int EnemyManager::Update() {
 		spawnTimer = currentSpawnInterval;
 
 		//沸き間隔が長いときは3体ずつスポーン
-		int spawnCount = (currentSpawnInterval <= BURST_SPAWN_THRESHOLD) ? 1 : NORMAL_SPAWNCOUNT;
+		int spawnCount = (currentSpawnInterval <= Chara::EnemyManager::BURST_SPAWN_THRESHOLD) ? 1 : Chara::EnemyManager::NORMAL_SPAWNCOUNT;
 
 		for (int i = 0; i < spawnCount; i++) {
-			if (enemies.size() >= MAXENEMY_ONMAP)break;
+			if (enemies.size() >= Chara::EnemyManager::MAXENEMY_ONMAP)break;
 
 			int index = GetRand((int)spawnPoints.size() - 1);
 			VECTOR sPos = spawnPoints[index];
 
 			//地面に密着させてスポーン
-			VECTOR checkStart = VGet(sPos.x, sPos.y + SPAWN_RAY_START_OFFSET, sPos.z);
-			VECTOR checkEnd = VGet(sPos.x, sPos.y + SPAWN_RAY_END_OFFSET, sPos.z);
+			VECTOR checkStart = VGet(sPos.x, sPos.y + Chara::EnemyManager::SPAWN_RAY_START, sPos.z);
+			VECTOR checkEnd = VGet(sPos.x, sPos.y + Chara::EnemyManager::SPAWN_RAY_END, sPos.z);
 			MV1_COLL_RESULT_POLY ground = MV1CollCheck_Line(stageHandle, -1, checkStart, checkEnd);
 
-			if (ground.HitFlag == 1 && ground.Normal.y > SPAWN_GROUND_NORMAL_MIN) {
+			if (ground.HitFlag == System::Collision::HITFLAG_TRUE && ground.Normal.y > Chara::Base::GROUND_NORMAL_MIN) {
 				sPos.y = ground.HitPosition.y;
 			}
 			else {
 				continue;
 			}
-			if (VSize(VSub(target->GetPos(), sPos)) < SPAWNDIST_PLAYER)continue;
+			if (VSize(VSub(target->GetPos(), sPos)) < Chara::EnemyManager::SPAWNDIST_PLAYER)continue;
 
 			bool isSafe = true;
 
 			for (const auto& e : enemies) {
-				if (VSize(VSub(e->GetPos(), sPos)) < SPAWNDIST_ENEMY) {
+				if (VSize(VSub(e->GetPos(), sPos)) < Chara::EnemyManager::SPAWNDIST_ENEMY) {
 					isSafe = false;
 					break;
 				}
@@ -165,13 +146,13 @@ int EnemyManager::Update() {
 			if (!isSafe)continue;
 
 			std::vector<ENEMYTYPE>availableTypes;
-			if (CountEnemyType(ENEMYTYPE::MELEE) < MAX_LIMIT_MELEE)
+			if (CountEnemyType(ENEMYTYPE::MELEE) < Chara::EnemyManager::MAX_LIMIT_MELEE)
 				availableTypes.push_back(ENEMYTYPE::MELEE);
-			if (CountEnemyType(ENEMYTYPE::RIFLE) < MAX_LIMIT_RIFLE)
+			if (CountEnemyType(ENEMYTYPE::RIFLE) < Chara::EnemyManager::MAX_LIMIT_RIFLE)
 				availableTypes.push_back(ENEMYTYPE::RIFLE);
-			if (CountEnemyType(ENEMYTYPE::SNIPER) < MAX_LIMIT_SNIPER)
+			if (CountEnemyType(ENEMYTYPE::SNIPER) < Chara::EnemyManager::MAX_LIMIT_SNIPER)
 				availableTypes.push_back(ENEMYTYPE::SNIPER);
-			if (CountEnemyType(ENEMYTYPE::ROLLING) < MAX_LIMIT_ROLLING)
+			if (CountEnemyType(ENEMYTYPE::ROLLING) < Chara::EnemyManager::MAX_LIMIT_ROLLING)
 				availableTypes.push_back(ENEMYTYPE::ROLLING);
 
 			if (availableTypes.empty())break;
@@ -189,7 +170,7 @@ int EnemyManager::Update() {
 			}
 
 			if (newEnemy) {
-				SoundManager::GetIns().Play3DSE("Resource/Sound/spawn.ogg", newEnemy->GetPos(), 30.0f);
+				SoundManager::GetIns().Play3DSE("Resource/Sound/spawn.ogg", newEnemy->GetPos(), Chara::EnemyManager::SPAWN_SOUND_RADIUS);
 				Spawn(std::move(newEnemy));
 				Debug::Log("Spawned");
 			}

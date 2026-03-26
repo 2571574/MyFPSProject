@@ -2,16 +2,10 @@
 #include "Debug.h"
 #include "Time.h"
 #include "ConfigManager.h"
+#include "Param/Global.h"
+#include "Param/System.h"
 
 #include <cmath>
-
-namespace {
-	constexpr float CAM_ANGLESNAP_PITCH = 89.9f;		//カメラのy軸制限
-	constexpr float CAM_ANGLESNAP_YAW = 180.0f;		//カメラのx軸制限
-	constexpr float YAW_SNAP = 360.0f;				//x軸のスナップ用
-	constexpr float RECOIL_SPEED = 15.0f;
-	constexpr float RECOVERY_SPEED = 3.0f;
-}
 
 /*コンストラクタ*/
 Camera::Camera() 
@@ -25,11 +19,10 @@ Camera::Camera()
 }
 
 void Camera::Update(VECTOR Pos) {
-
 	//座標を得る
 	camPos = Pos;
 	float dt = Time::GetIns().GetDelta();
-	float dt60 = 60.0f * dt;
+	float dt60 = Global::Math::FPS_BASE * dt;
 
 	//カメラの操作入力を得る
 	int mouseX, mouseY, stickX, stickY;
@@ -42,19 +35,19 @@ void Camera::Update(VECTOR Pos) {
 	recovery = ConfigManager::GetIns().Settings().recovery;
 
 	//マウス
-	int deltaX = CENTER_X - mouseX;
-	int deltaY = CENTER_Y - mouseY;
+	int deltaX = System::Window::CENTER_X - mouseX;
+	int deltaY = System::Window::CENTER_Y - mouseY;
 	yaw -= deltaX * mouseSens;
 	pitch += deltaY * mouseSens;
-	SetMousePoint(CENTER_X, CENTER_Y);
+	SetMousePoint(System::Window::CENTER_X, System::Window::CENTER_Y);
 
 	//コントローラー　
 	yaw += stickX * padSens * dt60;
 	pitch -= stickY * padSens * dt60;
 
 	//リコイルの追加
-	float moveY = pendingRecoilYaw * RECOIL_SPEED * dt;
-	float moveP = pendingRecoilPitch * RECOIL_SPEED * dt;
+	float moveY = pendingRecoilYaw * System::Camera::RECOIL_SPEED * dt;
+	float moveP = pendingRecoilPitch * System::Camera::RECOIL_SPEED * dt;
 
 	yaw += moveY;
 	pitch += moveP;
@@ -66,8 +59,8 @@ void Camera::Update(VECTOR Pos) {
 		recoilYaw += moveY;
 		recoilPitch += moveP;
 
-		float recY = recoilYaw * RECOVERY_SPEED * dt;
-		float recP = recoilPitch * RECOVERY_SPEED * dt;
+		float recY = recoilYaw * System::Camera::RECOVERY_SPEED * dt;
+		float recP = recoilPitch * System::Camera::RECOVERY_SPEED * dt;
 
 		yaw -= recY;
 		pitch -= recP;
@@ -80,12 +73,11 @@ void Camera::Update(VECTOR Pos) {
 	}
 
 	//補正
-	if (pitch > CAM_ANGLESNAP_PITCH)pitch = CAM_ANGLESNAP_PITCH;
-	if (pitch < -CAM_ANGLESNAP_PITCH)pitch = -CAM_ANGLESNAP_PITCH;
+	if (pitch > System::Camera::CAM_ANGLESNAP_PITCH) pitch = System::Camera::CAM_ANGLESNAP_PITCH;
+	if (pitch < -System::Camera::CAM_ANGLESNAP_PITCH) pitch = -System::Camera::CAM_ANGLESNAP_PITCH;
 
-	if (yaw > CAM_ANGLESNAP_YAW)yaw -= YAW_SNAP;
-	if (yaw < -CAM_ANGLESNAP_YAW)yaw += YAW_SNAP;
-
+	if (yaw > System::Camera::CAM_ANGLESNAP_YAW) yaw -= System::Camera::YAW_SNAP;
+	if (yaw < -System::Camera::CAM_ANGLESNAP_YAW) yaw += System::Camera::YAW_SNAP;
 }
 
 void Camera::AddAngle(float deltaYaw, float deltaPitch){
@@ -97,12 +89,12 @@ void Camera::Move(float fov) {
 	float camYaw = yaw;
 	float camPitch = pitch;
 	//注視点を計算
-	VECTOR targetPos;	//カメラの注視点
-	targetPos.x = camPos.x + cosf(camPitch*(DX_PI_F/180)) * sinf(camYaw*(DX_PI_F/180));
-	targetPos.y = camPos.y + sinf(camPitch*(DX_PI_F/180));
-	targetPos.z = camPos.z + cosf(camPitch*(DX_PI_F/180)) * cosf(camYaw*(DX_PI_F/180));
+	VECTOR targetPos;
+	targetPos.x = camPos.x + cosf(camPitch * Global::Math::DEG_TO_RAD) * sinf(camYaw * Global::Math::DEG_TO_RAD);
+	targetPos.y = camPos.y + sinf(camPitch * Global::Math::DEG_TO_RAD);
+	targetPos.z = camPos.z + cosf(camPitch * Global::Math::DEG_TO_RAD) * cosf(camYaw * Global::Math::DEG_TO_RAD);
 	SetupCamera_Perspective(fov);
-	SetCameraPositionAndTarget_UpVecY(camPos, targetPos);	//カメラ位置と注視点をセット
+	SetCameraPositionAndTarget_UpVecY(camPos, targetPos);
 }
 
 
@@ -111,17 +103,17 @@ void Camera::SetPos(VECTOR pos) {
 }
 /*プレイヤーから見た前のベクトルの方向を得る*/
 void Camera::GetForwardVec(VECTOR& forward, VECTOR& right) const {
-	forward = VGet(sinf(yaw * (DX_PI_F / 180)), 0, cosf(yaw * (DX_PI_F / 180)));
-	right = VGet(forward.z, 0, -forward.x);
+	forward = VGet(sinf(yaw * Global::Math::DEG_TO_RAD), 0.0f, cosf(yaw * Global::Math::DEG_TO_RAD));
+	right = VGet(forward.z, 0.0f, -forward.x);
 }
 
 /*カメラの向いている方向を前としたベクトルを得る*/
-VECTOR Camera::GetLookDirection()const{
+VECTOR Camera::GetLookDirection()const {
 	VECTOR out;
 	float camYaw = yaw;
 	float camPitch = pitch;
-	float radY = camYaw * (DX_PI_F / 180.0f);
-	float radP = camPitch * (DX_PI_F / 180.0f);
+	float radY = camYaw * Global::Math::DEG_TO_RAD;
+	float radP = camPitch * Global::Math::DEG_TO_RAD;
 	float cp = cosf(radP);
 	out.x = cp * sinf(radY);
 	out.y = sinf(radP);

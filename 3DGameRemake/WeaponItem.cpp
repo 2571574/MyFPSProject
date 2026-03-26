@@ -3,76 +3,65 @@
 #include "TextManager.h"
 #include "ItemManager.h"
 #include "ResourceManager.h"
+#include "Param/Global.h"
+#include "Param/System.h"
+#include "Param/Visual.h"
+
 #include <cmath>
 
-namespace {
-	constexpr float BOBBING_SPEED = 2.0f;
-	constexpr float BOBBING_AMPLITUDE = 0.2f;
-	constexpr float BASE_HEIGHT_OFFSET = 0.5f;
-	constexpr float CUBE_HALF_SIZE = 0.25f;
-
-	constexpr float UI_DISPLAY_DISTANCE = 15.0f;
-	constexpr int UI_OFFSET_X = -20;
-	constexpr int UI_OFFSET_Y_AMMO = -40;
-	constexpr int UI_OFFSET_Y_NAME = -20;
-
-	constexpr int RING_SEGMENTS = 32;
-	constexpr float RING_RADIUS_INNER = 0.6f;
-	constexpr float RING_RADIUS_OUTER = 0.8f;
-}
 WeaponItem::WeaponItem(VECTOR pos, std::unique_ptr<Weapon>weapon)
 	:position(pos)
-	,droppedWeapon(std::move(weapon))
-	,bobbingTimer(0.0f)
-	,alive(true){ 
+	, droppedWeapon(std::move(weapon))
+	, bobbingTimer(0.0f)
+	, alive(true) {
 	fontItemAmmo = ResourceManager::GetIns().GetFont("Resource/Font/RobotoMono_20.dft");
 	fontItemName = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_20.dft");
 }
 
 void WeaponItem::Update() {
 	float dt = Time::GetIns().GetDelta();
-	bobbingTimer += dt * BOBBING_SPEED;
+	bobbingTimer += dt * Visual::ItemUI::BOBBING_SPEED;
 }
 
 void WeaponItem::Draw() {
 	if (!alive || !droppedWeapon)return;
 
-	float yOffset = std::sinf(bobbingTimer) * BOBBING_AMPLITUDE;
-	VECTOR drawPos = VAdd(position, VGet(0.0f, yOffset + BASE_HEIGHT_OFFSET, 0.0f));
+	float yOffset = std::sinf(bobbingTimer) * Visual::ItemUI::BOBBING_AMPLITUDE;
+	VECTOR drawPos = VAdd(position, VGet(0.0f, yOffset + Visual::ItemUI::BASE_HEIGHT_OFFSET, 0.0f));
 
-	int ringColor = GetColor(255, 200, 0);
+	int ringColor = GetColor(Visual::ItemUI::COLOR_ITEM_RING.r, Visual::ItemUI::COLOR_ITEM_RING.g, Visual::ItemUI::COLOR_ITEM_RING.b);
 	VECTOR center = VGet(position.x, drawPos.y, position.z);
 
 	SetWriteZBuffer3D(FALSE);
-	SetDrawBlendMode(DX_BLENDMODE_ADD, 150);
+	SetDrawBlendMode(DX_BLENDMODE_ADD, Visual::ItemUI::RING_BLEND_ALPHA);
 
 	MATRIX rotYMat = MGetRotY(bobbingTimer);
 	MATRIX transMat = MGetTranslate(center);
 	MATRIX innerWorldMat = MMult(rotYMat, transMat);
 
-	for (int i = 0; i < RING_SEGMENTS; ++i) {
-		float a1 = DX_PI_F * 2.0f * i / RING_SEGMENTS;
-		float a2 = DX_PI_F * 2.0f * (i + 1) / RING_SEGMENTS;
+	for (int i = 0; i < Visual::ItemUI::RING_SEGMENTS; ++i) {
+		float a1 = DX_PI_F * 2.0f * i / Visual::ItemUI::RING_SEGMENTS;
+		float a2 = DX_PI_F * 2.0f * (i + 1) / Visual::ItemUI::RING_SEGMENTS;
 
-		VECTOR localP1 = VGet(std::cosf(a1) * RING_RADIUS_INNER, std::sinf(a1) * RING_RADIUS_INNER, 0.0f);
-		VECTOR localP2 = VGet(std::cosf(a2) * RING_RADIUS_INNER, std::sinf(a2) * RING_RADIUS_INNER, 0.0f);
+		VECTOR localP1 = VGet(std::cosf(a1) * Visual::ItemUI::RING_RADIUS_INNER, std::sinf(a1) * Visual::ItemUI::RING_RADIUS_INNER, 0.0f);
+		VECTOR localP2 = VGet(std::cosf(a2) * Visual::ItemUI::RING_RADIUS_INNER, std::sinf(a2) * Visual::ItemUI::RING_RADIUS_INNER, 0.0f);
 
 		VECTOR p1 = VTransform(localP1, innerWorldMat);
 		VECTOR p2 = VTransform(localP2, innerWorldMat);
 		DrawLine3D(p1, p2, ringColor);
 	}
 
-	float outerBob = std::sinf(bobbingTimer * 1.5f) * 0.05f;
-	MATRIX outerRotMat = MGetRotY(-bobbingTimer * 0.5f);
-	MATRIX outerTransMat = MGetTranslate(VAdd(center, VGet(0.0f, -0.2f + outerBob, 0.0f)));
+	float outerBob = std::sinf(bobbingTimer * Visual::ItemUI::OUTER_RING_BOB_SPEED_MULT) * Visual::ItemUI::OUTER_RING_BOB_AMP;
+	MATRIX outerRotMat = MGetRotY(bobbingTimer * Visual::ItemUI::OUTER_RING_ROT_SPEED_MULT);
+	MATRIX outerTransMat = MGetTranslate(VAdd(center, VGet(0.0f, Visual::ItemUI::OUTER_RING_OFFSET_Y + outerBob, 0.0f)));
 	MATRIX outerWorldMat = MMult(outerRotMat, outerTransMat);
 
-	for (int i = 0; i < RING_SEGMENTS; ++i) {
-		float a1 = DX_PI_F * 2.0f * i / RING_SEGMENTS;
-		float a2 = DX_PI_F * 2.0f * (i + 1) / RING_SEGMENTS;
+	for (int i = 0; i < Visual::ItemUI::RING_SEGMENTS; ++i) {
+		float a1 = DX_PI_F * 2.0f * i / Visual::ItemUI::RING_SEGMENTS;
+		float a2 = DX_PI_F * 2.0f * (i + 1) / Visual::ItemUI::RING_SEGMENTS;
 
-		VECTOR localP1 = VGet(std::cosf(a1) * RING_RADIUS_OUTER, 0.0f, std::sinf(a1) * RING_RADIUS_OUTER);
-		VECTOR localP2 = VGet(std::cosf(a2) * RING_RADIUS_OUTER, 0.0f, std::sinf(a2) * RING_RADIUS_OUTER);
+		VECTOR localP1 = VGet(std::cosf(a1) * Visual::ItemUI::RING_RADIUS_OUTER, 0.0f, std::sinf(a1) * Visual::ItemUI::RING_RADIUS_OUTER);
+		VECTOR localP2 = VGet(std::cosf(a2) * Visual::ItemUI::RING_RADIUS_OUTER, 0.0f, std::sinf(a2) * Visual::ItemUI::RING_RADIUS_OUTER);
 
 		VECTOR p1 = VTransform(localP1, outerWorldMat);
 		VECTOR p2 = VTransform(localP2, outerWorldMat);
@@ -86,9 +75,8 @@ void WeaponItem::Draw() {
 	if (modelHandle != -1) {
 		const GunStatus& spec = droppedWeapon->GetSpec();
 
-		float s = spec.visual.scale * 0.5;
+		float s = spec.visual.scale * 0.5f;
 		MATRIX scaleMat = MGetScale(VGet(s, s, s));
-
 		MATRIX rotMat = MGetRotY(bobbingTimer);
 		MATRIX transMat = MGetTranslate(drawPos);
 
@@ -97,12 +85,15 @@ void WeaponItem::Draw() {
 		MV1DrawModel(modelHandle);
 	}
 	else {
-		DrawCube3D(VAdd(drawPos, VGet(CUBE_HALF_SIZE, CUBE_HALF_SIZE, CUBE_HALF_SIZE)), VAdd(drawPos, VGet(-CUBE_HALF_SIZE, -CUBE_HALF_SIZE, -CUBE_HALF_SIZE)), GetColor(255, 255, 0), GetColor(255, 255, 0), TRUE);
+		int fallbackColor = GetColor(Visual::ItemUI::COLOR_FALLBACK_CUBE.r, Visual::ItemUI::COLOR_FALLBACK_CUBE.g, Visual::ItemUI::COLOR_FALLBACK_CUBE.b);
+		DrawCube3D(VAdd(drawPos, VGet(Visual::ItemUI::CUBE_HALF_SIZE, Visual::ItemUI::CUBE_HALF_SIZE, Visual::ItemUI::CUBE_HALF_SIZE)),
+			VAdd(drawPos, VGet(-Visual::ItemUI::CUBE_HALF_SIZE, -Visual::ItemUI::CUBE_HALF_SIZE, -Visual::ItemUI::CUBE_HALF_SIZE)),
+			fallbackColor, fallbackColor, TRUE);
 	}
 
 	VECTOR camPos = ItemManager::GetIns().GetCamPos();
 	float distance = VSize(VSub(camPos, drawPos));
-	if (distance <= UI_DISPLAY_DISTANCE) {
+	if (distance <= Visual::ItemUI::UI_DISPLAY_DISTANCE) {
 		VECTOR screenPos = ConvWorldPosToScreenPos(drawPos);
 		if (screenPos.z >= 0.0f && screenPos.z <= 1.0f) {
 			int stageHandle = ItemManager::GetIns().GetStageHandle();
@@ -110,21 +101,20 @@ void WeaponItem::Draw() {
 			if (hit.HitFlag == 0) {
 				const char* weaponName = TextManager::GetIns().GetWeaponName(droppedWeapon->GetSpec().id);
 
-				int drawX = static_cast<int>(screenPos.x) + UI_OFFSET_X;
-				int drawYAmmo = static_cast<int>(screenPos.y) + UI_OFFSET_Y_AMMO;
-				int drawYName = static_cast<int>(screenPos.y) + UI_OFFSET_Y_NAME;
+				int drawX = static_cast<int>(screenPos.x) + Visual::ItemUI::UI_OFFSET_X;
+				int drawYAmmo = static_cast<int>(screenPos.y) + Visual::ItemUI::UI_OFFSET_Y_AMMO;
+				int drawYName = static_cast<int>(screenPos.y) + Visual::ItemUI::UI_OFFSET_Y_NAME;
 
-			
-				float fadeStartDist = UI_DISPLAY_DISTANCE - 5.0f;
+				float fadeStartDist = Visual::ItemUI::UI_DISPLAY_DISTANCE - Visual::ItemUI::UI_FADE_TRANSITION_RANGE;
 				float alphaRate = 1.0f;
 				if (distance > fadeStartDist) {
-					alphaRate = 1.0f - ((distance - fadeStartDist) / 5.0f);
+					alphaRate = 1.0f - ((distance - fadeStartDist) / Visual::ItemUI::UI_FADE_TRANSITION_RANGE);
 				}
-				int alpha = static_cast<int>(255 * alphaRate);
+				int alpha = static_cast<int>(Visual::Effect::ALPHA_MAX * alphaRate);
 
 				::SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-				::DrawFormatStringToHandle(drawX, drawYAmmo, GetColor(255, 255, 255), fontItemAmmo, "AMMO: %d / %d", droppedWeapon->GetAmmo(), droppedWeapon->GetReserveAmmo());
-				::DrawFormatStringToHandle(drawX, drawYName, GetColor(255, 255, 255), fontItemName, "%s", weaponName);
+				::DrawFormatStringToHandle(drawX, drawYAmmo, GetColor(Visual::HUD::COLOR_HUD_WHITE.r, Visual::HUD::COLOR_HUD_WHITE.g, Visual::HUD::COLOR_HUD_WHITE.b), fontItemAmmo, "AMMO: %d / %d", droppedWeapon->GetAmmo(), droppedWeapon->GetReserveAmmo());
+				::DrawFormatStringToHandle(drawX, drawYName, GetColor(Visual::HUD::COLOR_HUD_WHITE.r, Visual::HUD::COLOR_HUD_WHITE.g, Visual::HUD::COLOR_HUD_WHITE.b), fontItemName, "%s", weaponName);
 				::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 			}
 		}

@@ -86,8 +86,8 @@ const char* TextManager::GetKeyName(InputType type, int code) const {
 		if (code == MOUSE_INPUT_LEFT) return "左クリック";
 		if (code == MOUSE_INPUT_RIGHT) return "右クリック";
 		if (code == MOUSE_INPUT_MIDDLE) return "中クリック";
-		if (code == MOUSE_WHEEL_UP) return "ホイール上";
-		if (code == MOUSE_WHEEL_DOWN) return "ホイール下";
+		if (code == System::Input::MOUSE_WHEEL_UP) return "ホイール上";
+		if (code == System::Input::MOUSE_WHEEL_DOWN) return "ホイール下";
 		if (code == MOUSE_INPUT_4) return "サイド 1";
 		if (code == MOUSE_INPUT_5) return "サイド 2";
 		return "マウス";

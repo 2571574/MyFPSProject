@@ -1,6 +1,6 @@
 #pragma once
-#include "Global.h"
-#include "Chara.h"
+#include "Param/Global.h"
+#include "Param/Chara.h"
 
 namespace System {
 
@@ -58,24 +58,6 @@ namespace System {
     namespace Sound {
         constexpr int MAX_DUPLICATE = 8;
         constexpr int MAX_VOLUME_SCALE = 255;
-    }
-
-    namespace Debug {
-        constexpr int BOX_WIDTH = 250;
-        constexpr int BOX_SPEED = 4;
-        constexpr int BGALPHA = 80;
-
-        constexpr int MAX_LOG_COUNT = 10;
-        constexpr int LOG_LINE_HEIGHT = 16;
-        constexpr int LOG_BOX_MARGIN = 10;
-        constexpr int DEBUG_BOX_PADDING = 5;
-        constexpr int TEXT_LINE_SPACING = 16;
-
-        constexpr Global::ColorRGB COLOR_BG = Global::Palette::BLACK;
-        constexpr Global::ColorRGB COLOR_BORDER = Global::Palette::MAGENTA;
-        constexpr Global::ColorRGB COLOR_LOG = Global::Palette::YELLOW;
-        constexpr Global::ColorRGB COLOR_WATCH = Global::Palette::GREEN;
-        constexpr int DEBUG_BG_ALPHA = 80;
     }
 
     namespace Config {

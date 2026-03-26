@@ -1,25 +1,12 @@
 ﻿#include "Character.h"
 #include "CollisionManager.h"
 #include "Time.h"
+#include "Param/Global.h"
+#include "Param/Chara.h"
+#include "Param/System.h"
 
 #include <cmath>
 #include <cfloat>
-
-namespace {
-	constexpr float GLAVITY = -0.008f;
-	constexpr float GROUND_KB_FRICTION = 0.8f;
-	constexpr float AIR_KB_FRICTION = 0.98f;
-	constexpr float STEP_RAY_START = 0.1f;
-	constexpr float STEP_RAY_END = -0.2f;
-	constexpr float GROUND_NORMAL_MIN = 0.3f;
-	constexpr float WALL_NORMAL_MAX = 0.4f;
-	constexpr float CEILING_NORMAL_MAX = -0.1f;
-	constexpr float CAP_BOTTOM_OFFSET = 0.3f;
-	constexpr int RAY_COUNT = 5;
-	constexpr float CAP_SIDE_OFFSET = 0.8f;
-	
-}
-
 
 Character::Character(VECTOR _position, const CharacterStatus& _status) :
 	position(_position)
@@ -31,7 +18,7 @@ Character::Character(VECTOR _position, const CharacterStatus& _status) :
 	, crouch(false)
 	, onGround(true)
 	, currentHeight(_status.height)
-	, currentEyeHeight(_status.eyeHeight){
+	, currentEyeHeight(_status.eyeHeight) {
 
 	CollisionManager::GetIns().Register(this);
 };
@@ -40,13 +27,14 @@ Character::~Character() {
 	CollisionManager::GetIns().Unregister(this);
 }
 
-void Character::ApplyMovement(VECTOR moveDir,int stageHandle) {
+void Character::ApplyMovement(VECTOR moveDir, int stageHandle) {
 	UpdateVelocity(moveDir);
 	UpdatePhysics(stageHandle);
 }
+
 void Character::UpdateVelocity(VECTOR moveDir) {
 	float dt = Time::GetIns().GetDelta();
-	float dt60 = dt * 60.0f;
+	float dt60 = dt * Global::Math::FPS_BASE;
 	if (VSize(moveDir) > 0.0f) {
 		velocity.x += moveDir.x * status.accel * dt60;
 		velocity.z += moveDir.z * status.accel * dt60;
@@ -60,25 +48,25 @@ void Character::UpdateVelocity(VECTOR moveDir) {
 
 void Character::UpdatePhysics(int stageHandle) {
 	float dt = Time::GetIns().GetDelta();
-	float dt60 = dt * 60.0f;
+	float dt60 = dt * Global::Math::FPS_BASE;
 	float radius = status.width / 2.0f;
 
-	float currentkbFriction = onGround ? GROUND_KB_FRICTION : AIR_KB_FRICTION;
+	float currentkbFriction = onGround ? Chara::Base::GROUND_KB_FRICTION : Chara::Base::AIR_KB_FRICTION;
 	float kbFriction = std::pow(currentkbFriction, dt60);
 	knockback.x *= kbFriction;
 	knockback.z *= kbFriction;
 
-	if (VSize(knockback) < 0.01f) {
+	if (VSize(knockback) < Chara::Base::MOVEMENT_MIN) {
 		knockback = VGet(0.0f, 0.0f, 0.0f);
 	}
-	
-	velocity.y += GLAVITY * dt60;
+
+	velocity.y += Chara::Base::GRAVITY * dt60;
 
 	VECTOR totalVelocity = VAdd(velocity, knockback);
 	VECTOR totalMove = VScale(totalVelocity, dt60);
 	float moveDist = VSize(totalMove);
 
-	float maxStep = radius * 0.5f;
+	float maxStep = radius * Chara::Base::HALF_RATIO;
 	int stepCount = 1;
 	if (moveDist > maxStep) {
 		stepCount = (int)std::ceil(moveDist / maxStep);
@@ -92,9 +80,9 @@ void Character::UpdatePhysics(int stageHandle) {
 	for (int step = 0; step < stepCount; ++step) {
 		VECTOR nextPos = VAdd(currentPos, stepMove);
 		if (totalVelocity.y <= 0.0f) {
-			float offset = radius * CAP_SIDE_OFFSET;
+			float offset = radius * Chara::Base::CAP_SIDE_OFFSET;
 
-			VECTOR rayOffsets[RAY_COUNT] = {
+			VECTOR rayOffsets[Chara::Base::RAY_COUNT] = {
 				VGet(0.0f,0.0f,0.0f),
 				VGet(offset,0.0f,0.0f),
 				VGet(-offset,0.0f,0.0f),
@@ -104,16 +92,16 @@ void Character::UpdatePhysics(int stageHandle) {
 			bool hitGroundThisFrame = false;
 			float highestY = -FLT_MAX;
 
-			for (int i = 0; i < RAY_COUNT; i++) {
+			for (int i = 0; i < Chara::Base::RAY_COUNT; i++) {
 				VECTOR basePos = VAdd(nextPos, rayOffsets[i]);
 				//足元からレイを打つ
-				VECTOR start = VAdd(basePos, VGet(0, radius + STEP_RAY_START, 0));
-				VECTOR end = VAdd(basePos, VGet(0, STEP_RAY_END, 0));
+				VECTOR start = VAdd(basePos, VGet(0, radius + Chara::Base::STEP_RAY_START, 0));
+				VECTOR end = VAdd(basePos, VGet(0, Chara::Base::STEP_RAY_END, 0));
 				//床と当たったか判定する
 				MV1_COLL_RESULT_POLY groundHit = MV1CollCheck_Line(stageHandle, -1, start, end);
 
 				//当たっていた時、その面の法線が上を向いていたら地面とみなす
-				if (groundHit.HitFlag == 1 && groundHit.Normal.y > GROUND_NORMAL_MIN) {
+				if (groundHit.HitFlag == System::Collision::HITFLAG_TRUE && groundHit.Normal.y > Chara::Base::GROUND_NORMAL_MIN) {
 					if (groundHit.HitPosition.y > highestY) {
 						highestY = groundHit.HitPosition.y;
 						hitGroundThisFrame = true;
@@ -130,7 +118,7 @@ void Character::UpdatePhysics(int stageHandle) {
 			}
 		}
 
-		VECTOR capBottom = VAdd(nextPos, VGet(0, radius + CAP_BOTTOM_OFFSET, 0));
+		VECTOR capBottom = VAdd(nextPos, VGet(0, radius + Chara::Base::CAP_BOTTOM_OFFSET, 0));
 		VECTOR capTop = VAdd(nextPos, VGet(0, currentHeight - radius, 0));
 		MV1_COLL_RESULT_POLY_DIM wallHitDim = MV1CollCheck_Capsule(stageHandle, -1, capBottom, capTop, radius);
 		VECTOR totalPush = VGet(0, 0, 0);
@@ -140,11 +128,11 @@ void Character::UpdatePhysics(int stageHandle) {
 			//当たっているポリゴンの法線ベクトルを取得
 			VECTOR normal = wallHitDim.Dim[i].Normal;
 
-			if (normal.y >= WALL_NORMAL_MAX) continue;
+			if (normal.y >= Chara::Base::WALL_NORMAL_MAX) continue;
 			//カプセルの下を基準
 			VECTOR checkPos = nextPos;
 			// 法線ベクトルが下を向いているときのみ上を基準に計算
-			if (normal.y < CEILING_NORMAL_MAX)checkPos = VAdd(nextPos, VGet(0, currentHeight - radius, 0));
+			if (normal.y < Chara::Base::CEILING_NORMAL_MAX)checkPos = VAdd(nextPos, VGet(0, currentHeight - radius, 0));
 
 			//カプセルの中心から壁の面の最短距離
 			float distance = VDot(VSub(checkPos, wallHitDim.Dim[i].Position[0]), normal);
@@ -186,12 +174,11 @@ void Character::UpdatePhysics(int stageHandle) {
 	onGround = isGroundedThisFrame;
 }
 
-
 void Character::ResolveWallPenetration(int stagehandle) {
 	if (stagehandle == -1) return;
 
 	float radius = status.width / 2.0f;
-	VECTOR capBottom = VAdd(position, VGet(0, radius + CAP_BOTTOM_OFFSET, 0));
+	VECTOR capBottom = VAdd(position, VGet(0, radius + Chara::Base::CAP_BOTTOM_OFFSET, 0));
 	VECTOR capTop = VAdd(position, VGet(0, currentHeight - radius, 0));
 
 	MV1_COLL_RESULT_POLY_DIM wallHitDim = MV1CollCheck_Capsule(stagehandle, -1, capBottom, capTop, radius);
@@ -199,10 +186,10 @@ void Character::ResolveWallPenetration(int stagehandle) {
 	for (int i = 0; i < wallHitDim.HitNum; i++) {
 		VECTOR normal = wallHitDim.Dim[i].Normal;
 
-		if (normal.y >= WALL_NORMAL_MAX) continue;
+		if (normal.y >= Chara::Base::WALL_NORMAL_MAX) continue;
 
 		VECTOR checkPos = position;
-		if (normal.y < CEILING_NORMAL_MAX) checkPos = VAdd(position, VGet(0, currentHeight - radius, 0));
+		if (normal.y < Chara::Base::CEILING_NORMAL_MAX) checkPos = VAdd(position, VGet(0, currentHeight - radius, 0));
 
 		float distance = VDot(VSub(checkPos, wallHitDim.Dim[i].Position[0]), normal);
 

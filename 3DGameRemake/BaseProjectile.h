@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "DxLib.h"
-#include"Parameter.h"
 #include "Character.h"
 #include "Time.h"
 

@@ -1,18 +1,19 @@
-﻿#include "Parameter.h"
-#include "DxLib.h"
+﻿#include "DxLib.h"
 #include "SceneManager.h"
 #include "CheckKey.h"
 #include "ConfigManager.h"
 #include "SoundManager.h"
 #include "Time.h"
+#include "Param/Global.h"
+#include "Param/System.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    SetGraphMode(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_COLORBIT);	//ウィンドウサイズの設定
+	SetGraphMode(System::Window::WINDOW_WIDTH, System::Window::WINDOW_HEIGHT, System::Window::WINDOW_COLORBIT);	//ウィンドウサイズの設定
 	SetMainWindowText("Killing Arena");
 	// DXライブラリの初期化
 	if (DxLib_Init() == -1) {
-		return -1; 
+		return -1;
 	}
 
 	SetCreate3DSoundFlag(TRUE);
@@ -22,9 +23,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetUseZBuffer3D(TRUE);// 3D描画を有効にする
 	SetWriteZBuffer3D(TRUE); // Zバッファへの書き込みを有効にする
 
-    SetCameraNearFar(0.01f, 1000.0f);//オブジェクトを描画する距離を設定
-	
-	
+	SetCameraNearFar(System::Camera::CAMERA_NEAR_CLIP, System::Camera::CAMERA_FAR_CLIP);//オブジェクトを描画する距離を設定
+
 	ConfigManager::GetIns().Load();	//Configの読み込み
 
 	SceneManager ins;		//ゲームの処理のインスタンス

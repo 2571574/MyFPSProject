@@ -3,30 +3,16 @@
 #include "EnemyManager.h"
 #include "EffectManager.h"
 #include "SoundManager.h"
-
-namespace {
-	constexpr float EXPLODE_TIME = 2.0f;
-	constexpr float TRIGGER_DISTANCE = 5.0f;
-
-	constexpr float GRAVITY = -0.008f;
-	constexpr float STEP_RAY_SIDE_OFFSET = 0.8f;
-	constexpr float STEP_RAY_START_OFFSET = 0.1f;
-	constexpr float STEP_RAY_END_OFFSET = -0.2f;
-	constexpr float GROUND_NORMAL_MIN = 0.3f;
-	constexpr float WALL_NORMAL_MAX = 0.4f;
-	constexpr float CEILING_NORMAL_MAX = -0.1f;
-
-	constexpr float PATH_UPDATE_BASE_TIME = 0.5f;
-	constexpr int PATH_UPDATE_RANDOM_RANGE = 50;
-	constexpr float PATH_NODE_REACHED_DIST_SQ = 1.0f * 1.0f;
-}
+#include "Param/Global.h"
+#include "Param/Chara.h"
+#include "Param/System.h"
 
 
 RollingEnemy::RollingEnemy(VECTOR pos, Player* target)
-	:Enemy(pos, CHARA_STATUS::ROLL_ENEMY, target,ENEMYTYPE::ROLLING)
+	:Enemy(pos, CHARA_STATUS::ROLL_ENEMY, target, ENEMYTYPE::ROLLING)
 	, isExploding(false)
-	, explodeTimer(EXPLODE_TIME)
-	, triggerDist(TRIGGER_DISTANCE)
+	, explodeTimer(Chara::Rolling::EXPLODE_TIME)
+	, triggerDist(Chara::Rolling::TRIGGER_DISTANCE)
 	, beepTimer(0.0f)
 	, alertDuration(0.0f) {
 	explodeSpec = ENEMY_GUN::DESTRUCT;
@@ -45,9 +31,9 @@ void RollingEnemy::Update() {
 	if (hp <= 0 && !isExploding) {
 		isExploding = true;
 		beepTimer = 0.0f;
-		explodeTimer = EXPLODE_TIME;
+		explodeTimer = Chara::Rolling::EXPLODE_TIME;
 		alertDuration = SoundManager::GetIns().GetSoundDuration("Resource/Sound/alert.wav");
-		if (alertDuration <= 0.0f) alertDuration = 1.0f;
+		if (alertDuration <= 0.0f) alertDuration = Chara::Rolling::ALERT_DURATION_FALLBACK;
 	}
 
 	float distToPlayer = VSize(VSub(target->GetPos(), position));
@@ -64,17 +50,16 @@ void RollingEnemy::Update() {
 			isExploding = true;
 			beepTimer = 0.0f;
 			alertDuration = SoundManager::GetIns().GetSoundDuration("Resource/Sound/alert.wav");
-			if (alertDuration <= 0.0f) alertDuration = 1.0f;
+			if (alertDuration <= 0.0f) alertDuration = Chara::Rolling::ALERT_DURATION_FALLBACK;
 		}
 	}
 	else {
-		ApplyMovement(VGet(0, 0, 0), stageHandle);
+		ApplyMovement(VGet(0.0f, 0.0f, 0.0f), stageHandle);
 		explodeTimer -= dt;
 		beepTimer -= dt;
 
 		if (beepTimer <= 0.0f && explodeTimer > 0.0f) {
-			SoundManager::GetIns().Play3DSE("Resource/Sound/alert.wav", position, 30.0f);
-
+			SoundManager::GetIns().Play3DSE("Resource/Sound/alert.wav", position, Chara::Rolling::ALERT_SOUND_VOLUME);
 			beepTimer = alertDuration;
 		}
 		if (explodeTimer <= 0.0f) {
@@ -85,50 +70,50 @@ void RollingEnemy::Update() {
 
 void RollingEnemy::Action() {
 	SoundManager::GetIns().StopSE("Resource/Sound/alert.wav");
-	CollisionManager::GetIns().ProcessExplosion(position, explodeSpec.explodeArea, explodeSpec.damage,explodeSpec.knockbackP,true, status.teamID,explodeSpec.id,explodeSpec.friendlyFire);
-	EffectManager::GetIns().CreateExplosionEffect(position, explodeSpec.explodeArea, GetColor(255, 100, 0));
+	CollisionManager::GetIns().ProcessExplosion(position, explodeSpec.explodeArea, explodeSpec.damage, explodeSpec.knockbackP, true, status.teamID, explodeSpec.id, explodeSpec.friendlyFire);
+	EffectManager::GetIns().CreateExplosionEffect(position, explodeSpec.explodeArea, GetColor(Chara::Rolling::EXPLOSION_EFFECT_COLOR.r, Chara::Rolling::EXPLOSION_EFFECT_COLOR.g, Chara::Rolling::EXPLOSION_EFFECT_COLOR.b));
 	alive = false;
 }
 
 void RollingEnemy::Draw() {
-	int color = GetColor(255, 165, 0);
-	if (onHitFlashTimer > 0.0f) color = GetColor(255, 255, 255);
+	int color = GetColor(Chara::Rolling::COLOR_NORMAL.r, Chara::Rolling::COLOR_NORMAL.g, Chara::Rolling::COLOR_NORMAL.b);
+	if (onHitFlashTimer > 0.0f) color = GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b);
 	if (isExploding) {
-		if (static_cast<int>(explodeTimer * 10) % 2 == 0)color = GetColor(255, 0, 0);
+		if (static_cast<int>(explodeTimer * Chara::Rolling::EXPLOSION_FLASH_TIME_SCALE) % Chara::Rolling::EXPLOSION_FLASH_MODULO == 0) color = GetColor(Chara::Rolling::COLOR_EXPLODE.r, Chara::Rolling::COLOR_EXPLODE.g, Chara::Rolling::COLOR_EXPLODE.b);
 	}
-	float bodyRad = status.width / 2.0f;
+	float bodyRad = status.width / System::Collision::BODY_RADIUS_DIVISOR;
 	VECTOR bottom = VAdd(position, VGet(0.0f, bodyRad, 0.0f));
-	VECTOR top = VAdd(position, VGet(0, currentHeight - bodyRad, 0));
+	VECTOR top = VAdd(position, VGet(0.0f, currentHeight - bodyRad, 0.0f));
 	int fillFlag = nowSpawned ? FALSE : TRUE;
 
 	if (!nowSpawned) {
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
-		VECTOR shadowPos1 = VAdd(position, VGet(0.0f, 0.02f, 0.0f));
-		VECTOR shadowPos2 = VAdd(position, VGet(0.0f, 0.01f, 0.0f));
-		DrawCone3D(shadowPos1, shadowPos2, status.width / 1.5f, 16, GetColor(0, 0, 0), GetColor(0, 0, 0), TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, Chara::Base::SHADOW_ALPHA);
+		VECTOR shadowPos1 = VAdd(position, VGet(0.0f, Chara::Base::SHADOW_OFFSET_Y_HIGH, 0.0f));
+		VECTOR shadowPos2 = VAdd(position, VGet(0.0f, Chara::Base::SHADOW_OFFSET_Y_LOW, 0.0f));
+		DrawCone3D(shadowPos1, shadowPos2, status.width / Chara::Base::SHADOW_WIDTH_DIVISOR, Chara::Base::SHADOW_CONE_SEGMENTS, GetColor(Global::Palette::BLACK.r, Global::Palette::BLACK.g, Global::Palette::BLACK.b), GetColor(Global::Palette::BLACK.r, Global::Palette::BLACK.g, Global::Palette::BLACK.b), TRUE);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 
-	DrawCapsule3D(bottom, top, bodyRad, CIRCLE_DIVNUM, color, color, fillFlag);
+	DrawCapsule3D(bottom, top, bodyRad, System::Window::CIRCLE_DIVNUM, color, color, fillFlag);
 
 	if (isExploding) {
-		DrawSphere3D(position, explodeSpec.explodeArea, CIRCLE_DIVNUM, color, color, false);
+		DrawSphere3D(position, explodeSpec.explodeArea, System::Window::CIRCLE_DIVNUM, color, color, false);
 	}
 }
 
 void RollingEnemy::UpdatePhysics() {
 	float dt = Time::GetIns().GetDelta();
-	float dt60 = dt * 60.0f;
-	float radius = status.width / 2.0f;
+	float dt60 = dt * Global::Math::FPS_BASE;
+	float radius = status.width / System::Collision::BODY_RADIUS_DIVISOR;
 
-	velocity.y += GRAVITY * dt60;
+	velocity.y += Chara::Base::GRAVITY * dt60;
 
 	VECTOR nextPos = VAdd(position, VScale(velocity, dt60));
 
 	if (velocity.y <= 0.0f) {
-		float offset = radius * STEP_RAY_SIDE_OFFSET;
+		float offset = radius * Chara::Base::CAP_SIDE_OFFSET;
 
-		VECTOR rayOffsets[5] = {
+		VECTOR rayOffsets[Chara::Base::RAY_COUNT] = {
 			VGet(0.0f, 0.0f, 0.0f),
 			VGet(offset, 0.0f, 0.0f),
 			VGet(-offset, 0.0f, 0.0f),
@@ -136,15 +121,15 @@ void RollingEnemy::UpdatePhysics() {
 			VGet(0.0f, 0.0f, -offset),
 		};
 		bool hitGroundThisFrame = false;
-		float highestY = -999.0f;
+		float highestY = Chara::Rolling::HIGHEST_Y_SENTINEL;
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < Chara::Base::RAY_COUNT; i++) {
 			VECTOR basePos = VAdd(nextPos, rayOffsets[i]);
-			VECTOR start = VAdd(basePos, VGet(0.0f, radius + STEP_RAY_START_OFFSET, 0.0f));
-			VECTOR end = VAdd(basePos, VGet(0.0f, STEP_RAY_END_OFFSET, 0.0f));
+			VECTOR start = VAdd(basePos, VGet(0.0f, radius + Chara::Base::STEP_RAY_START, 0.0f));
+			VECTOR end = VAdd(basePos, VGet(0.0f, Chara::Base::STEP_RAY_END, 0.0f));
 			MV1_COLL_RESULT_POLY groundHit = MV1CollCheck_Line(stageHandle, -1, start, end);
 
-			if (groundHit.HitFlag == 1 && groundHit.Normal.y > GROUND_NORMAL_MIN) {
+			if (groundHit.HitFlag == System::Collision::HITFLAG_TRUE && groundHit.Normal.y > Chara::Base::GROUND_NORMAL_MIN) {
 				if (groundHit.HitPosition.y > highestY) {
 					highestY = groundHit.HitPosition.y;
 					hitGroundThisFrame = true;
@@ -163,10 +148,10 @@ void RollingEnemy::UpdatePhysics() {
 	for (int i = 0; i < wallHitDim.HitNum; i++) {
 		VECTOR normal = wallHitDim.Dim[i].Normal;
 
-		if (normal.y >= WALL_NORMAL_MAX) continue;
+		if (normal.y >= Chara::Base::WALL_NORMAL_MAX) continue;
 
 		VECTOR checkPos = nextPos;
-		if (normal.y < CEILING_NORMAL_MAX) {
+		if (normal.y < Chara::Base::CEILING_NORMAL_MAX) {
 			checkPos = VAdd(nextPos, VGet(0.0f, currentHeight - radius, 0.0f));
 		}
 
@@ -189,7 +174,6 @@ void RollingEnemy::UpdatePhysics() {
 	position = nextPos;
 }
 
-
 VECTOR RollingEnemy::UpdateNavigation(const Character* target, float dt) {
 	bool hasLOS = CheckLineSight(target, target->GetCurrentEyeHeight());
 
@@ -200,7 +184,7 @@ VECTOR RollingEnemy::UpdateNavigation(const Character* target, float dt) {
 		if (!isDirectPathSafe) {
 			SetPath(EnemyManager::GetIns().CalculatePath(position, target->GetPos()));
 		}
-		pathUpdateTimer = PATH_UPDATE_BASE_TIME + (GetRand(PATH_UPDATE_RANDOM_RANGE) / 100.0f);
+		pathUpdateTimer = Chara::EnemyCommon::PATH_UPDATE_BASE_INTERVAL + (GetRand(Chara::EnemyCommon::PATH_UPDATE_RANDOM) / Global::Math::PERCENT_MAX);
 	}
 
 	VECTOR moveTarget = target->GetPos();
@@ -211,7 +195,7 @@ VECTOR RollingEnemy::UpdateNavigation(const Character* target, float dt) {
 		float distSq = VSquareSize(toNode);
 
 		bool reached = false;
-		if (distSq <PATH_NODE_REACHED_DIST_SQ) {
+		if (distSq < (Chara::EnemyCommon::PATH_NODE_REACHED_DIST * Chara::EnemyCommon::PATH_NODE_REACHED_DIST)) {
 			reached = true;
 		}
 		else {
@@ -221,7 +205,7 @@ VECTOR RollingEnemy::UpdateNavigation(const Character* target, float dt) {
 				}
 			}
 		}
-	
+
 		if (reached) {
 			AdvancePathIndex();
 			if (HasPath())moveTarget = GetNextNodeID();

@@ -5,6 +5,7 @@
 #include "ProjectileManager.h"
 #include "Character.h"
 #include "InputManager.h"
+#include "Param/Item.h"
 
 class Camera;
 
@@ -144,7 +145,7 @@ public:
 	bool IsInfinite() const { return infinite; }
 	
 	void OnEquip() {
-		equipCT = 0.15f;
+		equipCT = Item::Weapon::EQUIP_TIME;
 	}
 
 	int GetModelHandle()const { return gunModelHandle; }

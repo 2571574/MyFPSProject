@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "BaseScene.h"
 #include "Status.h"
+#include "Param/Scene.h"
 
 #include <memory>
 #include <vector>
@@ -14,13 +15,13 @@ struct GameResult {
 	int totalHeadHit = 0;
 	WeaponID causeOfDeath = WeaponID::UNKNOWN;
 
-void Clear() {
-	currentScore = 0;
-	Shot = 0;
-	totalHit = 0;
-	totalHeadHit = 0;
-	causeOfDeath = WeaponID::UNKNOWN;
-}
+	void Clear() {
+		currentScore = 0;
+		Shot = 0;
+		totalHit = 0;
+		totalHeadHit = 0;
+		causeOfDeath = WeaponID::UNKNOWN;
+	}
 };
 
 /// <summary>
@@ -42,10 +43,9 @@ private:
 	PlayMode currentMode;	//現在の難易度
 
 	GameResult lastResult;	//直近の結果
-	std::vector<std::vector<int>> ranking;	
+	std::vector<std::vector<int>> ranking;
 	const std::string RANKING_FILE = "ranking.dat";
-	static constexpr int MAX_RECORD = 5;	//ランキングの最大
-	
+
 	void SaveRanking();
 	void LoadRanking();
 public:
@@ -71,7 +71,7 @@ public:
 		lastResult.totalHit = hit;
 		lastResult.totalHeadHit = headShot;
 	}
-	
+
 	//スコアのセット
 	void SetScore(int score);
 	void SetCauseOfDeath(WeaponID id) { lastResult.causeOfDeath = id; }
@@ -79,13 +79,12 @@ public:
 	//リザルト関係
 	const GameResult& GetResult()const { return lastResult; }
 	const std::vector<int>& GetRanking()const { return ranking[(int)currentMode]; }
-	
+
 	//難易度
 	void SetCurrentMode(PlayMode mode) { currentMode = mode; }
 	PlayMode GetcurrentMode()const { return currentMode; }
-	
+
 	//終了フラグ
 	void SetExitTag(bool tag) { exitTag = tag; }
 	bool GetExitTag() { return exitTag; }
 };
-

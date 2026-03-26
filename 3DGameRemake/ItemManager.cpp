@@ -3,14 +3,13 @@
 #include "Time.h"
 #include "InputManager.h"
 #include "SoundManager.h"
+#include "Param/Global.h"
+#include "Param/Item.h"
 
 #include<random>
 #include <algorithm>
 
-namespace {
-	constexpr size_t MAX_DROPPED = 10;
-	constexpr float ITEM_PICKUP_RAD = 2.0f;
-}
+
 ItemManager& ItemManager::GetIns() {
 	static ItemManager ins;
 	return ins;
@@ -82,9 +81,8 @@ void ItemManager::InitSpawners(const std::vector<SpawnerSetup>& setup) {
 		s.SpawnerInfo = set;
 		s.spawnedSpec = GetPlayerGunStatus(set.weaponId);
 
-		
-			s.item = std::make_unique<WeaponItem>(s.SpawnerInfo.pos, std::make_unique<Weapon>(s.spawnedSpec));
-			s.respawnTimer = set.respawnTime;
+		s.item = std::make_unique<WeaponItem>(s.SpawnerInfo.pos, std::make_unique<Weapon>(s.spawnedSpec));
+		s.respawnTimer = set.respawnTime;
 		spawners.push_back(std::move(s));
 	}
 }
@@ -93,7 +91,7 @@ void ItemManager::SpawnDroppedItem(std::unique_ptr<WeaponItem> item) {
 	if (!item)return;
 
 	droppedItem.push_back(std::move(item));
-	if (droppedItem.size() > MAX_DROPPED) {
+	if (droppedItem.size() > Item::Item::MAX_DROPPED) {
 		//古いものから削除
 		droppedItem.erase(droppedItem.begin());
 	}
@@ -101,7 +99,7 @@ void ItemManager::SpawnDroppedItem(std::unique_ptr<WeaponItem> item) {
 
 void ItemManager::Update(Player* player) {
 	float dt = Time::GetIns().GetDelta();
-	float pickUpRadius = ITEM_PICKUP_RAD;
+	float pickUpRadius = Item::Item::ITEM_PICKUP_RAD;
 	bool interact = InputManager::GetIns().IsActionTrigger(ActionID::INTERACT);
 	VECTOR pPos = player ? player->GetPos() : VGet(0.0f, 0.0f, 0.0f);
 
@@ -166,7 +164,7 @@ void ItemManager::Update(Player* player) {
 
 void ItemManager::Draw() {
 	for (const auto& item : droppedItem) {
-		if(item)item->Draw();
+		if (item)item->Draw();
 	}
 	for (const auto& spawner : spawners) {
 		if (spawner.item)spawner.item->Draw();

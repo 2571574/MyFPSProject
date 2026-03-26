@@ -2,14 +2,16 @@
 #include "TitleScene.h"
 #include "InputManager.h"
 #include "EnemyManager.h"
-#include "Parameter.h"
 #include "ResourceManager.h"
 #include "TextManager.h"
 #include "SoundManager.h"
+#include "Param/Global.h"
+#include "Param/Scene.h"
+#include "Param/System.h"
 
-ResultScene::ResultScene(SceneManager* manager,int bghandle)
+ResultScene::ResultScene(SceneManager* manager, int bghandle)
 	: BaseScene(manager)
-	, bgHandle(bghandle){}
+	, bgHandle(bghandle) {}
 
 ResultScene::~ResultScene() {
 	if (bgHandle != -1) {
@@ -17,7 +19,7 @@ ResultScene::~ResultScene() {
 	}
 }
 
-void ResultScene::Init(){
+void ResultScene::Init() {
 	fontLarge = ResourceManager::GetIns().GetFont("Resource/Font/JetBrainsMono_60.dft");
 	fontMedium = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_30.dft");
 	fontSmall = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_22.dft");
@@ -31,65 +33,50 @@ void ResultScene::Update() {
 }
 
 void ResultScene::Draw() {
-	const int white = GetColor(255, 255, 255);
-	const int yellow = GetColor(255, 255, 0);
-	const int gray = GetColor(180, 180, 180);
-	const int red = GetColor(255, 100, 100);
+	const int white = GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b);
+	const int yellow = GetColor(Global::Palette::YELLOW.r, Global::Palette::YELLOW.g, Global::Palette::YELLOW.b);
+	const int gray = GetColor(Global::Palette::GRAY.r, Global::Palette::GRAY.g, Global::Palette::GRAY.b);
+	const int red = GetColor(Global::Palette::RED_LIGHT.r, Global::Palette::RED_LIGHT.g, Global::Palette::RED_LIGHT.b);
 
 	if (bgHandle != -1) {
-		SetDrawBright(120, 120, 120);
+		SetDrawBright(Scene::Result::RESULT_BG_BRIGHTNESS, Scene::Result::RESULT_BG_BRIGHTNESS, Scene::Result::RESULT_BG_BRIGHTNESS);
 		DrawGraph(0, 0, bgHandle, FALSE);
 		SetDrawBright(255, 255, 255);
 	}
 
-	// ==========================================
-	// レイアウト調整用の定数（ここで全体のバランスをいじれます）
-	const int TITLE_X = 150;         // 「Result」見出しのX座標
-	const int TITLE_Y = 100;          // 「Result」見出しのY座標
-
-	const int SCORE_Y = 200;         // 一番上のスコアのY座標
-
-	const int COL_LEFT_X = 300;      // 左列（死因・キル数）の基準X座標
-	const int COL_RIGHT_X = 1100;    // 右列（射撃精度・ランキング）の基準X座標
-
-	const int ROW_TOP_Y = 300;       // 上段（死因・射撃精度）の開始Y座標
-	const int ROW_BOTTOM_Y = 550;    // 下段（キル数・ランキング）の開始Y座標
-	const int LINE_HEIGHT = 45;      // 各項目の行間
-	// ==========================================
-
 	const GameResult& result = manager->GetResult();
 
-	::DrawStringToHandle(TITLE_X, TITLE_Y, "Result", white, fontLarge);
+	::DrawStringToHandle(Scene::Result::RESULT_TITLE_X, Scene::Result::RESULT_TITLE_Y, "Result", white, fontLarge);
 
-	::DrawFormatStringToHandle(CENTER_X - 150, SCORE_Y, yellow, fontLarge, "Score : %d", result.currentScore);
+	::DrawFormatStringToHandle(System::Window::CENTER_X - 150, Scene::Result::RESULT_SCORE_Y, yellow, fontLarge, "Score : %d", result.currentScore);
 
 
-	::DrawStringToHandle(COL_LEFT_X, ROW_TOP_Y, "- 死因 -", gray, fontMedium);
+	::DrawStringToHandle(Scene::Result::RESULT_COL_LEFT_X, Scene::Result::RESULT_ROW_TOP_Y, "- 死因 -", gray, fontMedium);
 	const char* causeStr = TextManager::GetIns().GetCauseName(result.causeOfDeath);
-	::DrawFormatStringToHandle(COL_LEFT_X + 40, ROW_TOP_Y + LINE_HEIGHT, red, fontMedium, "%s", causeStr);
+	::DrawFormatStringToHandle(Scene::Result::RESULT_COL_LEFT_X + Scene::Result::RESULT_ITEM_INDENT_X, Scene::Result::RESULT_ROW_TOP_Y + Scene::Result::RESULT_LINE_HEIGHT, red, fontMedium, "%s", causeStr);
 
 
-	::DrawStringToHandle(COL_RIGHT_X, ROW_TOP_Y, "- 射撃精度 -", gray, fontMedium);
+	::DrawStringToHandle(Scene::Result::RESULT_COL_RIGHT_X, Scene::Result::RESULT_ROW_TOP_Y, "- 射撃精度 -", gray, fontMedium);
 	int shot = result.Shot;
 	int hit = result.totalHit;
 	int head = result.totalHeadHit;
-	float accuracy = (shot > 0) ? ((float)hit / shot) * 100.0f : 0.0f;
-	float hsAccuracy = (hit > 0) ? ((float)head / hit) * 100.0f : 0.0f;
+	float accuracy = (shot > 0) ? ((float)hit / shot) * Scene::Result::PERCENTAGE_MULTIPLIER : 0.0f;
+	float hsAccuracy = (hit > 0) ? ((float)head / hit) * Scene::Result::PERCENTAGE_MULTIPLIER : 0.0f;
 
-	::DrawFormatStringToHandle(COL_RIGHT_X + 40, ROW_TOP_Y + LINE_HEIGHT, white, fontMedium, "ヒット率 : %.1f%%", accuracy);
-	::DrawFormatStringToHandle(COL_RIGHT_X + 40, ROW_TOP_Y + LINE_HEIGHT * 2, white, fontMedium, "ヘッドショット率 : %.1f%%", hsAccuracy);
+	::DrawFormatStringToHandle(Scene::Result::RESULT_COL_RIGHT_X + Scene::Result::RESULT_ITEM_INDENT_X, Scene::Result::RESULT_ROW_TOP_Y + Scene::Result::RESULT_LINE_HEIGHT, white, fontMedium, "ヒット率 : %.1f%%", accuracy);
+	::DrawFormatStringToHandle(Scene::Result::RESULT_COL_RIGHT_X + Scene::Result::RESULT_ITEM_INDENT_X, Scene::Result::RESULT_ROW_TOP_Y + Scene::Result::RESULT_LINE_HEIGHT * 2, white, fontMedium, "ヘッドショット率 : %.1f%%", hsAccuracy);
 
 
-	::DrawStringToHandle(COL_LEFT_X, ROW_BOTTOM_Y, "- キル数 -", gray, fontMedium);
+	::DrawStringToHandle(Scene::Result::RESULT_COL_LEFT_X, Scene::Result::RESULT_ROW_BOTTOM_Y, "- キル数 -", gray, fontMedium);
 	int killMelee = EnemyManager::GetIns().GetKillCount(ENEMYTYPE::MELEE);
 	int killRifle = EnemyManager::GetIns().GetKillCount(ENEMYTYPE::RIFLE);
 	int killSniper = EnemyManager::GetIns().GetKillCount(ENEMYTYPE::SNIPER);
 	int killRoll = EnemyManager::GetIns().GetKillCount(ENEMYTYPE::ROLLING);
 
-	::DrawFormatStringToHandle(COL_LEFT_X + 40, ROW_BOTTOM_Y + LINE_HEIGHT, white, fontMedium, "近接 : %d", killMelee);
-	::DrawFormatStringToHandle(COL_LEFT_X + 40, ROW_BOTTOM_Y + LINE_HEIGHT * 2, white, fontMedium, "ライフル : %d", killRifle);
-	::DrawFormatStringToHandle(COL_LEFT_X + 40, ROW_BOTTOM_Y + LINE_HEIGHT * 3, white, fontMedium, "スナイパー : %d", killSniper);
-	::DrawFormatStringToHandle(COL_LEFT_X + 40, ROW_BOTTOM_Y + LINE_HEIGHT * 4, white, fontMedium, "爆弾 : %d", killRoll);
+	::DrawFormatStringToHandle(Scene::Result::RESULT_COL_LEFT_X + Scene::Result::RESULT_ITEM_INDENT_X, Scene::Result::RESULT_ROW_BOTTOM_Y + Scene::Result::RESULT_LINE_HEIGHT, white, fontMedium, "近接 : %d", killMelee);
+	::DrawFormatStringToHandle(Scene::Result::RESULT_COL_LEFT_X + Scene::Result::RESULT_ITEM_INDENT_X, Scene::Result::RESULT_ROW_BOTTOM_Y + Scene::Result::RESULT_LINE_HEIGHT * 2, white, fontMedium, "ライフル : %d", killRifle);
+	::DrawFormatStringToHandle(Scene::Result::RESULT_COL_LEFT_X + Scene::Result::RESULT_ITEM_INDENT_X, Scene::Result::RESULT_ROW_BOTTOM_Y + Scene::Result::RESULT_LINE_HEIGHT * 3, white, fontMedium, "スナイパー : %d", killSniper);
+	::DrawFormatStringToHandle(Scene::Result::RESULT_COL_LEFT_X + Scene::Result::RESULT_ITEM_INDENT_X, Scene::Result::RESULT_ROW_BOTTOM_Y + Scene::Result::RESULT_LINE_HEIGHT * 4, white, fontMedium, "爆弾 : %d", killRoll);
 
 
 	const char* modeString = "";
@@ -100,7 +87,7 @@ void ResultScene::Draw() {
 	default: modeString = "UNKNOWN"; break;
 	}
 
-	::DrawFormatStringToHandle(COL_RIGHT_X, ROW_BOTTOM_Y, yellow, fontMedium, "- ランキング (%s) -", modeString);
+	::DrawFormatStringToHandle(Scene::Result::RESULT_COL_RIGHT_X, Scene::Result::RESULT_ROW_BOTTOM_Y, yellow, fontMedium, "- ランキング (%s) -", modeString);
 
 	const auto& ranking = manager->GetRanking();
 	bool highlight = false;
@@ -110,15 +97,15 @@ void ResultScene::Draw() {
 			color = red;
 			highlight = true;
 		}
-		::DrawFormatStringToHandle(COL_RIGHT_X + 40, ROW_BOTTOM_Y + LINE_HEIGHT + (int)i * LINE_HEIGHT, color, fontMedium, "%d.   %d", i + 1, ranking[i]);
+		::DrawFormatStringToHandle(Scene::Result::RESULT_COL_RIGHT_X + Scene::Result::RESULT_ITEM_INDENT_X, Scene::Result::RESULT_ROW_BOTTOM_Y + Scene::Result::RESULT_LINE_HEIGHT + (int)i * Scene::Result::RESULT_LINE_HEIGHT, color, fontMedium, "%d.   %d", i + 1, ranking[i]);
 	}
 
 
-	::DrawBox(0, WINDOW_HEIGHT - 50, WINDOW_WIDTH, WINDOW_HEIGHT, GetColor(0, 0, 0), TRUE);
+	::DrawBox(0, System::Window::WINDOW_HEIGHT - Scene::Result::RESULT_HELP_BAR_HEIGHT, System::Window::WINDOW_WIDTH, System::Window::WINDOW_HEIGHT, GetColor(Global::Palette::BLACK.r, Global::Palette::BLACK.g, Global::Palette::BLACK.b), TRUE);
 
 	std::string menuSel = TextManager::GetIns().GetActionKeyString(ActionID::MENU_SELECT);
 	std::string helpText = menuSel + " : タイトルに戻る";
 
 	int textWidth = GetDrawStringWidthToHandle(helpText.c_str(), static_cast<int>(helpText.length()), fontSmall);
-	::DrawStringToHandle(WINDOW_WIDTH - textWidth - 50, WINDOW_HEIGHT - 30, helpText.c_str(), white, fontSmall);
+	::DrawStringToHandle(System::Window::WINDOW_WIDTH - textWidth - Scene::Common::HELP_TEXT_MARGIN_X, System::Window::WINDOW_HEIGHT - Scene::Common::HELP_TEXT_MARGIN_Y, helpText.c_str(), white, fontSmall);
 }

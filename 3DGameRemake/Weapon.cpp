@@ -1,20 +1,15 @@
-﻿#include"Weapon.h"
-#include"Character.h"
+﻿#include "Weapon.h"
+#include "Character.h"
 #include "CollisionManager.h"
 #include "ResourceManager.h"
 #include "Camera.h"
-#include "Parameter.h"
 #include "EffectManager.h"
 #include "SoundManager.h"
+#include "Param/Global.h"
+#include "Param/Item.h"
+#include "Param/Visual.h"
 
 #include <memory>
-
-namespace {
-	constexpr float SPREAD_RANDOM_PRECISION = 1000.0f;
-	constexpr float RAY_MAX_DISTANCE = 100.0f;
-	constexpr float RECOIL_RANDOM_PRECISION = 100.0f;
-	constexpr float EQUIP_TIME = 0.15f;
-}
 
 Weapon::Weapon(const GunStatus _spec)
 	: spec(_spec)
@@ -24,7 +19,7 @@ Weapon::Weapon(const GunStatus _spec)
 	, currentState(WeaponState::IDLE)
 	, reloadCT(0)
 	, fireCT(0)
-	, equipCT(EQUIP_TIME)
+	, equipCT(Item::Weapon::EQUIP_TIME)
 	, aim(false)
 	, adsWeight(0.0f)
 	, gunModelHandle(-1)
@@ -48,17 +43,16 @@ Weapon::~Weapon() {
 void Weapon::Update(Character& user) {
 	//リロード、射撃後のタイマーを減らす
 	float delta = Time::GetIns().GetDelta();
-	constexpr float ADS_SPEED = 0.6f;
-	float dt60 = delta * 60.0f;
-	float lerpRate = 1.0f - std::pow(1.0f - ADS_SPEED, dt60);
+	float dt60 = delta * Global::Math::FPS_BASE;
+	float lerpRate = 1.0f - std::pow(1.0f - Item::Weapon::ADS_SPEED, dt60);
 	float targetAds = aim ? 1.0f : 0.0f;
 
 	adsWeight += (targetAds - adsWeight) * lerpRate;
 	if (reloadCT > 0) {
 		reloadCT -= delta;
-		if (currentState == WeaponState::RELOADING && !reloadEndPlayed && reloadCT <= 0.25f) {
+		if (currentState == WeaponState::RELOADING && !reloadEndPlayed && reloadCT <= Item::Weapon::RELOAD_END_SOUND_THRESHOLD) {
 			if (!spec.visual.reloadSoundPath.empty()) {
-				SoundManager::GetIns().Play3DSE(spec.visual.ReloadEndSoundPath, user.GetPos(), 20.0f);
+				SoundManager::GetIns().Play3DSE(spec.visual.ReloadEndSoundPath, user.GetPos(), Item::Weapon::SOUND_RADIUS_NORMAL);
 			}
 			reloadEndPlayed = true;
 		}
@@ -98,8 +92,8 @@ void Weapon::Fired(Character& user) {
 
 	//反動の処理
 	float recoilP = spec.recoil;
-	int randMax = static_cast<int>(spec.recoil * RECOIL_RANDOM_PRECISION);
-	float recoilY = (randMax>0) ?(((float)GetRand(randMax) / RECOIL_RANDOM_PRECISION) - (spec.recoil/2.0)) : 0.0f;
+	int randMax = static_cast<int>(spec.recoil * Item::Weapon::RECOIL_RANDOM_PRECISION);
+	float recoilY = (randMax > 0) ? (((float)GetRand(randMax) / Item::Weapon::RECOIL_RANDOM_PRECISION) - (spec.recoil / Item::Weapon::RECOIL_HALF_DIVISOR)) : 0.0f;
 	user.AddRecoil(recoilY, recoilP);
 }
 
@@ -108,7 +102,7 @@ void Weapon::FireInput(Character& user, VECTOR direction) {
 	if (ammo <= 0 && currentState == WeaponState::IDLE) {
 		if (InputManager::GetIns().IsActionTrigger(ActionID::FIRE)) {
 			// ステータスを経由せず、直接ファイルパスを指定して鳴らす
-			SoundManager::GetIns().Play3DSE("Resource/Sound/Fireempty.wav", user.GetPos(), 20.0f);
+			SoundManager::GetIns().Play3DSE("Resource/Sound/Fireempty.wav", user.GetPos(), Item::Weapon::SOUND_RADIUS_NORMAL);
 		}
 	}
 	if (spec.fullAuto) {
@@ -146,23 +140,23 @@ void Weapon::Fire(Character& user, VECTOR direction) {
 	if (!CanFire())return;		//撃てなかったらreturn
 
 	if (!spec.visual.fireSoundPath.empty()) {
-		SoundManager::GetIns().Play3DSE(spec.visual.fireSoundPath, user.GetPos(), 40.0f);
+		SoundManager::GetIns().Play3DSE(spec.visual.fireSoundPath, user.GetPos(), Item::Weapon::SOUND_RADIUS_LOUD);
 	}
 
 	user.ShotRecord();
 	VECTOR dir = VNorm(direction);
 	float currentSpread = aim ? spec.adsSpread : spec.spread;
 	if (user.IsCrouching()) {
-		currentSpread *= 0.7f;
+		currentSpread *= Item::Weapon::CROUCH_SPREAD_MULTIPLIER;
 	}
-		VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), direction));
-		VECTOR up = VNorm(VCross(direction, right));
+	VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), direction));
+	VECTOR up = VNorm(VCross(direction, right));
 
-		float randX = ((float)GetRand(2000) - SPREAD_RANDOM_PRECISION) / SPREAD_RANDOM_PRECISION;
-		float randY = ((float)GetRand(2000) - SPREAD_RANDOM_PRECISION) / SPREAD_RANDOM_PRECISION;
-		dir = VAdd(direction, VScale(right, randX * currentSpread));
-		dir = VAdd(dir, VScale(up, randY * currentSpread));
-		dir = VNorm(dir);
+	float randX = ((float)GetRand(Item::Weapon::SPREAD_RANDOM_RANGE) - Item::Weapon::SPREAD_RANDOM_PRECISION) / Item::Weapon::SPREAD_RANDOM_PRECISION;
+	float randY = ((float)GetRand(Item::Weapon::SPREAD_RANDOM_RANGE) - Item::Weapon::SPREAD_RANDOM_PRECISION) / Item::Weapon::SPREAD_RANDOM_PRECISION;
+	dir = VAdd(direction, VScale(right, randX * currentSpread));
+	dir = VAdd(dir, VScale(up, randY * currentSpread));
+	dir = VNorm(dir);
 	//specのhitscanによって判別
 	if (spec.hitscan) {
 		FireHitScan(user, direction, dir);
@@ -188,7 +182,7 @@ void Weapon::FireProjectile(Character& user, VECTOR baseDir, VECTOR shootDir) {
 	fireFinal = VAdd(fireFinal, VScale(baseDir, fireOffset.z));
 	VECTOR spawnPos = VAdd(userEyePos, fireFinal);
 
-	VECTOR targetPos = VAdd(userEyePos, VScale(shootDir, 100.0f));
+	VECTOR targetPos = VAdd(userEyePos, VScale(shootDir, Item::Weapon::RAY_MAX_DISTANCE));
 	VECTOR lastDir = VNorm(VSub(targetPos, spawnPos));
 
 	VECTOR visualOffset = VAdd(VScale(spec.visual.drawMuzzleOffset, 1.0f - adsWeight), VScale(spec.visual.drawAdsMuzzleOffset, adsWeight));
@@ -197,7 +191,7 @@ void Weapon::FireProjectile(Character& user, VECTOR baseDir, VECTOR shootDir) {
 	visualFinal = VAdd(visualFinal, VScale(baseDir, visualOffset.z));
 	VECTOR visualMuzzlePos = VAdd(userEyePos, visualFinal);
 
-	EffectManager::GetIns().CreateMuzzleFlash(visualMuzzlePos, baseDir, 0.5f);
+	EffectManager::GetIns().CreateMuzzleFlash(visualMuzzlePos, baseDir, Visual::Effect::MUZZLE_FLASH_BASE_SIZE);
 
 	//弾の生成
 	auto p = std::make_unique<BaseProjectile>(spawnPos, user.GetID(), spec, lastDir);
@@ -218,7 +212,7 @@ void Weapon::FireHitScan(Character& user, VECTOR baseDir, VECTOR shootDir) {
 	fireFinal = VAdd(fireFinal, VScale(baseDir, fireOffset.z));
 	VECTOR spawnPos = VAdd(userEyePos, fireFinal);
 
-	VECTOR targetPos = VAdd(userEyePos, VScale(shootDir, 100.0f));
+	VECTOR targetPos = VAdd(userEyePos, VScale(shootDir, Item::Weapon::RAY_MAX_DISTANCE));
 	VECTOR lastDir = VNorm(VSub(targetPos, spawnPos));
 
 	VECTOR visualOffset = VAdd(VScale(spec.visual.drawMuzzleOffset, 1.0f - adsWeight), VScale(spec.visual.drawAdsMuzzleOffset, adsWeight));
@@ -227,7 +221,7 @@ void Weapon::FireHitScan(Character& user, VECTOR baseDir, VECTOR shootDir) {
 	visualFinal = VAdd(visualFinal, VScale(baseDir, visualOffset.z));
 	VECTOR visualMuzzlePos = VAdd(userEyePos, visualFinal);
 
-	EffectManager::GetIns().CreateMuzzleFlash(visualMuzzlePos, baseDir, 0.5f);
+	EffectManager::GetIns().CreateMuzzleFlash(visualMuzzlePos, baseDir, Visual::Effect::MUZZLE_FLASH_BASE_SIZE);
 
 	//始点と終点をセット
 	VECTOR start = spawnPos;
@@ -239,10 +233,10 @@ void Weapon::FireHitScan(Character& user, VECTOR baseDir, VECTOR shootDir) {
 	HitInfo hit = CollisionManager::GetIns().CheckHitScan(start, end, user.GetID());
 	if (hit.character != nullptr) {
 		user.HitRecord(hit.isHeadShot);
-		int lastdamage = hit.isHeadShot ? spec.damage * 2 : spec.damage;
+		int lastdamage = hit.isHeadShot ? spec.damage * Item::Projectile::HEADSHOT_MULTIPLIER : spec.damage;
 		if (hit.isHeadShot)Debug::Log("Headshot");
 		else Debug::Log("hit");
-		hit.character->OnHit(lastdamage,spec.id);
+		hit.character->OnHit(lastdamage, spec.id);
 		bool isKill = (hit.character->GetHP() <= 0);
 		user.HitRecord(hit.isHeadShot, isKill);
 
@@ -252,7 +246,7 @@ void Weapon::FireHitScan(Character& user, VECTOR baseDir, VECTOR shootDir) {
 		EffectManager::GetIns().CreateHitEffect(hit.hitPos, hit.hitNormal, false);
 	}
 
-	int trailColor = GetColor(200, 200, 200);
+	int trailColor = GetColor(Visual::Effect::COLOR_TRAIL_FRIENDLY.r, Visual::Effect::COLOR_TRAIL_FRIENDLY.g, Visual::Effect::COLOR_TRAIL_FRIENDLY.b);
 	EffectManager::GetIns().CreateHitScanTrail(visualMuzzlePos, actualEnd, trailColor);
 }
 
@@ -265,12 +259,11 @@ void Weapon::Reload(Character& user) {
 
 	// 追加：リロード開始音を再生
 	if (!spec.visual.reloadSoundPath.empty()) {
-		SoundManager::GetIns().Play3DSE(spec.visual.reloadSoundPath, user.GetPos(), 20.0f);
+		SoundManager::GetIns().Play3DSE(spec.visual.reloadSoundPath, user.GetPos(), Item::Weapon::SOUND_RADIUS_NORMAL);
 	}
 }
 
-void Weapon::Ads() {
-}
+void Weapon::Ads() {}
 
 //描画
 void Weapon::Draw(VECTOR basePos, VECTOR forward, VECTOR right, VECTOR up, bool isAds, bool isFPP) {
@@ -278,109 +271,82 @@ void Weapon::Draw(VECTOR basePos, VECTOR forward, VECTOR right, VECTOR up, bool 
 	float s = spec.visual.scale;
 	MATRIX scaleMat = MGetScale(VGet(s, s, s));
 
-	MATRIX localRot = MGetRotY(-DX_PI_F / 2.0f);
+	MATRIX localRot = MGetRotY(Visual::WeaponAnim::MODEL_BASE_ROTATION_Y);
 
 	VECTOR animOffset = VGet(0.0f, 0.0f, 0.0f);
 	MATRIX animRot = MGetIdent();
 	if (equipCT > 0.0f) {
-		float progress = 1.0f - (equipCT / EQUIP_TIME);
+		float progress = 1.0f - (equipCT / Item::Weapon::EQUIP_TIME);
 		float easeOut = sinf(progress * DX_PI_F / 2.0f);
 
-		// スケール: 0.5倍から1.0倍(元のサイズ)へ
-		s *= (0.5f + 0.5f * easeOut);
+		s *= (Visual::WeaponAnim::ANIM_EQUIP_START_SCALE + (1.0f - Visual::WeaponAnim::ANIM_EQUIP_START_SCALE) * easeOut);
 
-		// 位置と回転: 下＆手前から定位置へ
-		float startOffsetY = -0.6f;
-		float startOffsetZ = -0.3f;
-		float startRotX = DX_PI_F / 4.0f;
-
-		animOffset = VGet(0.0f, startOffsetY * (1.0f - easeOut), startOffsetZ * (1.0f - easeOut));
-		animRot = MGetRotX(startRotX * (1.0f - easeOut));
+		animOffset = VGet(0.0f, Visual::WeaponAnim::ANIM_EQUIP_OFFSET_Y * (1.0f - easeOut), Visual::WeaponAnim::ANIM_EQUIP_OFFSET_Z * (1.0f - easeOut));
+		animRot = MGetRotX(Visual::WeaponAnim::ANIM_EQUIP_ROT_X * (1.0f - easeOut));
 	}
 	else if (currentState == WeaponState::RELOADING && spec.reloadTime > 0.0f) {
-		float progress = 1.0f - (reloadCT / spec.reloadTime);	
+		float progress = 1.0f - (reloadCT / spec.reloadTime);
 		switch (spec.id) {
 		case WeaponID::PIS:
 		case WeaponID::SMG:
 		{
-			float phase1End = 0.15f;
-			float phase2End = 0.85f;
-
-			float windUpOffsetY = -0.1f;
-			float windUpRotX = DX_PI_F / 4.0f;
-
-			float spinRotations = 6.0f;
-			float pullBackOffsetZ = -0.2f;
-
-			float overshootOffsetY = 0.1f;
-			float overshootRotX = -DX_PI_F / 8.0f;
-
-			if (progress < phase1End) {
-				float t = progress / phase1End;
+			if (progress < Visual::WeaponAnim::ANIM_RELOAD_SMG_PHASE1) {
+				float t = progress / Visual::WeaponAnim::ANIM_RELOAD_SMG_PHASE1;
 				float ease = sinf(t * DX_PI_F / 2.0f);
 
-				animOffset = VGet(0.0f, windUpOffsetY * ease, (pullBackOffsetZ * 0.3f) * ease);
-				animRot = MGetRotX(windUpRotX * ease);
+				animOffset = VGet(0.0f, Visual::WeaponAnim::ANIM_RELOAD_SMG_WINDUP_Y * ease, (Visual::WeaponAnim::ANIM_RELOAD_SMG_PULLBACK_Z * 0.3f) * ease);
+				animRot = MGetRotX(Global::Math::MATH_PI_QUARTER * ease);
 			}
-			else if (progress < phase2End) {
-				float t = (progress - phase1End) / (phase2End - phase1End);
+			else if (progress < Visual::WeaponAnim::ANIM_RELOAD_SMG_PHASE2) {
+				float t = (progress - Visual::WeaponAnim::ANIM_RELOAD_SMG_PHASE1) / (Visual::WeaponAnim::ANIM_RELOAD_SMG_PHASE2 - Visual::WeaponAnim::ANIM_RELOAD_SMG_PHASE1);
 
 				float zEase = sinf(t * DX_PI_F);
-				float currentZ = (pullBackOffsetZ * 0.3f) * (1.0f - t) + pullBackOffsetZ * zEase;
+				float currentZ = (Visual::WeaponAnim::ANIM_RELOAD_SMG_PULLBACK_Z * 0.3f) * (1.0f - t) + Visual::WeaponAnim::ANIM_RELOAD_SMG_PULLBACK_Z * zEase;
 
-				animOffset = VGet(0.0f, windUpOffsetY * (1.0f - t), currentZ);
+				animOffset = VGet(0.0f, Visual::WeaponAnim::ANIM_RELOAD_SMG_WINDUP_Y * (1.0f - t), currentZ);
 
-				float targetRot = -DX_PI_F * 2.0f * spinRotations;
-				float currentRot = windUpRotX * (1.0f - t) + targetRot * t;
+				float targetRot = -DX_PI_F * 2.0f * Visual::WeaponAnim::ANIM_RELOAD_SMG_SPINS;
+				float currentRot = Global::Math::MATH_PI_QUARTER * (1.0f - t) + targetRot * t;
 
 				animRot = MGetRotX(currentRot);
 			}
 			else {
-				float t = (progress - phase2End) / (1.0f - phase2End);
+				float t = (progress - Visual::WeaponAnim::ANIM_RELOAD_SMG_PHASE2) / (1.0f - Visual::WeaponAnim::ANIM_RELOAD_SMG_PHASE2);
 				float ease = sinf(t * DX_PI_F);
 
-				animOffset = VGet(0.0f, overshootOffsetY * ease, 0.0f);
-				animRot = MGetRotX(overshootRotX * ease);
+				animOffset = VGet(0.0f, Visual::WeaponAnim::ANIM_RELOAD_SMG_OVERSHOOT_Y * ease, 0.0f);
+				animRot = MGetRotX(Visual::WeaponAnim::ANIM_RELOAD_SMG_OVERSHOOT_ROT_X * ease);
 			}
 			break;
 		}
 		case WeaponID::LR:
 		{
-			float phase1End = 0.3f;
-			float phase2End = 0.7f;
-
-			float shoulderOffsetY = 0.8f;
-			float shoulderOffsetX = 0.3f;
-			float shoulderOffsetZ = -0.2f;
-
-			float shoulderRotX = -DX_PI_F / 2.5f;
-
-			if (progress < phase1End) {
-				float t = progress / phase1End;
+			if (progress < Visual::WeaponAnim::ANIM_RELOAD_LR_PHASE1) {
+				float t = progress / Visual::WeaponAnim::ANIM_RELOAD_LR_PHASE1;
 				float easeIn = 1.0f - cosf(t * DX_PI_F / 2.0f);
 
-				animOffset = VGet(shoulderOffsetX * easeIn, shoulderOffsetY * easeIn, shoulderOffsetZ * easeIn);
-				animRot = MGetRotX(shoulderRotX * easeIn);
+				animOffset = VGet(Visual::WeaponAnim::ANIM_RELOAD_LR_SHOULDER_X * easeIn, Visual::WeaponAnim::ANIM_RELOAD_LR_SHOULDER_Y * easeIn, Visual::WeaponAnim::ANIM_RELOAD_LR_SHOULDER_Z * easeIn);
+				animRot = MGetRotX(Visual::WeaponAnim::ANIM_RELOAD_LR_ROT_X * easeIn);
 			}
-			else if (progress < phase2End) {
-				animOffset = VGet(shoulderOffsetX, shoulderOffsetY, shoulderOffsetZ);
-				animRot = MGetRotX(shoulderRotX);
+			else if (progress < Visual::WeaponAnim::ANIM_RELOAD_LR_PHASE2) {
+				animOffset = VGet(Visual::WeaponAnim::ANIM_RELOAD_LR_SHOULDER_X, Visual::WeaponAnim::ANIM_RELOAD_LR_SHOULDER_Y, Visual::WeaponAnim::ANIM_RELOAD_LR_SHOULDER_Z);
+				animRot = MGetRotX(Visual::WeaponAnim::ANIM_RELOAD_LR_ROT_X);
 			}
 			else {
-				float t = (progress - phase2End) / (1.0f - phase2End);
+				float t = (progress - Visual::WeaponAnim::ANIM_RELOAD_LR_PHASE2) / (1.0f - Visual::WeaponAnim::ANIM_RELOAD_LR_PHASE2);
 				float easeOut = sinf(t * DX_PI_F / 2.0f);
 
 				animOffset = VGet(
-					shoulderOffsetX * (1.0f - easeOut),
-					shoulderOffsetY * (1.0f - easeOut),
-					shoulderOffsetZ * (1.0f - easeOut)
+					Visual::WeaponAnim::ANIM_RELOAD_LR_SHOULDER_X * (1.0f - easeOut),
+					Visual::WeaponAnim::ANIM_RELOAD_LR_SHOULDER_Y * (1.0f - easeOut),
+					Visual::WeaponAnim::ANIM_RELOAD_LR_SHOULDER_Z * (1.0f - easeOut)
 				);
-				animRot = MGetRotX(shoulderRotX * (1.0f - easeOut));
+				animRot = MGetRotX(Visual::WeaponAnim::ANIM_RELOAD_LR_ROT_X * (1.0f - easeOut));
 			}
 			break;
 		}
 		default:
-			float transitionRatio = 0.07f;
+			float transitionRatio = Visual::WeaponAnim::ANIM_RELOAD_DEFAULT_TRANSITION;
 			float lerpFactor = 0.0f;
 
 			if (progress < transitionRatio) {
@@ -417,8 +383,8 @@ void Weapon::Draw(VECTOR basePos, VECTOR forward, VECTOR right, VECTOR up, bool 
 
 	if (isAds && spec.id == WeaponID::SR && isFPP) {
 		int scopeGraph = ResourceManager::GetIns().GetGraph("Resource/SniperScope.png");
-		if(scopeGraph != -1){
-			DrawExtendGraph(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, scopeGraph, TRUE);
+		if (scopeGraph != -1) {
+			DrawExtendGraph(0, 0, System::Window::WINDOW_WIDTH, System::Window::WINDOW_HEIGHT, scopeGraph, TRUE);
 		}
 	}
 	else {

@@ -3,11 +3,10 @@
 #include "EnemyManager.h"
 #include "Player.h"
 #include "EffectManager.h"
+#include "Param/Global.h"
+#include "Param/Item.h"
+#include "Param/Visual.h"
 
-namespace {
-	constexpr float FPS_BASE = 60.0f;
-	constexpr int HEADSHOT_MULTIPLIER = 2;
-}
 BaseProjectile::BaseProjectile(VECTOR start, TEAMID _id, const GunStatus& _spec, VECTOR direction)
 	: startpos(start)
 	, pos(start)
@@ -19,7 +18,7 @@ BaseProjectile::BaseProjectile(VECTOR start, TEAMID _id, const GunStatus& _spec,
 }
 /*弾の更新*/
 void BaseProjectile::Update() {
-	float move = spec.projectileSpeed * Time::GetIns().GetDelta() * FPS_BASE;		
+	float move = spec.projectileSpeed * Time::GetIns().GetDelta() * Global::Math::FPS_BASE;
 	VECTOR nextpos = VAdd(pos, VScale(dir, move));
 
 	HitInfo hit =
@@ -39,13 +38,13 @@ void BaseProjectile::Update() {
 		//当たっていたらその敵の被弾処理
 		if (spec.AOE) {
 			hitEnemy = Explode(hitPoint);
-			int color = GetColor(255, 100, 0);
+			int color = GetColor(Visual::Effect::COLOR_EXPLOSION.r, Visual::Effect::COLOR_EXPLOSION.g, Visual::Effect::COLOR_EXPLOSION.b);
 			EffectManager::GetIns().CreateExplosionEffect(hitPoint, spec.explodeArea, color);
 		}
 		else if (hit.character) {
 			hitEnemy = true;
 			isHeadShot = hit.isHeadShot;
-			int lastDamage = hit.isHeadShot ? spec.damage * HEADSHOT_MULTIPLIER : spec.damage;
+			int lastDamage = hit.isHeadShot ? spec.damage * Item::Projectile::HEADSHOT_MULTIPLIER : spec.damage;
 			if (hit.isHeadShot)Debug::Log("Headshot");
 			else Debug::Log("hit");
 			hit.character->OnHit(lastDamage, spec.id);
@@ -67,16 +66,19 @@ void BaseProjectile::Update() {
 	}
 
 	// 味方の弾はライトグレー、敵の弾はオレンジで色分け
-	int trailColor = (id == TEAMID::ID_FRIENDLY) ? GetColor(180, 180, 180) : GetColor(255, 0, 0);
-	if (spec.id == WeaponID::LR) trailColor = GetColor(255, 100, 0);
-	EffectManager::GetIns().CreateProjectileTrail(pos, actualNextPos, spec.projectileSize * 1.0f, trailColor);
+	int trailColor = (id == TEAMID::ID_FRIENDLY) ?
+		GetColor(Visual::Effect::COLOR_TRAIL_FRIENDLY.r, Visual::Effect::COLOR_TRAIL_FRIENDLY.g, Visual::Effect::COLOR_TRAIL_FRIENDLY.b) :
+		GetColor(Visual::Effect::COLOR_TRAIL_ENEMY.r, Visual::Effect::COLOR_TRAIL_ENEMY.g, Visual::Effect::COLOR_TRAIL_ENEMY.b);
+
+	if (spec.id == WeaponID::LR) trailColor = GetColor(Visual::Effect::COLOR_TRAIL_LAUNCHER.r, Visual::Effect::COLOR_TRAIL_LAUNCHER.g, Visual::Effect::COLOR_TRAIL_LAUNCHER.b);
+	EffectManager::GetIns().CreateProjectileTrail(pos, actualNextPos, spec.projectileSize * Item::Projectile::TRAIL_RADIUS_MULTIPLIER, trailColor);
 
 	if (alive) {
 		//射程以上進んだら弾の生存タグを消す
 		if (VSize(VSub(actualNextPos, startpos)) > spec.range) {
 			if (spec.AOE) {
 				Explode(actualNextPos);
-				int color = GetColor(255, 100, 0);
+				int color = GetColor(Visual::Effect::COLOR_EXPLOSION.r, Visual::Effect::COLOR_EXPLOSION.g, Visual::Effect::COLOR_EXPLOSION.b);
 				EffectManager::GetIns().CreateExplosionEffect(actualNextPos, spec.explodeArea, color);
 			}
 			alive = false;
@@ -87,10 +89,8 @@ void BaseProjectile::Update() {
 }
 
 /*弾の描画*/
-void BaseProjectile::Draw() {
-}
-
+void BaseProjectile::Draw() {}
 
 bool BaseProjectile::Explode(VECTOR hitPos) {
-	return CollisionManager::GetIns().ProcessExplosion(hitPos, spec.explodeArea, spec.damage, spec.knockbackP, true, id, spec.id,spec.friendlyFire);
+	return CollisionManager::GetIns().ProcessExplosion(hitPos, spec.explodeArea, spec.damage, spec.knockbackP, true, id, spec.id, spec.friendlyFire);
 }

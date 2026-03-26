@@ -1,5 +1,5 @@
 #pragma once
-#include "Global.h"
+#include "Param/Global.h"
 
 namespace Chara {
 
@@ -51,6 +51,7 @@ namespace Chara {
         constexpr float BOBBING_DECAY = 0.7f;
         constexpr float BOBBING_CROUCH_MIN_SPEED = 0.06f;
         constexpr float DROP_ITEM_Y_OFFSET = 0.4f;
+        constexpr float STEP_LENGTH = 4.0f;
         constexpr float STICK_INPUT_SCALE = 1000.0f;
         constexpr float INPUT_VECTOR_MAX_LENGTH = 1.0f;
         constexpr float YAW_HALF_TURN_DEG = 180.0f;
@@ -61,7 +62,6 @@ namespace Chara {
 
         constexpr int MAX_WEAPON_SLOT_EASY_NORMAL = 10;
         constexpr int MAX_WEAPON_SLOT_HARD = 2;
-
         constexpr float SWAY_MULTIPLIER = 0.02f;
         constexpr float MAX_SWAY = 0.5f;
         constexpr float SWAY_LERP_SPEED = 0.2f;
@@ -113,8 +113,8 @@ namespace Chara {
         constexpr Global::ColorRGB COLOR_NORMAL = Global::Palette::YELLOW;
         constexpr float RECOVERY_PHASE1_RATIO = 0.3f;
         constexpr float RECOVERY_PHASE2_RATIO = 0.7f;
-        constexpr float SWING_90_DEG = Global::Math::PI_HALF;        
-        constexpr float SWING_QUARTER_TURN = Global::Math::PI_QUARTER;
+        constexpr float SWING_90_DEG = Global::Math::MATH_PI_HALF;
+        constexpr float SWING_QUARTER_TURN = Global::Math::MATH_PI_QUARTER;
 
         constexpr float MOVE_STOP_RANGE_RATIO = 0.9f;
         constexpr float MELEE_ATTACK_SOUND_RADIUS = 20.0f;

@@ -1,19 +1,16 @@
 ﻿#include "MeleeEnemy.h"
 #include "Player.h"
 #include "Time.h"
-#include "Parameter.h"
 #include "EnemyManager.h"
 #include "SoundManager.h"
+#include "Param/Global.h"
+#include "Param/Chara.h"
+#include "Param/System.h"
 
 #include <cmath>
 
-namespace {
-	constexpr float ATTACK_WINDUP_TIME = 0.3f;
-	constexpr float ATTACK_RECOVERY_TIME = 0.5f;
-}
-
 MeleeEnemy::MeleeEnemy(VECTOR pos, Player* target)
-	:Enemy(pos, CHARA_STATUS::MELEE_ENEMY, target,ENEMYTYPE::MELEE)
+	:Enemy(pos, CHARA_STATUS::MELEE_ENEMY, target, ENEMYTYPE::MELEE)
 	, attackTimer(0.0f) {
 	melee = std::make_unique<Weapon>(ENEMY_GUN::MELEE);
 }
@@ -55,28 +52,28 @@ void MeleeEnemy::Update() {
 
 		VECTOR targetPos = target->GetPos();
 		float distToTarget = VSize(VSub(targetPos, position));
-		if (distToTarget > range* 0.9f) {
+		if (distToTarget > range * Chara::Melee::MOVE_STOP_RANGE_RATIO) {
 			ApplyMovement(dir, stageHandle);
 		}
 		else {
-			ApplyMovement(VGet(0, 0, 0), stageHandle);
+			ApplyMovement(VGet(0.0f, 0.0f, 0.0f), stageHandle);
 		}
 
 		if (distToTarget <= range && std::abs(target->GetPos().y - position.y) <= currentHeight && attackTimer <= 0.0f) {
 			state = MeleeState::ATTACK_WIND;
-			stateTimer = ATTACK_WINDUP_TIME;
+			stateTimer = Chara::Melee::ATTACK_WINDUP_TIME;
 		}
 		break;
 	}
 
 	case MeleeState::ATTACK_WIND: {
-		ApplyMovement(VGet(0, 0, 0), stageHandle);
+		ApplyMovement(VGet(0.0f, 0.0f, 0.0f), stageHandle);
 
 		stateTimer -= dt;
 		if (stateTimer <= 0.0f) {
 			Action();
 			state = MeleeState::ATTACK_RECOVERY;
-			stateTimer = ATTACK_RECOVERY_TIME;
+			stateTimer = Chara::Melee::ATTACK_RECOVERY_TIME;
 		}
 		break;
 	}
@@ -92,25 +89,21 @@ void MeleeEnemy::Update() {
 	}
 	}
 
-
 	UpdateFootstep();
 }
 
-
-
 void MeleeEnemy::Draw() {
 	VECTOR cPos = GetPos();
-	float bodyRad = status.width / 2.0f;
-	float headRad = bodyRad * 0.5f;
-	if (headRad < 0.15f)headRad = 0.15f;
+	float bodyRad = status.width / System::Collision::BODY_RADIUS_DIVISOR;
+	float headRad = bodyRad / System::Collision::HEAD_RADIUS_DIVISOR;
+	if (headRad < System::Collision::MIN_HEAD_RAD) headRad = System::Collision::MIN_HEAD_RAD;
 	VECTOR bottom = VAdd(position, VGet(0.0f, bodyRad, 0.0f));
 	float neck = status.eyeHeight - headRad;
 	VECTOR bodyTop = VAdd(cPos, VGet(0.0f, neck - bodyRad, 0.0f));
 	VECTOR headPos = VAdd(cPos, VGet(0.0f, currentEyeHeight, 0.0f));
 
 	VECTOR leanMax = VGet(velocity.x, 0.0f, velocity.z);
-	constexpr float LEAN_FACTOR = 1.5f;
-	leanMax = VScale(leanMax, LEAN_FACTOR);
+	leanMax = VScale(leanMax, Chara::EnemyCommon::LEAN_FACTOR);
 
 	float headHeight = currentEyeHeight - bodyRad;
 	float bodyTopHeight = (neck - bodyRad) - bodyRad;
@@ -120,59 +113,55 @@ void MeleeEnemy::Draw() {
 	bodyTop = VAdd(bodyTop, bodyTopLean);
 	headPos = VAdd(headPos, leanMax);
 
-	int color = GetColor(255, 255, 0);
-	if (onHitFlashTimer > 0.0f) color = GetColor(255, 255, 255);
+	int color = GetColor(Chara::Melee::COLOR_NORMAL.r, Chara::Melee::COLOR_NORMAL.g, Chara::Melee::COLOR_NORMAL.b);
+	if (onHitFlashTimer > 0.0f) color = GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b);
 
 	int fillFlag = nowSpawned ? FALSE : TRUE;
 
 	if (!nowSpawned) {
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
-		VECTOR shadowPos1 = VAdd(position, VGet(0.0f, 0.02f, 0.0f));
-		VECTOR shadowPos2 = VAdd(position, VGet(0.0f, 0.01f, 0.0f));
-		DrawCone3D(shadowPos1, shadowPos2, status.width / 1.5f, 16, GetColor(0, 0, 0), GetColor(0, 0, 0), TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, Chara::Base::SHADOW_ALPHA);
+		VECTOR shadowPos1 = VAdd(position, VGet(0.0f, Chara::Base::SHADOW_OFFSET_Y_HIGH, 0.0f));
+		VECTOR shadowPos2 = VAdd(position, VGet(0.0f, Chara::Base::SHADOW_OFFSET_Y_LOW, 0.0f));
+		DrawCone3D(shadowPos1, shadowPos2, status.width / Chara::Base::SHADOW_WIDTH_DIVISOR, Chara::Base::SHADOW_CONE_SEGMENTS, GetColor(Global::Palette::BLACK.r, Global::Palette::BLACK.g, Global::Palette::BLACK.b), GetColor(Global::Palette::BLACK.r, Global::Palette::BLACK.g, Global::Palette::BLACK.b), TRUE);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 
-	DrawCapsule3D(bottom, bodyTop, bodyRad, CIRCLE_DIVNUM, color, color, fillFlag);
-	DrawSphere3D(headPos, headRad, CIRCLE_DIVNUM, color, color, fillFlag);
-
+	DrawCapsule3D(bottom, bodyTop, bodyRad, System::Window::CIRCLE_DIVNUM, color, color, fillFlag);
+	DrawSphere3D(headPos, headRad, System::Window::CIRCLE_DIVNUM, color, color, fillFlag);
 
 	if (melee) {
-		VECTOR forward = VGet(0, 0, 1);
+		VECTOR forward = VGet(0.0f, 0.0f, 1.0f);
 		if (target) {
 			forward = VNorm(VSub(target->GetPos(), position));
 			forward.y = 0.0f;
-			if (VSize(forward) < 0.01f) forward = VGet(0, 0, 1);
+			if (VSize(forward) < System::Collision::MIN_DIST_SQUARED) forward = VGet(0.0f, 0.0f, 1.0f);
 		}
-		VECTOR right = VNorm(VCross(VGet(0, 1, 0), forward));
+		VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), forward));
 		VECTOR up = VNorm(VCross(forward, right));
 
 		float swingAngle = 0.0f;
 		if (state == MeleeState::ATTACK_WIND) {
-		
-			float t = 1.0f - (stateTimer / 0.3f); 
-			swingAngle = t * -(DX_PI_F / 2.0f);
+			float t = 1.0f - (stateTimer / Chara::Melee::ATTACK_WINDUP_TIME);
+			swingAngle = t * -Chara::Melee::SWING_90_DEG;
 		}
 		else if (state == MeleeState::ATTACK_RECOVERY) {
-			float t = 1.0f - (stateTimer / 0.5f); 
-			if (t < 0.3f) {
-				float p = t / 0.3f;
-				swingAngle = -(DX_PI_F / 2.0f) * (1.0f - p) + (DX_PI_F / 4.0f) * p;
+			float t = 1.0f - (stateTimer / Chara::Melee::ATTACK_RECOVERY_TIME);
+			if (t < Chara::Melee::RECOVERY_PHASE1_RATIO) {
+				float p = t / Chara::Melee::RECOVERY_PHASE1_RATIO;
+				swingAngle = -Chara::Melee::SWING_90_DEG * (1.0f - p) + Chara::Melee::SWING_QUARTER_TURN * p;
 			}
 			else {
-				float p = (t - 0.3f) / 0.7f;
-				swingAngle = (DX_PI_F / 4.0f) * (1.0f - p);
+				float p = (t - Chara::Melee::RECOVERY_PHASE1_RATIO) / Chara::Melee::RECOVERY_PHASE2_RATIO;
+				swingAngle = Chara::Melee::SWING_QUARTER_TURN * (1.0f - p);
 			}
 		}
 
-		// 右方向ベクトルを軸にして上下に回転させる
 		MATRIX rot = MGetRotAxis(right, swingAngle);
 		VECTOR animForward = VTransform(forward, rot);
 		VECTOR animUp = VTransform(up, rot);
 
-		// 体の中心付近(手元の高さ)を基準に描画
-		VECTOR drawPos = VAdd(position, VGet(0, status.height * 0.5f, 0));
-		float weaponHeight = (status.height * 0.5f) - bodyRad;
+		VECTOR drawPos = VAdd(position, VGet(0.0f, status.height * Chara::Base::HALF_RATIO, 0.0f));
+		float weaponHeight = (status.height * Chara::Base::HALF_RATIO) - bodyRad;
 		drawPos = VAdd(drawPos, VScale(leanMax, weaponHeight / headHeight));
 		melee->Draw(drawPos, animForward, right, animUp, false, false);
 	}
@@ -185,7 +174,6 @@ void MeleeEnemy::Action() {
 
 	VECTOR attackPos = VAdd(position, VScale(toTarget, 1.0f));
 	auto spec = melee->GetSpec();
-	CollisionManager::GetIns().ProcessExplosion(attackPos, spec.explodeArea, spec.damage, spec.knockbackP, false, GetID(), WeaponID::ENEMY_KNIFE,spec.friendlyFire);
-	SoundManager::GetIns().Play3DSE("Resource/Sound/melee.wav", attackPos, 20.0f);
-	Debug::Log("EnemyAttack");
+	CollisionManager::GetIns().ProcessExplosion(attackPos, spec.explodeArea, spec.damage, spec.knockbackP, false, GetID(), WeaponID::ENEMY_KNIFE, spec.friendlyFire);
+	SoundManager::GetIns().Play3DSE("Resource/Sound/melee.wav", attackPos, Chara::Melee::MELEE_ATTACK_SOUND_RADIUS);
 }

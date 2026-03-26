@@ -14,26 +14,26 @@
 #include "TextManager.h"
 #include "EffectManager.h"
 #include "SoundManager.h"
+#include "Param/Global.h"
+#include "Param/Scene.h"
+#include "Param/System.h"
+#include "Param/Visual.h"
 
-namespace {
-	constexpr float TUTORIAL_SPAWN_TIMER = 0.5f;
-	constexpr int DIALOG_X2 = 350;
-	constexpr int DIALOG_Y = 250;
-}
+// [Rule 4] namespaceによるローカル定数定義を削除
+
 TutorialScene::TutorialScene(SceneManager* manager)
 	:BaseScene(manager)
 	, player(VGet(20.0f, 0.0f, 28.0f), &camera, PlayMode::MODE_TUTORIAL)
 	, stageHandle(-1)
 	, isPaused(false)
-	, pauseSelectNum(0) {
-}
+	, pauseSelectNum(0) {}
 
 TutorialScene::~TutorialScene() {
 	EnemyManager::GetIns().Clear();
 	ProjectileManager::GetIns().Clear();
 	ItemManager::GetIns().Clear();
 	EffectManager::GetIns().Clear();
-} 
+}
 
 void TutorialScene::Init() {
 	currentPhase = TutorialPhase::MOVEMENT;
@@ -41,40 +41,37 @@ void TutorialScene::Init() {
 
 	stageHandle = ResourceManager::GetIns().GetModel("Resource/TutorialArena.mv1");
 	EffectManager::GetIns().Clear();
-	//ステージセット
+
 	MV1SetPosition(stageHandle, VGet(0.0f, 0.0f, 0.0f));
-	MV1SetScale(stageHandle, VGet(0.02f, 0.02f, 0.02f));
-	MV1SetupCollInfo(stageHandle, -1, 8, 8, 8);
+	MV1SetScale(stageHandle, VGet(Scene::Common::STAGE_MODEL_SCALE, Scene::Common::STAGE_MODEL_SCALE, Scene::Common::STAGE_MODEL_SCALE));
+	MV1SetupCollInfo(stageHandle, -1, Scene::Common::COLLISION_SETUP_DIV_NUM, Scene::Common::COLLISION_SETUP_DIV_NUM, Scene::Common::COLLISION_SETUP_DIV_NUM);
 
 	player.SetStageHandle(stageHandle);
 	CollisionManager::GetIns().SetStageHandle(stageHandle);
-	EnemyManager::GetIns().NoPathInit(stageHandle,&player);
+	EnemyManager::GetIns().NoPathInit(stageHandle, &player);
 	ItemManager::GetIns().SetStageHandle(stageHandle);
 
 	fontLarge = ResourceManager::GetIns().GetFont("Resource/Font/JetBrainsMono_36.dft");
 	fontMedium = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_20.dft");
 	fontSmall = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_16.dft");
 
-	//武器スポナー
 	std::vector<SpawnerSetup>spawnerSetups = {
-		{VGet(-15.0f,0.4f,-16.0f),WeaponID::AR,TUTORIAL_SPAWN_TIMER},
-		{VGet(-10.0f,0.4f,-16.0f),WeaponID::SR,TUTORIAL_SPAWN_TIMER},
-		{VGet(0.0f,0.4f,-16.0f),WeaponID::SMG,TUTORIAL_SPAWN_TIMER},
-		{VGet(5.0f,0.4f,-16.0f),WeaponID::LR,TUTORIAL_SPAWN_TIMER}
+		{VGet(-15.0f,0.4f,-16.0f),WeaponID::AR,Scene::Tutorial::TUTORIAL_SPAWN_TIMER},
+		{VGet(-10.0f,0.4f,-16.0f),WeaponID::SR,Scene::Tutorial::TUTORIAL_SPAWN_TIMER},
+		{VGet(0.0f,0.4f,-16.0f),WeaponID::SMG,Scene::Tutorial::TUTORIAL_SPAWN_TIMER},
+		{VGet(5.0f,0.4f,-16.0f),WeaponID::LR,Scene::Tutorial::TUTORIAL_SPAWN_TIMER}
 	};
 	ItemManager::GetIns().InitSpawners(spawnerSetups);
 
-	//的ダミー
 	for (int i = 0; i < 3; ++i) {
-		auto Target = std::make_unique<Dummy>(VGet(-26.0f + i * 15.0f, 0.0f, -5.0f + i * 15.0f), &player, true);
+		auto Target = std::make_unique<Dummy>(VGet(Scene::Tutorial::TARGET_BASE_X + i * Scene::Tutorial::TARGET_INTERVAL_X, 0.0f, Scene::Tutorial::TARGET_BASE_Z + i * Scene::Tutorial::TARGET_INTERVAL_Z), &player, true);
 		target.push_back(std::move(Target));
 	}
 
-	//ボタンダミー 
 	for (int i = 0; i < 4; i++) {
 		SpawnButton btn;
-		btn.pos = VGet(28.0f + i * -5.0f, 0.0f, -28.0f);
-		btn.dummy = std::make_unique<Dummy>(btn.pos,&player,false);
+		btn.pos = VGet(Scene::Tutorial::BUTTON_BASE_X + i * Scene::Tutorial::BUTTON_INTERVAL_X, 0.0f, Scene::Tutorial::BUTTON_BASE_Z);
+		btn.dummy = std::make_unique<Dummy>(btn.pos, &player, false);
 		btn.enemyType = i;
 		btn.spawnCT = 0.0f;
 		button.push_back(std::move(btn));
@@ -87,13 +84,12 @@ void TutorialScene::Update() {
 	Debug::Update();
 	float dt = Time::GetIns().GetDelta();
 
-	//ポーズ処理
 	if (InputManager::GetIns().IsActionTrigger(ActionID::PAUSE)) {
 		isPaused = !isPaused;
 		pauseSelectNum = 0;
 
 		if (isPaused) {
-			SoundManager::GetIns().PauseAll(); 
+			SoundManager::GetIns().PauseAll();
 			SoundManager::GetIns().PlaySE("Resource/Sound/pause.ogg");
 		}
 		else {
@@ -108,7 +104,6 @@ void TutorialScene::Update() {
 
 	player.Update();
 
-	//ダミー更新処理
 	for (auto& btn : button) {
 		if (btn.spawnCT > 0.0f)
 			btn.spawnCT -= dt;
@@ -124,12 +119,11 @@ void TutorialScene::Update() {
 
 	VECTOR pPos = player.GetPos();
 
-	//ステート更新箇所の座標
-	bool isPlayerCombatArea = (pPos.x >= -22.0f && pPos.x <= 9.0f && pPos.z >= -30.0f && pPos.z <= -20.0f);
-	bool MovementToCombat = (pPos.x >= 11.0f && pPos.x <= 30.0f && pPos.z < -20.0f);
-	bool CombatToMovement = (pPos.x >= 11.0f && pPos.x <= 30.0f && pPos.z > -18.0f);
-	bool CombatToFreerange = (pPos.x >= -30.0f && pPos.x <= -24.0f && pPos.z > -18.0f);
-	bool FreerangeToCombat = (pPos.x >= -30.0f && pPos.x <= -24.0f && pPos.z < -20.0f);
+	bool isPlayerCombatArea = (pPos.x >= Scene::Tutorial::Boundary::COMBAT_MIN_X && pPos.x <= Scene::Tutorial::Boundary::COMBAT_MAX_X && pPos.z >= Scene::Tutorial::Boundary::COMBAT_MIN_Z && pPos.z <= Scene::Tutorial::Boundary::COMBAT_MAX_Z);
+	bool MovementToCombat = (pPos.x >= Scene::Tutorial::Boundary::MOVE_TO_COMBAT_MIN_X && pPos.x <= Scene::Tutorial::Boundary::MOVE_TO_COMBAT_MAX_X && pPos.z < Scene::Tutorial::Boundary::MOVE_TO_COMBAT_Z_LIMIT);
+	bool CombatToMovement = (pPos.x >= Scene::Tutorial::Boundary::MOVE_TO_COMBAT_MIN_X && pPos.x <= Scene::Tutorial::Boundary::MOVE_TO_COMBAT_MAX_X && pPos.z > Scene::Tutorial::Boundary::COMBAT_TO_MOVE_Z_LIMIT);
+	bool CombatToFreerange = (pPos.x >= Scene::Tutorial::Boundary::FREE_RANGE_MIN_X && pPos.x <= Scene::Tutorial::Boundary::FREE_RANGE_MAX_X && pPos.z > Scene::Tutorial::Boundary::COMBAT_TO_MOVE_Z_LIMIT);
+	bool FreerangeToCombat = (pPos.x >= Scene::Tutorial::Boundary::FREE_RANGE_MIN_X && pPos.x <= Scene::Tutorial::Boundary::FREE_RANGE_MAX_X && pPos.z < Scene::Tutorial::Boundary::MOVE_TO_COMBAT_Z_LIMIT);
 
 
 	if (isPlayerCombatArea) {
@@ -142,7 +136,7 @@ void TutorialScene::Update() {
 	if (player.GetHP() <= 0) {
 		player.revive();
 	}
-	
+
 	switch (currentPhase) {
 	case TutorialPhase::MOVEMENT:
 		if (MovementToCombat) {
@@ -171,7 +165,6 @@ void TutorialScene::Update() {
 			currentEnemyInfo = -1;
 		}
 
-		//スポーンボタンの処理
 		for (auto& btn : button) {
 			if (btn.dummy && btn.dummy->GetHP() < btn.dummy->GetStatus().maxHP) {
 				btn.dummy->revive();
@@ -181,7 +174,7 @@ void TutorialScene::Update() {
 					EnemyManager::GetIns().Clear();
 
 					currentEnemyInfo = btn.enemyType;
-					VECTOR spawnPos = VGet(-18, 1, -24);
+					VECTOR spawnPos = VGet(Scene::Tutorial::Pos::SPAWN_X, Scene::Tutorial::Pos::SPAWN_Y, Scene::Tutorial::Pos::SPAWN_Z);
 
 					if (btn.enemyType == 0)EnemyManager::GetIns().Spawn(std::make_unique<MeleeEnemy>(spawnPos, &player));
 					if (btn.enemyType == 1)EnemyManager::GetIns().Spawn(std::make_unique<RifleEnemy>(spawnPos, &player));
@@ -204,7 +197,7 @@ void TutorialScene::Update() {
 }
 
 void TutorialScene::PauseUpdate() {
-	SetMousePoint(CENTER_X, CENTER_Y);
+	SetMousePoint(System::Window::CENTER_X, System::Window::CENTER_Y);
 	if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_UP)) {
 		SoundManager::GetIns().PlaySE("Resource/Sound/cursormove.ogg");
 		pauseSelectNum--;
@@ -230,16 +223,15 @@ void TutorialScene::PauseUpdate() {
 void TutorialScene::Draw() {
 	if (stageHandle != -1) MV1DrawModel(stageHandle);
 	ItemManager::GetIns().SetCamPos(camera.GetPos());
-	// ボタン（ダミー）の描画とテキスト
 	for (auto& btn : button) {
 		if (btn.dummy) {
-			btn.dummy->Draw();	
-			VECTOR camPos = camera.GetPos(); 
+			btn.dummy->Draw();
+			VECTOR camPos = camera.GetPos();
 			float distance = VSize(VSub(camPos, btn.pos));
-			if (distance <= 15.0f){
-				VECTOR textPos3D = VAdd(btn.pos, VGet(0.0f, 2.0f, 0.0f));
+			if (distance <= Scene::Tutorial::BUTTON_UI_VISIBLE_DIST) {
+				VECTOR textPos3D = VAdd(btn.pos, VGet(0.0f, Scene::Tutorial::BUTTON_UI_OFFSET_Y, 0.0f));
 				VECTOR sp = ConvWorldPosToScreenPos(textPos3D);
-				if (sp.z >= 0 && sp.z <= 1.0f) {
+				if (sp.z >= 0.0f && sp.z <= 1.0f) {
 					MV1_COLL_RESULT_POLY hit = MV1CollCheck_Line(stageHandle, -1, camPos, textPos3D);
 					if (hit.HitFlag == 0) {
 						const char* name = "";
@@ -247,15 +239,15 @@ void TutorialScene::Draw() {
 						else if (btn.enemyType == 1) name = "Rifle";
 						else if (btn.enemyType == 2) name = "Sniper";
 						else if (btn.enemyType == 3) name = "Rolling";
-						float fadeStartDist = 10.0f;
+						float fadeStartDist = Scene::Tutorial::BUTTON_UI_FADE_START;
 						float alphaRate = 1.0f;
 						if (distance > fadeStartDist) {
-							alphaRate = 1.0f - ((distance - fadeStartDist) / 5.0f);
+							alphaRate = 1.0f - ((distance - fadeStartDist) / Scene::Tutorial::BUTTON_UI_FADE_RANGE);
 						}
-						int alpha = static_cast<int>(255 * alphaRate);
+						int alpha = static_cast<int>(Visual::Effect::ALPHA_MAX * alphaRate);
 
 						::SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-						::DrawFormatStringToHandle(static_cast<int>(sp.x) - 40, static_cast<int>(sp.y), GetColor(255, 255, 255), fontMedium, "Spawn: %s", name);
+						::DrawFormatStringToHandle(static_cast<int>(sp.x) + Scene::Tutorial::BUTTON_UI_TEXT_OFFSET_X, static_cast<int>(sp.y), GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b), fontMedium, "Spawn: %s", name);
 						::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 					}
 				}
@@ -273,14 +265,14 @@ void TutorialScene::Draw() {
 	Debug::Draw();
 
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
-	DrawBox(0, CENTER_Y - DIALOG_Y, DIALOG_X2, CENTER_Y + DIALOG_Y, GetColor(0, 0, 0),true);
+	DrawBox(0, System::Window::CENTER_Y - Scene::Tutorial::DIALOG_Y_POS, Scene::Tutorial::DIALOG_X2_POS, System::Window::CENTER_Y + Scene::Tutorial::DIALOG_Y_POS, GetColor(Global::Palette::BLACK.r, Global::Palette::BLACK.g, Global::Palette::BLACK.b), true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	// --- HUD描画 ---
-	const int colorTitle = GetColor(0, 255, 0);
-	const int colorText = GetColor(255, 255, 255);
-	const int colorWarning = GetColor(255, 100, 100);
-	const int colorAlert = GetColor(255, 255, 0);
-	const int colorInfo = GetColor(255, 200, 0);
+
+	const int colorTitle = GetColor(Global::Palette::GREEN.r, Global::Palette::GREEN.g, Global::Palette::GREEN.b);
+	const int colorText = GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b);
+	const int colorWarning = GetColor(Global::Palette::RED_LIGHT.r, Global::Palette::RED_LIGHT.g, Global::Palette::RED_LIGHT.b);
+	const int colorAlert = GetColor(Global::Palette::YELLOW.r, Global::Palette::YELLOW.g, Global::Palette::YELLOW.b);
+	const int colorInfo = GetColor(Global::Palette::AMBER.r, Global::Palette::AMBER.g, Global::Palette::AMBER.b);
 
 	const int TEXT_X = 20;
 	const int TEXT_Y = 300;
@@ -318,7 +310,6 @@ void TutorialScene::Draw() {
 		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 7, "ヘッドショットするとダメージは２倍", colorText, fontSmall);
 		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 9, "的を撃つと対応する敵がスポーン", colorText, fontSmall);
 
-		// スポーンした敵の情報
 		if (currentEnemyInfo == 0) {
 			DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 10, "< 近接 >", colorWarning, fontSmall);
 			DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 11, "まっすぐ追いかけて攻撃してきます。", colorText, fontSmall);
@@ -379,14 +370,17 @@ void TutorialScene::Draw() {
 }
 
 void TutorialScene::PauseDraw() {
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
-	DrawBox(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GetColor(0, 0, 0), TRUE);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, Scene::Common::PAUSE_BG_ALPHA);
+	DrawBox(0, 0, System::Window::WINDOW_WIDTH, System::Window::WINDOW_HEIGHT, GetColor(Global::Palette::BLACK.r, Global::Palette::BLACK.g, Global::Palette::BLACK.b), TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-	DrawStringToHandle(CENTER_X - 40, CENTER_Y - 100, "PAUSE", GetColor(255, 255, 255), fontLarge);
-	int colorResume = (pauseSelectNum == RESUME) ? GetColor(255, 255, 0) : GetColor(255, 255, 255);
-	int colorTitle = (pauseSelectNum == RETURN_TITLE) ? GetColor(255, 255, 0) : GetColor(255, 255, 255);
-	DrawStringToHandle(CENTER_X - 80, CENTER_Y + 60 * pauseSelectNum, ">", GetColor(255, 255, 0), fontMedium);
-	DrawStringToHandle(CENTER_X - 60, CENTER_Y, "Resume", colorResume, fontMedium);
-	DrawStringToHandle(CENTER_X - 60, CENTER_Y + 60, "Return Title", colorTitle, fontMedium);
+	int yellow = GetColor(Global::Palette::YELLOW.r, Global::Palette::YELLOW.g, Global::Palette::YELLOW.b);
+	int white = GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b);
+
+	DrawStringToHandle(System::Window::CENTER_X + Scene::Common::PAUSE_TITLE_OFFSET_X, System::Window::CENTER_Y + Scene::Common::PAUSE_TITLE_OFFSET_Y, "PAUSE", white, fontLarge);
+	int colorResume = (pauseSelectNum == RESUME) ? yellow : white;
+	int colorTitle = (pauseSelectNum == RETURN_TITLE) ? yellow : white;
+	DrawStringToHandle(System::Window::CENTER_X + Scene::Common::PAUSE_CURSOR_OFFSET_X, System::Window::CENTER_Y + Scene::Common::PAUSE_ITEM_LINE_HEIGHT * pauseSelectNum, ">", yellow, fontMedium);
+	DrawStringToHandle(System::Window::CENTER_X + Scene::Common::PAUSE_ITEM_OFFSET_X, System::Window::CENTER_Y, "Resume", colorResume, fontMedium);
+	DrawStringToHandle(System::Window::CENTER_X + Scene::Common::PAUSE_ITEM_OFFSET_X, System::Window::CENTER_Y + Scene::Common::PAUSE_ITEM_LINE_HEIGHT, "Return Title", colorTitle, fontMedium);
 }

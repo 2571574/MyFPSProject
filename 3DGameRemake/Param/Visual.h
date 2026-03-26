@@ -1,13 +1,13 @@
 #pragma once
-#include "DxLib.h"
+#include "Global.h"
 
-namespace VisualParam {
+namespace Visual {
 
     namespace WeaponAnim {
         constexpr float ANIM_EQUIP_START_SCALE = 0.5f;
         constexpr float ANIM_EQUIP_OFFSET_Y = -0.6f;
         constexpr float ANIM_EQUIP_OFFSET_Z = -0.3f;
-        constexpr float ANIM_EQUIP_ROT_X = DX_PI_F / 4.0f;
+        constexpr float ANIM_EQUIP_ROT_X = Global::Math::PI_QUARTER;
 
         constexpr float ANIM_RELOAD_SMG_PHASE1 = 0.15f;
         constexpr float ANIM_RELOAD_SMG_PHASE2 = 0.85f;
@@ -15,7 +15,7 @@ namespace VisualParam {
         constexpr float ANIM_RELOAD_SMG_SPINS = 6.0f;
         constexpr float ANIM_RELOAD_SMG_PULLBACK_Z = -0.2f;
         constexpr float ANIM_RELOAD_SMG_OVERSHOOT_Y = 0.1f;
-        constexpr float ANIM_RELOAD_SMG_OVERSHOOT_ROT_X = -DX_PI_F / 8.0f;
+        constexpr float ANIM_RELOAD_SMG_OVERSHOOT_ROT_X = -Global::Math::PI_EIGHTH;
 
         constexpr float ANIM_RELOAD_LR_PHASE1 = 0.3f;
         constexpr float ANIM_RELOAD_LR_PHASE2 = 0.7f;
@@ -24,13 +24,11 @@ namespace VisualParam {
         constexpr float ANIM_RELOAD_LR_SHOULDER_Z = -0.2f;
         constexpr float ANIM_RELOAD_LR_ROT_X = -DX_PI_F / 2.5f;
 
-        constexpr float MODEL_BASE_ROTATION_Y = -DX_PI_F / 2.0f;
+        constexpr float MODEL_BASE_ROTATION_Y = -Global::Math::PI_HALF;
     }
 
     namespace ItemUI {
-        constexpr int COLOR_ITEM_RING_R = 255;
-        constexpr int COLOR_ITEM_RING_G = 200;
-        constexpr int COLOR_ITEM_RING_B = 0;
+        constexpr Global::ColorRGB COLOR_ITEM_RING = Global::Palette::AMBER;
         constexpr int RING_BLEND_ALPHA = 150;
 
         constexpr float OUTER_RING_BOB_SPEED_MULT = 1.5f;
@@ -38,9 +36,7 @@ namespace VisualParam {
         constexpr float OUTER_RING_ROT_SPEED_MULT = -0.5f;
         constexpr float OUTER_RING_OFFSET_Y = -0.2f;
 
-        constexpr int COLOR_FALLBACK_CUBE_R = 255;
-        constexpr int COLOR_FALLBACK_CUBE_G = 255;
-        constexpr int COLOR_FALLBACK_CUBE_B = 0;
+        constexpr Global::ColorRGB COLOR_ITEM_RING = Global::Palette::AMBER;
 
         constexpr float UI_FADE_TRANSITION_RANGE = 5.0f;
 
@@ -60,33 +56,13 @@ namespace VisualParam {
     }
 
     namespace HUD {
-        constexpr int COLOR_HUD_WHITE_R = 255;
-        constexpr int COLOR_HUD_WHITE_G = 255;
-        constexpr int COLOR_HUD_WHITE_B = 255;
-
-        constexpr int COLOR_HUD_RED_R = 255;
-        constexpr int COLOR_HUD_RED_G = 50;
-        constexpr int COLOR_HUD_RED_B = 50;
-
-        constexpr int COLOR_HUD_YELLOW_R = 255;
-        constexpr int COLOR_HUD_YELLOW_G = 200;
-        constexpr int COLOR_HUD_YELLOW_B = 0;
-
-        constexpr int COLOR_HP_BAR_BG_R = 40;
-        constexpr int COLOR_HP_BAR_BG_G = 40;
-        constexpr int COLOR_HP_BAR_BG_B = 40;
-
-        constexpr int COLOR_RESERVE_AMMO_TEXT_R = 200;
-        constexpr int COLOR_RESERVE_AMMO_TEXT_G = 200;
-        constexpr int COLOR_RESERVE_AMMO_TEXT_B = 200;
-
-        constexpr int COLOR_RELOAD_CIRCLE_BG_R = 80;
-        constexpr int COLOR_RELOAD_CIRCLE_BG_G = 80;
-        constexpr int COLOR_RELOAD_CIRCLE_BG_B = 80;
-
-        constexpr int COLOR_DAMAGE_FLASH_R = 255;
-        constexpr int COLOR_DAMAGE_FLASH_G = 0;
-        constexpr int COLOR_DAMAGE_FLASH_B = 0;
+        constexpr Global::ColorRGB COLOR_HUD_WHITE = Global::Palette::WHITE;
+        constexpr Global::ColorRGB COLOR_HUD_RED = Global::Palette::RED_LIGHT;
+        constexpr Global::ColorRGB COLOR_HUD_YELLOW = Global::Palette::AMBER;
+        constexpr Global::ColorRGB COLOR_HP_BAR_BG = Global::Palette::GRAY_DARK;
+        constexpr Global::ColorRGB COLOR_RESERVE_AMMO_TEXT = Global::Palette::GRAY_LIGHT;
+        constexpr Global::ColorRGB COLOR_RELOAD_CIRCLE_BG = Global::Palette::GRAY_MEDIUM;
+        constexpr Global::ColorRGB COLOR_DAMAGE_FLASH = Global::Palette::RED;
 
         constexpr int TOP_INFO_TEXT_Y = 50;
 
@@ -141,7 +117,6 @@ namespace VisualParam {
         constexpr float DAMAGE_FLASH_BASE_THICKNESS = 40.0f;
         constexpr float DAMAGE_FLASH_OFFSET_MAX = 60.0f;
 
-        // HUD.cpp のピックアップUI関連
         constexpr int PICKUP_ICON_TEXT_GAP = 20;
         constexpr int PICKUP_PADDING_X = 25;
         constexpr int PICKUP_PADDING_Y = 15;
@@ -155,42 +130,35 @@ namespace VisualParam {
     }
 
     namespace Effect {
-        constexpr int COLOR_EFFECT_MELEE_R = 255;
-        constexpr int COLOR_EFFECT_MELEE_G = 255;
-        constexpr int COLOR_EFFECT_MELEE_B = 0;
+        constexpr Global::ColorRGB COLOR_EFFECT_MELEE = Global::Palette::YELLOW;
+        constexpr Global::ColorRGB COLOR_EFFECT_RIFLE = Global::Palette::BLUE;
+        constexpr Global::ColorRGB COLOR_EFFECT_SNIPER = Global::Palette::GREEN;
+        constexpr Global::ColorRGB COLOR_EFFECT_ROLLING = Global::Palette::ORANGE;
+        constexpr Global::ColorRGB COLOR_EFFECT_HIT = Global::Palette::ORANGE_BRIGHT;
+        constexpr Global::ColorRGB COLOR_EFFECT_SPAWN = Global::Palette::VIOLET;
+        constexpr Global::ColorRGB COLOR_MUZZLE_FLASH = Global::Palette::YELLOW;
+        constexpr Global::ColorRGB COLOR_TRAIL_FRIENDLY = Global::Palette::GRAY;
+        constexpr Global::ColorRGB COLOR_TRAIL_ENEMY = Global::Palette::RED;
+        constexpr Global::ColorRGB COLOR_TRAIL_LAUNCHER = Global::Palette::ORANGE_BRIGHT;
+        constexpr Global::ColorRGB COLOR_EXPLOSION = Global::Palette::ORANGE_BRIGHT;
 
-        constexpr int COLOR_EFFECT_RIFLE_R = 0;
-        constexpr int COLOR_EFFECT_RIFLE_G = 0;
-        constexpr int COLOR_EFFECT_RIFLE_B = 255;
-
-        constexpr int COLOR_EFFECT_SNIPER_R = 0;
-        constexpr int COLOR_EFFECT_SNIPER_G = 255;
-        constexpr int COLOR_EFFECT_SNIPER_B = 0;
-
-        constexpr int COLOR_EFFECT_ROLLING_R = 255;
-        constexpr int COLOR_EFFECT_ROLLING_G = 165;
-        constexpr int COLOR_EFFECT_ROLLING_B = 0;
-
-        constexpr int COLOR_EFFECT_HIT_R = 255;
-        constexpr int COLOR_EFFECT_HIT_G = 100;
-        constexpr int COLOR_EFFECT_HIT_B = 0;
-
-        constexpr int COLOR_EFFECT_SPAWN_R = 200;
-        constexpr int COLOR_EFFECT_SPAWN_G = 100;
-        constexpr int COLOR_EFFECT_SPAWN_B = 255;
-
-        constexpr int COLOR_TRAIL_FRIENDLY_R = 180;
-        constexpr int COLOR_TRAIL_FRIENDLY_G = 180;
-        constexpr int COLOR_TRAIL_FRIENDLY_B = 180;
-        constexpr int COLOR_TRAIL_ENEMY_R = 255;
-        constexpr int COLOR_TRAIL_ENEMY_G = 0;
-        constexpr int COLOR_TRAIL_ENEMY_B = 0;
-        constexpr int COLOR_TRAIL_LAUNCHER_R = 255;
-        constexpr int COLOR_TRAIL_LAUNCHER_G = 100;
-        constexpr int COLOR_TRAIL_LAUNCHER_B = 0;
-        constexpr int COLOR_EXPLOSION_R = 255;
-        constexpr int COLOR_EXPLOSION_G = 100;
-        constexpr int COLOR_EXPLOSION_B = 0;
+        constexpr Global::ColorRGB COLOR_EFFECT_WHITE = { 255, 255, 255 };
+        constexpr float DEATH_VEL_Y_RANDOM_MULT = 0.3f;
+        constexpr float DEATH_VEL_Y_BASE = 0.2f;
+        constexpr float DEATH_LIFE_BASE = 1.0f;
+        constexpr float DEATH_SIZE_BASE = 0.05f;
+        constexpr int DEATH_SIZE_RANDOM_MULT = 10;
+        constexpr float MUZZLE_FLASH_LIFE = 0.05f;
+        constexpr float HIT_SPEED_RANDOM_MULT = 0.25f;
+        constexpr float HIT_SPEED_BASE = 0.1f;
+        constexpr float HIT_LIFE_BASE = 0.4f;
+        constexpr int HIT_LIFE_RANDOM = 40;
+        constexpr float HIT_SIZE_BASE = 0.04f;
+        constexpr int HIT_SIZE_RANDOM = 3;
+        constexpr float EXPLOSION_LIFE = 0.6f;
+        constexpr float EXPLOSION_SOUND_RADIUS = 50.0f;
+        constexpr float TRAIL_HITSCAN_LIFE = 0.25f;
+        constexpr float TRAIL_PROJECTILE_LIFE = 0.12f;
 
         constexpr float MUZZLE_FLASH_TOP_SCALE = 4.0f;
         constexpr float MUZZLE_FLASH_BOTTOM_SCALE = 0.5f;
@@ -210,7 +178,7 @@ namespace VisualParam {
         constexpr float PARTICLE_SPEED_RANDOM_MULT = 0.4f;
 
         constexpr float EFFECT_GRAVITY = 0.025f;
-        constexpr float EFFECT_FLOOR_Y_LIMIT = -10.0f;
+        constexpr float EFFECT_FLOOR_Y_LIMIT = Global::World::Y_MIN;
 
         constexpr float PARTICLE_BOUNCE_COEFFICIENT = -0.5f;
         constexpr float PARTICLE_FRICTION_GROUND_XZ = 0.7f;
@@ -221,6 +189,36 @@ namespace VisualParam {
         constexpr int SPHERE_SEGMENTS_LOW = 8;
         constexpr int CAPSULE_SEGMENTS_TRAIL = 6;
         constexpr int CAPSULE_SEGMENTS_HITSCAN = 8;
+
+        constexpr int ROT_AXIS_RAND_RANGE = 100;
+        constexpr float ROT_AXIS_RAND_OFFSET = 50.0f;
+        constexpr float STOP_VEL_Y_THRESHOLD = 0.05f;
+
+        constexpr float SPAWN_SCAN_Y_MULT = 2.0f;
+        constexpr float SPAWN_PROGRESS_HALF = 0.5f;
+        constexpr int SPAWN_RAD_RAND_RANGE = 10;
+        constexpr int SPAWN_POS_RAND_RANGE = 20;
+        constexpr float SPAWN_POS_RAND_OFFSET = 10.0f;
+        constexpr float SPAWN_VEL_XZ_DIVISOR = 500.0f;
+        constexpr float SPAWN_VEL_Y_DIVISOR = 200.0f;
+        constexpr float SPAWN_VEL_Y_OFFSET = 5.0f;
+        constexpr float SPAWN_LIFE_BASE = 0.2f;
+        constexpr int SPAWN_LIFE_RAND_RANGE = 20;
+        constexpr float SPAWN_SIZE_BASE = 0.03f;
+        constexpr int SPAWN_SIZE_RAND_RANGE = 3;
+        constexpr float SPAWN_VEL_DECAY = 0.9f;
+
+        constexpr float EXPLOSION_SPEED_BASE = 0.2f;
+        constexpr float EXPLOSION_SPEED_RAND_MULT = 0.8f;
+        constexpr float EXPLOSION_ROT_SPEED_BASE = 0.1f;
+        constexpr float EXPLOSION_ROT_SPEED_RAND_MULT = 0.5f;
+        constexpr float EXPLOSION_SIZE_BASE = 0.04f;
+        constexpr int EXPLOSION_SIZE_RAND_RANGE = 6;
+        constexpr int EXPLOSION_CORE_ALPHA_MAX = 150;
+        constexpr float EXPLOSION_CORE_POW = 3.0f;
+
+        constexpr float TRAIL_INNER_RAD_MULT = 0.3f;
+        constexpr int ALPHA_MAX = 255;
     }
 
 }

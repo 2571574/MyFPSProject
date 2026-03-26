@@ -1,5 +1,7 @@
 #pragma once
-namespace ItemParam {
+#include "Global.h"
+
+namespace Item {
 
     namespace Weapon {
         constexpr float SPREAD_RANDOM_PRECISION = 1000.0f;
@@ -13,7 +15,6 @@ namespace ItemParam {
         constexpr float MUZZLE_FLASH_DURATION = 0.5f;
         constexpr int HEADSHOT_DAMAGE_MULTIPLIER = 2;
 
-        constexpr float FPS_BASE = 60.0f;
         constexpr float RECOIL_HALF_DIVISOR = 2.0f;
         constexpr float SOUND_RADIUS_NORMAL = 20.0f;
         constexpr float SOUND_RADIUS_LOUD = 40.0f;
@@ -25,9 +26,7 @@ namespace ItemParam {
     }
 
     namespace Projectile {
-        constexpr float FPS_BASE = 60.0f;
         constexpr int HEADSHOT_MULTIPLIER = 2;
         constexpr float TRAIL_RADIUS_MULTIPLIER = 1.0f;
     }
-
 }

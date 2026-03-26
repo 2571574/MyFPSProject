@@ -1,6 +1,8 @@
 #pragma once
+#include "Global.h"
+#include "Chara.h"
 
-namespace SystemParam {
+namespace System {
 
     namespace Window {
         constexpr int WINDOW_WIDTH = 1920;
@@ -12,7 +14,6 @@ namespace SystemParam {
     }
 
     namespace Time {
-        constexpr float MS_TO_SEC_DIVISOR = 1000.0f;
         constexpr float MAX_DELTA_TIME = 0.1f;
     }
 
@@ -22,17 +23,16 @@ namespace SystemParam {
         constexpr float YAW_SNAP = 360.0f;
         constexpr float RECOIL_SPEED = 15.0f;
         constexpr float RECOVERY_SPEED = 3.0f;
-        constexpr float DEG_TO_RAD_DIVISOR = 180.0f;
         constexpr float CAMERA_NEAR_CLIP = 0.01f;
         constexpr float CAMERA_FAR_CLIP = 1000.0f;
     }
 
     namespace Pathfinding {
         constexpr float GRID_SIZE = 2.0f;
-        constexpr float CHARA_HEIGHT = 2.0f;
-        constexpr float CHARA_RADIUS = 0.5f;
+        constexpr float CHARA_HEIGHT = Chara::Base::CHARA_HEIGHT;
+        constexpr float CHARA_RADIUS = Chara::Base::CHARA_RADIUS;
         constexpr float MAP_START_Y = 30.0f;
-        constexpr float MAP_END_Y = -10.0f;
+        constexpr float MAP_END_Y = Global::World::Y_MIN;
         constexpr float MAX_SLOPE_NORMAL = 0.6f;
         constexpr float MAP_MIN_X = -30.0f;
         constexpr float MAP_MAX_X = 30.0f;
@@ -42,7 +42,6 @@ namespace SystemParam {
         constexpr float GROUND_CHECK_DIST = 0.4f;
 
         constexpr int CIRCLE_CHECK_SEGMENTS = 8;
-        constexpr float PI_DIVISOR_OCTAGON = 4.0f;
         constexpr float CAPSULE_BOTTOM_MARGIN = 0.1f;
         constexpr float NODE_PLACEMENT_OFFSET_Y = 0.1f;
         constexpr float NEXT_RAY_OFFSET_Y = -0.5f;
@@ -52,12 +51,13 @@ namespace SystemParam {
         constexpr float GROUND_CHECK_RAY_OFFSET_Y_TOP = 0.5f;
         constexpr float GROUND_CHECK_RAY_OFFSET_Y_BOTTOM = -0.5f;
         constexpr float MAX_DISTANCE_SQUARED = 99999.0f;
+
+        constexpr int MIN_DIV_COUNT = 1;
     }
 
     namespace Sound {
         constexpr int MAX_DUPLICATE = 8;
         constexpr int MAX_VOLUME_SCALE = 255;
-        constexpr float MS_TO_SEC_DIVISOR = 1000.0f;
     }
 
     namespace Debug {
@@ -71,13 +71,10 @@ namespace SystemParam {
         constexpr int DEBUG_BOX_PADDING = 5;
         constexpr int TEXT_LINE_SPACING = 16;
 
-        constexpr int COLOR_BG_RGB = 0;
-        constexpr int COLOR_BORDER_RB = 255;
-        constexpr int COLOR_BORDER_G = 0;
-        constexpr int COLOR_LOG_RG = 255;
-        constexpr int COLOR_LOG_B = 0;
-        constexpr int COLOR_WATCH_G = 255;
-        constexpr int COLOR_WATCH_RB = 0;
+        constexpr Global::ColorRGB COLOR_BG = Global::Palette::BLACK;
+        constexpr Global::ColorRGB COLOR_BORDER = Global::Palette::MAGENTA;
+        constexpr Global::ColorRGB COLOR_LOG = Global::Palette::YELLOW;
+        constexpr Global::ColorRGB COLOR_WATCH = Global::Palette::GREEN;
         constexpr int DEBUG_BG_ALPHA = 80;
     }
 
@@ -112,6 +109,7 @@ namespace SystemParam {
         constexpr float STICK_DEADZONE = 0.01f;
         constexpr int MOUSE_WHEEL_UP = 1301;
         constexpr int MOUSE_WHEEL_DOWN = 1302;
+        constexpr int MAX_KEYCODES = 256;
     }
 
 }

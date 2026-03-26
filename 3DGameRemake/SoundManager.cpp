@@ -2,6 +2,8 @@
 #include "ResourceManager.h"
 #include "ConfigManager.h"
 #include "Time.h"
+#include "Param/System.h"
+#include "Param/Global.h"
 
 SoundManager& SoundManager::GetIns() {
     static SoundManager ins;
@@ -11,13 +13,11 @@ SoundManager& SoundManager::GetIns() {
 void SoundManager::Update() {
     float dt = Time::GetIns().GetDelta();
 
-    // BGMの音量設定を反映（設定画面での変更に即座に対応）
     if (currentBGMHandle != -1 && CheckSoundMem(currentBGMHandle) == 1) {
         float bgmVol = ConfigManager::GetIns().Settings().bgmVolume;
-        ChangeVolumeSoundMem(static_cast<int>(255 * bgmVol), currentBGMHandle);
+        ChangeVolumeSoundMem(static_cast<int>(System::Sound::MAX_VOLUME_SCALE * bgmVol), currentBGMHandle);
     }
 
-    // フェードアウト指定されたSEの音量を徐々に下げる
     float seVolBase = ConfigManager::GetIns().Settings().seVolume;
     for (auto it = fadingSEs.begin(); it != fadingSEs.end();) {
         it->timer -= dt;
@@ -27,7 +27,7 @@ void SoundManager::Update() {
         }
         else {
             float rate = it->timer / it->maxTime;
-            int vol = static_cast<int>(255 * seVolBase * rate);
+            int vol = static_cast<int>(System::Sound::MAX_VOLUME_SCALE * seVolBase * rate);
             ChangeVolumeSoundMem(vol, it->handle);
             ++it;
         }
@@ -55,7 +55,7 @@ void SoundManager::PlayBGM(const std::string& path) {
     currentBGMHandle = nextBGM;
 
     float bgmVol = ConfigManager::GetIns().Settings().bgmVolume;
-    ChangeVolumeSoundMem(static_cast<int>(255 * bgmVol), currentBGMHandle);
+    ChangeVolumeSoundMem(static_cast<int>(System::Sound::MAX_VOLUME_SCALE * bgmVol), currentBGMHandle);
     PlaySoundMem(currentBGMHandle, DX_PLAYTYPE_LOOP);
 }
 
@@ -83,14 +83,14 @@ void SoundManager::PlaySE(const std::string& path) {
         }
     }
 
-    if (playHandle == -1 && pool.duplicateHandles.size() < MAX_DUPLICATE) {
+    if (playHandle == -1 && pool.duplicateHandles.size() < System::Sound::MAX_DUPLICATE) {
         playHandle = DuplicateSoundMem(baseHandle);
         if (playHandle != -1) pool.duplicateHandles.push_back(playHandle);
     }
 
     if (playHandle != -1) {
         float seVol = ConfigManager::GetIns().Settings().seVolume;
-        ChangeVolumeSoundMem(static_cast<int>(255 * seVol), playHandle);
+        ChangeVolumeSoundMem(static_cast<int>(System::Sound::MAX_VOLUME_SCALE * seVol), playHandle);
         PlaySoundMem(playHandle, DX_PLAYTYPE_BACK);
     }
 }
@@ -108,14 +108,14 @@ void SoundManager::PlaySEWithFadeOut(const std::string& path, float fadeTimeSec)
             playHandle = handle; break;
         }
     }
-    if (playHandle == -1 && pool.duplicateHandles.size() < MAX_DUPLICATE) {
+    if (playHandle == -1 && pool.duplicateHandles.size() < System::Sound::MAX_DUPLICATE) {
         playHandle = DuplicateSoundMem(baseHandle);
         if (playHandle != -1) pool.duplicateHandles.push_back(playHandle);
     }
 
     if (playHandle != -1) {
         float seVol = ConfigManager::GetIns().Settings().seVolume;
-        ChangeVolumeSoundMem(static_cast<int>(255 * seVol), playHandle);
+        ChangeVolumeSoundMem(static_cast<int>(System::Sound::MAX_VOLUME_SCALE * seVol), playHandle);
         PlaySoundMem(playHandle, DX_PLAYTYPE_BACK);
 
         fadingSEs.push_back({ playHandle, fadeTimeSec, fadeTimeSec });
@@ -135,16 +135,15 @@ int SoundManager::Play3DSE(const std::string& path, VECTOR position, float radiu
         }
     }
 
-    if (playHandle == -1 && pool.duplicateHandles.size() < MAX_DUPLICATE) {
+    if (playHandle == -1 && pool.duplicateHandles.size() < System::Sound::MAX_DUPLICATE) {
         playHandle = DuplicateSoundMem(baseHandle);
         if (playHandle != -1) pool.duplicateHandles.push_back(playHandle);
     }
 
     if (playHandle != -1) {
         float seVol = ConfigManager::GetIns().Settings().seVolume;
-        ChangeVolumeSoundMem(static_cast<int>(255 * seVol), playHandle);
+        ChangeVolumeSoundMem(static_cast<int>(System::Sound::MAX_VOLUME_SCALE * seVol), playHandle);
 
-        // 3Dサウンドの設定
         Set3DRadiusSoundMem(radius, playHandle);
         Set3DPositionSoundMem(position, playHandle);
 
@@ -250,5 +249,5 @@ float SoundManager::GetSoundDuration(const std::string& path) {
     int baseHandle = ResourceManager::GetIns().GetSound(path);
     if (baseHandle == -1) return 0.0f;
 
-    return GetSoundTotalTime(baseHandle) / 1000.0f;
+    return GetSoundTotalTime(baseHandle) * Global::Math::MS_TO_SEC;
 }

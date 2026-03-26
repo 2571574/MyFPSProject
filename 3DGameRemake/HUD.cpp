@@ -85,7 +85,6 @@ void HUD::Draw() {
 		snprintf(topTextBuf, sizeof(topTextBuf), "スコア : %d", EnemyManager::GetIns().GetTotalScore());
 	}
 
-	// ★修正: GetDrawStringWidthToHandle を使用し、fontJpLarge を指定
 	int textWidth = GetDrawStringWidthToHandle(topTextBuf, static_cast<int>(strlen(topTextBuf)), fontJpLarge);
 	int drawX = CENTER_X - (textWidth / 2);
 
@@ -177,7 +176,7 @@ void HUD::Draw() {
 			std::string pickUpStr = "PickUp : " + interactKey;
 
 			int nameWidth = GetDrawStringWidthToHandle(weaponName, static_cast<int>(strlen(weaponName)), fontJpMedium);
-			int subTextWidth = GetDrawStringWidthToHandle(pickUpStr.c_str(), static_cast<int>(pickUpStr.length()), fontEnSmall); // ★修正
+			int subTextWidth = GetDrawStringWidthToHandle(pickUpStr.c_str(), static_cast<int>(pickUpStr.length()), fontEnSmall);
 			int textMaxWidth = (nameWidth > subTextWidth) ? nameWidth : subTextWidth;
 
 			int iconSize = spec->visual.uiPath.empty() ? 0 : 100;

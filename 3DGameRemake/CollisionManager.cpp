@@ -1,13 +1,9 @@
 ﻿#include "CollisionManager.h"
 #include "Character.h"
+#include "Param/System.h"
 
 #include <algorithm>
 #include <cfloat>
-
-constexpr float MIN_HEAD_RAD = 0.15f;			//頭の判定の最小
-constexpr float HITSCAN_RAY_THICKNESS = 0.05f;	//ヒットスキャンの判定の太さ
-constexpr float MIN_DIST_SQUARED = 0.01f;		//押し出し判定などの最小距離の2乗
-constexpr float EXPLODE_UPWARD_BIAS = 0.5f;		//ノックバックを上に向かせる補正値
 
 CollisionManager& CollisionManager::GetIns() {
 	static CollisionManager ins;
@@ -15,7 +11,7 @@ CollisionManager& CollisionManager::GetIns() {
 }
 
 void CollisionManager::Register(Character* chara) {
-	if(chara){
+	if (chara) {
 		characters.push_back(chara);
 	}
 }
@@ -49,18 +45,18 @@ void CollisionManager::Update() {
 			}
 
 			VECTOR vecAB = VSub(posB, posA);
-			vecAB.y = 0.0f;
+			vecAB.y = System::Collision::ZERO;
 
 			float distSq = VSquareSize(vecAB);
-			float radA = charaA->GetStatus().width / 2.0f;
-			float radB = charaB->GetStatus().width / 2.0f;
+			float radA = charaA->GetStatus().width / System::Collision::BODY_RADIUS_DIVISOR;
+			float radB = charaB->GetStatus().width / System::Collision::BODY_RADIUS_DIVISOR;
 
 			float sumRad = radA + radB;
 
-			if (distSq > MIN_DIST_SQUARED && distSq < sumRad * sumRad) {
+			if (distSq > System::Collision::MIN_DIST_SQUARED && distSq < sumRad * sumRad) {
 				float dist = sqrtf(distSq);
 				float overlap = sumRad - dist;
-				VECTOR pushDir = VScale(vecAB, 1.0f / dist);
+				VECTOR pushDir = VScale(vecAB, System::Collision::ONE / dist);
 
 				int massA = charaA->GetStatus().mass;
 				int massB = charaB->GetStatus().mass;
@@ -72,7 +68,7 @@ void CollisionManager::Update() {
 					charaA->SetPos(VSub(posA, VScale(pushDir, overlap)));
 				}
 				else {
-					float half = overlap * 0.5f;
+					float half = overlap * System::Collision::PUSH_SPLIT_RATIO_EQUAL_MASS;
 					charaA->SetPos(VSub(posA, VScale(pushDir, half)));
 					charaB->SetPos(VAdd(posB, VScale(pushDir, half)));
 				}
@@ -86,7 +82,7 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 	float minDistance = FLT_MAX;
 	if (stageHandle != -1) {
 		MV1_COLL_RESULT_POLY wallHit = MV1CollCheck_Line(stageHandle, -1, start, end);
-		if (wallHit.HitFlag == 1) {
+		if (wallHit.HitFlag == System::Collision::HITFLAG_TRUE) {
 			minDistance = VSize(VSub(wallHit.HitPosition, start));
 			result.isWallHit = true;
 			result.hitPos = wallHit.HitPosition;
@@ -103,12 +99,12 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 		if (hitY > cPos.y + chara->GetStatus().height)hitY = cPos.y + chara->GetStatus().height;
 		VECTOR approxBodyHitPos = VGet(cPos.x, hitY, cPos.z);
 
-		float bodyRad = chara->GetStatus().width / 2.0f;
-		float headRad =bodyRad / 2.0f;
-		if (headRad < MIN_HEAD_RAD)headRad = MIN_HEAD_RAD;
-		VECTOR headPos = VAdd(cPos, VGet(0.0f, chara->GetCurrentEyeHeight(), 0.0f));
+		float bodyRad = chara->GetStatus().width / System::Collision::BODY_RADIUS_DIVISOR;
+		float headRad = bodyRad / System::Collision::HEAD_RADIUS_DIVISOR;
+		if (headRad < System::Collision::MIN_HEAD_RAD)headRad = System::Collision::MIN_HEAD_RAD;
+		VECTOR headPos = VAdd(cPos, VGet(System::Collision::ZERO, chara->GetCurrentEyeHeight(), System::Collision::ZERO));
 
-		if (HitCheck_Capsule_Capsule(start, end, HITSCAN_RAY_THICKNESS, headPos, headPos, headRad)) {
+		if (HitCheck_Capsule_Capsule(start, end, System::Collision::HITSCAN_RAY_THICKNESS, headPos, headPos, headRad)) {
 			float dist = VSize(VSub(headPos, start));
 			if (dist < minDistance) {
 				minDistance = dist;
@@ -121,12 +117,12 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 			continue;
 		}
 
-		VECTOR bodyBottom = VAdd(cPos, VGet(0.0f, bodyRad, 0.0f));
+		VECTOR bodyBottom = VAdd(cPos, VGet(System::Collision::ZERO, bodyRad, System::Collision::ZERO));
 		float neckHeight = chara->GetCurrentEyeHeight() - headRad;
-		if (neckHeight < bodyRad * 2.0f)neckHeight = bodyRad * 2.0f;
-		VECTOR bodyTop = VAdd(cPos, VGet(0.0f, neckHeight - bodyRad, 0.0f));
+		if (neckHeight < bodyRad * System::Collision::MIN_NECK_HEIGHT_BODYRAD_MULT)neckHeight = bodyRad * System::Collision::MIN_NECK_HEIGHT_BODYRAD_MULT;
+		VECTOR bodyTop = VAdd(cPos, VGet(System::Collision::ZERO, neckHeight - bodyRad, System::Collision::ZERO));
 
-		if (HitCheck_Capsule_Capsule(start, end, HITSCAN_RAY_THICKNESS, bodyBottom, bodyTop, bodyRad)) {
+		if (HitCheck_Capsule_Capsule(start, end, System::Collision::HITSCAN_RAY_THICKNESS, bodyBottom, bodyTop, bodyRad)) {
 			float dist = VSize(VSub(approxBodyHitPos, start));
 			if (dist < minDistance) {
 				minDistance = dist;
@@ -142,7 +138,6 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 	return result;
 }
 
-
 HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radius, TEAMID shooter) {
 	HitInfo result;
 	result.hitPos = nextPos;
@@ -151,14 +146,13 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 	if (stageHandle != -1) {
 		MV1_COLL_RESULT_POLY wallHit = MV1CollCheck_Line(stageHandle, -1, pos, nextPos);
 
-		if (wallHit.HitFlag == 1) {
+		if (wallHit.HitFlag == System::Collision::HITFLAG_TRUE) {
 			minDistance = VSize(VSub(wallHit.HitPosition, pos));
 			result.isWallHit = true;
 			result.hitPos = wallHit.HitPosition;
 			result.hitNormal = wallHit.Normal;
 		}
 	}
-
 
 	for (auto* chara : characters) {
 		if (chara->GetID() == shooter || !chara->IsAlive() || chara->GetHP() <= 0) continue;
@@ -169,14 +163,14 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 		if (hitY > cPos.y + chara->GetStatus().height)hitY = cPos.y + chara->GetStatus().height;
 		VECTOR approxBodyHitPos = VGet(cPos.x, hitY, cPos.z);
 
-		float bodyRad = chara->GetStatus().width / 2.0f;
-		float headRad = bodyRad / 2.0f;
-		if (headRad < MIN_HEAD_RAD)headRad = MIN_HEAD_RAD;
-		VECTOR headPos = VAdd(cPos, VGet(0.0f, chara->GetCurrentEyeHeight(), 0.0f));
+		float bodyRad = chara->GetStatus().width / System::Collision::BODY_RADIUS_DIVISOR;
+		float headRad = bodyRad / System::Collision::HEAD_RADIUS_DIVISOR;
+		if (headRad < System::Collision::MIN_HEAD_RAD)headRad = System::Collision::MIN_HEAD_RAD;
+		VECTOR headPos = VAdd(cPos, VGet(System::Collision::ZERO, chara->GetCurrentEyeHeight(), System::Collision::ZERO));
 
 		VECTOR moveVec = VSub(nextPos, pos);
 		VECTOR extendedNextPos = nextPos;
-		if (VSquareSize(moveVec) > MIN_DIST_SQUARED) {
+		if (VSquareSize(moveVec) > System::Collision::MIN_DIST_SQUARED) {
 			VECTOR moveDir = VNorm(moveVec);
 
 			extendedNextPos = VAdd(nextPos, VScale(moveDir, chara->GetStatus().width));
@@ -193,11 +187,11 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 			}
 			continue;
 		}
-		VECTOR bodyBottom = VAdd(cPos, VGet(0.0f, bodyRad, 0.0f));
+		VECTOR bodyBottom = VAdd(cPos, VGet(System::Collision::ZERO, bodyRad, System::Collision::ZERO));
 		float neckHeight = chara->GetCurrentEyeHeight() - headRad;
-		if (neckHeight < bodyRad * 2.0f)neckHeight = bodyRad * 2.0f;
+		if (neckHeight < bodyRad * System::Collision::MIN_NECK_HEIGHT_BODYRAD_MULT)neckHeight = bodyRad * System::Collision::MIN_NECK_HEIGHT_BODYRAD_MULT;
 
-		VECTOR bodyTop = VAdd(cPos, VGet(0.0f, neckHeight - bodyRad, 0.0f));
+		VECTOR bodyTop = VAdd(cPos, VGet(System::Collision::ZERO, neckHeight - bodyRad, System::Collision::ZERO));
 		if (HitCheck_Capsule_Capsule(pos, nextPos, radius, bodyBottom, bodyTop, bodyRad)) {
 			float dist = VSize(VSub(approxBodyHitPos, pos));
 			if (dist < minDistance) {
@@ -213,8 +207,8 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 	return result;
 }
 
-bool CollisionManager::ProcessExplosion(VECTOR hitPos, float radius, int damage,float knockbackPower,bool distanceFallOff, TEAMID shooter, WeaponID id,bool friendlyFire) {
-	if (radius <= 0.0f)return false;
+bool CollisionManager::ProcessExplosion(VECTOR hitPos, float radius, int damage, float knockbackPower, bool distanceFallOff, TEAMID shooter, WeaponID id, bool friendlyFire) {
+	if (radius <= System::Collision::ZERO)return false;
 	bool hit = false;
 
 	for (auto* chara : characters) {
@@ -226,26 +220,25 @@ bool CollisionManager::ProcessExplosion(VECTOR hitPos, float radius, int damage,
 		float dist = VSize(VSub(chara->GetPos(), hitPos));
 		if (dist <= radius) {
 			hit = true;
-			float damageRate = distanceFallOff ? (1.0f - (dist / radius)) : 1.0f;
+			float damageRate = distanceFallOff ? (System::Collision::ONE - (dist / radius)) : System::Collision::ONE;
 			int actualDamage = (int)(damage * damageRate);
-			if (actualDamage < 1 && damage > 0)actualDamage = 1;
+			if (actualDamage < System::Collision::MIN_DAMAGE_ON_FALLOFF && damage > 0)actualDamage = System::Collision::MIN_DAMAGE_ON_FALLOFF;
 
-
-			chara->OnHit((int)(damage * damageRate),id);
+			chara->OnHit((int)(damage * damageRate), id);
 
 			VECTOR toChara = VSub(chara->GetPos(), hitPos);
 
-			if (VSize(toChara) < MIN_DIST_SQUARED) {
-				toChara = VGet(0.0f, 1.0f, 0.0f);
+			if (VSize(toChara) < System::Collision::MIN_DIST_SQUARED) {
+				toChara = VGet(System::Collision::ZERO, System::Collision::DEFAULT_FALLBACK_DIR_Y, System::Collision::ZERO);
 			}
 			else {
 				toChara = VNorm(toChara);
-				toChara.y += EXPLODE_UPWARD_BIAS;
+				toChara.y += System::Collision::EXPLODE_UPWARD_BIAS;
 				toChara = VNorm(toChara);
 			}
 
 			float currentKnockback = knockbackPower * damageRate;
-			
+
 			chara->Applyknockback(VScale(toChara, currentKnockback));
 		}
 	}

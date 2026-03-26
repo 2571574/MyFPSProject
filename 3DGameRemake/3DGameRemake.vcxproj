@@ -183,7 +183,12 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="ItemManager.h" />
     <ClInclude Include="MeleeEnemy.h" />
-    <ClInclude Include="Parameter.h" />
+    <ClInclude Include="Param\Chara.h" />
+    <ClInclude Include="Param\Global.h" />
+    <ClInclude Include="Param\Item.h" />
+    <ClInclude Include="Param\Scene.h" />
+    <ClInclude Include="Param\System.h" />
+    <ClInclude Include="Param\Visual.h" />
     <ClInclude Include="Pathfinding.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="ProjectileManager.h" />

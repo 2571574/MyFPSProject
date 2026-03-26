@@ -30,3 +30,6 @@ std::vector<VECTOR> FindPath(VECTOR startPos, VECTOR goalPos, const std::vector<
 VECTOR GetNodePosition(int nodeID, const std::vector<Node>& mapnode);
 float GetDistance(VECTOR a, VECTOR b);
 int GetNearestNodeIndex(VECTOR pos, const std::vector<Node>& mapnode);
+
+
+

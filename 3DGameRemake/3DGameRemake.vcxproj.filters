@@ -63,13 +63,7 @@
     <ClCompile Include="CollisionManager.cpp">
       <Filter>3.SINGLE MANAGER</Filter>
     </ClCompile>
-    <ClCompile Include="ConfigManager.cpp">
-      <Filter>3.SINGLE MANAGER</Filter>
-    </ClCompile>
     <ClCompile Include="EnemyManager.cpp">
-      <Filter>3.SINGLE MANAGER</Filter>
-    </ClCompile>
-    <ClCompile Include="InputManager.cpp">
       <Filter>3.SINGLE MANAGER</Filter>
     </ClCompile>
     <ClCompile Include="ItemManager.cpp">
@@ -83,9 +77,6 @@
     </ClCompile>
     <ClCompile Include="TextManager.cpp">
       <Filter>3.SINGLE MANAGER</Filter>
-    </ClCompile>
-    <ClCompile Include="CheckKey.cpp">
-      <Filter>4.TOOL</Filter>
     </ClCompile>
     <ClCompile Include="Pathfinding.cpp">
       <Filter>4.TOOL</Filter>
@@ -132,20 +123,29 @@
     <ClCompile Include="BaseProjectile.cpp">
       <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
     </ClCompile>
-    <ClCompile Include="Time.cpp">
-      <Filter>3.SINGLE MANAGER</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>1.GAME</Filter>
-    </ClCompile>
-    <ClCompile Include="EffectManager.cpp">
-      <Filter>3.SINGLE MANAGER</Filter>
     </ClCompile>
     <ClCompile Include="Effect.cpp">
       <Filter>2.OBJECT\1.ENTITY</Filter>
     </ClCompile>
+    <ClCompile Include="CheckKey.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
     <ClCompile Include="SoundManager.cpp">
-      <Filter>3.SINGLE MANAGER</Filter>
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigManager.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -173,13 +173,7 @@
     <ClInclude Include="CollisionManager.h">
       <Filter>3.SINGLE MANAGER</Filter>
     </ClInclude>
-    <ClInclude Include="ConfigManager.h">
-      <Filter>3.SINGLE MANAGER</Filter>
-    </ClInclude>
     <ClInclude Include="EnemyManager.h">
-      <Filter>3.SINGLE MANAGER</Filter>
-    </ClInclude>
-    <ClInclude Include="InputManager.h">
       <Filter>3.SINGLE MANAGER</Filter>
     </ClInclude>
     <ClInclude Include="ItemManager.h">
@@ -193,9 +187,6 @@
     </ClInclude>
     <ClInclude Include="TextManager.h">
       <Filter>3.SINGLE MANAGER</Filter>
-    </ClInclude>
-    <ClInclude Include="CheckKey.h">
-      <Filter>4.TOOL</Filter>
     </ClInclude>
     <ClInclude Include="Pathfinding.h">
       <Filter>4.TOOL</Filter>
@@ -236,26 +227,50 @@
     <ClInclude Include="WeaponItem.h">
       <Filter>2.OBJECT\2.WEAPON</Filter>
     </ClInclude>
-    <ClInclude Include="Time.h">
-      <Filter>1.GAME</Filter>
-    </ClInclude>
-    <ClInclude Include="Parameter.h">
-      <Filter>1.GAME</Filter>
-    </ClInclude>
     <ClInclude Include="BaseProjectile.h">
       <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
     </ClInclude>
     <ClInclude Include="SniperEnemy.h">
       <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
     </ClInclude>
-    <ClInclude Include="EffectManager.h">
-      <Filter>3.SINGLE MANAGER</Filter>
-    </ClInclude>
     <ClInclude Include="Effect.h">
       <Filter>2.OBJECT\1.ENTITY</Filter>
     </ClInclude>
+    <ClInclude Include="Param\Chara.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Param\Item.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Param\Scene.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Param\System.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Param\Visual.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Param\Global.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckKey.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
     <ClInclude Include="SoundManager.h">
-      <Filter>3.SINGLE MANAGER</Filter>
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectManager.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigManager.h">
+      <Filter>ソース ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

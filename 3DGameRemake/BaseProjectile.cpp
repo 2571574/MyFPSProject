@@ -66,7 +66,6 @@ void BaseProjectile::Update() {
 		alive = false;		//弾の生存タグを消す
 	}
 
-	// ★追加: 1フレーム分の移動距離を繋ぐカプセル（リボンの1節）を生成
 	// 味方の弾はライトグレー、敵の弾はオレンジで色分け
 	int trailColor = (id == TEAMID::ID_FRIENDLY) ? GetColor(180, 180, 180) : GetColor(255, 0, 0);
 	if (spec.id == WeaponID::LR) trailColor = GetColor(255, 100, 0);
@@ -83,7 +82,7 @@ void BaseProjectile::Update() {
 			alive = false;
 		}
 		//移動処理
-		pos = actualNextPos; // ★修正: actualNextPosを使用する
+		pos = actualNextPos;
 	}
 }
 

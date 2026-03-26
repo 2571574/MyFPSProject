@@ -1,12 +1,5 @@
 ﻿#pragma once
-#include "DxLib.h"
-#include "Parameter.h"
-
-
-//マウスホイールの入力コード
-constexpr int MOUSE_WHEEL_UP = 1301;
-constexpr int MOUSE_WHEEL_DOWN = 1302;
-
+#include "Param/System.h"
 
 enum InputType {
 	KEYBOARD,
@@ -22,12 +15,12 @@ class CheckKey
 {
 private:
 	//現在の入力状態
-	char keyboard[256] = {};
+	char keyboard[System::Input::MAX_KEYCODES] = {};
 	int mouseButton = 0;
 	int joy = 0;
 
 	//前の入力状態
-	char Prevkeyboard[256] = {};
+	char Prevkeyboard[System::Input::MAX_KEYCODES] = {};
 	int prevMouseButton = 0;
 	int Prevjoy = 0;
 

@@ -1,5 +1,8 @@
 #include "EffectManager.h"
 #include "SoundManager.h"
+#include "Param/Visual.h"
+#include "Param/Global.h"
+#include "Param/System.h"
 #include <algorithm>
 
 EffectManager& EffectManager::GetIns() {
@@ -35,45 +38,47 @@ void EffectManager::Clear() {
 void EffectManager::CreateDeathParticle(VECTOR pos, float floorY, ENEMYTYPE type) {
 	int color = GetColor(255, 255, 255);
 
-	if (type == ENEMYTYPE::MELEE) color = GetColor(255, 255, 0);
-	else if (type == ENEMYTYPE::RIFLE) color = GetColor(0, 0, 255);
-	else if (type == ENEMYTYPE::SNIPER) color = GetColor(0, 255, 0);
-	else if (type == ENEMYTYPE::ROLLING) color = GetColor(255, 165, 0);
+	if (type == ENEMYTYPE::MELEE) color = GetColor(Visual::Effect::COLOR_EFFECT_MELEE.r, Visual::Effect::COLOR_EFFECT_MELEE.g, Visual::Effect::COLOR_EFFECT_MELEE.b);
+	else if (type == ENEMYTYPE::RIFLE) color = GetColor(Visual::Effect::COLOR_EFFECT_RIFLE.r, Visual::Effect::COLOR_EFFECT_RIFLE.g, Visual::Effect::COLOR_EFFECT_RIFLE.b);
+	else if (type == ENEMYTYPE::SNIPER) color = GetColor(Visual::Effect::COLOR_EFFECT_SNIPER.r, Visual::Effect::COLOR_EFFECT_SNIPER.g, Visual::Effect::COLOR_EFFECT_SNIPER.b);
+	else if (type == ENEMYTYPE::ROLLING) color = GetColor(Visual::Effect::COLOR_EFFECT_ROLLING.r, Visual::Effect::COLOR_EFFECT_ROLLING.g, Visual::Effect::COLOR_EFFECT_ROLLING.b);
 
-	int particleCount = 15 + GetRand(5);
+	int particleCount = Visual::Effect::BASE_PARTICLE_COUNT_DEATH_MIN + GetRand(Visual::Effect::BASE_PARTICLE_COUNT_DEATH_RAND);
 	for (int i = 0; i < particleCount; ++i) {
-		float theta = (GetRand(314) / 100.0f) * 2.0f;
-		float phi = acosf(1.0f - 2.0f * (GetRand(100) / 100.0f));
+		float theta = (GetRand(Visual::Effect::PI_APPROX_INT) / Visual::Effect::RANDOM_PERCENT_DIVISOR) * 2.0f;
+		float phi = acosf(1.0f - 2.0f * (GetRand(Global::Math::PERCENT_MAX) * Global::Math::RATIO_FROM_PERCENT));;
 
-		float speed = (GetRand(100) / 100.0f) * 0.4f + 0.1f; 
+		float speed = (GetRand(Global::Math::PERCENT_MAX) * Global::Math::RATIO_FROM_PERCENT) * Visual::Effect::PARTICLE_SPEED_RANDOM_MULT + Visual::Effect::PARTICLE_SPEED_BASE;;
 
 		VECTOR vel;
 		vel.x = sinf(phi) * cosf(theta) * speed;
 		vel.y = cosf(phi) * speed;
 		vel.z = sinf(phi) * sinf(theta) * speed;
-		vel.y += (GetRand(100) / 100.0f) * 0.3f + 0.2f;
+		vel.y += (GetRand(Global::Math::PERCENT_MAX) * Global::Math::RATIO_FROM_PERCENT) * Visual::Effect::DEATH_VEL_Y_RANDOM_MULT + Visual::Effect::DEATH_VEL_Y_BASE;
 
-		float life = 1.0f + (GetRand(100) / 100.0f); 
-		float size = 0.05f + (GetRand(10) / 100.0f);
+		float life = Visual::Effect::DEATH_LIFE_BASE + (GetRand(Global::Math::PERCENT_MAX) / Visual::Effect::RANDOM_PERCENT_DIVISOR);
+		float size = Visual::Effect::DEATH_SIZE_BASE + (GetRand(Visual::Effect::DEATH_SIZE_RANDOM_MULT) / Visual::Effect::RANDOM_PERCENT_DIVISOR);
 
 		AddEffect(std::make_unique<DeathEffect>(pos, vel, life, size, floorY, color));
 	}
 }
 
 void EffectManager::CreateMuzzleFlash(VECTOR pos, VECTOR dir, float size) {
-	AddEffect(std::make_unique<MuzzleFlashEffect>(pos, dir, 0.05f, size, GetColor(255, 255, 0)));
+	AddEffect(std::make_unique<MuzzleFlashEffect>(pos, dir, Visual::Effect::MUZZLE_FLASH_LIFE, size, GetColor(Visual::Effect::COLOR_MUZZLE_FLASH.r, Visual::Effect::COLOR_MUZZLE_FLASH.g, Visual::Effect::COLOR_MUZZLE_FLASH.b)));
 }
 
 void EffectManager::CreateHitEffect(VECTOR pos, VECTOR normal, bool isEnemy) {
-	int color = isEnemy ? GetColor(255, 100, 0) : GetColor(255,255,255);
-	int particleCount = isEnemy ? 12 : 6;
+	int color = isEnemy ? GetColor(Visual::Effect::COLOR_EFFECT_HIT.r, Visual::Effect::COLOR_EFFECT_HIT.g, Visual::Effect::COLOR_EFFECT_HIT.b) 
+						: GetColor(Visual::Effect::COLOR_EFFECT_WHITE.r, Visual::Effect::COLOR_EFFECT_WHITE.g, Visual::Effect::COLOR_EFFECT_WHITE.b);
 
-	if (VSquareSize(normal) < 0.01f)normal = VGet(0, 1, 0);
+	int particleCount = isEnemy ? Visual::Effect::HIT_PARTICLE_COUNT_ENEMY : Visual::Effect::HIT_PARTICLE_COUNT_WALL;
+
+	if (VSquareSize(normal) < System::Collision::MIN_DIST_SQUARED) normal = VGet(0, 1, 0);
 	normal = VNorm(normal);
 
 	VECTOR up = VGet(0, 1, 0);
 	VECTOR right = VCross(up, normal);
-	if (VSquareSize(right) < 0.01f) {
+	if (VSquareSize(right) < System::Collision::MIN_DIST_SQUARED) {
 		right = VGet(1, 0, 0);
 	}
 	else {
@@ -83,10 +88,10 @@ void EffectManager::CreateHitEffect(VECTOR pos, VECTOR normal, bool isEnemy) {
 
 	for (int i = 0; i < particleCount; ++i) {
 		// 法線を中心とした半球状にランダムなベクトルを生成
-		float theta = (GetRand(314) / 100.0f) * 2.0f;
-		float phi = acosf(1.0f - (GetRand(100) / 100.0f));
+		float theta = (GetRand(Visual::Effect::PI_APPROX_INT) / Visual::Effect::RANDOM_PERCENT_DIVISOR) * 2.0f;
+		float phi = acosf(1.0f - (GetRand(Global::Math::PERCENT_MAX) / Visual::Effect::RANDOM_PERCENT_DIVISOR));
 
-		float speed = (GetRand(100) / 100.0f) * 0.25f + 0.1f;
+		float speed = (GetRand(Global::Math::PERCENT_MAX) / Visual::Effect::RANDOM_PERCENT_DIVISOR) * Visual::Effect::HIT_SPEED_RANDOM_MULT + Visual::Effect::HIT_SPEED_BASE;
 
 		float localX = sinf(phi) * cosf(theta);
 		float localY = sinf(phi) * sinf(theta);
@@ -99,11 +104,10 @@ void EffectManager::CreateHitEffect(VECTOR pos, VECTOR normal, bool isEnemy) {
 
 		vel = VScale(vel, speed);
 
-		float life = 0.4f + (GetRand(40) / 100.0f);
-		float size = 0.04f + (GetRand(3) / 100.0f);
+		float life = Visual::Effect::HIT_LIFE_BASE + (GetRand(Visual::Effect::HIT_LIFE_RANDOM) / Visual::Effect::RANDOM_PERCENT_DIVISOR);
+		float size = Visual::Effect::HIT_SIZE_BASE + (GetRand(Visual::Effect::HIT_SIZE_RANDOM) / Visual::Effect::RANDOM_PERCENT_DIVISOR);
 
-		// 床の高さはステージ下限として一旦 -10.0f 固定（空中で当たっても奈落に落ちて消える）
-		AddEffect(std::make_unique<HitEffect>(pos, vel, life, size, -10.0f, color));
+		AddEffect(std::make_unique<HitEffect>(pos, vel, life, size, Visual::Effect::EFFECT_FLOOR_Y_LIMIT, color));
 	}
 }
 
@@ -112,14 +116,14 @@ void EffectManager::CreateSpawnEffect(VECTOR pos, float height, float radius, fl
 }
 
 void EffectManager::CreateExplosionEffect(VECTOR pos, float radius, int color) {
-	AddEffect(std::make_unique<ExplosionEffect>(pos, radius, color, 0.6f));
-	SoundManager::GetIns().Play3DSE("Resource/Sound/explode.ogg", pos, 50.0f);
+	AddEffect(std::make_unique<ExplosionEffect>(pos, radius, color, Visual::Effect::EXPLOSION_LIFE));
+	SoundManager::GetIns().Play3DSE("Resource/Sound/explode.ogg", pos, Visual::Effect::EXPLOSION_SOUND_RADIUS);
 }
 
 void EffectManager::CreateHitScanTrail(VECTOR start, VECTOR end, int color) {
-	AddEffect(std::make_unique<HitScanTrail>(start, end, color, 0.25f));
+	AddEffect(std::make_unique<HitScanTrail>(start, end, color, Visual::Effect::TRAIL_HITSCAN_LIFE));
 }
 
 void EffectManager::CreateProjectileTrail(VECTOR start, VECTOR end, float radius, int color) {
-	AddEffect(std::make_unique<ProjectileTrailEffect>(start, end, radius, color, 0.12f));
+	AddEffect(std::make_unique<ProjectileTrailEffect>(start, end, radius, color, Visual::Effect::TRAIL_PROJECTILE_LIFE));
 }

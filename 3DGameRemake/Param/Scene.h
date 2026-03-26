@@ -1,6 +1,7 @@
 #pragma once
+#include "System.h"
 
-namespace SceneParam {
+namespace Scene {
 
     namespace Manager {
         constexpr int ALPHA_MAX_SCALE = 255;
@@ -8,10 +9,25 @@ namespace SceneParam {
         constexpr int MAX_RECORD = 5;
     }
 
+    namespace Common {
+        constexpr float STAGE_MODEL_SCALE = 0.02f;
+        constexpr int COLLISION_SETUP_DIV_NUM = 8;
+
+        constexpr int PAUSE_BG_ALPHA = 128;
+        constexpr int PAUSE_TITLE_OFFSET_X = -40;
+        constexpr int PAUSE_TITLE_OFFSET_Y = -100;
+        constexpr int PAUSE_CURSOR_OFFSET_X = -80;
+        constexpr int PAUSE_ITEM_LINE_HEIGHT = 60;
+        constexpr int PAUSE_ITEM_OFFSET_X = -60;
+
+        constexpr int HELP_TEXT_MARGIN_X = 50;
+        constexpr int HELP_TEXT_MARGIN_Y = 30;
+    }
+
     namespace Title {
         constexpr int BG_ALPHA_DEFAULT = 100;
         constexpr int BG_ALPHA_DARK = 200;
-        constexpr float BG_SCROLL_X = 50.0f;
+        constexpr float BG_SCROLL_X = 50.0f; 
         constexpr float BOB_SPEED = 10.0f;
         constexpr int MENU_UNSELECTED_ALPHA = 40;
         constexpr int KEYCONFIG_HIGHLIGHT_ALPHA = 30;
@@ -48,9 +64,6 @@ namespace SceneParam {
         constexpr float MOUSE_SENS_DISPLAY_SCALE = 1000.0f;
         constexpr float PAD_SENS_DISPLAY_SCALE = 10000.0f;
 
-        constexpr int HELP_TEXT_MARGIN_X = 50;
-        constexpr int HELP_TEXT_MARGIN_Y = 30;
-
         constexpr float INTRO_DURATION = 0.5f;
         constexpr float SLIDE_START_X = -500.0f;
 
@@ -65,25 +78,10 @@ namespace SceneParam {
         constexpr int MENU_BG_OFFSET_X = -80;
         constexpr int MENU_BG_OFFSET_Y = -10;
 
-        constexpr float BG_SCROLL_X = 50.0f;
-        constexpr float BOBSPEED = 10.0f;
-
-        constexpr int DIALOG_X1 = 1010; // CENTER_X + 50
-        constexpr int DIALOG_Y1 = 640;  // CENTER_Y + 100
-        constexpr int DIALOG_X2 = 1870; // WINDOW_WIDTH - 50
-        constexpr int DIALOG_Y2 = 980;  // WINDOW_HEIGHT - 100
-    }
-
-    namespace Common {
-        constexpr float STAGE_MODEL_SCALE = 0.02f;
-        constexpr int COLLISION_SETUP_DIV_NUM = 8;
-
-        constexpr int PAUSE_BG_ALPHA = 128;
-        constexpr int PAUSE_TITLE_OFFSET_X = -40;
-        constexpr int PAUSE_TITLE_OFFSET_Y = -100;
-        constexpr int PAUSE_CURSOR_OFFSET_X = -80;
-        constexpr int PAUSE_ITEM_LINE_HEIGHT = 60;
-        constexpr int PAUSE_ITEM_OFFSET_X = -60;
+        constexpr int DIALOG_X1 = System::Window::CENTER_X + 50;
+        constexpr int DIALOG_Y1 = System::Window::CENTER_Y + 100;
+        constexpr int DIALOG_X2 = System::Window::WINDOW_WIDTH - 50;
+        constexpr int DIALOG_Y2 = System::Window::WINDOW_HEIGHT - 100;
     }
 
     namespace Tutorial {
@@ -115,11 +113,6 @@ namespace SceneParam {
         constexpr float BUTTON_BASE_X = 28.0f;
         constexpr float BUTTON_INTERVAL_X = -5.0f;
         constexpr float BUTTON_BASE_Z = -28.0f;
-
-        constexpr float AREA_COMBAT_MIN_X = -22.0f;
-        constexpr float AREA_COMBAT_MAX_X = 9.0f;
-        constexpr float AREA_COMBAT_MIN_Z = -30.0f;
-        constexpr float AREA_COMBAT_MAX_Z = -20.0f;
 
         constexpr float BUTTON_UI_VISIBLE_DIST = 15.0f;
         constexpr float BUTTON_UI_FADE_START = 10.0f;
@@ -160,10 +153,6 @@ namespace SceneParam {
         constexpr int RESULT_ITEM_INDENT_X = 40;
 
         constexpr float PERCENTAGE_MULTIPLIER = 100.0f;
-
         constexpr int RESULT_HELP_BAR_HEIGHT = 50;
-        constexpr int HELP_TEXT_MARGIN_X = 50;
-        constexpr int HELP_TEXT_MARGIN_Y = 30;
     }
-
 }

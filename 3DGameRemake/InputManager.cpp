@@ -1,4 +1,6 @@
 ﻿#include "InputManager.h"
+#include "Param/System.h"
+#include "DxLib.h"
 
 /*コンストラクタ*/
 InputManager::InputManager() {
@@ -25,8 +27,8 @@ void InputManager::SetDefaultBinding() {
 	SetBind(ActionID::RUN, InputType::KEYBOARD, KEY_INPUT_LSHIFT);
 	SetBind(ActionID::JUMP, InputType::KEYBOARD, KEY_INPUT_SPACE);
 	SetBind(ActionID::CROUCH, InputType::KEYBOARD, KEY_INPUT_LCONTROL);
-	SetBind(ActionID::WEAPON_NEXT, InputType::MOUSE, MOUSE_WHEEL_DOWN);
-	SetBind(ActionID::WEAPON_PREV, InputType::MOUSE, MOUSE_WHEEL_UP);
+	SetBind(ActionID::WEAPON_NEXT, InputType::MOUSE, System::Input::MOUSE_WHEEL_DOWN);
+	SetBind(ActionID::WEAPON_PREV, InputType::MOUSE, System::Input::MOUSE_WHEEL_UP);
 	SetBind(ActionID::INTERACT, InputType::KEYBOARD, KEY_INPUT_F);
 	SetBind(ActionID::MENU_UP, InputType::KEYBOARD, KEY_INPUT_W);
 	SetBind(ActionID::MENU_LEFT, InputType::KEYBOARD, KEY_INPUT_A);

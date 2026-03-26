@@ -223,7 +223,6 @@ void TitleScene::Update() {
 				SoundManager::GetIns().PlaySE("Resource/Sound/cursormove.ogg");
 			}
 
-			// ★修正: 右への移動時、移動アクションならブロックする
 			if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_RIGHT)) {
 				ActionID target = GAMEPLAY_ACTION[selectNum];
 				bool isMoveAction = (target == ActionID::MOVE_FORWARD || target == ActionID::MOVE_LEFT ||
@@ -288,14 +287,13 @@ void TitleScene::Draw() {
 		if (currentState == TitleState::SETTINGS ||
 			currentState == TitleState::KEY_CONFIG ||
 			currentState == TitleState::CREDIT) {
-			::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200); // 100(通常) -> 200(深い暗闇)
+			::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
 			::DrawBox(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, ::GetColor(0, 0, 0), TRUE);
 			::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 	}
 
 
-	// ★スライドインの計算 (Ease-out)
 	float rawProgress = introTimer / INTRO_DURATION;
 	float progress = (rawProgress > 1.0f) ? 1.0f : rawProgress;
 
@@ -359,7 +357,6 @@ void TitleScene::Draw() {
 		break;
 	}
 	case TitleState::MODE_SELECT: {
-		// ★ TOPと同じ平行四辺形スタイルとアニメーションを適用
 		const char* modeLabels[] = { "TUTORIAL", "EASY", "NORMAL", "HARD" };
 		int modeMax = static_cast<int>(PlayMode::MODE_MAX);
 
@@ -370,9 +367,7 @@ void TitleScene::Draw() {
 			bool isSelected = (i == selectNum);
 			int bgColor = GetColor(255, 255, 255);
 
-			// 選択中は不透明な白、非選択時は極めて薄い白（ガイドラインとして機能）
 			int bgAlpha = isSelected ? 255 : 40;
-			// ★ 選択中は背景が白なので、文字を黒にする（視認性の確保）
 			int textColor = isSelected ? GetColor(0, 0, 0) : GetColor(255, 255, 255);
 
 			// 背景描画
@@ -646,7 +641,6 @@ void TitleScene::Control() {
 		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_UP)) moveDir = -1;
 		if (InputManager::GetIns().IsActionTrigger(ActionID::MENU_DOWN)) moveDir = 1;
 
-		// ★修正: 上下移動時に無効な行をスキップするロジック
 		if (moveDir != 0 && max > 0) {
 			SoundManager::GetIns().PlaySE("Resource/Sound/cursormove.ogg");
 			do {

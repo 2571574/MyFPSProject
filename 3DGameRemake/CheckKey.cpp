@@ -1,14 +1,11 @@
 ﻿#include "CheckKey.h"
-#include "Debug.h"
-
-namespace {
-	constexpr float STICK_DEADZONE = 0.01f;			//スティックのデッドゾーン
-}
+#include "DxLib.h"
+#include <cstring>
 
 /*コンストラクタ*/
 CheckKey::CheckKey() {
 	//コントローラーのデッドゾーンを設定
-	SetJoypadDeadZone(DX_INPUT_PAD1, STICK_DEADZONE);
+	SetJoypadDeadZone(DX_INPUT_PAD1, System::Input::STICK_DEADZONE);
 }
 
 /*インスタンスを取得*/
@@ -53,18 +50,18 @@ bool CheckKey::isKeyRelease(int code)const {	//入力がない&前に入力が�
 
 /*マウスのボタンの検知*/
 bool CheckKey::IsmouseHold(int code)const {		
-	if (code == MOUSE_WHEEL_UP || code == MOUSE_WHEEL_DOWN)return false;
+	if (code == System::Input::MOUSE_WHEEL_UP || code == System::Input::MOUSE_WHEEL_DOWN)return false;
 	return(mouseButton & code) != 0;
 }
 
 bool CheckKey::IsmousePress(int code)const {
-	if (code == MOUSE_WHEEL_UP)return mouseWheelVol > 0;
-	if (code == MOUSE_WHEEL_DOWN)return mouseWheelVol < 0;
+	if (code == System::Input::MOUSE_WHEEL_UP)return mouseWheelVol > 0;
+	if (code == System::Input::MOUSE_WHEEL_DOWN)return mouseWheelVol < 0;
 	return (mouseButton & code) != 0 && (prevMouseButton & code) == 0;
 }
 
 bool CheckKey::IsmouseRelease(int code)const {
-	if (code == MOUSE_WHEEL_UP || code == MOUSE_WHEEL_DOWN)return false;
+	if (code == System::Input::MOUSE_WHEEL_UP || code == System::Input::MOUSE_WHEEL_DOWN)return false;
 	return (mouseButton & code) == 0 && (prevMouseButton & code) != 0;
 }
 

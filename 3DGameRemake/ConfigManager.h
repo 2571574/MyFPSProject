@@ -2,17 +2,19 @@
 #include<map>
 #include<vector>
 #include<string>
-#include"InputManager.h"
+
+#include "InputManager.h"
+#include "Param/System.h"
 
 //ユーザー設定の構造
 struct ConfigData {
-	float bgmVolume = 0.5f;
-	float seVolume = 0.5f;
-	float mouseSensitivity = 0.050f;
-	float padSensitivity = 0.005f;
-	float basefov = 70.0f;
-	bool headbob = true;
-	bool recovery = false;
+	float bgmVolume = System::Config::DEFAULT_BGM_VOLUME;
+	float seVolume = System::Config::DEFAULT_SE_VOLUME;
+	float mouseSensitivity = System::Config::DEFAULT_MOUSE_SENSITIVITY;
+	float padSensitivity = System::Config::DEFAULT_PAD_SENSITIVITY;
+	float basefov = System::Config::DEFAULT_BASE_FOV;
+	bool headbob = System::Config::DEFAULT_HEADBOB;
+	bool recovery = System::Config::DEFAULT_RECOVERY;
 };
 
 /// <summary>

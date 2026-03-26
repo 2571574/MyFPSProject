@@ -123,7 +123,6 @@ void WeaponItem::Draw() {
 				int alpha = static_cast<int>(255 * alphaRate);
 
 				::SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-				// ★修正: フォント指定＋白文字に変更
 				::DrawFormatStringToHandle(drawX, drawYAmmo, GetColor(255, 255, 255), fontItemAmmo, "AMMO: %d / %d", droppedWeapon->GetAmmo(), droppedWeapon->GetReserveAmmo());
 				::DrawFormatStringToHandle(drawX, drawYName, GetColor(255, 255, 255), fontItemName, "%s", weaponName);
 				::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);

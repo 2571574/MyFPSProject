@@ -1,5 +1,6 @@
 #pragma once
 #include "DxLib.h"
+#include "Param/System.h"
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -32,8 +33,6 @@ private:
 
     bool isBGMPaused = false;
     std::vector<int> pausedSEHandles;
-
-    const int MAX_DUPLICATE = 8; // 同時再生の最大数
 
 public:
     static SoundManager& GetIns();

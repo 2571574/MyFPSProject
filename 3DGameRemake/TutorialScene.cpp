@@ -94,11 +94,11 @@ void TutorialScene::Update() {
 
 		if (isPaused) {
 			SoundManager::GetIns().PauseAll(); 
-			SoundManager::GetIns().PlaySE("Resource/Sound/pause.wav");
+			SoundManager::GetIns().PlaySE("Resource/Sound/pause.ogg");
 		}
 		else {
 			SoundManager::GetIns().ResumeAll();
-			SoundManager::GetIns().PlaySE("Resource/Sound/pause.wav");
+			SoundManager::GetIns().PlaySE("Resource/Sound/pause.ogg");
 		}
 	}
 	if (isPaused) {

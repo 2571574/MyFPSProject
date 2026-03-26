@@ -44,7 +44,10 @@ void RollingEnemy::Update() {
 	}
 	if (hp <= 0 && !isExploding) {
 		isExploding = true;
+		beepTimer = 0.0f;
 		explodeTimer = EXPLODE_TIME;
+		alertDuration = SoundManager::GetIns().GetSoundDuration("Resource/Sound/alert.wav");
+		if (alertDuration <= 0.0f) alertDuration = 1.0f;
 	}
 
 	float distToPlayer = VSize(VSub(target->GetPos(), position));

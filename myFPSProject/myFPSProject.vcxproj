@@ -22,7 +22,7 @@
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{cb1f2c2c-e02b-47d3-9f24-d7a9a8af506a}</ProjectGuid>
-    <RootNamespace>My3DGameRemake</RootNamespace>
+    <RootNamespace>myFPSProject</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

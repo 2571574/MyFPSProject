@@ -61,7 +61,7 @@ struct WeaponVisual {
 	std::string uiPath;
 	std::string fireSoundPath;
 	std::string reloadSoundPath;
-	std::string ReloadEndSoundPath;
+	std::string reloadEndSoundPath;
 };
 
 struct GunStatus {		 //武器の性能

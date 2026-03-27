@@ -19,14 +19,13 @@ void ProjectileManager::Spawn(std::unique_ptr<BaseProjectile> b)
 void ProjectileManager::Update()
 {
 	for (int i = (int)projectiles.size() - 1; i >= 0; i--){
-		projectiles[i]->Update();
-		
+		projectiles[i]->Update();	
+	}
 		//生存タグのない弾を消去する
 		projectiles.erase(std::remove_if(projectiles.begin(), projectiles.end(),
 			[](const std::unique_ptr<BaseProjectile>& p) {return !p->IsAlive(); }),
 			projectiles.end()
 		);
-	}
 }
 
 void ProjectileManager::Draw()

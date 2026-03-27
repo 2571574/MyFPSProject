@@ -153,7 +153,7 @@ int EnemyManager::Update() {
 				availableTypes.push_back(ENEMYTYPE::RIFLE);
 			if (CountEnemyType(ENEMYTYPE::SNIPER) < GameConfig.maxLimitSniper)
 				availableTypes.push_back(ENEMYTYPE::SNIPER);
-			if (CountEnemyType(ENEMYTYPE::ROLLING) < GameConfig.maxLimitRolling)
+			if (CountEnemyType(ENEMYTYPE::ROLLING) < GameConfig.maxLimitSniper)
 				availableTypes.push_back(ENEMYTYPE::ROLLING);
 
 			if (availableTypes.empty())break;

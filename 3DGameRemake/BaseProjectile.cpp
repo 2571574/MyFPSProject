@@ -40,11 +40,6 @@ void BaseProjectile::Update() {
 			hitEnemy = Explode(hitPoint);
 			int color = GetColor(Visual::Effect::COLOR_EXPLOSION.r, Visual::Effect::COLOR_EXPLOSION.g, Visual::Effect::COLOR_EXPLOSION.b);
 			EffectManager::GetIns().CreateExplosionEffect(hitPoint, spec.explodeArea, color);
-			if (hitEnemy && id == TEAMID::ID_FRIENDLY) {
-				if (Player* p = EnemyManager::GetIns().GetPlayer()) {
-					p->HitRecord(false, false);
-				}
-			}
 		}
 		else if (hit.character) {
 			hitEnemy = true;

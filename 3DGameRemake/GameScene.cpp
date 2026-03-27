@@ -14,12 +14,18 @@
 GameScene::GameScene(SceneManager* manager)
 	: BaseScene(manager)
 	, player(VGet(0.0f, 0.0f, 25.0f), &camera, manager->GetcurrentMode())
-	, stageHandle(-1) {}
+	, stageHandle(-1) 
+	, isPaused(false)
+	, pauseSelectNum(0)
+	, score(0){}
 
 GameScene::~GameScene() {
 	EnemyManager::GetIns().Clear();
 	ProjectileManager::GetIns().Clear();
 	EffectManager::GetIns().Clear();
+	if (monochromeHandle != -1) {
+		DeleteGraph(monochromeHandle);
+	}
 }
 
 

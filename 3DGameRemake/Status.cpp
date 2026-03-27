@@ -22,7 +22,7 @@ namespace PLAYER_GUN {
 						{"Resource/Weapon/SR.mv1",0.005f,VGet(0.5f,-0.55f,0.6f),VGet(0.0f,-0.28f,0.4f), VGet(0.5f,-0.4f,3.3f),VGet(0.0f, -1.2f, 3.3f),
                          "Resource/WeaponUI/SR.png","Resource/Sound/FireSR.ogg","Resource/Sound/Reload.wav","Resource/Sound/Reloadend.wav"} };
 
-	GunStatus LAUNCHER = { WeaponID::LR, false, true, false, false, 180, 40.0f, 1, 5, 2.5f, 10.0f, 0.001f,0.001f, 14.0f,VGet(0.4f,-0.2f,0.94f),VGet(0.4f,-0.2f,0.89f),0.5f,0.5f,65.0f,0.1f,0.5f,10.0f, 0.3f,true,
+	GunStatus LAUNCHER = { WeaponID::LR, false, true, false, false, 180, 40.0f, 1, 5, 2.5f, 10.0f, 0.001f,0.001f, 14.0f,VGet(0.4f,-0.2f,0.94f),VGet(0.4f,-0.2f,0.89f),0.5f,0.5f,65.0f,0.1f,0.5f,10, 0.3f,true,
 						{"Resource/Weapon/LR.mv1",0.005f,VGet(0.4f,-0.32f,0.5f),VGet(0.4f,-0.32f,0.5f), VGet(0.4f,-0.2f,0.94f),VGet(0.4f,-0.2f,0.89f),
                          "Resource/WeaponUI/LR.png","Resource/Sound/FireLR.ogg","Resource/Sound/Reload.wav","Resource/Sound/Reloadend.wav"} };
 
@@ -36,7 +36,7 @@ namespace PLAYER_GUN {
 }
 namespace ENEMY_GUN {
 	GunStatus MELEE = { WeaponID::ENEMY_KNIFE,false,false,false,true, 25, 3.0f, 0, 0, 0.0f, 1.0f, 0.0f,0.0f,0.0f,
-                        VGet(0.0f,0.0f,0.0f),VGet(0.0f,0.0f,0.0f),1.0f,1.0f,0.0f,0.0f,0.0f,2.5f,0.0f,false ,
+                        VGet(0.0f,0.0f,0.0f),VGet(0.0f,0.0f,0.0f),1.0f,1.0f,0.0f,0.0f,0.0f,3,0.0f,false ,
 						{"Resource/Weapon/EnemyKnife.mv1", 0.008f, VGet(0.4f, 0.0f, 0.5f), VGet(0.0f,0.0f,0.0f), VGet(0.0f,0.0f,0.0f), VGet(0.0f,0.0f,0.0f)} };
 
 	GunStatus RIFLE = {WeaponID::ENEMY_AR, false, false, true, true, 10, 20.0f, 20, 0, 5.0f, 1.0f, 0.001f, 0.001f, 0.0f, 
@@ -50,7 +50,7 @@ namespace ENEMY_GUN {
                           "","Resource/Sound/FireENEMYSR.ogg","Resource/Sound/Reload.wav","Resource/Sound/Reloadend.wav"}};
 
 	GunStatus DESTRUCT = {WeaponID::ENEMY_EXPLOSION, false, false, false, true,90, 0.0f, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 
-                          VGet(0.0f, 0.0f, 0.0f),VGet(0.0f,0.0f,0.0f), 1.0f, 1.0f, 0.0f, 0.0f,0.0f,10.0f,0.5f, true,{} };
+                          VGet(0.0f, 0.0f, 0.0f),VGet(0.0f,0.0f,0.0f), 1.0f, 1.0f, 0.0f, 0.0f,0.0f,10,0.5f, true,{} };
 }
 
 GameConfigData GameConfig;
@@ -188,7 +188,7 @@ void LoadAllStatusFromCSV() {
                 else if (key == "MAX_LIMIT_MELEE") GameConfig.maxLimitMelee = std::stoi(row[1]);
                 else if (key == "MAX_LIMIT_RIFLE") GameConfig.maxLimitRifle = std::stoi(row[1]);
                 else if (key == "MAX_LIMIT_SNIPER") GameConfig.maxLimitSniper = std::stoi(row[1]);
-                else if (key == "MAX_LIMIT_ROLLING") GameConfig.maxLimitRolling = std::stof(row[1]);
+                else if (key == "MAX_LIMIT_ROLLING") GameConfig.maxLimitRolling = std::stoi(row[1]);
                 else if (key == "INIT_SPAWN_INTERVAL") GameConfig.initSpawnInterval = std::stof(row[1]);
                 else if (key == "PREPARE_TIME") GameConfig.prepareTime = std::stof(row[1]);
                 else if (key == "DIFFICULTY_UP_INTERVAL") GameConfig.difficultyUpInterval = std::stof(row[1]);

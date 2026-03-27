@@ -224,7 +224,7 @@ bool CollisionManager::ProcessExplosion(VECTOR hitPos, float radius, int damage,
 			int actualDamage = (int)(damage * damageRate);
 			if (actualDamage < System::Collision::MIN_DAMAGE_ON_FALLOFF && damage > 0)actualDamage = System::Collision::MIN_DAMAGE_ON_FALLOFF;
 
-			chara->OnHit((int)(damage * damageRate), id);
+			chara->OnHit(actualDamage, id);
 
 			VECTOR toChara = VSub(chara->GetPos(), hitPos);
 

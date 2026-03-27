@@ -276,9 +276,9 @@ void Player::Draw() {
 void Player::AddRecoil(float y,float p){
 
 	//覗いていないとき、しゃがんでいるとき反動を1/2にする
-	if (!isAds||crouch) {
-		y /= 2;
-		p /= 2;
+	if (!isAds || crouch) {
+		y *= Chara::Player::RECOIL_HIPFIRE_MULTIPLIER;
+		p *= Chara::Player::RECOIL_HIPFIRE_MULTIPLIER;
 	}
 	//反動をつける
 	cam->AddAngle(y, p);

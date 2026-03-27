@@ -1,0 +1,11 @@
+Key,Value,
+MAXENEMY_ONMAP,15,マップ上の敵の最大数
+MAX_LIMIT_MELEE,6,近接の最大スポーン数
+MAX_LIMIT_RIFLE,8,ライフルの最大スポーン数
+MAX_LIMIT_SNIPER,20,スナイパーの最大スポーン数
+MAX_LIMIT_ROLLING,2,爆弾の最大スポーン数
+INIT_SPAWN_INTERVAL,8,敵のスポーン間隔
+PREPARE_TIME,10,準備時間
+DIFFICULTY_UP_INTERVAL,20,難易度上昇までの時間
+DIFFICULTY_UP_AMOUNT,0.5,上昇時のスポーン間隔の短縮幅
+MIN_SPAWN_INTERVAL,0.2,スポーン間隔の最小値

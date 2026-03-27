@@ -18,7 +18,6 @@ namespace Global {
         constexpr float MATH_PI_EIGHTH = PI_VALUE / 8.0f;     // 22.5度
 
         constexpr float MS_TO_SEC = 0.001f;
-        constexpr float RATIO_FROM_PERCENT = 0.01f;
 
         constexpr int PERCENT_MAX = 100;
     }

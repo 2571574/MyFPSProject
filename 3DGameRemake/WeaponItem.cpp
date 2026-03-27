@@ -110,7 +110,7 @@ void WeaponItem::Draw() {
 				if (distance > fadeStartDist) {
 					alphaRate = 1.0f - ((distance - fadeStartDist) / Visual::ItemUI::UI_FADE_TRANSITION_RANGE);
 				}
-				int alpha = static_cast<int>(Visual::Effect::ALPHA_MAX * alphaRate);
+				int alpha = static_cast<int>(255 * alphaRate);
 
 				::SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 				::DrawFormatStringToHandle(drawX, drawYAmmo, GetColor(Visual::HUD::COLOR_HUD_WHITE.r, Visual::HUD::COLOR_HUD_WHITE.g, Visual::HUD::COLOR_HUD_WHITE.b), fontItemAmmo, "AMMO: %d / %d", droppedWeapon->GetAmmo(), droppedWeapon->GetReserveAmmo());

@@ -4,6 +4,7 @@
 #include "ConfigManager.h"
 #include "SoundManager.h"
 #include "Time.h"
+#include "Status.h"
 #include "Param/Global.h"
 #include "Param/System.h"
 
@@ -26,6 +27,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetCameraNearFar(System::Camera::CAMERA_NEAR_CLIP, System::Camera::CAMERA_FAR_CLIP);//オブジェクトを描画する距離を設定
 
 	ConfigManager::GetIns().Load();	//Configの読み込み
+
+	LoadAllStatusFromCSV();	//ステータスを読み込む
 
 	SceneManager ins;		//ゲームの処理のインスタンス
 

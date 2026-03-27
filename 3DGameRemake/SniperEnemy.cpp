@@ -41,7 +41,7 @@ void SniperEnemy::Update() {
 
 	VECTOR moveTarget = UpdateNavigation(target, dt);
 	float distToPlayer = VSize(VSub(target->GetPos(), position));
-	bool hasLos = CheckLineSight(target, target->GetCurrentHeight() * Chara::Base::HALF_RATIO);
+	bool hasLos = CheckLineSight(target, target->GetCurrentHeight() * 0.5f);
 	VECTOR moveDir = VGet(0.0f, 0.0f, 0.0f);
 
 	if (distToPlayer < escapeDist) {
@@ -72,7 +72,7 @@ void SniperEnemy::Update() {
 	if (sniper->GetAmmo() <= 0 && !sniper->Reloading()) {
 		sniper->Reload(*this);
 	}
-	if (sniper->CanFire() && CheckLineSight(target, target->GetCurrentHeight() * Chara::Base::HALF_RATIO) && distToPlayer <= sniper->GetSpec().range) {
+	if (sniper->CanFire() && CheckLineSight(target, target->GetCurrentHeight() * 0.5f) && distToPlayer <= sniper->GetSpec().range) {
 
 		if (targetingTimer == 0.0f) {
 			chargeSoundHandle = SoundManager::GetIns().Play3DSE("Resource/Sound/SRCharge.wav", position, Chara::Sniper::CHARGE_SOUND_RADIUS);
@@ -104,7 +104,7 @@ void SniperEnemy::Action() {
 
 	SoundManager::GetIns().StopSE("Resource/Sound/charge.wav");
 	VECTOR s = VAdd(position, VGet(0.0f, status.eyeHeight, 0.0f));
-	VECTOR e = VAdd(target->GetPos(), VGet(0.0f, target->GetCurrentHeight() * Chara::Base::HALF_RATIO, 0.0f));
+	VECTOR e = VAdd(target->GetPos(), VGet(0.0f, target->GetCurrentHeight() * 0.5f, 0.0f));
 	VECTOR fireDir = VNorm(VSub(e, s));
 
 	sniper->Fire(*this, fireDir);
@@ -112,8 +112,8 @@ void SniperEnemy::Action() {
 
 void SniperEnemy::Draw() {
 	VECTOR cPos = GetPos();
-	float bodyRad = status.width / System::Collision::BODY_RADIUS_DIVISOR;
-	float headRad = bodyRad / System::Collision::HEAD_RADIUS_DIVISOR;
+	float bodyRad = status.width / 2.0f;
+	float headRad = bodyRad / 2.0f;
 	if (headRad < System::Collision::MIN_HEAD_RAD) headRad = System::Collision::MIN_HEAD_RAD;
 	VECTOR bottom = VAdd(position, VGet(0.0f, bodyRad, 0.0f));
 	float neck = status.eyeHeight - headRad;
@@ -157,8 +157,8 @@ void SniperEnemy::Draw() {
 		VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), forward));
 		VECTOR up = VNorm(VCross(forward, right));
 
-		VECTOR drawPos = VAdd(position, VGet(0.0f, status.height * Chara::Base::HALF_RATIO, 0.0f));
-		float weaponHeight = (status.height * Chara::Base::HALF_RATIO) - bodyRad;
+		VECTOR drawPos = VAdd(position, VGet(0.0f, status.height * 0.5f, 0.0f));
+		float weaponHeight = (status.height * 0.5f) - bodyRad;
 		drawPos = VAdd(drawPos, VScale(leanMax, weaponHeight / headHeight));
 		sniper->Draw(drawPos, forward, right, up, false, false);
 	}
@@ -167,7 +167,7 @@ void SniperEnemy::Draw() {
 		if (sniper && target) {
 			VECTOR gunOffset = VAdd(sniper->GetSpec().muzzleOffset, VGet(0.0f, currentEyeHeight, 0.0f));
 			VECTOR s = VAdd(position, gunOffset);
-			VECTOR e = VAdd(target->GetPos(), VGet(0.0f, target->GetCurrentHeight() * Chara::Base::HALF_RATIO, 0.0f));
+			VECTOR e = VAdd(target->GetPos(), VGet(0.0f, target->GetCurrentHeight() * 0.5f, 0.0f));
 
 			float progress = targetingTimer / Chara::Sniper::TARGET_TIME;
 
@@ -201,7 +201,7 @@ void SniperEnemy::Draw() {
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, outerAlpha);
 			DrawCapsule3D(s, e, outerRad, Chara::Sniper::INDICATOR_CAPSULE_SEGMENTS, outerColor, outerColor, TRUE);
 
-			SetDrawBlendMode(DX_BLENDMODE_ADD, Visual::Effect::ALPHA_MAX);
+			SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
 			DrawCapsule3D(s, e, innerRad, Chara::Sniper::INDICATOR_CAPSULE_SEGMENTS, innerColor, innerColor, TRUE);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 			SetWriteZBuffer3D(TRUE);

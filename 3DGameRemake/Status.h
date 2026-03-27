@@ -33,7 +33,6 @@ enum class WeaponID {
 	ENEMY_AR,
 	ENEMY_SR,
 	ENEMY_EXPLOSION,
-
 	UNKNOWN
 };
 //キャラのステータスの定義
@@ -93,6 +92,19 @@ struct GunStatus {		 //武器の性能
 	WeaponVisual visual;
 };
 
+struct GameConfigData {
+	int maxEnemyOnMap = 15;
+	int maxLimitMelee = 6;
+	int maxLimitRifle = 4;
+	int maxLimitSniper = 3;
+	int maxLimitRolling = 2;
+	float initSpawnInterval = 8.0f;
+	float prepareTime = 10.0f;
+	float difficultyUpInterval = 20.0f;
+	float difficultyUpAmount = 0.5f;
+	float minSpawnInterval = 0.2f;
+};
+
 //ステータスのテンプレート
 namespace CHARA_STATUS {
 	extern CharacterStatus PLAYER;
@@ -115,3 +127,7 @@ namespace ENEMY_GUN {
 	extern GunStatus SNIPER;
 	extern GunStatus DESTRUCT;
 }
+
+extern GameConfigData GameConfig;
+
+void LoadAllStatusFromCSV();

@@ -47,7 +47,6 @@ namespace System {
         constexpr float NEXT_RAY_OFFSET_Y = -0.5f;
         constexpr float NODE_CONNECT_MAX_DIST_RATE = 1.8f;
         constexpr float WALKABLE_HEIGHT_TOLERANCE = 0.2f;
-        constexpr float HALF_HEIGHT_RATE = 0.5f;
         constexpr float GROUND_CHECK_RAY_OFFSET_Y_TOP = 0.5f;
         constexpr float GROUND_CHECK_RAY_OFFSET_Y_BOTTOM = -0.5f;
         constexpr float MAX_DISTANCE_SQUARED = 99999.0f;
@@ -75,14 +74,9 @@ namespace System {
         constexpr float HITSCAN_RAY_THICKNESS = 0.05f;
         constexpr float MIN_DIST_SQUARED = 0.01f;
         constexpr float EXPLODE_UPWARD_BIAS = 0.5f;
-        constexpr float BODY_RADIUS_DIVISOR = 2.0f;
-        constexpr float HEAD_RADIUS_DIVISOR = 2.0f;
         constexpr float MIN_NECK_HEIGHT_BODYRAD_MULT = 2.0f;
         constexpr float PUSH_SPLIT_RATIO_EQUAL_MASS = 0.5f;
         constexpr float HITS_POS_NORMALIZE_EPS = 1.0f;
-        constexpr float ZERO = 0.0f;
-        constexpr float ONE = 1.0f;
-        constexpr int HITFLAG_TRUE = 1;
         constexpr int MIN_DAMAGE_ON_FALLOFF = 1;
         constexpr float DEFAULT_FALLBACK_DIR_Y = 1.0f;
     }

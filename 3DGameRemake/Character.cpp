@@ -66,7 +66,7 @@ void Character::UpdatePhysics(int stageHandle) {
 	VECTOR totalMove = VScale(totalVelocity, dt60);
 	float moveDist = VSize(totalMove);
 
-	float maxStep = radius * Chara::Base::HALF_RATIO;
+	float maxStep = radius * 0.5f;
 	int stepCount = 1;
 	if (moveDist > maxStep) {
 		stepCount = (int)std::ceil(moveDist / maxStep);
@@ -101,7 +101,7 @@ void Character::UpdatePhysics(int stageHandle) {
 				MV1_COLL_RESULT_POLY groundHit = MV1CollCheck_Line(stageHandle, -1, start, end);
 
 				//当たっていた時、その面の法線が上を向いていたら地面とみなす
-				if (groundHit.HitFlag == System::Collision::HITFLAG_TRUE && groundHit.Normal.y > Chara::Base::GROUND_NORMAL_MIN) {
+				if (groundHit.HitFlag == TRUE && groundHit.Normal.y > Chara::Base::GROUND_NORMAL_MIN) {
 					if (groundHit.HitPosition.y > highestY) {
 						highestY = groundHit.HitPosition.y;
 						hitGroundThisFrame = true;

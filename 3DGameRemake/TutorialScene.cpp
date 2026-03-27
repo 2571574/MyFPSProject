@@ -244,7 +244,7 @@ void TutorialScene::Draw() {
 						if (distance > fadeStartDist) {
 							alphaRate = 1.0f - ((distance - fadeStartDist) / Scene::Tutorial::BUTTON_UI_FADE_RANGE);
 						}
-						int alpha = static_cast<int>(Visual::Effect::ALPHA_MAX * alphaRate);
+						int alpha = static_cast<int>(255 * alphaRate);
 
 						::SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 						::DrawFormatStringToHandle(static_cast<int>(sp.x) + Scene::Tutorial::BUTTON_UI_TEXT_OFFSET_X, static_cast<int>(sp.y), GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b), fontMedium, "Spawn: %s", name);

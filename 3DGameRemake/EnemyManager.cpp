@@ -8,6 +8,7 @@
 #include "Debug.h"
 #include "EffectManager.h"
 #include "SoundManager.h"
+#include "Status.h"
 #include "Param/Global.h"
 #include "Param/Chara.h"
 #include "Param/System.h"
@@ -24,10 +25,10 @@ void EnemyManager::Init(int modelhandle, Player* _target) {
 	stageHandle = modelhandle;
 	InitNode(stageHandle, mapNode);
 	target = _target;
-	currentSpawnInterval = Chara::EnemyManager::INIT_SPAWN_INTERVAL;
+	currentSpawnInterval = GameConfig.initSpawnInterval;
 	spawnTimer = 0.0f;
 	difficultyTimer = 0.0f;
-	prepareTimer = Chara::EnemyManager::PREPARE_TIME;
+	prepareTimer = GameConfig.prepareTime;
 	killCounts.clear();
 	spawnPoints.clear();
 
@@ -80,7 +81,7 @@ int EnemyManager::Update() {
 			totalScore += enemies[i]->GetStatus().score;
 			killCounts[enemies[i]->GetType()]++;
 
-			VECTOR deathPos = VAdd(enemies[i]->GetPos(), VGet(0.0f, enemies[i]->GetCurrentHeight() * Chara::Base::HALF_RATIO, 0.0f));
+			VECTOR deathPos = VAdd(enemies[i]->GetPos(), VGet(0.0f, enemies[i]->GetCurrentHeight() * 0.5f, 0.0f));
 			float floorY = enemies[i]->GetPos().y;
 			EffectManager::GetIns().CreateDeathParticle(deathPos, floorY, enemies[i]->GetType());
 
@@ -100,11 +101,11 @@ int EnemyManager::Update() {
 
 	//難易度上昇
 	difficultyTimer += dt;
-	if (difficultyTimer >= Chara::EnemyManager::DIFFICULTY_UP_INTERVAL) {
+	if (difficultyTimer >= GameConfig.difficultyUpInterval) {
 		difficultyTimer = 0.0f;
-		currentSpawnInterval -= Chara::EnemyManager::DIFFICULTY_UP_AMOUNT;
-		if (currentSpawnInterval < Chara::EnemyManager::MIN_SPAWN_INTERVAL) {
-			currentSpawnInterval = Chara::EnemyManager::MIN_SPAWN_INTERVAL;
+		currentSpawnInterval -= GameConfig.difficultyUpAmount;
+		if (currentSpawnInterval < GameConfig.minSpawnInterval) {
+			currentSpawnInterval = GameConfig.minSpawnInterval;
 		}
 	}
 
@@ -117,7 +118,7 @@ int EnemyManager::Update() {
 		int spawnCount = (currentSpawnInterval <= Chara::EnemyManager::BURST_SPAWN_THRESHOLD) ? 1 : Chara::EnemyManager::NORMAL_SPAWNCOUNT;
 
 		for (int i = 0; i < spawnCount; i++) {
-			if (enemies.size() >= Chara::EnemyManager::MAXENEMY_ONMAP)break;
+			if (enemies.size() >= GameConfig.maxEnemyOnMap)break;
 
 			int index = GetRand((int)spawnPoints.size() - 1);
 			VECTOR sPos = spawnPoints[index];
@@ -127,7 +128,7 @@ int EnemyManager::Update() {
 			VECTOR checkEnd = VGet(sPos.x, sPos.y + Chara::EnemyManager::SPAWN_RAY_END, sPos.z);
 			MV1_COLL_RESULT_POLY ground = MV1CollCheck_Line(stageHandle, -1, checkStart, checkEnd);
 
-			if (ground.HitFlag == System::Collision::HITFLAG_TRUE && ground.Normal.y > Chara::Base::GROUND_NORMAL_MIN) {
+			if (ground.HitFlag == TRUE && ground.Normal.y > Chara::Base::GROUND_NORMAL_MIN) {
 				sPos.y = ground.HitPosition.y;
 			}
 			else {
@@ -146,13 +147,13 @@ int EnemyManager::Update() {
 			if (!isSafe)continue;
 
 			std::vector<ENEMYTYPE>availableTypes;
-			if (CountEnemyType(ENEMYTYPE::MELEE) < Chara::EnemyManager::MAX_LIMIT_MELEE)
+			if (CountEnemyType(ENEMYTYPE::MELEE) < GameConfig.maxLimitMelee)
 				availableTypes.push_back(ENEMYTYPE::MELEE);
-			if (CountEnemyType(ENEMYTYPE::RIFLE) < Chara::EnemyManager::MAX_LIMIT_RIFLE)
+			if (CountEnemyType(ENEMYTYPE::RIFLE) < GameConfig.maxLimitRifle)
 				availableTypes.push_back(ENEMYTYPE::RIFLE);
-			if (CountEnemyType(ENEMYTYPE::SNIPER) < Chara::EnemyManager::MAX_LIMIT_SNIPER)
+			if (CountEnemyType(ENEMYTYPE::SNIPER) < GameConfig.maxLimitSniper)
 				availableTypes.push_back(ENEMYTYPE::SNIPER);
-			if (CountEnemyType(ENEMYTYPE::ROLLING) < Chara::EnemyManager::MAX_LIMIT_ROLLING)
+			if (CountEnemyType(ENEMYTYPE::ROLLING) < GameConfig.maxLimitSniper)
 				availableTypes.push_back(ENEMYTYPE::ROLLING);
 
 			if (availableTypes.empty())break;

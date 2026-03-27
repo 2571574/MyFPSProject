@@ -47,6 +47,14 @@ namespace Scene {
         constexpr int CREDIT_LINK_OFFSET_X = 350;
         constexpr int CREDIT_ITEM_INDENT_X = 40;
 
+        constexpr int SETTINGS_TITLE_Y = 100;
+        constexpr int SETTINGS_CURSOR_OFFSET_X = -20;
+
+        constexpr int KEYCONFIG_LINE_MARGIN_X = 200;
+        constexpr int KEYCONFIG_LINE_THICKNESS = 2;
+        constexpr int KEYCONFIG_CURSOR_OFFSET_X = -40;
+        constexpr int KEYCONFIG_BG_OFFSET_X = -50;
+        constexpr int KEYCONFIG_BG_OFFSET_Y = -5;
         constexpr int KEYCONFIG_BASE_X = 400;
         constexpr int KEYCONFIG_BASE_Y = 250;
         constexpr int KEYCONFIG_LINE_HEIGHT = 50;
@@ -142,6 +150,7 @@ namespace Scene {
 
         constexpr int RESULT_TITLE_X = 150;
         constexpr int RESULT_TITLE_Y = 100;
+        constexpr int RESULT_SCORE_OFFSET_X = -150;
         constexpr int RESULT_SCORE_Y = 200;
 
         constexpr int RESULT_COL_LEFT_X = 300;

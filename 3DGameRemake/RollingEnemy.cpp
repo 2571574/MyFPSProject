@@ -81,7 +81,7 @@ void RollingEnemy::Draw() {
 	if (isExploding) {
 		if (static_cast<int>(explodeTimer * Chara::Rolling::EXPLOSION_FLASH_TIME_SCALE) % Chara::Rolling::EXPLOSION_FLASH_MODULO == 0) color = GetColor(Chara::Rolling::COLOR_EXPLODE.r, Chara::Rolling::COLOR_EXPLODE.g, Chara::Rolling::COLOR_EXPLODE.b);
 	}
-	float bodyRad = status.width / System::Collision::BODY_RADIUS_DIVISOR;
+	float bodyRad = status.width / 2.0f;
 	VECTOR bottom = VAdd(position, VGet(0.0f, bodyRad, 0.0f));
 	VECTOR top = VAdd(position, VGet(0.0f, currentHeight - bodyRad, 0.0f));
 	int fillFlag = nowSpawned ? FALSE : TRUE;
@@ -104,7 +104,7 @@ void RollingEnemy::Draw() {
 void RollingEnemy::UpdatePhysics() {
 	float dt = Time::GetIns().GetDelta();
 	float dt60 = dt * Global::Math::FPS_BASE;
-	float radius = status.width / System::Collision::BODY_RADIUS_DIVISOR;
+	float radius = status.width / 2.0f;
 
 	velocity.y += Chara::Base::GRAVITY * dt60;
 
@@ -129,7 +129,7 @@ void RollingEnemy::UpdatePhysics() {
 			VECTOR end = VAdd(basePos, VGet(0.0f, Chara::Base::STEP_RAY_END, 0.0f));
 			MV1_COLL_RESULT_POLY groundHit = MV1CollCheck_Line(stageHandle, -1, start, end);
 
-			if (groundHit.HitFlag == System::Collision::HITFLAG_TRUE && groundHit.Normal.y > Chara::Base::GROUND_NORMAL_MIN) {
+			if (groundHit.HitFlag == TRUE && groundHit.Normal.y > Chara::Base::GROUND_NORMAL_MIN) {
 				if (groundHit.HitPosition.y > highestY) {
 					highestY = groundHit.HitPosition.y;
 					hitGroundThisFrame = true;

@@ -12,8 +12,8 @@ DeathEffect::DeathEffect(VECTOR pos, VECTOR vel, float life, float s, float fY, 
 	, floorY(fY)
 	, color(c) {
 	rotAxis = VNorm(VGet(GetRand(Visual::Effect::ROT_AXIS_RAND_RANGE) - Visual::Effect::ROT_AXIS_RAND_OFFSET, GetRand(Visual::Effect::ROT_AXIS_RAND_RANGE) - Visual::Effect::ROT_AXIS_RAND_OFFSET, GetRand(Visual::Effect::ROT_AXIS_RAND_RANGE) - Visual::Effect::ROT_AXIS_RAND_OFFSET));
-	if (VSize(rotAxis) < System::Collision::MIN_DIST_SQUARED) rotAxis = VGet(System::Collision::ZERO, System::Collision::DEFAULT_FALLBACK_DIR_Y, System::Collision::ZERO);
-	rotSpeed = (GetRand(Global::Math::PERCENT_MAX) / Visual::Effect::RANDOM_PERCENT_DIVISOR) * Visual::Effect::PARTICLE_SPEED_RANDOM_MULT + Visual::Effect::PARTICLE_SPEED_BASE;
+	if (VSize(rotAxis) < System::Collision::MIN_DIST_SQUARED) rotAxis = VGet(0.0f, 1.0f, 0.0f);
+	rotSpeed = (GetRand(100) / 100.0f) * Visual::Effect::PARTICLE_SPEED_RANDOM_MULT + Visual::Effect::PARTICLE_SPEED_BASE;
 }
 
 void DeathEffect::Update() {
@@ -21,7 +21,7 @@ void DeathEffect::Update() {
 	float dt60 = dt * Global::Math::FPS_BASE;
 
 	lifeTime -= dt;
-	if (lifeTime <= System::Collision::ZERO) {
+	if (lifeTime <= 0.0f) {
 		alive = false;
 		return;
 	}
@@ -38,7 +38,7 @@ void DeathEffect::Update() {
 		rotSpeed *= std::pow(Visual::Effect::PARTICLE_ROT_DECAY, dt60);
 
 		if (std::abs(velocity.y) < Visual::Effect::STOP_VEL_Y_THRESHOLD) {
-			velocity.y = System::Collision::ZERO;
+			velocity.y = 0.0f;
 		}
 	}
 	else {
@@ -52,14 +52,14 @@ void DeathEffect::Update() {
 
 void DeathEffect::Draw() {
 	float scale = lifeTime / maxLifeTime;
-	if (scale < System::Collision::ZERO) scale = System::Collision::ZERO;
+	if (scale < 0.0f) scale = 0.0f;
 
-	int alpha = static_cast<int>(Visual::Effect::ALPHA_MAX * (scale * scale));
+	int alpha = static_cast<int>(255 * (scale * scale));
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 
 	MATRIX rotMat = MGetRotAxis(rotAxis, angle);
-	VECTOR topOffset = VTransform(VGet(System::Collision::ZERO, size, System::Collision::ZERO), rotMat);
-	VECTOR bottomOffset = VTransform(VGet(System::Collision::ZERO, -size, System::Collision::ZERO), rotMat);
+	VECTOR topOffset = VTransform(VGet(0.0f, size, 0.0f), rotMat);
+	VECTOR bottomOffset = VTransform(VGet(0.0f, -size, 0.0f), rotMat);
 
 	VECTOR top = VAdd(position, topOffset);
 	VECTOR bottom = VAdd(position, bottomOffset);
@@ -79,16 +79,16 @@ MuzzleFlashEffect::MuzzleFlashEffect(VECTOR pos, VECTOR dir, float life, float s
 void MuzzleFlashEffect::Update() {
 	float dt = Time::GetIns().GetDelta();
 	lifeTime -= dt;
-	if (lifeTime <= System::Collision::ZERO) {
+	if (lifeTime <= 0.0f) {
 		alive = false;
 	}
 }
 
 void MuzzleFlashEffect::Draw() {
 	float scale = lifeTime / maxLifeTime;
-	if (scale < System::Collision::ZERO) scale = System::Collision::ZERO;
+	if (scale < 0.0f) scale = 0.0f;
 
-	int alpha = static_cast<int>(Visual::Effect::ALPHA_MAX * scale);
+	int alpha = static_cast<int>(255 * scale);
 	SetDrawBlendMode(DX_BLENDMODE_ADD, alpha);
 
 	VECTOR top = VAdd(position, VScale(direction, size * Visual::Effect::MUZZLE_FLASH_TOP_SCALE * scale));
@@ -113,7 +113,7 @@ void HitEffect::Update() {
 	float dt60 = dt * Global::Math::FPS_BASE;
 
 	lifeTime -= dt;
-	if (lifeTime <= System::Collision::ZERO) {
+	if (lifeTime <= 0.0f) {
 		alive = false;
 		return;
 	}
@@ -129,7 +129,7 @@ void HitEffect::Update() {
 		velocity.z *= std::pow(Visual::Effect::PARTICLE_FRICTION_GROUND_XZ, dt60);
 
 		if (std::abs(velocity.y) < Visual::Effect::STOP_VEL_Y_THRESHOLD) {
-			velocity.y = System::Collision::ZERO;
+			velocity.y = 0.0f;
 		}
 	}
 	else {
@@ -141,11 +141,11 @@ void HitEffect::Update() {
 
 void HitEffect::Draw() {
 	float scale = lifeTime / maxLifeTime;
-	if (scale < System::Collision::ZERO)scale = System::Collision::ZERO;
+	if (scale < 0.0f)scale = 0.0f;
 
 	float currentSize = size * scale;
 
-	int alpha = static_cast<int>(Visual::Effect::ALPHA_MAX * (scale * scale));
+	int alpha = static_cast<int>(255 * (scale * scale));
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 
 	VECTOR pos1 = VAdd(position, VGet(-currentSize, -currentSize, -currentSize));
@@ -166,33 +166,33 @@ void SpawnEffect::Update() {
 	float dt60 = dt * Global::Math::FPS_BASE;
 
 	lifeTime -= dt;
-	if (lifeTime < System::Collision::ZERO && particles.empty()) {
+	if (lifeTime < 0.0f && particles.empty()) {
 		alive = false;
 		return;
 	}
 
-	if (lifeTime >= System::Collision::ZERO) {
-		float progress = System::Collision::ONE - (lifeTime / maxLifeTime);
-		float scanY = System::Collision::ZERO;
+	if (lifeTime >= 0.0f) {
+		float progress = 1.0f - (lifeTime / maxLifeTime);
+		float scanY = 0.0f;
 
 		if (progress < Visual::Effect::SPAWN_PROGRESS_HALF) {
 			scanY = (progress * Visual::Effect::SPAWN_SCAN_Y_MULT) * targetHeight;
 		}
 		else {
-			scanY = ((System::Collision::ONE - progress) * Visual::Effect::SPAWN_SCAN_Y_MULT) * targetHeight;
+			scanY = ((1.0f - progress) * Visual::Effect::SPAWN_SCAN_Y_MULT) * targetHeight;
 		}
 
-		VECTOR center = VAdd(position, VGet(System::Collision::ZERO, scanY, System::Collision::ZERO));
+		VECTOR center = VAdd(position, VGet(0.0f, scanY, 0.0f));
 
 		for (int i = 0; i < Visual::Effect::SPAWN_PARTICLE_COUNT; i++) {
-			float angle = (GetRand(Visual::Effect::PI_APPROX_INT) / Visual::Effect::RANDOM_PERCENT_DIVISOR) * System::Collision::HEAD_RADIUS_DIVISOR;
-			float dist = targetRadius + (GetRand(Visual::Effect::SPAWN_RAD_RAND_RANGE) / Visual::Effect::RANDOM_PERCENT_DIVISOR);
-			VECTOR pPos = VAdd(center, VGet(cosf(angle) * dist, (GetRand(Visual::Effect::SPAWN_POS_RAND_RANGE) - Visual::Effect::SPAWN_POS_RAND_OFFSET) / Visual::Effect::RANDOM_PERCENT_DIVISOR, sinf(angle) * dist));
+			float angle = (GetRand(100) / 100.0f) * DX_PI_F * 2.0f;
+			float dist = targetRadius + (GetRand(Visual::Effect::SPAWN_RAD_RAND_RANGE) / 100.0f);
+			VECTOR pPos = VAdd(center, VGet(cosf(angle) * dist, (GetRand(Visual::Effect::SPAWN_POS_RAND_RANGE) - Visual::Effect::SPAWN_POS_RAND_OFFSET) / 100.0f, sinf(angle) * dist));
 
 			VECTOR pVel = VGet((GetRand(Visual::Effect::SPAWN_POS_RAND_RANGE) - Visual::Effect::SPAWN_POS_RAND_OFFSET) / Visual::Effect::SPAWN_VEL_XZ_DIVISOR, (GetRand(Visual::Effect::SPAWN_POS_RAND_RANGE) - Visual::Effect::SPAWN_VEL_Y_OFFSET) / Visual::Effect::SPAWN_VEL_Y_DIVISOR, (GetRand(Visual::Effect::SPAWN_POS_RAND_RANGE) - Visual::Effect::SPAWN_POS_RAND_OFFSET) / Visual::Effect::SPAWN_VEL_XZ_DIVISOR);
 
-			float pLife = Visual::Effect::SPAWN_LIFE_BASE + (GetRand(Visual::Effect::SPAWN_LIFE_RAND_RANGE) / Visual::Effect::RANDOM_PERCENT_DIVISOR);
-			float pSize = Visual::Effect::SPAWN_SIZE_BASE + (GetRand(Visual::Effect::SPAWN_SIZE_RAND_RANGE) / Visual::Effect::RANDOM_PERCENT_DIVISOR);
+			float pLife = Visual::Effect::SPAWN_LIFE_BASE + (GetRand(Visual::Effect::SPAWN_LIFE_RAND_RANGE) / 100.0f);
+			float pSize = Visual::Effect::SPAWN_SIZE_BASE + (GetRand(Visual::Effect::SPAWN_SIZE_RAND_RANGE) / 100.0f);
 
 			int pColor = (GetRand(1) == 0) ? GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b) : GetColor(Global::Palette::VIOLET.r, Global::Palette::VIOLET.g, Global::Palette::VIOLET.b);
 
@@ -202,7 +202,7 @@ void SpawnEffect::Update() {
 
 	for (auto it = particles.begin(); it != particles.end();) {
 		it->life -= dt;
-		if (it->life <= System::Collision::ZERO) {
+		if (it->life <= 0.0f) {
 			it = particles.erase(it);
 		}
 		else {
@@ -218,9 +218,9 @@ void SpawnEffect::Draw() {
 	for (const auto& p : particles) {
 		float scale = p.life / p.maxLife;
 		float currentSize = p.size * scale;
-		if (currentSize <= System::Collision::ZERO) continue;
+		if (currentSize <= 0.0f) continue;
 
-		int alpha = static_cast<int>(Visual::Effect::ALPHA_MAX * scale);
+		int alpha = static_cast<int>(255 * scale);
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 
 		VECTOR pos1 = VAdd(p.pos, VGet(-currentSize, -currentSize, -currentSize));
@@ -240,19 +240,19 @@ ExplosionEffect::ExplosionEffect(VECTOR pos, float radius, int c, float life)
 	d.pos = pos;
 	int debrisCount = Visual::Effect::EXPLOSION_DEBRIS_COUNT_MIN + GetRand(Visual::Effect::EXPLOSION_DEBRIS_COUNT_RAND);
 	for (int i = 0; i < debrisCount; ++i) {
-		float theta = (GetRand(Visual::Effect::PI_APPROX_INT) / Visual::Effect::RANDOM_PERCENT_DIVISOR) * System::Collision::HEAD_RADIUS_DIVISOR;
-		float phi = acosf(System::Collision::ONE - System::Collision::HEAD_RADIUS_DIVISOR * (GetRand(Global::Math::PERCENT_MAX) / Visual::Effect::RANDOM_PERCENT_DIVISOR));
-		float speed = (GetRand(Global::Math::PERCENT_MAX) / Visual::Effect::RANDOM_PERCENT_DIVISOR) * Visual::Effect::EXPLOSION_SPEED_RAND_MULT + Visual::Effect::EXPLOSION_SPEED_BASE;
+		float theta = (GetRand(100) / 100.0f) * DX_PI_F * 2.0f;
+		float phi = acosf(1.0f - 2.0f * (GetRand(100) / 100.0f));
+		float speed = (GetRand(100) / 100.0f) * Visual::Effect::EXPLOSION_SPEED_RAND_MULT + Visual::Effect::EXPLOSION_SPEED_BASE;
 
 		d.vel.x = sinf(phi) * cosf(theta) * speed;
 		d.vel.y = cosf(phi) * speed;
 		d.vel.z = sinf(phi) * sinf(theta) * speed;
 
 		d.rotAxis = VNorm(VGet(GetRand(Visual::Effect::ROT_AXIS_RAND_RANGE) - Visual::Effect::ROT_AXIS_RAND_OFFSET, GetRand(Visual::Effect::ROT_AXIS_RAND_RANGE) - Visual::Effect::ROT_AXIS_RAND_OFFSET, GetRand(Visual::Effect::ROT_AXIS_RAND_RANGE) - Visual::Effect::ROT_AXIS_RAND_OFFSET));
-		if (VSize(d.rotAxis) < System::Collision::MIN_DIST_SQUARED)d.rotAxis = VGet(System::Collision::ZERO, System::Collision::DEFAULT_FALLBACK_DIR_Y, System::Collision::ZERO);
-		d.angle = System::Collision::ZERO;
-		d.rotSpeed = (GetRand(Global::Math::PERCENT_MAX) / Visual::Effect::RANDOM_PERCENT_DIVISOR) * Visual::Effect::EXPLOSION_ROT_SPEED_RAND_MULT + Visual::Effect::EXPLOSION_ROT_SPEED_BASE;
-		d.size = Visual::Effect::EXPLOSION_SIZE_BASE + (GetRand(Visual::Effect::EXPLOSION_SIZE_RAND_RANGE) / Visual::Effect::RANDOM_PERCENT_DIVISOR);
+		if (VSize(d.rotAxis) < System::Collision::MIN_DIST_SQUARED) d.rotAxis = VGet(0.0f, 1.0f, 0.0f);
+		d.angle = 0.0f;
+		d.rotSpeed = (GetRand(100) / 100.0f) * Visual::Effect::EXPLOSION_ROT_SPEED_RAND_MULT + Visual::Effect::EXPLOSION_ROT_SPEED_BASE;
+		d.size = Visual::Effect::EXPLOSION_SIZE_BASE + (GetRand(Visual::Effect::EXPLOSION_SIZE_RAND_RANGE) / 100.0f);
 
 		debrisList.push_back(d);
 	}
@@ -263,7 +263,7 @@ void ExplosionEffect::Update() {
 	float dt60 = dt * Global::Math::FPS_BASE;
 
 	lifeTime -= dt;
-	if (lifeTime <= System::Collision::ZERO) {
+	if (lifeTime <= 0.0f) {
 		alive = false;
 		return;
 	}
@@ -289,23 +289,23 @@ void ExplosionEffect::Update() {
 
 void ExplosionEffect::Draw() {
 	float scale = lifeTime / maxLifeTime;
-	if (scale < System::Collision::ZERO)scale = System::Collision::ZERO;
+	if (scale < 0.0f)scale = 0.0f;
 
-	float coreProgress = System::Collision::ONE - scale;
-	float coreScale = System::Collision::ONE - std::pow(System::Collision::ONE - coreProgress, Visual::Effect::EXPLOSION_CORE_POW);
+	float coreProgress = 1.0f - scale;
+	float coreScale = 1.0f - std::pow(1.0f - coreProgress, Visual::Effect::EXPLOSION_CORE_POW);
 	float currentRadius = maxRadius * coreScale;
 
 	int coreAlpha = static_cast<int>(Visual::Effect::EXPLOSION_CORE_ALPHA_MAX * scale);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, coreAlpha);
 	DrawSphere3D(position, currentRadius, System::Window::CIRCLE_DIVNUM, color, color, TRUE);
 
-	int debrisAlpha = static_cast<int>(Visual::Effect::ALPHA_MAX * (scale * scale));
+	int debrisAlpha = static_cast<int>(255 * (scale * scale));
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, debrisAlpha);
 
 	for (const auto& d : debrisList) {
 		MATRIX rot = MGetRotAxis(d.rotAxis, d.angle);
-		VECTOR topOffset = VTransform(VGet(System::Collision::ZERO, d.size, System::Collision::ZERO), rot);
-		VECTOR bottomOffset = VTransform(VGet(System::Collision::ZERO, -d.size, System::Collision::ZERO), rot);
+		VECTOR topOffset = VTransform(VGet(0.0f, d.size, 0.0f), rot);
+		VECTOR bottomOffset = VTransform(VGet(0.0f, -d.size, 0.0f), rot);
 
 		VECTOR top = VAdd(d.pos, topOffset);
 		VECTOR bottom = VAdd(d.pos, bottomOffset);
@@ -322,32 +322,30 @@ HitScanTrail::HitScanTrail(VECTOR start, VECTOR end, int c, float life)
 	, startPos(start)
 	, endPos(end)
 	, color(c)
-	, initialRad(System::Collision::HITSCAN_RAY_THICKNESS) {} // 0.03fを太さ定数で代用
+	, initialRad(System::Collision::HITSCAN_RAY_THICKNESS) {}
 
 void HitScanTrail::Update() {
 	float dt = Time::GetIns().GetDelta();
 	lifeTime -= dt;
-	if (lifeTime <= System::Collision::ZERO) {
+	if (lifeTime <= 0.0f) {
 		alive = false;
 	}
 }
 
 void HitScanTrail::Draw() {
 	float scale = lifeTime / maxLifeTime;
-	if (scale < System::Collision::ZERO)scale = System::Collision::ZERO;
+	if (scale < 0.0f)scale = 0.0f;
 
 	float easeScale = scale * scale;
 	VECTOR currentStart = VAdd(endPos, VScale(VSub(startPos, endPos), scale));
 	float currentRad = initialRad * scale;
 
-	int alpha = static_cast<int>(Visual::Effect::ALPHA_MAX * sqrtf(scale));
-
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+	int alpha = static_cast<int>(255 * sqrtf(scale));
 
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 	DrawCapsule3D(currentStart, endPos, currentRad, Visual::Effect::CAPSULE_SEGMENTS_HITSCAN, color, color, TRUE);
 
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, Visual::Effect::ALPHA_MAX);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
 	DrawCapsule3D(currentStart, endPos, currentRad * Visual::Effect::TRAIL_INNER_RAD_MULT, Visual::Effect::CAPSULE_SEGMENTS_HITSCAN, color, color, TRUE);
 
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
@@ -363,18 +361,18 @@ ProjectileTrailEffect::ProjectileTrailEffect(VECTOR start, VECTOR end, float rad
 void ProjectileTrailEffect::Update() {
 	float dt = Time::GetIns().GetDelta();
 	lifeTime -= dt;
-	if (lifeTime <= System::Collision::ZERO) {
+	if (lifeTime <= 0.0f) {
 		alive = false;
 	}
 }
 
 void ProjectileTrailEffect::Draw() {
 	float scale = lifeTime / maxLifeTime;
-	if (scale < System::Collision::ZERO) scale = System::Collision::ZERO;
+	if (scale < 0.0f) scale = 0.0f;
 
 	float currentRadius = initialRadius * scale;
 
-	int alpha = static_cast<int>(Visual::Effect::ALPHA_MAX * scale);
+	int alpha = static_cast<int>(255 * scale);
 
 	SetWriteZBuffer3D(FALSE);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);

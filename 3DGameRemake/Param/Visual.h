@@ -49,7 +49,7 @@ namespace Visual {
         constexpr int UI_OFFSET_X = -20;
         constexpr int UI_OFFSET_Y_AMMO = -40;
         constexpr int UI_OFFSET_Y_NAME = -20;
-
+        constexpr int PICKUP_BOX_HEIGHT_NO_ICON = 70;
         constexpr int RING_SEGMENTS = 32;
         constexpr float RING_RADIUS_INNER = 0.6f;
         constexpr float RING_RADIUS_OUTER = 0.8f;
@@ -177,9 +177,6 @@ namespace Visual {
         constexpr int EXPLOSION_DEBRIS_COUNT_MIN = 15;
         constexpr int EXPLOSION_DEBRIS_COUNT_RAND = 10;
 
-        constexpr int PI_APPROX_INT = 314;
-        constexpr float RANDOM_PERCENT_DIVISOR = 100.0f;
-
         constexpr float PARTICLE_SPEED_BASE = 0.1f;
         constexpr float PARTICLE_SPEED_RANDOM_MULT = 0.4f;
 
@@ -224,7 +221,6 @@ namespace Visual {
         constexpr float EXPLOSION_CORE_POW = 3.0f;
 
         constexpr float TRAIL_INNER_RAD_MULT = 0.3f;
-        constexpr int ALPHA_MAX = 255;
     }
 
 }

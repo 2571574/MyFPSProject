@@ -33,8 +33,8 @@ void Dummy::Update() {
 /*描画*/
 void Dummy::Draw() {
 	VECTOR cPos = GetPos();
-	float bodyRad = status.width / System::Collision::BODY_RADIUS_DIVISOR;
-	float headRad = bodyRad / System::Collision::HEAD_RADIUS_DIVISOR;
+	float bodyRad = status.width / 2.0f;
+	float headRad = bodyRad / 2.0f;
 	if (headRad < System::Collision::MIN_HEAD_RAD) headRad = System::Collision::MIN_HEAD_RAD;
 	VECTOR bottom = VAdd(position, VGet(0.0f, bodyRad, 0.0f));
 	float neck = status.eyeHeight - headRad;
@@ -63,7 +63,7 @@ void Dummy::Draw() {
 		if (screenPos.z >= 0.0f && screenPos.z <= 1.0f) {
 			float alphaRate = text.lifeTime / Chara::Dummy::TEXT_LIFETIME;
 			if (alphaRate < 0.0f) alphaRate = 0.0f;
-			int alpha = static_cast<int>(Visual::Effect::ALPHA_MAX * alphaRate);
+			int alpha = static_cast<int>(255 * alphaRate);
 
 			::SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 			::DrawFormatStringToHandle(static_cast<int>(screenPos.x), static_cast<int>(screenPos.y), GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b), fontDamage, "%d", text.damage);

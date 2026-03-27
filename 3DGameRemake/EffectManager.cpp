@@ -45,19 +45,19 @@ void EffectManager::CreateDeathParticle(VECTOR pos, float floorY, ENEMYTYPE type
 
 	int particleCount = Visual::Effect::BASE_PARTICLE_COUNT_DEATH_MIN + GetRand(Visual::Effect::BASE_PARTICLE_COUNT_DEATH_RAND);
 	for (int i = 0; i < particleCount; ++i) {
-		float theta = (GetRand(Visual::Effect::PI_APPROX_INT) / Visual::Effect::RANDOM_PERCENT_DIVISOR) * 2.0f;
-		float phi = acosf(1.0f - 2.0f * (GetRand(Global::Math::PERCENT_MAX) * Global::Math::RATIO_FROM_PERCENT));;
+		float theta = (GetRand(100) / 100.0f) * DX_PI_F * 2.0f;
+		float phi = acosf(1.0f - 2.0f * (GetRand(100) / 100.0f));
 
-		float speed = (GetRand(Global::Math::PERCENT_MAX) * Global::Math::RATIO_FROM_PERCENT) * Visual::Effect::PARTICLE_SPEED_RANDOM_MULT + Visual::Effect::PARTICLE_SPEED_BASE;;
+		float speed = (GetRand(100) / 100.0f) * Visual::Effect::PARTICLE_SPEED_RANDOM_MULT + Visual::Effect::PARTICLE_SPEED_BASE;
 
 		VECTOR vel;
 		vel.x = sinf(phi) * cosf(theta) * speed;
 		vel.y = cosf(phi) * speed;
 		vel.z = sinf(phi) * sinf(theta) * speed;
-		vel.y += (GetRand(Global::Math::PERCENT_MAX) * Global::Math::RATIO_FROM_PERCENT) * Visual::Effect::DEATH_VEL_Y_RANDOM_MULT + Visual::Effect::DEATH_VEL_Y_BASE;
+		vel.y += (GetRand(100) / 100.0f) * Visual::Effect::DEATH_VEL_Y_RANDOM_MULT + Visual::Effect::DEATH_VEL_Y_BASE;
 
-		float life = Visual::Effect::DEATH_LIFE_BASE + (GetRand(Global::Math::PERCENT_MAX) / Visual::Effect::RANDOM_PERCENT_DIVISOR);
-		float size = Visual::Effect::DEATH_SIZE_BASE + (GetRand(Visual::Effect::DEATH_SIZE_RANDOM_MULT) / Visual::Effect::RANDOM_PERCENT_DIVISOR);
+		float life = Visual::Effect::DEATH_LIFE_BASE + (GetRand(100) / 100.0f);
+		float size = Visual::Effect::DEATH_SIZE_BASE + (GetRand(Visual::Effect::DEATH_SIZE_RANDOM_MULT) / 100.0f);
 
 		AddEffect(std::make_unique<DeathEffect>(pos, vel, life, size, floorY, color));
 	}
@@ -68,18 +68,18 @@ void EffectManager::CreateMuzzleFlash(VECTOR pos, VECTOR dir, float size) {
 }
 
 void EffectManager::CreateHitEffect(VECTOR pos, VECTOR normal, bool isEnemy) {
-	int color = isEnemy ? GetColor(Visual::Effect::COLOR_EFFECT_HIT.r, Visual::Effect::COLOR_EFFECT_HIT.g, Visual::Effect::COLOR_EFFECT_HIT.b) 
-						: GetColor(Visual::Effect::COLOR_EFFECT_WHITE.r, Visual::Effect::COLOR_EFFECT_WHITE.g, Visual::Effect::COLOR_EFFECT_WHITE.b);
+	int color = isEnemy ? GetColor(Visual::Effect::COLOR_EFFECT_HIT.r, Visual::Effect::COLOR_EFFECT_HIT.g, Visual::Effect::COLOR_EFFECT_HIT.b)
+		: GetColor(Visual::Effect::COLOR_EFFECT_WHITE.r, Visual::Effect::COLOR_EFFECT_WHITE.g, Visual::Effect::COLOR_EFFECT_WHITE.b);
 
 	int particleCount = isEnemy ? Visual::Effect::HIT_PARTICLE_COUNT_ENEMY : Visual::Effect::HIT_PARTICLE_COUNT_WALL;
 
-	if (VSquareSize(normal) < System::Collision::MIN_DIST_SQUARED) normal = VGet(0, 1, 0);
+	if (VSquareSize(normal) < System::Collision::MIN_DIST_SQUARED) normal = VGet(0.0f, 1.0f, 0.0f);
 	normal = VNorm(normal);
 
-	VECTOR up = VGet(0, 1, 0);
+	VECTOR up = VGet(0.0f, 1.0f, 0.0f);
 	VECTOR right = VCross(up, normal);
 	if (VSquareSize(right) < System::Collision::MIN_DIST_SQUARED) {
-		right = VGet(1, 0, 0);
+		right = VGet(1.0f, 0.0f, 0.0f);
 	}
 	else {
 		right = VNorm(right);
@@ -88,10 +88,10 @@ void EffectManager::CreateHitEffect(VECTOR pos, VECTOR normal, bool isEnemy) {
 
 	for (int i = 0; i < particleCount; ++i) {
 		// 法線を中心とした半球状にランダムなベクトルを生成
-		float theta = (GetRand(Visual::Effect::PI_APPROX_INT) / Visual::Effect::RANDOM_PERCENT_DIVISOR) * 2.0f;
-		float phi = acosf(1.0f - (GetRand(Global::Math::PERCENT_MAX) / Visual::Effect::RANDOM_PERCENT_DIVISOR));
+		float theta = (GetRand(100) / 100.0f) * DX_PI_F * 2.0f;
+		float phi = acosf(1.0f - (GetRand(100) / 100.0f));
 
-		float speed = (GetRand(Global::Math::PERCENT_MAX) / Visual::Effect::RANDOM_PERCENT_DIVISOR) * Visual::Effect::HIT_SPEED_RANDOM_MULT + Visual::Effect::HIT_SPEED_BASE;
+		float speed = (GetRand(100) / 100.0f) * Visual::Effect::HIT_SPEED_RANDOM_MULT + Visual::Effect::HIT_SPEED_BASE;
 
 		float localX = sinf(phi) * cosf(theta);
 		float localY = sinf(phi) * sinf(theta);
@@ -104,8 +104,8 @@ void EffectManager::CreateHitEffect(VECTOR pos, VECTOR normal, bool isEnemy) {
 
 		vel = VScale(vel, speed);
 
-		float life = Visual::Effect::HIT_LIFE_BASE + (GetRand(Visual::Effect::HIT_LIFE_RANDOM) / Visual::Effect::RANDOM_PERCENT_DIVISOR);
-		float size = Visual::Effect::HIT_SIZE_BASE + (GetRand(Visual::Effect::HIT_SIZE_RANDOM) / Visual::Effect::RANDOM_PERCENT_DIVISOR);
+		float life = Visual::Effect::HIT_LIFE_BASE + (GetRand(Visual::Effect::HIT_LIFE_RANDOM) / 100.0f);
+		float size = Visual::Effect::HIT_SIZE_BASE + (GetRand(Visual::Effect::HIT_SIZE_RANDOM) / 100.0f);
 
 		AddEffect(std::make_unique<HitEffect>(pos, vel, life, size, Visual::Effect::EFFECT_FLOOR_Y_LIMIT, color));
 	}

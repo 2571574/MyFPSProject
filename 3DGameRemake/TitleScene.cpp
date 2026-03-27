@@ -283,7 +283,7 @@ void TitleScene::Draw() {
 	switch (currentState) {
 	case TitleState::TOP: {
 		if (titleLogoHandle != -1) {
-			::SetDrawBlendMode(DX_BLENDMODE_ADD, Visual::Effect::ALPHA_MAX);
+			::SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
 			DrawExtendGraph(System::Window::WINDOW_WIDTH - Scene::Title::TITLE_LOGO_OFFSET_X1, Scene::Title::TITLE_LOGO_Y1, System::Window::WINDOW_WIDTH - Scene::Title::TITLE_LOGO_OFFSET_X2, Scene::Title::TITLE_LOGO_Y2, titleLogoHandle, true);
 			::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
@@ -296,7 +296,7 @@ void TitleScene::Draw() {
 			bool isSelected = (i == selectNum);
 			int bgColor = GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b);
 
-			int bgAlpha = isSelected ? Visual::Effect::ALPHA_MAX : Scene::Title::MENU_UNSELECTED_ALPHA;
+			int bgAlpha = isSelected ? 255 : Scene::Title::MENU_UNSELECTED_ALPHA;
 			int textColor = isSelected ? GetColor(Global::Palette::BLACK.r, Global::Palette::BLACK.g, Global::Palette::BLACK.b) : GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b);
 
 			DrawGeometricBG(drawX + Scene::Title::MENU_BG_OFFSET_X, drawY + Scene::Title::MENU_BG_OFFSET_Y, bgColor, bgAlpha);
@@ -323,7 +323,7 @@ void TitleScene::Draw() {
 			bool isSelected = (i == selectNum);
 			int bgColor = GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b);
 
-			int bgAlpha = isSelected ? Visual::Effect::ALPHA_MAX : Scene::Title::MENU_UNSELECTED_ALPHA;
+			int bgAlpha = isSelected ? 255 : Scene::Title::MENU_UNSELECTED_ALPHA;
 			int textColor = isSelected ? GetColor(Global::Palette::BLACK.r, Global::Palette::BLACK.g, Global::Palette::BLACK.b) : GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b);
 
 			DrawGeometricBG(drawX + Scene::Title::MENU_BG_OFFSET_X, drawY + Scene::Title::MENU_BG_OFFSET_Y, bgColor, bgAlpha);
@@ -402,7 +402,7 @@ void TitleScene::Draw() {
 }
 
 void TitleScene::DrawSettings() {
-	::DrawStringToHandle(Scene::Title::MENU_BASE_X, 100, "SETTINGS", GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b), fontMenuLarge);
+	::DrawStringToHandle(Scene::Title::MENU_BASE_X, Scene::Title::SETTINGS_TITLE_Y, "SETTINGS", GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b), fontMenuLarge);
 	auto& s = ConfigManager::GetIns().Settings();
 
 	const char* labels[(int)SettingItem::MAX] = {
@@ -419,7 +419,7 @@ void TitleScene::DrawSettings() {
 		int drawY = Scene::Title::MENU_BASE_Y + i * Scene::Title::KEYCONFIG_LINE_HEIGHT;
 
 
-		::DrawStringToHandle(Scene::Title::MENU_BASE_X - 20, drawY, (i == selectNum) ? ">" : " ", color, fontMenuSmall);
+		::DrawStringToHandle(Scene::Title::MENU_BASE_X + Scene::Title::SETTINGS_CURSOR_OFFSET_X, drawY, (i == selectNum) ? ">" : " ", color, fontMenuSmall);
 
 		switch ((SettingItem)i) {
 		case SettingItem::BGM_VOLUME:
@@ -468,7 +468,9 @@ void TitleScene::DrawKeyConfig() {
 	::DrawStringToHandle(Scene::Title::KEYCONFIG_COL_PAD_X, Scene::Title::KEYCONFIG_HEADER_Y, "コントローラー", GetColor(Global::Palette::GRAY.r, Global::Palette::GRAY.g, Global::Palette::GRAY.b), fontMenuSmall);
 
 	::SetDrawBlendMode(DX_BLENDMODE_ALPHA, Scene::Title::BG_ALPHA_DEFAULT);
-	::DrawLine(Scene::Title::KEYCONFIG_BASE_X, Scene::Title::KEYCONFIG_LINE_Y, System::Window::WINDOW_WIDTH - 200, Scene::Title::KEYCONFIG_LINE_Y, GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b), 2);
+	::DrawLine(Scene::Title::KEYCONFIG_BASE_X, Scene::Title::KEYCONFIG_LINE_Y, 
+		System::Window::WINDOW_WIDTH - Scene::Title::KEYCONFIG_LINE_MARGIN_X, Scene::Title::KEYCONFIG_LINE_Y, 
+		GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b), Scene::Title::KEYCONFIG_LINE_THICKNESS);
 	::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	auto& allBind = ConfigManager::GetIns().Bindings();
@@ -481,9 +483,13 @@ void TitleScene::DrawKeyConfig() {
 		const char* actName = TextManager::GetIns().GetActionName(act);
 
 		if (i == selectNum) {
-			::DrawStringToHandle(Scene::Title::KEYCONFIG_BASE_X - 40, y, ">", color, fontMenuSmall);
+			::DrawStringToHandle(Scene::Title::KEYCONFIG_BASE_X + Scene::Title::KEYCONFIG_CURSOR_OFFSET_X, y, ">", color, fontMenuSmall);
 			::SetDrawBlendMode(DX_BLENDMODE_ALPHA, Scene::Title::KEYCONFIG_HIGHLIGHT_ALPHA);
-			::DrawBox(Scene::Title::KEYCONFIG_BASE_X - 50, y - 5, System::Window::WINDOW_WIDTH - 200, y + Scene::Title::KEYCONFIG_LINE_HEIGHT - 5, GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b), TRUE);
+			::DrawBox(Scene::Title::KEYCONFIG_BASE_X + Scene::Title::KEYCONFIG_BG_OFFSET_X,
+				y + Scene::Title::KEYCONFIG_BG_OFFSET_Y,
+				System::Window::WINDOW_WIDTH - Scene::Title::KEYCONFIG_LINE_MARGIN_X,
+				y + Scene::Title::KEYCONFIG_LINE_HEIGHT + Scene::Title::KEYCONFIG_BG_OFFSET_Y,
+				GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b), TRUE);
 			::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 

@@ -48,7 +48,7 @@ void ResultScene::Draw() {
 
 	::DrawStringToHandle(Scene::Result::RESULT_TITLE_X, Scene::Result::RESULT_TITLE_Y, "Result", white, fontLarge);
 
-	::DrawFormatStringToHandle(System::Window::CENTER_X - 150, Scene::Result::RESULT_SCORE_Y, yellow, fontLarge, "Score : %d", result.currentScore);
+	::DrawFormatStringToHandle(System::Window::CENTER_X + Scene::Result::RESULT_SCORE_OFFSET_X, Scene::Result::RESULT_SCORE_Y, yellow, fontLarge, "Score : %d", result.currentScore);
 
 
 	::DrawStringToHandle(Scene::Result::RESULT_COL_LEFT_X, Scene::Result::RESULT_ROW_TOP_Y, "- 死因 -", gray, fontMedium);

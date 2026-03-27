@@ -60,7 +60,7 @@ void HUD::Draw() {
 		::DrawStringToHandle(drawX, topY, topTextBuf, textColor, fontJpLarge);
 	}
 	else {
-		int alpha = static_cast<int>(scoreFadeAlpha * Visual::Effect::ALPHA_MAX);
+		int alpha = static_cast<int>(scoreFadeAlpha * 255);
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 		::DrawStringToHandle(drawX, topY, topTextBuf, textColor, fontJpLarge);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
@@ -92,7 +92,7 @@ void HUD::Draw() {
 		}
 
 		int baseColor = GetColor(bColor.r, bColor.g, bColor.b);
-		int alpha = static_cast<int>(Visual::Effect::ALPHA_MAX * (1.0f - easeOut));
+		int alpha = static_cast<int>(255 * (1.0f - easeOut));
 		float expandOffset = Visual::HUD::HITMARK_BASE_OFFSET + offsetMultiplier * easeOut;
 
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
@@ -145,7 +145,7 @@ void HUD::Draw() {
 
 			int contentWidth = iconSize + gap + textMaxWidth;
 			int boxWidth = contentWidth + Visual::HUD::PICKUP_PADDING_X * 2;
-			int boxHeight = (iconSize > 0) ? iconSize + Visual::HUD::PICKUP_PADDING_Y * 2 : 70;
+			int boxHeight = (iconSize > 0) ? iconSize + Visual::HUD::PICKUP_PADDING_Y * 2 : Visual::ItemUI::PICKUP_BOX_HEIGHT_NO_ICON;
 
 			int boxStartX = System::Window::CENTER_X - (boxWidth / 2);
 			int boxStartY = System::Window::CENTER_Y + Visual::HUD::PICKUP_BOX_START_Y_OFFSET;

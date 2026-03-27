@@ -94,8 +94,8 @@ void MeleeEnemy::Update() {
 
 void MeleeEnemy::Draw() {
 	VECTOR cPos = GetPos();
-	float bodyRad = status.width / System::Collision::BODY_RADIUS_DIVISOR;
-	float headRad = bodyRad / System::Collision::HEAD_RADIUS_DIVISOR;
+	float bodyRad = status.width / 2.0f;
+	float headRad = bodyRad / 2.0f;
 	if (headRad < System::Collision::MIN_HEAD_RAD) headRad = System::Collision::MIN_HEAD_RAD;
 	VECTOR bottom = VAdd(position, VGet(0.0f, bodyRad, 0.0f));
 	float neck = status.eyeHeight - headRad;
@@ -160,8 +160,8 @@ void MeleeEnemy::Draw() {
 		VECTOR animForward = VTransform(forward, rot);
 		VECTOR animUp = VTransform(up, rot);
 
-		VECTOR drawPos = VAdd(position, VGet(0.0f, status.height * Chara::Base::HALF_RATIO, 0.0f));
-		float weaponHeight = (status.height * Chara::Base::HALF_RATIO) - bodyRad;
+		VECTOR drawPos = VAdd(position, VGet(0.0f, status.height * 0.5f, 0.0f));
+		float weaponHeight = (status.height * 0.5f) - bodyRad;
 		drawPos = VAdd(drawPos, VScale(leanMax, weaponHeight / headHeight));
 		melee->Draw(drawPos, animForward, right, animUp, false, false);
 	}

@@ -26,7 +26,6 @@ namespace Chara {
 
         constexpr int PARAM_MAX = 255;
 
-        constexpr float HALF_RATIO = 0.5f;
         constexpr float CAP_BOTTOM_OFFSET = 0.3f;
         constexpr float CAP_SIDE_OFFSET = 0.8f;
 
@@ -56,10 +55,10 @@ namespace Chara {
         constexpr float INPUT_VECTOR_MAX_LENGTH = 1.0f;
         constexpr float YAW_HALF_TURN_DEG = 180.0f;
         constexpr float YAW_FULL_TURN_DEG = 360.0f;
+        constexpr float RECOIL_HIPFIRE_MULTIPLIER = 0.5f;
         constexpr float ADS_SWAY_SCALE = 0.1f;
         constexpr float BOBBING_2D_AMPLITUDE = 0.015f;
         constexpr float BOBBING_2D_FREQUENCY_MULT = 0.5f;
-
         constexpr int MAX_WEAPON_SLOT_EASY_NORMAL = 10;
         constexpr int MAX_WEAPON_SLOT_HARD = 2;
         constexpr float SWAY_MULTIPLIER = 0.02f;
@@ -88,16 +87,6 @@ namespace Chara {
     }
 
     namespace EnemyManager {
-        constexpr int MAXENEMY_ONMAP = 15;
-        constexpr int MAX_LIMIT_MELEE = 6;
-        constexpr int MAX_LIMIT_RIFLE = 4;
-        constexpr int MAX_LIMIT_SNIPER = 3;
-        constexpr int MAX_LIMIT_ROLLING = 2;
-        constexpr float INIT_SPAWN_INTERVAL = 8.0f;
-        constexpr float PREPARE_TIME = 10.0f;
-        constexpr float DIFFICULTY_UP_INTERVAL = 20.0f;
-        constexpr float DIFFICULTY_UP_AMOUNT = 0.5f;
-        constexpr float MIN_SPAWN_INTERVAL = 0.2f;
         constexpr float BURST_SPAWN_THRESHOLD = 0.5f;
         constexpr int NORMAL_SPAWNCOUNT = 3;
         constexpr float SPAWNDIST_PLAYER = 10.0f;

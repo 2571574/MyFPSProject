@@ -51,8 +51,8 @@ void Weapon::Update(Character& user) {
 	if (reloadCT > 0) {
 		reloadCT -= delta;
 		if (currentState == WeaponState::RELOADING && !reloadEndPlayed && reloadCT <= Item::Weapon::RELOAD_END_SOUND_THRESHOLD) {
-			if (!spec.visual.reloadSoundPath.empty()) {
-				SoundManager::GetIns().Play3DSE(spec.visual.ReloadEndSoundPath, user.GetPos(), Item::Weapon::SOUND_RADIUS_NORMAL);
+			if (!spec.visual.reloadEndSoundPath.empty()) {
+				SoundManager::GetIns().Play3DSE(spec.visual.reloadEndSoundPath, user.GetPos(), Item::Weapon::SOUND_RADIUS_NORMAL);
 			}
 			reloadEndPlayed = true;
 		}
@@ -232,7 +232,6 @@ void Weapon::FireHitScan(Character& user, VECTOR baseDir, VECTOR shootDir) {
 	//始点から終点までで当たったか判定する
 	HitInfo hit = CollisionManager::GetIns().CheckHitScan(start, end, user.GetID());
 	if (hit.character != nullptr) {
-		user.HitRecord(hit.isHeadShot);
 		int lastdamage = hit.isHeadShot ? spec.damage * Item::Projectile::HEADSHOT_MULTIPLIER : spec.damage;
 		if (hit.isHeadShot)Debug::Log("Headshot");
 		else Debug::Log("hit");

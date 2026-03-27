@@ -122,7 +122,7 @@ void LoadToGun(GunStatus& target, const std::vector<std::string>& row) {
         target.visual.uiPath = row[43];
         target.visual.fireSoundPath = row[44];
         target.visual.reloadSoundPath = row[45];
-        target.visual.ReloadEndSoundPath = row[46];
+        target.visual.reloadEndSoundPath = row[46];
     }
     catch (...) { Debug::Log("Gun.csv Parse Error: " + row[0]); }
 }

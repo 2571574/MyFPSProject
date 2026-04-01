@@ -22,23 +22,23 @@
     <Filter Include="2.OBJECT">
       <UniqueIdentifier>{c124736d-c864-4cc0-90c2-40cfdce84f24}</UniqueIdentifier>
     </Filter>
-    <Filter Include="2.OBJECT\1.ENTITY">
-      <UniqueIdentifier>{f71adfef-2e07-444b-833a-f6ea3dde1555}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2.OBJECT\2.WEAPON">
       <UniqueIdentifier>{8770df12-d577-4073-a941-9211fc8017ea}</UniqueIdentifier>
     </Filter>
     <Filter Include="2.OBJECT\2.WEAPON\BULLET">
       <UniqueIdentifier>{567b0b2e-d394-4f99-a59a-29f8b8338c0d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="2.OBJECT\1.ENTITY\ENEMY">
-      <UniqueIdentifier>{68d7d6db-bd31-4c4d-a5b5-9eb52f030ee7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="3.SINGLE MANAGER">
       <UniqueIdentifier>{66608d9c-bd0b-478e-9b6f-373b804978a2}</UniqueIdentifier>
     </Filter>
     <Filter Include="4.TOOL">
       <UniqueIdentifier>{1554755e-39b2-4491-9320-21365cc84e7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2.OBJECT\1.ENTITY">
+      <UniqueIdentifier>{f71adfef-2e07-444b-833a-f6ea3dde1555}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2.OBJECT\1.ENTITY\ENEMY">
+      <UniqueIdentifier>{68d7d6db-bd31-4c4d-a5b5-9eb52f030ee7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -60,92 +60,92 @@
     <ClCompile Include="GameScene.cpp">
       <Filter>1.GAME\SCENE</Filter>
     </ClCompile>
-    <ClCompile Include="Status.cpp">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
-    </ClCompile>
-    <ClCompile Include="CheckKey.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Time.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="InputManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="EffectManager.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>3.SINGLE MANAGER</Filter>
     </ClCompile>
     <ClCompile Include="ConfigManager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>3.SINGLE MANAGER</Filter>
     </ClCompile>
-    <ClCompile Include="Pathfinding.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="TextManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="CollisionManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Effect.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseProjectile.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Weapon.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Character.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="HUD.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="WeaponItem.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="SniperEnemy.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="RollingEnemy.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="RifleEnemy.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="MeleeEnemy.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Dummy.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="EffectManager.cpp">
+      <Filter>3.SINGLE MANAGER</Filter>
     </ClCompile>
     <ClCompile Include="EnemyManager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>3.SINGLE MANAGER</Filter>
     </ClCompile>
     <ClCompile Include="ItemManager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>3.SINGLE MANAGER</Filter>
     </ClCompile>
     <ClCompile Include="ProjectileManager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClCompile>
+    <ClCompile Include="TextManager.cpp">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClCompile>
+    <ClCompile Include="Status.cpp">
+      <Filter>4.TOOL</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseProjectile.cpp">
+      <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
+    </ClCompile>
+    <ClCompile Include="SniperEnemy.cpp">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClCompile>
+    <ClCompile Include="RollingEnemy.cpp">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClCompile>
+    <ClCompile Include="RifleEnemy.cpp">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClCompile>
+    <ClCompile Include="Dummy.cpp">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>2.OBJECT\1.ENTITY</Filter>
+    </ClCompile>
+    <ClCompile Include="HUD.cpp">
+      <Filter>2.OBJECT\1.ENTITY</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>2.OBJECT\1.ENTITY</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeEnemy.cpp">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckKey.cpp">
+      <Filter>4.TOOL</Filter>
+    </ClCompile>
+    <ClCompile Include="Pathfinding.cpp">
+      <Filter>4.TOOL</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>2.OBJECT\2.WEAPON</Filter>
+    </ClCompile>
+    <ClCompile Include="WeaponItem.cpp">
+      <Filter>2.OBJECT\2.WEAPON</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>1.GAME</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>2.OBJECT\1.ENTITY</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>2.OBJECT</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -167,7 +167,91 @@
     <ClInclude Include="GameScene.h">
       <Filter>1.GAME\SCENE</Filter>
     </ClInclude>
+    <ClInclude Include="BaseScene.h">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigManager.h">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectManager.h">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyManager.h">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemManager.h">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileManager.h">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundManager.h">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
+    <ClInclude Include="TextManager.h">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
+    <ClInclude Include="Status.h">
+      <Filter>4.TOOL</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseProjectile.h">
+      <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
+    </ClInclude>
+    <ClInclude Include="SniperEnemy.h">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClInclude>
+    <ClInclude Include="RollingEnemy.h">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClInclude>
+    <ClInclude Include="RifleEnemy.h">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClInclude>
+    <ClInclude Include="Dummy.h">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>2.OBJECT\1.ENTITY</Filter>
+    </ClInclude>
+    <ClInclude Include="HUD.h">
+      <Filter>2.OBJECT\1.ENTITY</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>2.OBJECT\1.ENTITY</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeEnemy.h">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckKey.h">
+      <Filter>4.TOOL</Filter>
+    </ClInclude>
+    <ClInclude Include="Pathfinding.h">
+      <Filter>4.TOOL</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapon.h">
+      <Filter>2.OBJECT\2.WEAPON</Filter>
+    </ClInclude>
+    <ClInclude Include="WeaponItem.h">
+      <Filter>2.OBJECT\2.WEAPON</Filter>
+    </ClInclude>
     <ClInclude Include="Param\Chara.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Param\Global.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Param\Item.h">
@@ -182,98 +266,14 @@
     <ClInclude Include="Param\Visual.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="CheckKey.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Time.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="InputManager.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundManager.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="EffectManager.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="ConfigManager.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Pathfinding.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="TextManager.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionManager.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Effect.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseProjectile.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Weapon.h">
-      <Filter>ソース ファイル</Filter>
+    <ClInclude Include="Utils.h">
+      <Filter>4.TOOL</Filter>
     </ClInclude>
     <ClInclude Include="Character.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="HUD.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemy.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Status.h">
       <Filter>2.OBJECT\1.ENTITY</Filter>
     </ClInclude>
-    <ClInclude Include="WeaponItem.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="SniperEnemy.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="RollingEnemy.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="RifleEnemy.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="MeleeEnemy.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Dummy.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseScene.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="EnemyManager.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemManager.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileManager.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Param\Global.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="Effect.h">
+      <Filter>2.OBJECT</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

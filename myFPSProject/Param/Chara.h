@@ -23,6 +23,7 @@ namespace Chara {
         constexpr int SHADOW_ALPHA = 100;               //影のα値
         constexpr float SHADOW_OFFSET_Y_HIGH = 0.02f;   //影描画の浮かせ幅（高）
         constexpr float SHADOW_OFFSET_Y_LOW = 0.01f;    //影描画の浮かせ幅（低）
+        constexpr float SHADOW_WIDTH_DIVISOR = 1.5f;    //影の横幅
 
         constexpr float MOVEMENT_MIN = 0.01f;           //移動とみなす最小速度
     }
@@ -80,6 +81,8 @@ namespace Chara {
 
         constexpr float LEAN_FACTOR = 1.5f;                     //速度に応じた傾きの具合
         constexpr float SPAWN_PROCESS_TIME = 1.5f;              //出現直後の行動しない無敵時間
+
+        constexpr float HIT_FLASH_DURATION = 0.1f;          //ヒットエフェクトの時間
     }
 
     namespace EnemyManager {
@@ -148,9 +151,8 @@ namespace Chara {
     namespace Dummy {
         constexpr float TEXT_LIFETIME = 1.0f;               //ダメージ数値の表示されている時間
         constexpr float TEXT_HEIGHT_OFFSET = 0.5f;          //ダメージ数字の表示する頭上の高さ
-        constexpr float ACCUMULATE_TIME_MAX = 0.2f;
+        constexpr float ACCUMULATE_TIME_MAX = 0.2f;         //２つのヒットの数字を一つにまとめる時間の猶予
 
-        constexpr Global::ColorRGB COLOR_NORMAL = Global::Palette::RED_LIGHT;
-        constexpr float HIT_FLASH_DURATION = 0.1f;
+        constexpr Global::ColorRGB COLOR_NORMAL = Global::Palette::RED_LIGHT;   //ダミーの色
     }
 }

@@ -27,8 +27,6 @@ private:
 	int fontEnSmall = -1;   // 予備弾数、RELOADING用 (Century Gothic)
 
 	const int PICKUP_ICON_SIZE = 100; // ピックアップUIのアイコンサイズ
-	const int PICKUP_BOX_WIDTH = 350;  // ピックアップUIの背景矩形幅
-	const int PICKUP_BOX_HEIGHT = 150; // ピックアップUIの背景矩形高
 public:
 	HUD(Player* player);
 	~HUD() = default;

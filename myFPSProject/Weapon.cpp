@@ -93,7 +93,7 @@ void Weapon::Fired(Character& user) {
 	//反動の処理
 	float recoilP = spec.recoil;
 	int randMax = static_cast<int>(spec.recoil * Item::Weapon::RECOIL_RANDOM_PRECISION);
-	float recoilY = (randMax > 0) ? (((float)GetRand(randMax) / Item::Weapon::RECOIL_RANDOM_PRECISION) - (spec.recoil / Item::Weapon::RECOIL_HALF_DIVISOR)) : 0.0f;
+	float recoilY = (randMax > 0) ? (((float)GetRand(randMax) / Item::Weapon::RECOIL_RANDOM_PRECISION) - (spec.recoil / 2.0f)) : 0.0f;
 	user.AddRecoil(recoilY, recoilP);
 }
 
@@ -232,7 +232,7 @@ void Weapon::FireHitScan(Character& user, VECTOR baseDir, VECTOR shootDir) {
 	//始点から終点までで当たったか判定する
 	HitInfo hit = CollisionManager::GetIns().CheckHitScan(start, end, user.GetID());
 	if (hit.character != nullptr) {
-		int lastdamage = hit.isHeadShot ? spec.damage * Item::Projectile::HEADSHOT_MULTIPLIER : spec.damage;
+		int lastdamage = hit.isHeadShot ? spec.damage * Item::Weapon::HEADSHOT_MULTIPLIER : spec.damage;
 		if (hit.isHeadShot)Debug::Log("Headshot");
 		else Debug::Log("hit");
 		hit.character->OnHit(lastdamage, spec.id);

@@ -24,7 +24,7 @@ Enemy::Enemy(VECTOR pos, const CharacterStatus& status, Player* _target, ENEMYTY
 void Enemy::OnHit(int damage, WeaponID id) {
 	if (!alive || nowSpawned) return;
 	TakeDamage(damage, id);
-	onHitFlashTimer = Chara::Dummy::HIT_FLASH_DURATION;
+	onHitFlashTimer = Chara::EnemyCommon::HIT_FLASH_DURATION;
 }
 
 VECTOR Enemy::GetNextNodeID()const {

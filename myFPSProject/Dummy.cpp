@@ -77,7 +77,7 @@ void Dummy::Action() {}
 void Dummy::OnHit(int damage, WeaponID id) {
 	if (!alive) return;
 	TakeDamage(damage, id);
-	onHitFlashTimer = Chara::Dummy::HIT_FLASH_DURATION;
+	onHitFlashTimer = Chara::EnemyCommon::HIT_FLASH_DURATION;
 	if (!damageText) return;
 	if (accumulateTimer > 0.0f && !damageTexts.empty()) {
 		DamageText& lastText = damageTexts.back();

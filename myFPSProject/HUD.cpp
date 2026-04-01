@@ -301,7 +301,7 @@ void HUD::OnHitTarget(bool isHeadShot,bool isKill) {
 }
 
 void HUD::OnPlayerTakeDamage() {
-	damageFlashTimer = DAMAGE_FLASH_DURATION;
+	damageFlashTimer = Visual::HUD::DAMAGE_FLASH_DURATION;
 	if (pplayer->GetHP() > 0) {
 		SoundManager::GetIns().PlaySE("Resource/Sound/damage.ogg");
 	}

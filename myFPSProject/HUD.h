@@ -18,13 +18,13 @@ private:
 	float scoreFadeAlpha = 0.0f;
 
 	float damageFlashTimer = 0.0f;
-	const float DAMAGE_FLASH_DURATION = 1.0f;
 
 
-	int fontJpLarge = -1;   // スコア、スタートタイマー用 (メイリオ)
-	int fontJpMedium = -1;  // 武器名、PickUp表記用 (メイリオ)
-	int fontEnLarge = -1;   // AMMOのメイン数字用 (Century Gothic)
-	int fontEnSmall = -1;   // 予備弾数、RELOADING用 (Century Gothic)
+
+	int fontJpLarge = -1;   // スコア、スタートタイマー用
+	int fontJpMedium = -1;  // 武器名、PickUp表記用
+	int fontEnLarge = -1;   // AMMOのメイン数字用
+	int fontEnSmall = -1;   // 予備弾数、RELOADING用
 
 	const int PICKUP_ICON_SIZE = 100; // ピックアップUIのアイコンサイズ
 public:

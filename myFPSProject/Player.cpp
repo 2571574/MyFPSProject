@@ -79,7 +79,7 @@ void Player::Update() {
 	moveVec = VAdd(moveVec, VScale(rightVec, right));
 
 	// 正規化
-	if (VSize(moveVec) > Chara::Player::INPUT_VECTOR_MAX_LENGTH) {
+	if (VSize(moveVec) > Chara::Player::INPUT_VECTOR) {
 		moveVec = VNorm(moveVec);
 	}
 
@@ -255,8 +255,8 @@ void Player::Draw() {
 		VECTOR drawPos = cam->GetPos();
 
 		if (!isAds) {
-			float bobX = cosf(bobbingTimer * Chara::Player::BOBBING_2D_FREQUENCY_MULT) * Chara::Player::BOBBING_2D_AMPLITUDE;
-			float bobY = sinf(bobbingTimer) * Chara::Player::BOBBING_2D_AMPLITUDE;
+			float bobX = cosf(bobbingTimer * Chara::Player::BOBBING_WEAPON_FREQUENCY_MULT) * Chara::Player::BOBBING_WEAPON_AMPLITUDE;
+			float bobY = sinf(bobbingTimer) * Chara::Player::BOBBING_WEAPON_AMPLITUDE;
 
 			drawPos = VAdd(drawPos, VScale(right, bobX));
 			drawPos = VAdd(drawPos, VScale(up, bobY));

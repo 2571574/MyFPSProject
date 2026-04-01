@@ -1,79 +1,78 @@
-#pragma once
+﻿#pragma once
 #include "Param/Global.h"
 
+//キャラクター関係の定数
 namespace Chara {
 
     namespace Base {
-        constexpr float CHARA_HEIGHT = 2.0f;
-        constexpr float CHARA_RADIUS = 0.5f;
+        constexpr float CHARA_HEIGHT = 2.0f;            //キャラのデフォルト身長
+        constexpr float CHARA_RADIUS = 0.5f;            //キャラのデフォルト幅
 
-        constexpr float GRAVITY = -0.008f;
-        constexpr float GROUND_KB_FRICTION = 0.8f;
-        constexpr float AIR_KB_FRICTION = 0.98f;
-        constexpr float GROUND_NORMAL_MIN = 0.3f;
-        constexpr float WALL_NORMAL_MAX = 0.4f;
-        constexpr float CEILING_NORMAL_MAX = -0.1f;
+        constexpr float GRAVITY = -0.008f;              //重力
+        constexpr float GROUND_KB_FRICTION = 0.8f;      //デフォルト地上摩擦
+        constexpr float AIR_KB_FRICTION = 0.98f;        //デフォルト空中摩擦
+        constexpr float GROUND_NORMAL_MIN = 0.3f;       //床とみなす法線ベクトルの角度
+        constexpr float CEILING_NORMAL_MAX = -0.1f;     //天井とみなす法線ベクトルの角度
 
-        constexpr int RAY_COUNT = 5;
-        constexpr float STEP_RAY_START = 0.1f;
-        constexpr float STEP_RAY_END = -0.2f;
+        constexpr int RAY_COUNT = 5;                    //キャラの着地判定のレイの本数
+        constexpr float STEP_RAY_START = 0.1f;          //着地判定始点
+        constexpr float STEP_RAY_END = -0.2f;           //着地判定終点
+        constexpr float CAP_SIDE_OFFSET = 0.8f;         //着地判定のレイの間隔
+        constexpr float CAP_BOTTOM_OFFSET = 0.3f;       //壁判定のためのカプセル下
 
-        constexpr int SHADOW_ALPHA = 100;
-        constexpr float SHADOW_OFFSET_Y_HIGH = 0.02f;
-        constexpr float SHADOW_OFFSET_Y_LOW = 0.01f;
-        constexpr float SHADOW_WIDTH_DIVISOR = 1.5f;
-        constexpr int SHADOW_CONE_SEGMENTS = 16;
+        constexpr int SHADOW_ALPHA = 100;               //影のα値
+        constexpr float SHADOW_OFFSET_Y_HIGH = 0.02f;   //影のY座標オフセット
+        constexpr float SHADOW_OFFSET_Y_LOW = 0.01f;    //影のY座標オフセット
+        constexpr float SHADOW_WIDTH_DIVISOR = 1.5f;    //影の横幅
+        constexpr int SHADOW_CONE_SEGMENTS = 16;        //影描画に使う円錐の頂点数              
 
-        constexpr int PARAM_MAX = 255;
 
-        constexpr float CAP_BOTTOM_OFFSET = 0.3f;
-        constexpr float CAP_SIDE_OFFSET = 0.8f;
-
-        constexpr float MOVEMENT_MIN = 0.01f;
+        constexpr float MOVEMENT_MIN = 0.01f;           //移動とみなす最小数
     }
 
+    //プレイヤーの定数
     namespace Player {
-        constexpr float CROUCH_ACCEL_RATE = 0.08f;
-        constexpr float CROUCH_FRICTION_ADD = 0.08f;
-        constexpr float SLIDE_MIN_SPEED = 0.18f;
-        constexpr float SLIDE_BOOST = 2.5f;
-        constexpr float SLIDE_COOLDOWN = 5.0f;
-        constexpr float RUN_ACCEL_ADD = 0.02f;
-        constexpr float RUN_FRICTION_SUB = 0.05f;
-        constexpr float JUMP_POWER = 0.25f;
-        constexpr float AIR_ACCEL_RATE = 0.1f;
-        constexpr float FOV_LERP_RATE = 0.1f;
-        constexpr float FOV_SPEED_BASE = 0.75f;
-        constexpr float MAX_FOV = 110.0f * Global::Math::DEG_TO_RAD;
-        constexpr float BOBBING_SPEED_MULT = 1.3f;
-        constexpr float BOBBING_AMPLITUDE = 0.05f;
-        constexpr float BOBBING_DECAY = 0.7f;
-        constexpr float BOBBING_CROUCH_MIN_SPEED = 0.06f;
-        constexpr float DROP_ITEM_Y_OFFSET = 0.4f;
-        constexpr float STEP_LENGTH = 4.0f;
-        constexpr float STICK_INPUT_SCALE = 1000.0f;
-        constexpr float INPUT_VECTOR_MAX_LENGTH = 1.0f;
-        constexpr float YAW_HALF_TURN_DEG = 180.0f;
-        constexpr float YAW_FULL_TURN_DEG = 360.0f;
-        constexpr float RECOIL_HIPFIRE_MULTIPLIER = 0.5f;
-        constexpr float ADS_SWAY_SCALE = 0.1f;
-        constexpr float BOBBING_2D_AMPLITUDE = 0.015f;
-        constexpr float BOBBING_2D_FREQUENCY_MULT = 0.5f;
-        constexpr int MAX_WEAPON_SLOT_EASY_NORMAL = 10;
-        constexpr int MAX_WEAPON_SLOT_HARD = 2;
-        constexpr float SWAY_MULTIPLIER = 0.02f;
-        constexpr float MAX_SWAY = 0.5f;
-        constexpr float SWAY_LERP_SPEED = 0.2f;
+        constexpr float CROUCH_ACCEL_RATE = 0.08f;      //しゃがみの加速倍率
+        constexpr float CROUCH_FRICTION_ADD = 0.08f;    //しゃがみの摩擦係数補正
+        constexpr float SLIDE_MIN_SPEED = 0.18f;        //スライディングに必要な速度
+        constexpr float SLIDE_BOOST = 2.5f;             //スライディングの加算速度
+        constexpr float SLIDE_COOLDOWN = 5.0f;          //スライディングのクールタイム
+        constexpr float RUN_ACCEL_ADD = 0.02f;          //ダッシュの速度加算
+        constexpr float RUN_FRICTION_SUB = 0.05f;       //ダッシュの摩擦係数補正
+        constexpr float JUMP_POWER = 0.25f;             //ジャンプ力
+        constexpr float AIR_ACCEL_RATE = 0.1f;          //空中の摩擦係数補正
+        constexpr float FOV_LERP_RATE = 0.1f;           //視野角の収束率
+        constexpr float FOV_SPEED_BASE = 0.75f;         //速度による視野角変化の基準値
+        constexpr float MAX_FOV = 110.0f * Global::Math::DEG_TO_RAD;    //最大視野角
+        constexpr float BOBBING_SPEED_MULT = 1.3f;      //画面揺れの速度
+        constexpr float BOBBING_AMPLITUDE = 0.05f;      //画面揺れの強さ
+        constexpr float BOBBING_DECAY = 0.7f;           //停止時の画面揺れの収束率
+        constexpr float BOBBING_CROUCH_MIN_SPEED = 0.06f;// しゃがみ時の揺れが有効になる時の最低速度
+
+        constexpr float DROP_ITEM_Y_OFFSET = 0.4f;              //ドロップアイテムのYオフセット
+        constexpr float STEP_LENGTH = 4.0f;                     //1歩の長さ
+        constexpr float STICK_INPUT_SCALE = 1000.0f;            //スティックの入力値の上限
+        constexpr float INPUT_VECTOR = 1.0f;                    //入力による移動の方向ベクトルの量
+        constexpr float YAW_HALF_TURN_DEG = 180.0f;             //視点半周
+        constexpr float YAW_FULL_TURN_DEG = 360.0f;             //視点１周
+        constexpr float RECOIL_HIPFIRE_MULTIPLIER = 0.5f;       //腰撃ち中のリコイルの大きさ減衰量
+        constexpr float ADS_SWAY_SCALE = 0.1f;                  //ADS中の武器揺れ補正
+        constexpr float BOBBING_WEAPON_AMPLITUDE = 0.015f;      //移動の武器揺れの強さ
+        constexpr float BOBBING_WEAPON_FREQUENCY_MULT = 0.5f;   //移動の武器揺れ速度
+        constexpr int MAX_WEAPON_SLOT_EASY_NORMAL = 10;         //イージーとノーマルの時の武器スロット数
+        constexpr int MAX_WEAPON_SLOT_HARD = 2;                 //ハードの時の武器スロット数
+        constexpr float SWAY_MULTIPLIER = 0.02f;                //視点の武器揺れ強さ
+        constexpr float MAX_SWAY = 0.5f;                        //視点の武器揺れの最大
+        constexpr float SWAY_LERP_SPEED = 0.2f;                 //視点の武器揺れの収束率
     }
 
     namespace EnemyCommon {
-        constexpr int PATH_UPDATE_RANDOM = 50;
-        constexpr float PATH_NODE_REACHED_DIST = 1.0f;
+        constexpr int PATH_UPDATE_RANDOM = 50;                  //更新までのミリ秒数の最大
+        constexpr float PATH_NODE_REACHED_DIST = 1.0f;          //つながるノードの最大距離
 
-        constexpr float PATH_SAFETY_CHECK_INTERVAL = 1.0f;
-        constexpr float PATH_SAFETY_RAY_HEIGHT = 1.0f;
-        constexpr float PATH_SAFETY_NORMAL_MIN = 0.6f;
-        constexpr float PATH_SAFETY_HEIGHT_DIFF_MAX = 0.8f;
+        constexpr float PATH_SAFETY_RAY_HEIGHT = 1.0f;          //ノードの床チェックのレイの高さ
+        constexpr float PATH_SAFETY_NORMAL_MIN = 0.6f;          //床チェックの法線角度の下限
+        constexpr float PATH_SAFETY_HEIGHT_DIFF_MAX = 0.8f;     //
         constexpr float PATH_SAFETY_TOTAL_HEIGHT_DIFF = 1.0f;
         constexpr float FALL_DEATH_Y = Global::World::Y_MIN;
         constexpr float STEP_LENGTH = 2.5f;

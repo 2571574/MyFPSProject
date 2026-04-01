@@ -60,23 +60,68 @@
     <ClCompile Include="GameScene.cpp">
       <Filter>1.GAME\SCENE</Filter>
     </ClCompile>
+    <ClCompile Include="BaseProjectile.cpp">
+      <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>2.OBJECT</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>2.OBJECT</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckKey.cpp">
+      <Filter>4.TOOL</Filter>
+    </ClCompile>
     <ClCompile Include="CollisionManager.cpp">
       <Filter>3.SINGLE MANAGER</Filter>
     </ClCompile>
     <ClCompile Include="ConfigManager.cpp">
       <Filter>3.SINGLE MANAGER</Filter>
     </ClCompile>
+    <ClCompile Include="Dummy.cpp">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>2.OBJECT</Filter>
+    </ClCompile>
     <ClCompile Include="EffectManager.cpp">
       <Filter>3.SINGLE MANAGER</Filter>
     </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClCompile>
     <ClCompile Include="EnemyManager.cpp">
       <Filter>3.SINGLE MANAGER</Filter>
+    </ClCompile>
+    <ClCompile Include="HUD.cpp">
+      <Filter>2.OBJECT</Filter>
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
       <Filter>3.SINGLE MANAGER</Filter>
     </ClCompile>
     <ClCompile Include="ItemManager.cpp">
       <Filter>3.SINGLE MANAGER</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeEnemy.cpp">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClCompile>
+    <ClCompile Include="SniperEnemy.cpp">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClCompile>
+    <ClCompile Include="RollingEnemy.cpp">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClCompile>
+    <ClCompile Include="RifleEnemy.cpp">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>1.GAME</Filter>
+    </ClCompile>
+    <ClCompile Include="Pathfinding.cpp">
+      <Filter>4.TOOL</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>2.OBJECT\1.ENTITY</Filter>
     </ClCompile>
     <ClCompile Include="ProjectileManager.cpp">
       <Filter>3.SINGLE MANAGER</Filter>
@@ -93,59 +138,14 @@
     <ClCompile Include="Time.cpp">
       <Filter>3.SINGLE MANAGER</Filter>
     </ClCompile>
-    <ClCompile Include="Status.cpp">
-      <Filter>4.TOOL</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseProjectile.cpp">
-      <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
-    </ClCompile>
-    <ClCompile Include="SniperEnemy.cpp">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClCompile>
-    <ClCompile Include="RollingEnemy.cpp">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClCompile>
-    <ClCompile Include="RifleEnemy.cpp">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClCompile>
-    <ClCompile Include="Dummy.cpp">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
-    </ClCompile>
-    <ClCompile Include="HUD.cpp">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
-    </ClCompile>
-    <ClCompile Include="MeleeEnemy.cpp">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClCompile>
-    <ClCompile Include="CheckKey.cpp">
-      <Filter>4.TOOL</Filter>
-    </ClCompile>
-    <ClCompile Include="Pathfinding.cpp">
-      <Filter>4.TOOL</Filter>
-    </ClCompile>
     <ClCompile Include="Weapon.cpp">
       <Filter>2.OBJECT\2.WEAPON</Filter>
     </ClCompile>
     <ClCompile Include="WeaponItem.cpp">
       <Filter>2.OBJECT\2.WEAPON</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>1.GAME</Filter>
-    </ClCompile>
-    <ClCompile Include="Character.cpp">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
-    </ClCompile>
-    <ClCompile Include="Effect.cpp">
-      <Filter>2.OBJECT</Filter>
+    <ClCompile Include="Status.cpp">
+      <Filter>4.TOOL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -185,8 +185,74 @@
     <ClInclude Include="InputManager.h">
       <Filter>3.SINGLE MANAGER</Filter>
     </ClInclude>
+    <ClInclude Include="Param\Global.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseProjectile.h">
+      <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseScene.h">
+      <Filter>1.GAME\SCENE</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>2.OBJECT</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>2.OBJECT</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckKey.h">
+      <Filter>4.TOOL</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect.h">
+      <Filter>2.OBJECT</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectManager.h">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigManager.h">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
+    <ClInclude Include="Dummy.h">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyManager.h">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
+    <ClInclude Include="HUD.h">
+      <Filter>2.OBJECT</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
     <ClInclude Include="ItemManager.h">
       <Filter>3.SINGLE MANAGER</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeEnemy.h">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClInclude>
+    <ClInclude Include="RollingEnemy.h">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClInclude>
+    <ClInclude Include="SniperEnemy.h">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClInclude>
+    <ClInclude Include="RifleEnemy.h">
+      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
+    </ClInclude>
+    <ClInclude Include="Pathfinding.h">
+      <Filter>4.TOOL</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>2.OBJECT\1.ENTITY</Filter>
     </ClInclude>
     <ClInclude Include="ProjectileManager.h">
       <Filter>3.SINGLE MANAGER</Filter>
@@ -203,77 +269,14 @@
     <ClInclude Include="Time.h">
       <Filter>3.SINGLE MANAGER</Filter>
     </ClInclude>
-    <ClInclude Include="Status.h">
-      <Filter>4.TOOL</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseProjectile.h">
-      <Filter>2.OBJECT\2.WEAPON\BULLET</Filter>
-    </ClInclude>
-    <ClInclude Include="SniperEnemy.h">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClInclude>
-    <ClInclude Include="RollingEnemy.h">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClInclude>
-    <ClInclude Include="RifleEnemy.h">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClInclude>
-    <ClInclude Include="Dummy.h">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemy.h">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
-    </ClInclude>
-    <ClInclude Include="HUD.h">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
-    </ClInclude>
-    <ClInclude Include="MeleeEnemy.h">
-      <Filter>2.OBJECT\1.ENTITY\ENEMY</Filter>
-    </ClInclude>
-    <ClInclude Include="CheckKey.h">
-      <Filter>4.TOOL</Filter>
-    </ClInclude>
-    <ClInclude Include="Pathfinding.h">
-      <Filter>4.TOOL</Filter>
-    </ClInclude>
     <ClInclude Include="Weapon.h">
       <Filter>2.OBJECT\2.WEAPON</Filter>
     </ClInclude>
     <ClInclude Include="WeaponItem.h">
       <Filter>2.OBJECT\2.WEAPON</Filter>
     </ClInclude>
-    <ClInclude Include="Param\Chara.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Param\Global.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Param\Item.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Param\Scene.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Param\System.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Param\Visual.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils.h">
+    <ClInclude Include="Status.h">
       <Filter>4.TOOL</Filter>
-    </ClInclude>
-    <ClInclude Include="Character.h">
-      <Filter>2.OBJECT\1.ENTITY</Filter>
-    </ClInclude>
-    <ClInclude Include="Effect.h">
-      <Filter>2.OBJECT</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

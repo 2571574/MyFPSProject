@@ -148,7 +148,7 @@ void RollingEnemy::UpdatePhysics() {
 	for (int i = 0; i < wallHitDim.HitNum; i++) {
 		VECTOR normal = wallHitDim.Dim[i].Normal;
 
-		if (normal.y >= Chara::Base::WALL_NORMAL_MAX) continue;
+		if (normal.y > Chara::Base::GROUND_NORMAL_MIN) continue;
 
 		VECTOR checkPos = nextPos;
 		if (normal.y < Chara::Base::CEILING_NORMAL_MAX) {

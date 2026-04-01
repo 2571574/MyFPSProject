@@ -128,7 +128,7 @@ void Character::UpdatePhysics(int stageHandle) {
 			//当たっているポリゴンの法線ベクトルを取得
 			VECTOR normal = wallHitDim.Dim[i].Normal;
 
-			if (normal.y >= Chara::Base::WALL_NORMAL_MAX) continue;
+			if (normal.y > Chara::Base::GROUND_NORMAL_MIN) continue;
 			//カプセルの下を基準
 			VECTOR checkPos = nextPos;
 			// 法線ベクトルが下を向いているときのみ上を基準に計算
@@ -186,7 +186,7 @@ void Character::ResolveWallPenetration(int stagehandle) {
 	for (int i = 0; i < wallHitDim.HitNum; i++) {
 		VECTOR normal = wallHitDim.Dim[i].Normal;
 
-		if (normal.y >= Chara::Base::WALL_NORMAL_MAX) continue;
+		if (normal.y > Chara::Base::GROUND_NORMAL_MIN) continue;
 
 		VECTOR checkPos = position;
 		if (normal.y < Chara::Base::CEILING_NORMAL_MAX) checkPos = VAdd(position, VGet(0, currentHeight - radius, 0));

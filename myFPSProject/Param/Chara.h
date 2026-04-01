@@ -1,17 +1,18 @@
-#pragma once
+﻿#pragma once
 #include "Param/Global.h"
 
+//キャラクター関係の定数
 namespace Chara {
 
+    //ステータスのデフォルト
     namespace Base {
-        constexpr float CHARA_HEIGHT = 2.0f;
-        constexpr float CHARA_RADIUS = 0.5f;
+        constexpr float CHARA_HEIGHT = 2.0f;        //キャラの身長
+        constexpr float CHARA_RADIUS = 0.5f;        //キャラの幅
 
-        constexpr float GRAVITY = -0.008f;
-        constexpr float GROUND_KB_FRICTION = 0.8f;
-        constexpr float AIR_KB_FRICTION = 0.98f;
-        constexpr float GROUND_NORMAL_MIN = 0.3f;
-        constexpr float WALL_NORMAL_MAX = 0.4f;
+        constexpr float GRAVITY = -0.008f;          //重力
+        constexpr float GROUND_KB_FRICTION = 0.8f;  //地上摩擦
+        constexpr float AIR_KB_FRICTION = 0.98f;    //空中摩擦
+        constexpr float GROUND_NORMAL_MIN = 0.3f;   //床とみなす法線ベクトルの角度
         constexpr float CEILING_NORMAL_MAX = -0.1f;
 
         constexpr int RAY_COUNT = 5;

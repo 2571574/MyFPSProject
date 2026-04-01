@@ -112,6 +112,7 @@ namespace Visual {
         constexpr int PICKUP_BOX_HEIGHT = 150;
 
         constexpr float FADE_DURATION = 0.3f;
+        constexpr float DAMAGE_FLASH_DURITION = 1.0f;
         constexpr float DAMAGE_FLASH_EASE_POWER = 4.0f;
         constexpr int DAMAGE_FLASH_ALPHA_MAX = 180;
         constexpr float DAMAGE_FLASH_BASE_THICKNESS = 40.0f;

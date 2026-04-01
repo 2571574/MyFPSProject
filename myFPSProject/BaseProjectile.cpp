@@ -49,7 +49,7 @@ void BaseProjectile::Update() {
 		else if (hit.character) {
 			hitEnemy = true;
 			isHeadShot = hit.isHeadShot;
-			int lastDamage = hit.isHeadShot ? spec.damage * Item::Projectile::HEADSHOT_MULTIPLIER : spec.damage;
+			int lastDamage = hit.isHeadShot ? spec.damage * Item::Weapon::HEADSHOT_MULTIPLIER : spec.damage;
 			if (hit.isHeadShot)Debug::Log("Headshot");
 			else Debug::Log("hit");
 			hit.character->OnHit(lastDamage, spec.id);

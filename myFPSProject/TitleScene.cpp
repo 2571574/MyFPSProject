@@ -284,7 +284,7 @@ void TitleScene::Draw() {
 	case TitleState::TOP: {
 		if (titleLogoHandle != -1) {
 			::SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
-			DrawExtendGraph(System::Window::WINDOW_WIDTH - Scene::Title::TITLE_LOGO_OFFSET_X1, Scene::Title::TITLE_LOGO_Y1, System::Window::WINDOW_WIDTH - Scene::Title::TITLE_LOGO_OFFSET_X2, Scene::Title::TITLE_LOGO_Y2, titleLogoHandle, true);
+			DrawExtendGraph(System::Window::WINDOW_WIDTH - Scene::Title::TITLE_LOGO_X1, Scene::Title::TITLE_LOGO_Y1, System::Window::WINDOW_WIDTH - Scene::Title::TITLE_LOGO_X2, Scene::Title::TITLE_LOGO_Y2, titleLogoHandle, true);
 			::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 

@@ -120,10 +120,10 @@ void TutorialScene::Update() {
 	VECTOR pPos = player.GetPos();
 
 	bool isPlayerCombatArea = (pPos.x >= Scene::Tutorial::Boundary::COMBAT_MIN_X && pPos.x <= Scene::Tutorial::Boundary::COMBAT_MAX_X && pPos.z >= Scene::Tutorial::Boundary::COMBAT_MIN_Z && pPos.z <= Scene::Tutorial::Boundary::COMBAT_MAX_Z);
-	bool MovementToCombat = (pPos.x >= Scene::Tutorial::Boundary::MOVE_TO_COMBAT_MIN_X && pPos.x <= Scene::Tutorial::Boundary::MOVE_TO_COMBAT_MAX_X && pPos.z < Scene::Tutorial::Boundary::MOVE_TO_COMBAT_Z_LIMIT);
-	bool CombatToMovement = (pPos.x >= Scene::Tutorial::Boundary::MOVE_TO_COMBAT_MIN_X && pPos.x <= Scene::Tutorial::Boundary::MOVE_TO_COMBAT_MAX_X && pPos.z > Scene::Tutorial::Boundary::COMBAT_TO_MOVE_Z_LIMIT);
-	bool CombatToFreerange = (pPos.x >= Scene::Tutorial::Boundary::FREE_RANGE_MIN_X && pPos.x <= Scene::Tutorial::Boundary::FREE_RANGE_MAX_X && pPos.z > Scene::Tutorial::Boundary::COMBAT_TO_MOVE_Z_LIMIT);
-	bool FreerangeToCombat = (pPos.x >= Scene::Tutorial::Boundary::FREE_RANGE_MIN_X && pPos.x <= Scene::Tutorial::Boundary::FREE_RANGE_MAX_X && pPos.z < Scene::Tutorial::Boundary::MOVE_TO_COMBAT_Z_LIMIT);
+	bool MovementToCombat = (pPos.x >= Scene::Tutorial::Boundary::MOVE_TO_COMBAT_MIN_X && pPos.x <= Scene::Tutorial::Boundary::MOVE_TO_COMBAT_MAX_X && pPos.z < Scene::Tutorial::Boundary::MOVE_TO_OTHER_MIN_Z);
+	bool CombatToMovement = (pPos.x >= Scene::Tutorial::Boundary::MOVE_TO_COMBAT_MIN_X && pPos.x <= Scene::Tutorial::Boundary::MOVE_TO_COMBAT_MAX_X && pPos.z > Scene::Tutorial::Boundary::MOVE_TO_OTHER_MAX_Z);
+	bool CombatToFreerange = (pPos.x >= Scene::Tutorial::Boundary::COMBAT_TO_FREE_RANGE_MIN_X && pPos.x <= Scene::Tutorial::Boundary::COMBAT_TO_FREE_RANGE_MAX_X && pPos.z > Scene::Tutorial::Boundary::MOVE_TO_OTHER_MAX_Z);
+	bool FreerangeToCombat = (pPos.x >= Scene::Tutorial::Boundary::COMBAT_TO_FREE_RANGE_MIN_X && pPos.x <= Scene::Tutorial::Boundary::COMBAT_TO_FREE_RANGE_MAX_X && pPos.z < Scene::Tutorial::Boundary::MOVE_TO_OTHER_MIN_Z);
 
 
 	if (isPlayerCombatArea) {

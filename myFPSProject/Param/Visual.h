@@ -4,37 +4,40 @@
 namespace Visual {
 
     namespace WeaponAnim {
-        constexpr float ANIM_EQUIP_START_SCALE = 0.5f;
-        constexpr float ANIM_EQUIP_OFFSET_Y = -0.6f;
-        constexpr float ANIM_EQUIP_OFFSET_Z = -0.3f;
-        constexpr float ANIM_EQUIP_ROT_X = Global::Math::MATH_PI_QUARTER;
+        constexpr float ANIM_EQUIP_START_SCALE = 0.5f;      //武器だしアニメーションの開始
+        constexpr float ANIM_EQUIP_OFFSET_Y = -0.6f;        //武器だしのYオフセット
+        constexpr float ANIM_EQUIP_OFFSET_Z = -0.3f;        //武器だしのZオフセット
+        constexpr float ANIM_EQUIP_ROT_X = Global::Math::MATH_PI_QUARTER;       //武器だしアニメーションのX回転量
 
-        constexpr float ANIM_RELOAD_SMG_PHASE1 = 0.15f;
-        constexpr float ANIM_RELOAD_SMG_PHASE2 = 0.85f;
-        constexpr float ANIM_RELOAD_SMG_WINDUP_Y = -0.1f;
-        constexpr float ANIM_RELOAD_SMG_SPINS = 6.0f;
-        constexpr float ANIM_RELOAD_SMG_PULLBACK_Z = -0.2f;
-        constexpr float ANIM_RELOAD_SMG_OVERSHOOT_Y = 0.1f;
+        constexpr float ANIM_RELOAD_SMG_PHASE1 = 0.15f;     //ピストルのリロードのフェーズ１に入る時間
+        constexpr float ANIM_RELOAD_SMG_PHASE2 = 0.85f;     //ピストルのリロードのフェーズ２に入る時間
+        constexpr float ANIM_RELOAD_SMG_WINDUP_Y = -0.1f;   //ピストルリロードの振り上げオフセット
+        constexpr float ANIM_RELOAD_SMG_SPINS = 6.0f;       //ピストルリロードの回転スピード
+        constexpr float ANIM_RELOAD_SMG_PULLBACK_Z = -0.2f; //ピストルリロードのアクション時手元に引き寄せる
+        constexpr float ANIM_RELOAD_SMG_OVERSHOOT_Y = 0.1f; //
         constexpr float ANIM_RELOAD_SMG_OVERSHOOT_ROT_X = -Global::Math::MATH_PI_EIGHTH;
 
-        constexpr float ANIM_RELOAD_LR_PHASE1 = 0.3f;
-        constexpr float ANIM_RELOAD_LR_PHASE2 = 0.7f;
-        constexpr float ANIM_RELOAD_LR_SHOULDER_Y = 0.8f;
+        constexpr float ANIM_RELOAD_LR_PHASE1 = 0.3f;       //ランチャーのリロードのフェーズ１に入る時間
+        constexpr float ANIM_RELOAD_LR_PHASE2 = 0.7f;       //ランチャーのリロードのフェーズ２に入る時間
+
+      //リロード中のランチャーの位置
         constexpr float ANIM_RELOAD_LR_SHOULDER_X = 0.3f;
+        constexpr float ANIM_RELOAD_LR_SHOULDER_Y = 0.8f;
         constexpr float ANIM_RELOAD_LR_SHOULDER_Z = -0.2f;
-        constexpr float ANIM_RELOAD_LR_ROT_X = -Global::Math::PI_VALUE / 2.5f;
-        constexpr float ANIM_RELOAD_DEFAULT_TRANSITION = 0.07f;
-        constexpr float MODEL_BASE_ROTATION_Y = -Global::Math::MATH_PI_HALF;
+
+        constexpr float ANIM_RELOAD_LR_ROT_X = -Global::Math::PI_VALUE / 2.5f;  //リロード中のランチャーの回転角度
+        constexpr float ANIM_RELOAD_DEFAULT_TRANSITION = 0.07f;     //リロードアニメーションの強さ
+        constexpr float MODEL_BASE_ROTATION_Y = -Global::Math::MATH_PI_HALF;    //モデルのベースのY軸回転
     }
 
     namespace ItemUI {
-        constexpr Global::ColorRGB COLOR_ITEM_RING = Global::Palette::AMBER;
-        constexpr int RING_BLEND_ALPHA = 150;
+        constexpr Global::ColorRGB COLOR_ITEM_RING = Global::Palette::AMBER;    //ドロップアイテムの目印の描画
+        constexpr int RING_BLEND_ALPHA = 150;       //リングの透明度
 
-        constexpr float OUTER_RING_BOB_SPEED_MULT = 1.5f;
-        constexpr float OUTER_RING_BOB_AMP = 0.05f;
-        constexpr float OUTER_RING_ROT_SPEED_MULT = -0.5f;
-        constexpr float OUTER_RING_OFFSET_Y = -0.2f;
+        constexpr float OUTER_RING_BOB_SPEED_MULT = 1.5f;       //リングの上下揺れの速度
+        constexpr float OUTER_RING_BOB_AMP = 0.05f;             //リングの上下揺れの強さ
+        constexpr float OUTER_RING_ROT_SPEED_MULT = -0.5f;      //リングの回転の速度
+        constexpr float OUTER_RING_OFFSET_Y = -0.2f;            //外周リングの高さオフセット
 
         constexpr Global::ColorRGB COLOR_FALLBACK_CUBE = Global::Palette::YELLOW;
 

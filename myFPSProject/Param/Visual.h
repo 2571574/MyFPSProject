@@ -116,15 +116,6 @@ namespace Visual {
         constexpr int PICKUP_ICON_SIZE = 100;       //拾うHUDのアイコンサイズ
         constexpr int PICKUP_BOX_WIDTH = 350;       //拾うHUDの枠の幅
         constexpr int PICKUP_BOX_HEIGHT = 150;      //拾うHUDの枠の高さ
-        constexpr int PICKUP_ICON_TEXT_GAP = 20;
-        constexpr int PICKUP_PADDING_X = 25;
-        constexpr int PICKUP_PADDING_Y = 15;
-        constexpr int PICKUP_BOX_START_Y_OFFSET = 120;
-        constexpr int PICKUP_PANEL_ALPHA = 150;
-        constexpr int PICKUP_ICON_PANEL_ALPHA = 200;
-        constexpr int PICKUP_TEXT_Y_OFFSET_FROM_ICON_CENTER = -25;
-        constexpr int PICKUP_TEXT_Y_OFFSET_NO_ICON = 10;
-        constexpr int PICKUP_SUBTEXT_Y_OFFSET = 30;
 
         constexpr float FADE_DURATION = 0.3f;       //タイマーがスコアに切り替わるときのフェードの秒数
         constexpr float DAMAGE_FLASH_DURITION = 1.0f;   //ダメージエフェクトの秒数
@@ -134,8 +125,18 @@ namespace Visual {
         constexpr float DAMAGE_FLASH_OFFSET_MAX = 60.0f;        //ダメージエフェクトのオフセット
 
         
-
         constexpr int TOP_TEXT_BUF_SIZE = 128;
+
+        constexpr int PICKUP_ICON_TEXT_GAP = 20;
+        constexpr int PICKUP_PADDING_X = 25;
+        constexpr int PICKUP_PADDING_Y = 15;
+        constexpr int PICKUP_BOX_START_Y_OFFSET = 120;
+        constexpr int PICKUP_PANEL_ALPHA = 150;
+        constexpr int PICKUP_ICON_PANEL_ALPHA = 200;
+        constexpr int PICKUP_TEXT_Y_OFFSET_FROM_ICON_CENTER = -25;
+        constexpr int PICKUP_TEXT_Y_OFFSET_NO_ICON = 10;
+        constexpr int PICKUP_SUBTEXT_Y_OFFSET = 30;
+        constexpr float DAMAGE_FLASH_DURATION = 1.0f;
     }
 
     namespace Effect {

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "DxLib.h"
 #include "Param/System.h"
 #include <string>
@@ -6,7 +6,7 @@
 #include <vector>
 
 /// <summary>
-/// 音響（環境音・SE・3Dサウンド）を統合管理するクラス
+/// サウンドを管理するマネージャークラス
 /// </summary>
 class SoundManager
 {

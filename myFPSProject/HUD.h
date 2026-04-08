@@ -33,7 +33,16 @@ public:
 	void Update();
 	void Draw();
 
+	/// <summary>
+	/// ターゲットに命中したことを感知する
+	/// </summary>
+	/// <param name="isHeadShot">ヘッドショットかどうか</param>
+	/// <param name="isKill">キル判定になったかどうか</param>
 	void OnHitTarget(bool isHeadShot,bool isKill);
+
+	/// <summary>
+	/// プレイヤーがダメージを受けたことを感知する
+	/// </summary>
 	void OnPlayerTakeDamage();
 };
 

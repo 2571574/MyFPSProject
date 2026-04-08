@@ -39,26 +39,27 @@ namespace Visual {
         constexpr float OUTER_RING_ROT_SPEED_MULT = -0.5f;      //リングの回転の速度
         constexpr float OUTER_RING_OFFSET_Y = -0.2f;            //外周リングの高さオフセット
 
-        constexpr Global::ColorRGB COLOR_FALLBACK_CUBE = Global::Palette::YELLOW;
+        constexpr Global::ColorRGB COLOR_FALLBACK_CUBE = Global::Palette::YELLOW;       //ドロップアイテムの武器モデルが読み込めなかったときの代替キューブの色
 
-        constexpr float UI_FADE_TRANSITION_RANGE = 5.0f;
+        constexpr float UI_FADE_TRANSITION_RANGE = 5.0f;            //アイテムのUIテキストがフェードする距離
 
-        constexpr float BOBBING_SPEED = 2.0f;
-        constexpr float BOBBING_AMPLITUDE = 0.2f;
-        constexpr float BASE_HEIGHT_OFFSET = 0.5f;
-        constexpr float CUBE_HALF_SIZE = 0.25f;
+        constexpr float BOBBING_SPEED = 2.0f;               //ドロップアイテムの上下揺れの速度
+        constexpr float BOBBING_AMPLITUDE = 0.2f;           //ドロップアイテムの揺れの強さ
+        constexpr float BASE_HEIGHT_OFFSET = 0.5f;          //基準高さのオフセット
+        constexpr float CUBE_HALF_SIZE = 0.25f;             //代替キューブのサイズ
 
-        constexpr float UI_DISPLAY_DISTANCE = 15.0f;
-        constexpr int UI_OFFSET_X = -20;
-        constexpr int UI_OFFSET_Y_AMMO = -40;
-        constexpr int UI_OFFSET_Y_NAME = -20;
-        constexpr int PICKUP_BOX_HEIGHT_NO_ICON = 70;
-        constexpr int RING_SEGMENTS = 32;
-        constexpr float RING_RADIUS_INNER = 0.6f;
-        constexpr float RING_RADIUS_OUTER = 0.8f;
+        constexpr float UI_DISPLAY_DISTANCE = 15.0f;        //UIテキストが表示される距離
+        constexpr int UI_OFFSET_X = -20;                    //アイテムUIのXオフセット
+        constexpr int UI_OFFSET_Y_AMMO = -40;               //弾情報のテキストのYオフセット
+        constexpr int UI_OFFSET_Y_NAME = -20;               //武器名のテキストのYオフセット
+        constexpr int PICKUP_BOX_HEIGHT_NO_ICON = 70;       //武器アイコンがなかった時のサイズ
+        constexpr int RING_SEGMENTS = 32;                   //アイテムのリングの分割数
+        constexpr float RING_RADIUS_INNER = 0.6f;           //内側リングの半径
+        constexpr float RING_RADIUS_OUTER = 0.8f;           //外側リングの背景
     }
 
     namespace HUD {
+        //HUD用色
         constexpr Global::ColorRGB COLOR_HUD_WHITE = Global::Palette::WHITE;
         constexpr Global::ColorRGB COLOR_HUD_RED = Global::Palette::RED_LIGHT;
         constexpr Global::ColorRGB COLOR_HUD_YELLOW = Global::Palette::AMBER;
@@ -67,65 +68,54 @@ namespace Visual {
         constexpr Global::ColorRGB COLOR_RELOAD_CIRCLE_BG = Global::Palette::GRAY_MEDIUM;
         constexpr Global::ColorRGB COLOR_DAMAGE_FLASH = Global::Palette::RED;
 
-        constexpr int TOP_INFO_TEXT_Y = 50;
+        constexpr int TOP_INFO_TEXT_Y = 50;     //スコアと準備タイマー用座標
 
-        constexpr int CROSSHAIR_DOT_SIZE = 4;
+        constexpr int CROSSHAIR_DOT_SIZE = 4;   //クロスヘアのサイズ
 
-        constexpr float HITMARK_DURATION = 0.2f;
-        constexpr float HITMARK_EASE_OUT_POWER = 3.0f;
-        constexpr int HITMARK_THICKNESS_NORMAL = 2;
-        constexpr float HITMARK_LINE_LENGTH_NORMAL = 8.0f;
-        constexpr float HITMARK_OFFSET_MULTIPLIER_NORMAL = 12.0f;
-        constexpr int HITMARK_THICKNESS_KILL = 4;
-        constexpr float HITMARK_LINE_LENGTH_KILL = 18.0f;
-        constexpr float HITMARK_OFFSET_MULTIPLIER_KILL = 24.0f;
-        constexpr int HITMARK_THICKNESS_HS = 4;
-        constexpr float HITMARK_LINE_LENGTH_HS = 14.0f;
-        constexpr float HITMARK_OFFSET_MULTIPLIER_HS = 20.0f;
-        constexpr float HITMARK_BASE_OFFSET = 8.0f;
+        constexpr float HITMARK_DURATION = 0.2f;    //ヒットマークの描画時間
+        constexpr float HITMARK_EASE_OUT_POWER = 3.0f;  //ヒットマークが拡散する速さ
+        constexpr int HITMARK_THICKNESS_NORMAL = 2;     //通常ヒットマークの線の太さ
+        constexpr float HITMARK_LINE_LENGTH_NORMAL = 8.0f;  //通常ヒットマークの線の長さ
+        constexpr float HITMARK_OFFSET_MULTIPLIER_NORMAL = 12.0f;   //通常ヒットマークのオフセット
+        constexpr int HITMARK_THICKNESS_KILL = 4;       //キルヒットマークの太さ
+        constexpr float HITMARK_LINE_LENGTH_KILL = 18.0f;   //キルヒットマークの長さ
+        constexpr float HITMARK_OFFSET_MULTIPLIER_KILL = 24.0f; //キルヒットマークのオフセット
+        constexpr int HITMARK_THICKNESS_HS = 4;         //ヘッドショットマークの太さ
+        constexpr float HITMARK_LINE_LENGTH_HS = 14.0f; //ヘッドショットマークの長さ
+        constexpr float HITMARK_OFFSET_MULTIPLIER_HS = 20.0f;   //ヘッドショットマークのオフセット
+        constexpr float HITMARK_BASE_OFFSET = 8.0f;     //ヒットマークの基準オフセット
 
-        constexpr int HP_BAR_WIDTH = 600;
-        constexpr int HP_BAR_HEIGHT = 10;
-        constexpr int HP_BAR_MARGIN_BOTTOM = 30;
-        constexpr float HP_LOW_RATIO_THRESHOLD = 0.3f;
+        constexpr int HP_BAR_WIDTH = 600;       //HPバーの長さ
+        constexpr int HP_BAR_HEIGHT = 10;       //HPバーの高さ
+        constexpr int HP_BAR_MARGIN_BOTTOM = 30;    //HPバーと画面下部の余裕
+        constexpr float HP_LOW_RATIO_THRESHOLD = 0.3f;  //何割から低体力とするか(色が変わる)
 
-        constexpr int WEAPON_ICON_SIZE = 250;
-        constexpr int WEAPON_UI_MARGIN_RIGHT = 30;
-        constexpr int WEAPON_UI_MARGIN_BOTTOM = 20;
-        constexpr int WEAPON_ICON_PANEL_ALPHA = 150;
-        constexpr int WEAPON_TEXT_PADDING_X = 20;
-        constexpr int WEAPON_TEXT_Y_OFFSET_FROM_ICON_BOTTOM = 100;
-        constexpr int WEAPON_AMMO_TEXT_Y_OFFSET = 30;
-        constexpr int WEAPON_RESERVE_TEXT_Y_OFFSET = 60;
+        constexpr int WEAPON_ICON_SIZE = 250;       //武器のアイコンサイズ
+        constexpr int WEAPON_UI_MARGIN_RIGHT = 30;  //武器UIの右画面端との猶予
+        constexpr int WEAPON_UI_MARGIN_BOTTOM = 20; //下画面端との猶予
+        constexpr int WEAPON_ICON_PANEL_ALPHA = 150;//武器アイコンの透明度
+        constexpr int WEAPON_TEXT_X_OFFSET = 20;   //武器テキストのXオフセット
+        constexpr int WEAPON_TEXT_Y_OFFSET_FROM_ICON_BOTTOM = 100;  //アイコン下部を基準とした武器テキストのYオフセット
+        constexpr int WEAPON_AMMO_TEXT_Y_OFFSET = 30;       //武器の弾情報テキストのYオフセット
+        constexpr int WEAPON_RESERVE_TEXT_Y_OFFSET = 60;    //武器の予備弾テキストのYオフセット
 
-        constexpr int RELOAD_CIRCLE_RADIUS = 128;
-        constexpr int RELOAD_CIRCLE_SEGMENTS = 128;
-        constexpr int RELOAD_CIRCLE_LINE_THICKNESS = 3;
-        constexpr int RELOAD_TEXT_Y_OFFSET = 15;
+        constexpr int RELOAD_CIRCLE_RADIUS = 128;       //リロードHUDの半径
+        constexpr int RELOAD_CIRCLE_SEGMENTS = 128;     //リロードHUDの円の分割数
+        constexpr int RELOAD_CIRCLE_LINE_THICKNESS = 3; //リロードHUDの円の太さ
+        constexpr int RELOAD_TEXT_Y_OFFSET = 15;        //リロード中の文字のYオフセット
 
-        constexpr float INDICATOR_RADIUS = 100.0f;
-        constexpr float INDICATOR_RADIUS_INCREASE = 80.0f;
-        constexpr float INDICATOR_ARC_ANGLE_SCALE = Global::Math::PI_VALUE / 4.0f;
-        constexpr float INDICATOR_ARC_ANGLE_OFFSET = Global::Math::PI_VALUE / 16.0f;
-        constexpr int INDICATOR_SEGMENTS = 16;
-        constexpr int INDICATOR_LINE_THICKNESS = 3;
-
-        constexpr int PICKUP_ICON_SIZE = 100;
-        constexpr int PICKUP_BOX_WIDTH = 350;
-        constexpr int PICKUP_BOX_HEIGHT = 150;
-
-        constexpr float FADE_DURATION = 0.3f;
-        constexpr float DAMAGE_FLASH_DURITION = 1.0f;
-        constexpr float DAMAGE_FLASH_EASE_POWER = 4.0f;
-        constexpr int DAMAGE_FLASH_ALPHA_MAX = 180;
-        constexpr float DAMAGE_FLASH_BASE_THICKNESS = 40.0f;
-        constexpr float DAMAGE_FLASH_OFFSET_MAX = 60.0f;
-
-        constexpr int INDICATOR_ALPHA_MIN = 100;
+        constexpr float INDICATOR_RADIUS = 100.0f;      //警告HUDの半径
+        constexpr float INDICATOR_RADIUS_INCREASE = 80.0f;  //警告半径の最大半径
+        constexpr float INDICATOR_ARC_ANGLE_SCALE = Global::Math::PI_VALUE / 4.0f;  //警告の弧の大きさ
+        constexpr float INDICATOR_ARC_ANGLE_OFFSET = Global::Math::PI_VALUE / 16.0f;    //警告のオフセット
+        constexpr int INDICATOR_SEGMENTS = 16;      //警告の弧の分割数
+        constexpr int INDICATOR_LINE_THICKNESS = 3; //警告線の太さ
+        constexpr int INDICATOR_ALPHA_MIN = 100;        //
         constexpr int INDICATOR_ALPHA_RANGE = 155;
-        
-        constexpr int TOP_TEXT_BUF_SIZE = 128;
 
+        constexpr int PICKUP_ICON_SIZE = 100;       //拾うHUDのアイコンサイズ
+        constexpr int PICKUP_BOX_WIDTH = 350;       //拾うHUDの枠の幅
+        constexpr int PICKUP_BOX_HEIGHT = 150;      //拾うHUDの枠の高さ
         constexpr int PICKUP_ICON_TEXT_GAP = 20;
         constexpr int PICKUP_PADDING_X = 25;
         constexpr int PICKUP_PADDING_Y = 15;
@@ -135,7 +125,17 @@ namespace Visual {
         constexpr int PICKUP_TEXT_Y_OFFSET_FROM_ICON_CENTER = -25;
         constexpr int PICKUP_TEXT_Y_OFFSET_NO_ICON = 10;
         constexpr int PICKUP_SUBTEXT_Y_OFFSET = 30;
-        constexpr float DAMAGE_FLASH_DURATION = 1.0f;
+
+        constexpr float FADE_DURATION = 0.3f;       //タイマーがスコアに切り替わるときのフェードの秒数
+        constexpr float DAMAGE_FLASH_DURITION = 1.0f;   //ダメージエフェクトの秒数
+        constexpr float DAMAGE_FLASH_EASE_POWER = 4.0f; //ダメージエフェクトの強さ
+        constexpr int DAMAGE_FLASH_ALPHA_MAX = 180;     //ダメージエフェクトの透明度
+        constexpr float DAMAGE_FLASH_BASE_THICKNESS = 40.0f;    //ダメージエフェクトの基準太さ
+        constexpr float DAMAGE_FLASH_OFFSET_MAX = 60.0f;        //ダメージエフェクトのオフセット
+
+        
+
+        constexpr int TOP_TEXT_BUF_SIZE = 128;
     }
 
     namespace Effect {

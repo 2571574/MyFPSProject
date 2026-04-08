@@ -216,7 +216,7 @@ void HUD::Draw() {
 			}
 		}
 
-		int textX = uiBaseX + Visual::HUD::WEAPON_TEXT_PADDING_X;
+		int textX = uiBaseX + Visual::HUD::WEAPON_TEXT_X_OFFSET;
 		int textY = uiBaseY + Visual::HUD::WEAPON_ICON_SIZE - Visual::HUD::WEAPON_TEXT_Y_OFFSET_FROM_ICON_BOTTOM;
 
 		::DrawFormatStringToHandle(textX, textY, GetColor(Visual::HUD::COLOR_HUD_WHITE.r, Visual::HUD::COLOR_HUD_WHITE.g, Visual::HUD::COLOR_HUD_WHITE.b), fontJpMedium, "%s", weaponName);

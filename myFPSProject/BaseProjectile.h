@@ -42,5 +42,5 @@ public:
 	const GunStatus& GetBulletStatus() const { return spec; }
 	VECTOR GetPos() const{ return pos; }
 	TEAMID GetID() const{ return id; }
-	bool IsAlive() const{ return alive; }
+	bool GetAlive() const{ return alive; }
 };

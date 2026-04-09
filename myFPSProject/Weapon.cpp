@@ -146,7 +146,7 @@ void Weapon::Fire(Character& user, VECTOR direction) {
 	user.ShotRecord();
 	VECTOR dir = VNorm(direction);
 	float currentSpread = aim ? spec.adsSpread : spec.spread;
-	if (user.IsCrouching()) {
+	if (user.GetCrouching()) {
 		currentSpread *= Item::Weapon::CROUCH_SPREAD_MULTIPLIER;
 	}
 	VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), direction));

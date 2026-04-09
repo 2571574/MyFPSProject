@@ -46,6 +46,8 @@ void HUD::Draw() {
 	int textColor = GetColor(Visual::HUD::COLOR_HUD_WHITE.r, Visual::HUD::COLOR_HUD_WHITE.g, Visual::HUD::COLOR_HUD_WHITE.b);
 	int topY = Visual::HUD::TOP_INFO_TEXT_Y;
 	char topTextBuf[128];
+
+	//スコア&開始前タイマー
 	if (prepareTime > 0.0f) {
 		snprintf(topTextBuf, sizeof(topTextBuf), "スタートまで : %.1f", prepareTime);
 	}
@@ -66,6 +68,7 @@ void HUD::Draw() {
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 
+	//ヒットマーク
 	if (hitMarkTimer > 0.0f) {
 		float progress = 1.0f - (hitMarkTimer / Visual::HUD::HITMARK_DURATION);
 		float easeOut = 1.0f - std::powf(1.0f - progress, Visual::HUD::HITMARK_EASE_OUT_POWER);
@@ -105,6 +108,7 @@ void HUD::Draw() {
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 
+	//ダメージフラッシュ
 	if (damageFlashTimer > 0.0f) {
 		float progress = 1.0f - (damageFlashTimer / Visual::HUD::DAMAGE_FLASH_DURATION);
 		float ease = 1.0f - std::powf(1.0f - progress, Visual::HUD::DAMAGE_FLASH_EASE_POWER);
@@ -127,6 +131,7 @@ void HUD::Draw() {
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 
+	//武器を拾うHUD
 	WeaponItem* nearItem = ItemManager::GetIns().GetNearItem();
 	if (nearItem) {
 		const GunStatus* spec = nearItem->GetSpec();
@@ -176,6 +181,7 @@ void HUD::Draw() {
 		}
 	}
 
+	//HP
 	int hp = pplayer->GetHP();
 	int maxHP = pplayer->GetStatus().maxHP;
 	float hpRatio = static_cast<float>(hp) / maxHP;
@@ -190,13 +196,15 @@ void HUD::Draw() {
 	DrawBox(hpStartX, hpStartY, hpStartX + static_cast<int>(Visual::HUD::HP_BAR_WIDTH * hpRatio), hpStartY + Visual::HUD::HP_BAR_HEIGHT, hpColor, TRUE);
 
 	Weapon* weapon = pplayer->GetWeapon();
-
 	if (weapon) {
 		const GunStatus& spec = weapon->GetSpec();
 
+		//クロスヘア
 		if (!weapon->TakingAim() || spec.id == WeaponID::LR || spec.id == WeaponID::SMG) {
 			DrawCircle(System::Window::CENTER_X, System::Window::CENTER_Y, Visual::HUD::CROSSHAIR_DOT_SIZE, GetColor(Visual::HUD::COLOR_HUD_WHITE.r, Visual::HUD::COLOR_HUD_WHITE.g, Visual::HUD::COLOR_HUD_WHITE.b), TRUE);
 		}
+
+		//武器情報と弾薬
 		int ammo = weapon->GetAmmo();
 		int mag = spec.magAmmo;
 		int reserve = weapon->GetReserveAmmo();
@@ -226,6 +234,7 @@ void HUD::Draw() {
 			::DrawFormatStringToHandle(textX, textY + Visual::HUD::WEAPON_RESERVE_TEXT_Y_OFFSET, GetColor(Visual::HUD::COLOR_RESERVE_AMMO_TEXT.r, Visual::HUD::COLOR_RESERVE_AMMO_TEXT.g, Visual::HUD::COLOR_RESERVE_AMMO_TEXT.b), fontEnSmall, "      %03d", reserve);
 		}
 
+		//リロード
 		if (weapon->Reloading()) {
 			float prog = weapon->GetReloadProgress();
 			int cx = System::Window::CENTER_X;
@@ -251,6 +260,7 @@ void HUD::Draw() {
 			::DrawStringToHandle(cx - (rWidth / 2), cy + Visual::HUD::RELOAD_CIRCLE_RADIUS + Visual::HUD::RELOAD_TEXT_Y_OFFSET, reloadText, arcColor, fontEnSmall);
 		}
 
+		//狙われているインジケーター
 		const auto& attackers = pplayer->GetTargeted();
 		if (!attackers.empty()) {
 			float playerYaw = pplayer->GetCam()->GetYaw() * Global::Math::DEG_TO_RAD;

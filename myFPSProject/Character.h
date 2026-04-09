@@ -122,8 +122,8 @@ public:
 
 	void SetPos(VECTOR _pos) { position = _pos; }
 
-	bool IsCrouching() const { return crouch; }
-	bool IsAlive() const { return alive; }
+	bool GetCrouching() const { return crouch; }
+	bool GetAlive() const { return alive; }
 	int GetHP()const { return hp; }
 	VECTOR GetPos()const { return position; }
 	CharacterStatus GetStatus()const { return status; }

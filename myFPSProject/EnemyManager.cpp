@@ -76,7 +76,7 @@ int EnemyManager::Update() {
 		}
 
 		//生存タグが消えたら消去する
-		if (!enemies[i]->IsAlive()) {
+		if (!enemies[i]->GetAlive()) {
 			earnScore += enemies[i]->GetStatus().score;
 			totalScore += enemies[i]->GetStatus().score;
 			killCounts[enemies[i]->GetType()]++;

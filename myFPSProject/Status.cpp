@@ -4,6 +4,7 @@
 
 #include <fstream>
 
+//csvが読み込めなかった時用デフォルトステータス
 namespace CHARA_STATUS {
 	CharacterStatus PLAYER = { 100, 0.015f, 0.9f, 5, 1.0f, 2.0f, 1.0f,1.8f,0.8f,TEAMID::ID_FRIENDLY, 0};
 	CharacterStatus DUMMY = { 10000,0.0f,0.0f, 10, 1.0f,2.0f,2.0f,1.8f,1.8f, TEAMID::ID_ENEMY, 0 };
@@ -55,6 +56,7 @@ namespace ENEMY_GUN {
 
 GameConfigData GameConfig;
 
+//csvファイルからキャラのデータを読み込む
 void LoadToChara(CharacterStatus& target, const std::vector<std::string>& row) {
     if (row.size() < 12) return;
     try {
@@ -73,6 +75,7 @@ void LoadToChara(CharacterStatus& target, const std::vector<std::string>& row) {
     catch (...) { Debug::Log("Chara.csv Parse Error: " + row[0]); }
 }
 
+//武器のデータをcsvから読み込む
 void LoadToGun(GunStatus& target, const std::vector<std::string>& row) {
     if (row.size() < 47) return;
     try {

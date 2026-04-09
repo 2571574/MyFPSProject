@@ -33,7 +33,7 @@ public:
 	}
 
 	VECTOR GetPos()const { return position; }
-	bool IsAlive()const { return alive; }
+	bool GetAlive()const { return alive; }
 	const GunStatus* GetSpec()const {
 		if (droppedWeapon)return &droppedWeapon->GetSpec();
 		return nullptr;

@@ -130,4 +130,7 @@ namespace ENEMY_GUN {
 
 extern GameConfigData GameConfig;
 
+/// <summary>
+/// 全てのステータスをcsvファイルから読み込む
+/// <summary>
 void LoadAllStatusFromCSV();

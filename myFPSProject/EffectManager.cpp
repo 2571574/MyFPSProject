@@ -1,4 +1,4 @@
-#include "EffectManager.h"
+﻿#include "EffectManager.h"
 #include "SoundManager.h"
 #include "Param/Visual.h"
 #include "Param/Global.h"
@@ -20,7 +20,7 @@ void EffectManager::Update() {
 	for (auto& e : effects) {
 		e->Update();
 	}
-	effects.erase(std::remove_if(effects.begin(), effects.end(), [](const std::unique_ptr<Effect>& e) { return !e->IsAlive(); }), effects.end());
+	effects.erase(std::remove_if(effects.begin(), effects.end(), [](const std::unique_ptr<Effect>& e) { return !e->GetAlive(); }), effects.end());
 }
 
 void EffectManager::Draw() {

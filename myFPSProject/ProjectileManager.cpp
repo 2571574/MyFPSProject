@@ -23,7 +23,7 @@ void ProjectileManager::Update()
 	}
 		//生存タグのない弾を消去する
 		projectiles.erase(std::remove_if(projectiles.begin(), projectiles.end(),
-			[](const std::unique_ptr<BaseProjectile>& p) {return !p->IsAlive(); }),
+			[](const std::unique_ptr<BaseProjectile>& p) {return !p->GetAlive(); }),
 			projectiles.end()
 		);
 }

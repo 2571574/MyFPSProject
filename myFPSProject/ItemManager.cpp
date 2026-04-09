@@ -15,6 +15,7 @@ ItemManager& ItemManager::GetIns() {
 	return ins;
 }
 
+//
 GunStatus ItemManager::GetPlayerGunStatus(WeaponID id) {
 	switch (id) {
 	case WeaponID::AR: return PLAYER_GUN::RIFLE;
@@ -37,14 +38,14 @@ GunStatus ItemManager::GetPlayerGunStatus(WeaponID id) {
 
 	// スポナー上に配置されている武器
 	for (const auto& spawner : spawners) {
-		if (spawner.item && spawner.item->IsAlive()) {
+		if (spawner.item && spawner.item->GetAlive()) {
 			const GunStatus* spec = spawner.item->GetSpec();
 			if (spec) activeWeapons.push_back(spec->id);
 		}
 	}
 
 	for (const auto& item : droppedItem) {
-		if (item && item->IsAlive()) {
+		if (item && item->GetAlive()) {
 			const GunStatus* spec = item->GetSpec();
 			if (spec) activeWeapons.push_back(spec->id);
 		}
@@ -107,7 +108,7 @@ void ItemManager::Update(Player* player) {
 	float minDist = pickUpRadius;
 
 	for (auto& item : droppedItem) {
-		if (item && item->IsAlive()) {
+		if (item && item->GetAlive()) {
 			float dist = VSize(VSub(item->GetPos(), pPos));
 			if (dist < minDist) {
 				minDist = dist;
@@ -117,7 +118,7 @@ void ItemManager::Update(Player* player) {
 	}
 
 	for (auto& spawner : spawners) {
-		if (spawner.item && spawner.item->IsAlive()) {
+		if (spawner.item && spawner.item->GetAlive()) {
 			float dist = VSize(VSub(spawner.item->GetPos(), pPos));
 			if (dist < minDist) {
 				minDist = dist;
@@ -137,7 +138,7 @@ void ItemManager::Update(Player* player) {
 	for (int i = (int)droppedItem.size() - 1; i >= 0; i--) {
 		droppedItem[i]->Update();
 
-		if (!droppedItem[i]->IsAlive()) {
+		if (!droppedItem[i]->GetAlive()) {
 			droppedItem.erase(droppedItem.begin() + i);
 		}
 	}
@@ -146,7 +147,7 @@ void ItemManager::Update(Player* player) {
 		if (spawner.item) {
 			spawner.item->Update();
 
-			if (!spawner.item->IsAlive()) {
+			if (!spawner.item->GetAlive()) {
 				spawner.item.reset();
 				spawner.respawnTimer = spawner.SpawnerInfo.respawnTime;
 			}

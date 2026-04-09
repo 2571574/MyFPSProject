@@ -39,8 +39,8 @@ private:
 	float fadeAlpha = 0.0f;
 	std::unique_ptr<BaseScene> nextScenePending;
 	std::unique_ptr<BaseScene> currentScene;	//現在のシーン
-	bool exitTag;		//終了フラグ
-	PlayMode currentMode;	//現在の難易度
+	bool exitTag;								//終了フラグ
+	PlayMode currentMode;						//現在の難易度
 
 	GameResult lastResult;	//直近の結果
 	std::vector<std::vector<int>> ranking;

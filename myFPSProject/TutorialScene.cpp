@@ -36,6 +36,8 @@ TutorialScene::~TutorialScene() {
 }
 
 void TutorialScene::Init() {
+	SetMouseDispFlag(FALSE);
+
 	currentPhase = TutorialPhase::MOVEMENT;
 	currentEnemyInfo = -1;
 

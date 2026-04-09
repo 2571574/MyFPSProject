@@ -31,6 +31,7 @@ TitleScene::TitleScene(SceneManager* manager) :BaseScene(manager)
 TitleScene::~TitleScene() {}
 
 void TitleScene::Init() {
+	SetMouseDispFlag(TRUE);
 	titleLogoHandle = ResourceManager::GetIns().GetGraph("Resource/titleLogo.png");
 	titleBG = ResourceManager::GetIns().GetGraph("Resource/titlebg.png");
 	fontMenuLarge = ResourceManager::GetIns().GetFont("Resource/Font/JetBrainsMono_40.dft");
@@ -131,29 +132,29 @@ void TitleScene::Update() {
 						detectedType = InputType::KEYBOARD;
 						break;
 					}
-					//エラーだった場合、マウスの入力かどうかチェック
-					if (newCode == -1) {
-						if (CheckKey::GetIns().isPress(InputType::MOUSE, MOUSE_INPUT_LEFT)) {
-							newCode = MOUSE_INPUT_LEFT; detectedType = InputType::MOUSE;
-						}
-						if (CheckKey::GetIns().isPress(InputType::MOUSE, MOUSE_INPUT_RIGHT)) {
-							newCode = MOUSE_INPUT_RIGHT; detectedType = InputType::MOUSE;
-						}
-						if (CheckKey::GetIns().isPress(InputType::MOUSE, MOUSE_INPUT_MIDDLE)) {
-							newCode = MOUSE_INPUT_MIDDLE; detectedType = InputType::MOUSE;
-						}
-						if (CheckKey::GetIns().isPress(InputType::MOUSE, System::Input::MOUSE_WHEEL_UP)) {
-							newCode = System::Input::MOUSE_WHEEL_UP; detectedType = InputType::MOUSE;
-						}
-						if (CheckKey::GetIns().isPress(InputType::MOUSE, System::Input::MOUSE_WHEEL_DOWN)) {
-							newCode = System::Input::MOUSE_WHEEL_DOWN; detectedType = InputType::MOUSE;
-						}
-						if (CheckKey::GetIns().isPress(InputType::MOUSE, MOUSE_INPUT_4)) {
-							newCode = MOUSE_INPUT_4; detectedType = InputType::MOUSE;
-						}
-						if (CheckKey::GetIns().isPress(InputType::MOUSE, MOUSE_INPUT_5)) {
-							newCode = MOUSE_INPUT_5; detectedType = InputType::MOUSE;
-						}
+				}
+				//エラーだった場合、マウスの入力かどうかチェック
+				if (newCode == -1) {
+					if (CheckKey::GetIns().isPress(InputType::MOUSE, MOUSE_INPUT_LEFT)) {
+						newCode = MOUSE_INPUT_LEFT; detectedType = InputType::MOUSE;
+					}
+					if (CheckKey::GetIns().isPress(InputType::MOUSE, MOUSE_INPUT_RIGHT)) {
+						newCode = MOUSE_INPUT_RIGHT; detectedType = InputType::MOUSE;
+					}
+					if (CheckKey::GetIns().isPress(InputType::MOUSE, MOUSE_INPUT_MIDDLE)) {
+						newCode = MOUSE_INPUT_MIDDLE; detectedType = InputType::MOUSE;
+					}
+					if (CheckKey::GetIns().isPress(InputType::MOUSE, System::Input::MOUSE_WHEEL_UP)) {
+						newCode = System::Input::MOUSE_WHEEL_UP; detectedType = InputType::MOUSE;
+					}
+					if (CheckKey::GetIns().isPress(InputType::MOUSE, System::Input::MOUSE_WHEEL_DOWN)) {
+						newCode = System::Input::MOUSE_WHEEL_DOWN; detectedType = InputType::MOUSE;
+					}
+					if (CheckKey::GetIns().isPress(InputType::MOUSE, MOUSE_INPUT_4)) {
+						newCode = MOUSE_INPUT_4; detectedType = InputType::MOUSE;
+					}
+					if (CheckKey::GetIns().isPress(InputType::MOUSE, MOUSE_INPUT_5)) {
+						newCode = MOUSE_INPUT_5; detectedType = InputType::MOUSE;
 					}
 				}
 			}

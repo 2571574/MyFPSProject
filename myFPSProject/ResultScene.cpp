@@ -20,6 +20,7 @@ ResultScene::~ResultScene() {
 }
 
 void ResultScene::Init() {
+	SetMouseDispFlag(FALSE);
 	fontLarge = ResourceManager::GetIns().GetFont("Resource/Font/JetBrainsMono_60.dft");
 	fontMedium = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_30.dft");
 	fontSmall = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_22.dft");

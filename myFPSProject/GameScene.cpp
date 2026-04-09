@@ -29,7 +29,9 @@ GameScene::~GameScene() {
 }
 
 
-void GameScene::Init() {
+void GameScene::Init()
+{
+	SetMouseDispFlag(FALSE);
 	stageHandle = ResourceManager::GetIns().GetModel("Resource/Arena.mv1");
 	MV1SetPosition(stageHandle, VGet(0.0f, 0.0f, 0.0f));
 	MV1SetScale(stageHandle, VGet(Scene::Common::STAGE_MODEL_SCALE, Scene::Common::STAGE_MODEL_SCALE, Scene::Common::STAGE_MODEL_SCALE));

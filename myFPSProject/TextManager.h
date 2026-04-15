@@ -10,10 +10,10 @@
 class TextManager
 {
 private:
-	std::unordered_map<WeaponID, std::string>weaponNames;
-	std::unordered_map<ActionID, std::string>actionNames;
-	std::unordered_map<WeaponID, std::string>deathCause;
-	std::unordered_map<int, std::string> menuDescription;
+	std::unordered_map<WeaponID, std::string>weaponNames;		//武器の名前
+	std::unordered_map<ActionID, std::string>actionNames;		//行動名
+	std::unordered_map<WeaponID, std::string>deathCause;		//死因名
+	std::unordered_map<int, std::string> menuDescription;		//ダイアログの中身
 	TextManager();
 
 public:

@@ -32,9 +32,9 @@ private:
 		PAUSE_MAX
 	};
 	
-	bool isDeadSequence = false;
-	float deathTimer = 0.0f;
-	int monochromeHandle = -1;
+	bool isDeadSequence = false;	//死亡アニメーション中
+	float deathTimer = 0.0f;		//死亡アニメーションタイマー
+	int monochromeHandle = -1;		//モノクロ画像ハンドル
 
 	bool isSceneChange = false;
 	bool reqTransition = false;

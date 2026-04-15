@@ -18,6 +18,7 @@ namespace System {
     }
 
     namespace Camera {
+        constexpr float DEFAULT_CAM_X = 180.0f;         //スポーン時のデフォルトyaw
         constexpr float CAM_ANGLESNAP_PITCH = 89.9f;    //カメラの垂直の最大角度
         constexpr float CAM_ANGLESNAP_YAW = 180.0f;     //カメラの水平角度の限界角度
         constexpr float YAW_SNAP = 360.0f;              //水平角度を360でスナップする数値

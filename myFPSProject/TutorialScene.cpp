@@ -19,14 +19,14 @@
 #include "Param/System.h"
 #include "Param/Visual.h"
 
-// [Rule 4] namespaceによるローカル定数定義を削除
-
 TutorialScene::TutorialScene(SceneManager* manager)
 	:BaseScene(manager)
 	, player(VGet(20.0f, 0.0f, 28.0f), &camera, PlayMode::MODE_TUTORIAL)
 	, stageHandle(-1)
 	, isPaused(false)
-	, pauseSelectNum(0) {}
+	, pauseSelectNum(0) {
+	SetMousePoint(System::Window::CENTER_X, System::Window::CENTER_Y);
+}
 
 TutorialScene::~TutorialScene() {
 	EnemyManager::GetIns().Clear();
@@ -36,6 +36,8 @@ TutorialScene::~TutorialScene() {
 }
 
 void TutorialScene::Init() {
+	camera.SetAngle(System::Camera::DEFAULT_CAM_X, 0.0f);
+	player.SyncCamAngle();
 	SetMouseDispFlag(FALSE);
 
 	currentPhase = TutorialPhase::MOVEMENT;

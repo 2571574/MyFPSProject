@@ -17,7 +17,9 @@ GameScene::GameScene(SceneManager* manager)
 	, stageHandle(-1) 
 	, isPaused(false)
 	, pauseSelectNum(0)
-	, score(0){}
+	, score(0){
+	SetMousePoint(System::Window::CENTER_X, System::Window::CENTER_Y);
+}
 
 GameScene::~GameScene() {
 	EnemyManager::GetIns().Clear();
@@ -31,6 +33,8 @@ GameScene::~GameScene() {
 
 void GameScene::Init()
 {
+	camera.SetAngle(System::Camera::DEFAULT_CAM_X, 0.0f);
+	player.SyncCamAngle();
 	SetMouseDispFlag(FALSE);
 	stageHandle = ResourceManager::GetIns().GetModel("Resource/Arena.mv1");
 	MV1SetPosition(stageHandle, VGet(0.0f, 0.0f, 0.0f));

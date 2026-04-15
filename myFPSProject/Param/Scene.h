@@ -21,7 +21,7 @@ namespace Scene {
         constexpr int PAUSE_ITEM_LINE_HEIGHT = 60;      //ポーズ画面の項目ごとの高さ
         constexpr int PAUSE_ITEM_OFFSET_X = -60;        //ポーズ画面の項目のXオフセット
         constexpr int HELP_TEXT_MARGIN_X = 50;          //操作表示テキストが見切れないための猶予 X
-        constexpr int HELP_TEXT_MARGIN_Y = 30;          //操作表示テキストが見切れないための猶予 Y   
+        constexpr int HELP_TEXT_MARGIN_Y = 30;          //操作表示テキストが見切れないための猶予 Y
     }
 
     namespace Title {

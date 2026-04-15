@@ -99,6 +99,14 @@ public:
 		}
 	}
 
+	void SyncCamAngle() {
+		if (cam) {
+			lastCamYaw = cam->GetYaw();
+			lastCamPitch = cam->GetPitch();
+			currentSwayX = 0.0f;
+			currentSwayY = 0.0f;
+		}
+	}
 	void UpdateFootstep();
 
 	void SetStageHandle(int handle) { stageHandle = handle; }

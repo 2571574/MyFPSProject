@@ -85,6 +85,10 @@ void Camera::AddAngle(float deltaYaw, float deltaPitch){
 	pendingRecoilPitch += deltaPitch;
 }
 
+void Camera::SetAngle(float newYaw, float newPitch) {
+	yaw = newYaw;
+	pitch = newPitch;
+}
 void Camera::Move(float fov) {
 	float camYaw = yaw;
 	float camPitch = pitch;

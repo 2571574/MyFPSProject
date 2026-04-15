@@ -38,6 +38,7 @@ public:
 	/// <param name="deltaPitch">垂直加算量</param>
 	void AddAngle(float deltaYaw, float deltaPitch);
 
+	void SetAngle(float newYaw, float newPitch);
 	/// <summary>
 	/// 位置と向きの更新を反映させる
 	/// </summary>

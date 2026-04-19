@@ -85,7 +85,6 @@ void TutorialScene::Init() {
 }
 
 void TutorialScene::Update() {
-	Debug::Update();
 	float dt = Time::GetIns().GetDelta();
 
 	if (InputManager::GetIns().IsActionTrigger(ActionID::PAUSE)) {
@@ -266,7 +265,6 @@ void TutorialScene::Draw() {
 	ProjectileManager::GetIns().Draw();
 	ItemManager::GetIns().Draw();
 	player.Draw();
-	Debug::Draw();
 
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
 	DrawBox(0, System::Window::CENTER_Y - Scene::Tutorial::DIALOG_Y_POS, Scene::Tutorial::DIALOG_X2_POS, System::Window::CENTER_Y + Scene::Tutorial::DIALOG_Y_POS, GetColor(Global::Palette::BLACK.r, Global::Palette::BLACK.g, Global::Palette::BLACK.b), true);

@@ -83,7 +83,6 @@ void GameScene::Init()
 
 
 void GameScene::Update() {
-	Debug::Update();
 
 	if (!isDeadSequence) {
 		if (InputManager::GetIns().IsActionTrigger(ActionID::PAUSE)) {
@@ -177,7 +176,6 @@ void GameScene::Draw() {
 	else {
 		player.Draw();
 	}
-	Debug::Draw();
 	if (isPaused) {
 		PauseDraw();
 	}

@@ -233,8 +233,6 @@ void Weapon::FireHitScan(Character& user, VECTOR baseDir, VECTOR shootDir) {
 	HitInfo hit = CollisionManager::GetIns().CheckHitScan(start, end, user.GetID());
 	if (hit.character != nullptr) {
 		int lastdamage = hit.isHeadShot ? spec.damage * Item::Weapon::HEADSHOT_MULTIPLIER : spec.damage;
-		if (hit.isHeadShot)Debug::Log("Headshot");
-		else Debug::Log("hit");
 		hit.character->OnHit(lastdamage, spec.id);
 		bool isKill = (hit.character->GetHP() <= 0);
 		user.HitRecord(hit.isHeadShot, isKill);

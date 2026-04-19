@@ -6,7 +6,6 @@
 #include "TextManager.h"
 #include "ResourceManager.h"
 #include "SoundManager.h"
-#include "Debug.h"
 #include "Param/Global.h"
 #include "Param/Scene.h"
 #include "Param/System.h"

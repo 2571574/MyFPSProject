@@ -1,5 +1,4 @@
 ﻿#include "ProjectileManager.h"
-#include"Debug.h"
 
 #include <algorithm>
 

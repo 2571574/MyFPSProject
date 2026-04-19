@@ -30,7 +30,6 @@ TitleScene::TitleScene(SceneManager* manager) :BaseScene(manager)
 TitleScene::~TitleScene() {}
 
 void TitleScene::Init() {
-	SetMouseDispFlag(TRUE);
 	titleLogoHandle = ResourceManager::GetIns().GetGraph("Resource/titleLogo.png");
 	titleBG = ResourceManager::GetIns().GetGraph("Resource/titlebg.png");
 	fontMenuLarge = ResourceManager::GetIns().GetFont("Resource/Font/JetBrainsMono_40.dft");

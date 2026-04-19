@@ -38,7 +38,6 @@ TutorialScene::~TutorialScene() {
 void TutorialScene::Init() {
 	camera.SetAngle(System::Camera::DEFAULT_CAM_X, 0.0f);
 	player.SyncCamAngle();
-	SetMouseDispFlag(FALSE);
 
 	currentPhase = TutorialPhase::MOVEMENT;
 	currentEnemyInfo = -1;

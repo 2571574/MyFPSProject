@@ -17,6 +17,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return -1;
 	}
 
+	SetMouseDispFlag(FALSE);
 	SetCreate3DSoundFlag(TRUE);
 	SetUseLighting(false);		 //ライティングの無効化
 	SetDrawScreen(DX_SCREEN_BACK); // 裏画面を描画対象にする
@@ -29,7 +30,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ConfigManager::GetIns().Load();	//Configの読み込み
 
 	LoadAllStatusFromCSV();	//ステータスを読み込む
-
 	SceneManager ins;		//ゲームの処理のインスタンス
 
 	// メインループ

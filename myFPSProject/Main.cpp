@@ -30,7 +30,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ConfigManager::GetIns().Load();	//Configの読み込み
 
 	LoadAllStatusFromCSV();	//ステータスを読み込む
-
 	SceneManager ins;		//ゲームの処理のインスタンス
 
 	// メインループ

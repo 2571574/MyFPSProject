@@ -35,7 +35,6 @@ void GameScene::Init()
 {
 	camera.SetAngle(System::Camera::DEFAULT_CAM_X, 0.0f);
 	player.SyncCamAngle();
-	SetMouseDispFlag(FALSE);
 	stageHandle = ResourceManager::GetIns().GetModel("Resource/Arena.mv1");
 	MV1SetPosition(stageHandle, VGet(0.0f, 0.0f, 0.0f));
 	MV1SetScale(stageHandle, VGet(Scene::Common::STAGE_MODEL_SCALE, Scene::Common::STAGE_MODEL_SCALE, Scene::Common::STAGE_MODEL_SCALE));

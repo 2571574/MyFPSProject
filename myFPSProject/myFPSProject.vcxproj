@@ -209,6 +209,16 @@
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="WeaponItem.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resource\Arena.mv1" />
+    <None Include="Resource\TutorialArena.fbx" />
+    <None Include="Resource\TutorialArena.mv1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resource\SniperScope.png" />
+    <Image Include="Resource\titlebg.png" />
+    <Image Include="Resource\titleLogo.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

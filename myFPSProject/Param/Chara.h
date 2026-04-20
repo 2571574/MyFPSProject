@@ -26,6 +26,8 @@ namespace Chara {
         constexpr float SHADOW_WIDTH_DIVISOR = 1.5f;    //影の横幅
 
         constexpr float MOVEMENT_MIN = 0.01f;           //移動とみなす最小速度
+
+        constexpr float FOOTSTEP_SOUND_RADIUS = 40.0f;          //足音の聞こえる半径
     }
 
     //プレイヤーの定数
@@ -77,7 +79,6 @@ namespace Chara {
 
         constexpr float PATH_UPDATE_BASE_INTERVAL = 0.5f;       //経路再計算の基本間隔
         constexpr float PATH_SAFETY_SAMPLE_STEP = 1.0f;         //経路の安全性チェックの距離刻み
-        constexpr float FOOTSTEP_SOUND_RADIUS = 30.0f;          //足音の聞こえる半径
 
         constexpr float LEAN_FACTOR = 1.5f;                     //速度に応じた傾きの具合
         constexpr float SPAWN_PROCESS_TIME = 1.5f;              //出現直後の行動しない無敵時間

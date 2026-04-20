@@ -108,7 +108,8 @@ void Enemy::UpdateFootstep() {
 		moveDistance += speed * dt60;
 
 		if (moveDistance >= Chara::EnemyCommon::STEP_LENGTH) {
-			SoundManager::GetIns().Play3DSE("Resource/Sound/footstep.ogg", position, Chara::EnemyCommon::FOOTSTEP_SOUND_RADIUS);
+			SoundManager::GetIns().Play3DSE
+			("Resource/Sound/footstep.wav", position, Chara::Base::FOOTSTEP_SOUND_RADIUS);
 			moveDistance -= Chara::EnemyCommon::STEP_LENGTH;
 		}
 	}

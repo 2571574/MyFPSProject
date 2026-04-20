@@ -52,7 +52,12 @@ void Weapon::Update(Character& user) {
 		reloadCT -= delta;
 		if (currentState == WeaponState::RELOADING && !reloadEndPlayed && reloadCT <= Item::Weapon::RELOAD_END_SOUND_THRESHOLD) {
 			if (!spec.visual.reloadEndSoundPath.empty()) {
-				SoundManager::GetIns().Play3DSE(spec.visual.reloadEndSoundPath, user.GetPos(), Item::Weapon::SOUND_RADIUS_NORMAL);
+				if (user.GetID() == TEAMID::ID_FRIENDLY) {
+					SoundManager::GetIns().PlaySE(spec.visual.reloadEndSoundPath);
+				}
+				else {
+					SoundManager::GetIns().Play3DSE(spec.visual.reloadEndSoundPath, user.GetPos(), Item::Weapon::SOUND_RADIUS_NORMAL);
+				}
 			}
 			reloadEndPlayed = true;
 		}
@@ -254,9 +259,15 @@ void Weapon::Reload(Character& user) {
 	reloadCT = spec.reloadTime;
 	reloadEndPlayed = false; // フラグをリセット
 
-	// 追加：リロード開始音を再生
 	if (!spec.visual.reloadSoundPath.empty()) {
-		SoundManager::GetIns().Play3DSE(spec.visual.reloadSoundPath, user.GetPos(), Item::Weapon::SOUND_RADIUS_NORMAL);
+		if (user.GetID() == TEAMID::ID_FRIENDLY) {
+			// プレイヤー自身のリロード音は2D再生（置いていかれるのを防ぐ）
+			SoundManager::GetIns().PlaySE(spec.visual.reloadSoundPath);
+		}
+		else {
+			// 敵の場合は3Dサウンド
+			SoundManager::GetIns().Play3DSE(spec.visual.reloadSoundPath, user.GetPos(), Item::Weapon::SOUND_RADIUS_NORMAL);
+		}
 	}
 }
 

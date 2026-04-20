@@ -236,8 +236,10 @@ void Player::Update() {
 	hud->Update();
 
 	if (cam) {
+		VECTOR forward = cam->GetLookDirection();
 		VECTOR up = VGet(0.0f, 1.0f, 0.0f);
-		SoundManager::GetIns().UpdateListener(cam->GetPos(), cam->GetLookDirection(), up);
+
+		SoundManager::GetIns().UpdateListener(cam->GetPos(), forward, up);
 	}
 
 	UpdateFootstep();
@@ -352,7 +354,8 @@ void Player::UpdateFootstep() {
 		moveDistance += speed * dt60;
 
 		if (moveDistance >= Chara::Player::STEP_LENGTH && !crouch) {
-			SoundManager::GetIns().PlaySE("Resource/Sound/footstep.ogg");
+			SoundManager::GetIns().Play3DSE
+			("Resource/Sound/footstep.wav",position, Chara::Base::FOOTSTEP_SOUND_RADIUS);
 			moveDistance -= Chara::Player::STEP_LENGTH;
 		}
 	}

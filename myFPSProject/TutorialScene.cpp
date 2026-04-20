@@ -284,6 +284,9 @@ void TutorialScene::Draw() {
 
 
 	std::string moveUpKey = TextManager::GetIns().GetActionKeyString(ActionID::MOVE_FORWARD);
+	std::string moveDownKey = TextManager::GetIns().GetActionKeyString(ActionID::MOVE_BACK);
+	std::string moveLeftKey = TextManager::GetIns().GetActionKeyString(ActionID::MOVE_LEFT);
+	std::string moveRightKey = TextManager::GetIns().GetActionKeyString(ActionID::MOVE_RIGHT);
 	std::string runKey = TextManager::GetIns().GetActionKeyString(ActionID::RUN);
 	std::string jumpKey = TextManager::GetIns().GetActionKeyString(ActionID::JUMP);
 	std::string crouchKey = TextManager::GetIns().GetActionKeyString(ActionID::CROUCH);
@@ -298,7 +301,7 @@ void TutorialScene::Draw() {
 	switch (currentPhase) {
 	case TutorialPhase::MOVEMENT:
 		DrawStringToHandle(TEXT_X, TEXT_Y, "[MOVEMENT]", colorTitle, fontLarge);
-		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 2, ("移動 : " + moveUpKey + "等").c_str(), colorText, fontSmall);
+		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 2, ("移動 : " + moveUpKey + " / " + moveDownKey + " / " + moveLeftKey + " / " + moveRightKey).c_str(), colorText, fontSmall);
 		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 3, ("走る : " + runKey).c_str(), colorText, fontSmall);
 		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 4, ("ジャンプ : " + jumpKey).c_str(), colorText, fontSmall);
 		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 5, ("しゃがむ : " + crouchKey).c_str(), colorText, fontSmall);

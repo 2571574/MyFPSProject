@@ -12,12 +12,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
 	SetGraphMode(System::Window::WINDOW_WIDTH, System::Window::WINDOW_HEIGHT, System::Window::WINDOW_COLORBIT);	//ウィンドウサイズの設定
 	SetMainWindowText("Killing Arena");
+	SetEnableXAudioFlag(TRUE);
 	// DXライブラリの初期化
 	if (DxLib_Init() == -1) {
 		return -1;
 	}
 
-	SetCreate3DSoundFlag(TRUE);
+	SetMouseDispFlag(FALSE);
 	SetUseLighting(false);		 //ライティングの無効化
 	SetDrawScreen(DX_SCREEN_BACK); // 裏画面を描画対象にする
 

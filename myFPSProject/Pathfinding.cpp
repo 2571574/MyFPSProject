@@ -20,13 +20,17 @@ namespace {
 			return costF > other.costF;
 		}
 	};
+
+
 	bool IsSafePlace(int modelhandle, VECTOR pos, float charaRadius, float charaHeight, float maxSlope) {
+		//床があるか
 		VECTOR rayStart = VAdd(pos, VGet(0.0f, System::Pathfinding::RAY_Y_OFFSET, 0.0f));
 		VECTOR rayEnd = VAdd(pos, VGet(0.0f, -System::Pathfinding::RAY_Y_OFFSET, 0.0f));
 		MV1_COLL_RESULT_POLY centerHit = MV1CollCheck_Line(modelhandle, -1, rayStart, rayEnd);
 
 		if (centerHit.HitFlag == 0 || centerHit.Normal.y < maxSlope)return false;
 
+		//床の段差や抜けがないか
 		float checkDist = charaRadius;
 		for (int i = 0; i < System::Pathfinding::CIRCLE_CHECK_SEGMENTS; i++) {
 			float angle = i * Global::Math::MATH_PI_QUARTER;
@@ -43,6 +47,7 @@ namespace {
 			}
 		}
 
+		//その上に立てるかどうか
 		VECTOR capBottom = VAdd(centerHit.HitPosition, VGet(0.0f, charaRadius + System::Pathfinding::CAPSULE_BOTTOM_MARGIN, 0.0f));
 		VECTOR capTop = VAdd(centerHit.HitPosition, VGet(0.0f, charaHeight - charaRadius, 0.0f));
 

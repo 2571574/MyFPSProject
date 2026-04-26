@@ -19,7 +19,7 @@ Weapon::Weapon(const GunStatus _spec)
 	, currentState(WeaponState::IDLE)
 	, reloadCT(0)
 	, fireCT(0)
-	, equipCT(Item::Weapon::EQUIP_TIME)
+	, equipTimer(Item::Weapon::EQUIP_TIME)
 	, aim(false)
 	, adsWeight(0.0f)
 	, gunModelHandle(-1)
@@ -69,9 +69,9 @@ void Weapon::Update(Character& user) {
 		if (fireCT <= 0)
 			fireCT = 0;
 	}
-	if (equipCT > 0) {
-		equipCT -= delta;
-		if (equipCT <= 0) equipCT = 0;
+	if (equipTimer > 0) {
+		equipTimer -= delta;
+		if (equipTimer <= 0) equipTimer = 0;
 	}
 
 	// リロード中かつタイマーが尽きたときだけ弾を補充
@@ -149,6 +149,8 @@ void Weapon::Fire(Character& user, VECTOR direction) {
 	}
 
 	user.ShotRecord();
+
+	//ADSとしゃがみによって拡散を計算する
 	VECTOR dir = VNorm(direction);
 	float currentSpread = aim ? spec.adsSpread : spec.spread;
 	if (user.GetCrouching()) {
@@ -156,7 +158,7 @@ void Weapon::Fire(Character& user, VECTOR direction) {
 	}
 	VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), direction));
 	VECTOR up = VNorm(VCross(direction, right));
-
+	
 	float randX = ((float)GetRand(Item::Weapon::SPREAD_RANDOM_RANGE) - Item::Weapon::SPREAD_RANDOM_PRECISION) / Item::Weapon::SPREAD_RANDOM_PRECISION;
 	float randY = ((float)GetRand(Item::Weapon::SPREAD_RANDOM_RANGE) - Item::Weapon::SPREAD_RANDOM_PRECISION) / Item::Weapon::SPREAD_RANDOM_PRECISION;
 	dir = VAdd(direction, VScale(right, randX * currentSpread));
@@ -178,7 +180,7 @@ void Weapon::FireProjectile(Character& user, VECTOR baseDir, VECTOR shootDir) {
 	//射撃位置の取得
 	VECTOR userEyePos = VAdd(user.GetPos(), VGet(0, user.GetCurrentEyeHeight(), 0));
 	VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), baseDir));				//右のベクトル
-	VECTOR up = VNorm(VCross(baseDir, right));					//上のベクトル
+	VECTOR up = VNorm(VCross(baseDir, right));									//上のベクトル
 	VECTOR fireOffset = VAdd(VScale(spec.muzzleOffset, 1.0f - adsWeight), VScale(spec.adsMuzzleOffset, adsWeight));				//銃口のオフセット
 
 	//回転に応じてオフセット分ずらす
@@ -187,9 +189,11 @@ void Weapon::FireProjectile(Character& user, VECTOR baseDir, VECTOR shootDir) {
 	fireFinal = VAdd(fireFinal, VScale(baseDir, fireOffset.z));
 	VECTOR spawnPos = VAdd(userEyePos, fireFinal);
 
+	//画面中央の遠くを目標点とし、銃口からそこまでのベクトルを計算する
 	VECTOR targetPos = VAdd(userEyePos, VScale(shootDir, Item::Weapon::RAY_MAX_DISTANCE));
 	VECTOR lastDir = VNorm(VSub(targetPos, spawnPos));
 
+	//エフェクト用の銃口位置を計算
 	VECTOR visualOffset = VAdd(VScale(spec.visual.drawMuzzleOffset, 1.0f - adsWeight), VScale(spec.visual.drawAdsMuzzleOffset, adsWeight));
 	VECTOR visualFinal;
 	visualFinal = VAdd(VScale(right, visualOffset.x), VScale(up, visualOffset.y));
@@ -217,9 +221,11 @@ void Weapon::FireHitScan(Character& user, VECTOR baseDir, VECTOR shootDir) {
 	fireFinal = VAdd(fireFinal, VScale(baseDir, fireOffset.z));
 	VECTOR spawnPos = VAdd(userEyePos, fireFinal);
 
+	//画面中央の遠くを目標点とし、銃口からそこまでのベクトルを計算する
 	VECTOR targetPos = VAdd(userEyePos, VScale(shootDir, Item::Weapon::RAY_MAX_DISTANCE));
 	VECTOR lastDir = VNorm(VSub(targetPos, spawnPos));
 
+	//エフェクト用の銃口位置を計算
 	VECTOR visualOffset = VAdd(VScale(spec.visual.drawMuzzleOffset, 1.0f - adsWeight), VScale(spec.visual.drawAdsMuzzleOffset, adsWeight));
 	VECTOR visualFinal;
 	visualFinal = VAdd(VScale(right, visualOffset.x), VScale(up, visualOffset.y));
@@ -278,15 +284,20 @@ void Weapon::Ads() {}
 //描画
 void Weapon::Draw(VECTOR basePos, VECTOR forward, VECTOR right, VECTOR up, bool isAds, bool isFPP) {
 	if (gunModelHandle == -1)return;
+	//スケール設定
 	float s = spec.visual.scale;
 	MATRIX scaleMat = MGetScale(VGet(s, s, s));
 
+	//ベースの回転
 	MATRIX localRot = MGetRotY(Visual::WeaponAnim::MODEL_BASE_ROTATION_Y);
 
 	VECTOR animOffset = VGet(0.0f, 0.0f, 0.0f);
 	MATRIX animRot = MGetIdent();
-	if (equipCT > 0.0f) {
-		float progress = 1.0f - (equipCT / Item::Weapon::EQUIP_TIME);
+
+	//装備アニメーション
+	if (equipTimer > 0.0f) {
+		//取り出しアニメーション
+		float progress = 1.0f - (equipTimer / Item::Weapon::EQUIP_TIME);
 		float easeOut = sinf(progress * DX_PI_F / 2.0f);
 
 		s *= (Visual::WeaponAnim::ANIM_EQUIP_START_SCALE + (1.0f - Visual::WeaponAnim::ANIM_EQUIP_START_SCALE) * easeOut);
@@ -294,12 +305,17 @@ void Weapon::Draw(VECTOR basePos, VECTOR forward, VECTOR right, VECTOR up, bool 
 		animOffset = VGet(0.0f, Visual::WeaponAnim::ANIM_EQUIP_OFFSET_Y * (1.0f - easeOut), Visual::WeaponAnim::ANIM_EQUIP_OFFSET_Z * (1.0f - easeOut));
 		animRot = MGetRotX(Visual::WeaponAnim::ANIM_EQUIP_ROT_X * (1.0f - easeOut));
 	}
+	
+	//リロードアニメーション
 	else if (currentState == WeaponState::RELOADING && spec.reloadTime > 0.0f) {
 		float progress = 1.0f - (reloadCT / spec.reloadTime);
+
+		//武器ごとにアニメーションを分ける
 		switch (spec.id) {
 		case WeaponID::PIS:
 		case WeaponID::SMG:
 		{
+			//銃を持ち上げる
 			if (progress < Visual::WeaponAnim::ANIM_RELOAD_SMG_PHASE1) {
 				float t = progress / Visual::WeaponAnim::ANIM_RELOAD_SMG_PHASE1;
 				float ease = sinf(t * DX_PI_F / 2.0f);
@@ -307,6 +323,7 @@ void Weapon::Draw(VECTOR basePos, VECTOR forward, VECTOR right, VECTOR up, bool 
 				animOffset = VGet(0.0f, Visual::WeaponAnim::ANIM_RELOAD_SMG_WINDUP_Y * ease, (Visual::WeaponAnim::ANIM_RELOAD_SMG_PULLBACK_Z * 0.3f) * ease);
 				animRot = MGetRotX(Global::Math::MATH_PI_QUARTER * ease);
 			}
+			//引き寄せて回転させる
 			else if (progress < Visual::WeaponAnim::ANIM_RELOAD_SMG_PHASE2) {
 				float t = (progress - Visual::WeaponAnim::ANIM_RELOAD_SMG_PHASE1) / (Visual::WeaponAnim::ANIM_RELOAD_SMG_PHASE2 - Visual::WeaponAnim::ANIM_RELOAD_SMG_PHASE1);
 
@@ -320,6 +337,7 @@ void Weapon::Draw(VECTOR basePos, VECTOR forward, VECTOR right, VECTOR up, bool 
 
 				animRot = MGetRotX(currentRot);
 			}
+			//振り下ろして元の位置に戻す
 			else {
 				float t = (progress - Visual::WeaponAnim::ANIM_RELOAD_SMG_PHASE2) / (1.0f - Visual::WeaponAnim::ANIM_RELOAD_SMG_PHASE2);
 				float ease = sinf(t * DX_PI_F);
@@ -331,6 +349,7 @@ void Weapon::Draw(VECTOR basePos, VECTOR forward, VECTOR right, VECTOR up, bool 
 		}
 		case WeaponID::LR:
 		{
+			//上に持っていく
 			if (progress < Visual::WeaponAnim::ANIM_RELOAD_LR_PHASE1) {
 				float t = progress / Visual::WeaponAnim::ANIM_RELOAD_LR_PHASE1;
 				float easeIn = 1.0f - cosf(t * DX_PI_F / 2.0f);
@@ -342,6 +361,8 @@ void Weapon::Draw(VECTOR basePos, VECTOR forward, VECTOR right, VECTOR up, bool 
 				animOffset = VGet(Visual::WeaponAnim::ANIM_RELOAD_LR_SHOULDER_X, Visual::WeaponAnim::ANIM_RELOAD_LR_SHOULDER_Y, Visual::WeaponAnim::ANIM_RELOAD_LR_SHOULDER_Z);
 				animRot = MGetRotX(Visual::WeaponAnim::ANIM_RELOAD_LR_ROT_X);
 			}
+
+			//元の位置に戻す
 			else {
 				float t = (progress - Visual::WeaponAnim::ANIM_RELOAD_LR_PHASE2) / (1.0f - Visual::WeaponAnim::ANIM_RELOAD_LR_PHASE2);
 				float easeOut = sinf(t * DX_PI_F / 2.0f);
@@ -358,7 +379,6 @@ void Weapon::Draw(VECTOR basePos, VECTOR forward, VECTOR right, VECTOR up, bool 
 		default:
 			float transitionRatio = Visual::WeaponAnim::ANIM_RELOAD_DEFAULT_TRANSITION;
 			float lerpFactor = 0.0f;
-
 			if (progress < transitionRatio) {
 				lerpFactor = sinf((progress / transitionRatio) * DX_PI_F / 2.0f);
 			}
@@ -376,11 +396,13 @@ void Weapon::Draw(VECTOR basePos, VECTOR forward, VECTOR right, VECTOR up, bool 
 		}
 	}
 
+	//カメラの向きに合わせて回転行列を作る
 	MATRIX rot = MGetIdent();
 	rot.m[0][0] = right.x;		rot.m[0][1] = right.y;		rot.m[0][2] = right.z;
 	rot.m[1][0] = up.x;			rot.m[1][1] = up.y;			rot.m[1][2] = up.z;
 	rot.m[2][0] = forward.x;	rot.m[2][1] = forward.y;	rot.m[2][2] = forward.z;
 
+	//描画位置の計算
 	VECTOR worldOffset = VAdd(VScale(spec.visual.drawOffset, 1.0f - adsWeight), VScale(spec.visual.adsDrawOffset, adsWeight));
 	worldOffset = VAdd(worldOffset, animOffset);
 	VECTOR drawPos = basePos;
@@ -389,8 +411,11 @@ void Weapon::Draw(VECTOR basePos, VECTOR forward, VECTOR right, VECTOR up, bool 
 	drawPos = VAdd(drawPos, VScale(forward, worldOffset.z));
 	MATRIX transMat = MGetTranslate(drawPos);
 
+	//行列の合成
 	MATRIX worldMat = MMult(MMult(MMult(MMult(scaleMat, localRot), animRot), rot), transMat);
 
+
+	//スナイパースコープの描画
 	if (isAds && spec.id == WeaponID::SR && isFPP) {
 		int scopeGraph = ResourceManager::GetIns().GetGraph("Resource/SniperScope.png");
 		if (scopeGraph != -1) {

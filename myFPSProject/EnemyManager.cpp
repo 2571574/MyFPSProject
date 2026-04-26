@@ -128,16 +128,20 @@ int EnemyManager::Update() {
 			VECTOR checkEnd = VGet(sPos.x, sPos.y + Chara::EnemyManager::SPAWN_RAY_END, sPos.z);
 			MV1_COLL_RESULT_POLY ground = MV1CollCheck_Line(stageHandle, -1, checkStart, checkEnd);
 
+			//地面に当たっていて、かつ床とみなせる角度ならスポーン位置を地面の高さにする
 			if (ground.HitFlag == TRUE && ground.Normal.y > Chara::Base::GROUND_NORMAL_MIN) {
 				sPos.y = ground.HitPosition.y;
 			}
 			else {
+				//床とみなせなければスキップ
 				continue;
 			}
+
+			//プレイヤーから一定距離以上離れているか
 			if (VSize(VSub(target->GetPos(), sPos)) < Chara::EnemyManager::SPAWNDIST_PLAYER)continue;
 
+			//他の敵から一定距離以上離れているか
 			bool isSafe = true;
-
 			for (const auto& e : enemies) {
 				if (VSize(VSub(e->GetPos(), sPos)) < Chara::EnemyManager::SPAWNDIST_ENEMY) {
 					isSafe = false;
@@ -146,6 +150,7 @@ int EnemyManager::Update() {
 			}
 			if (!isSafe)continue;
 
+			//上限ではない敵の種類をリストアップしてランダムに選ぶ
 			std::vector<ENEMYTYPE>availableTypes;
 			if (CountEnemyType(ENEMYTYPE::MELEE) < GameConfig.maxLimitMelee)
 				availableTypes.push_back(ENEMYTYPE::MELEE);
@@ -156,6 +161,7 @@ int EnemyManager::Update() {
 			if (CountEnemyType(ENEMYTYPE::ROLLING) < GameConfig.maxLimitRolling)
 				availableTypes.push_back(ENEMYTYPE::ROLLING);
 
+			//上限であればスキップ
 			if (availableTypes.empty())break;
 
 			ENEMYTYPE selectedType = availableTypes[GetRand((int)availableTypes.size() - 1)];

@@ -20,18 +20,17 @@ class TutorialScene :
     public BaseScene
 {
 private:
-    Player player;
+    Player player;  
     Camera camera;
 
-    int stageHandle;
-    int fontLarge = -1;  // タイトル、PAUSE用 (36)
-    int fontMedium = -1; // ダミー上のボタンテキスト用 (20)
-    int fontSmall = -1;  // 説明文用 (16)
+	int stageHandle;     //ステージのモデルハンドル
+    int fontLarge = -1;  // タイトル、PAUSE用
+    int fontMedium = -1; // ダミー上のボタンテキスト用
+    int fontSmall = -1;  // 説明文用
 
-    bool isPaused;
-    int pauseSelectNum;
-
-    enum PauseMenu{RESUME,RETURN_TITLE,PAUSE_MAX};
+    bool isPaused;      //ポーズ中
+    int pauseSelectNum; //ポーズメニューの選択肢番号
+	enum PauseMenu { RESUME, RETURN_TITLE, PAUSE_MAX };  //ポーズメニューの選択肢
 
     void PauseUpdate();
     void PauseDraw();

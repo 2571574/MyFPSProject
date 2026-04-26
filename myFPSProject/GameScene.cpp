@@ -33,20 +33,26 @@ GameScene::~GameScene() {
 
 void GameScene::Init()
 {
+	//カメラの初期設定
 	camera.SetAngle(System::Camera::DEFAULT_CAM_X, 0.0f);
 	player.SyncCamAngle();
+
+	//ステージのモデルハンドルをセット
 	stageHandle = ResourceManager::GetIns().GetModel("Resource/Arena.mv1");
 	MV1SetPosition(stageHandle, VGet(0.0f, 0.0f, 0.0f));
 	MV1SetScale(stageHandle, VGet(Scene::Common::STAGE_MODEL_SCALE, Scene::Common::STAGE_MODEL_SCALE, Scene::Common::STAGE_MODEL_SCALE));
 	MV1SetupCollInfo(stageHandle, -1, Scene::Common::COLLISION_SETUP_DIV_NUM, Scene::Common::COLLISION_SETUP_DIV_NUM, Scene::Common::COLLISION_SETUP_DIV_NUM);
-
-	fontLarge = ResourceManager::GetIns().GetFont("Resource/Font/JetBrainsMono_36.dft");
-	fontMedium = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_20.dft");
-
 	player.SetStageHandle(stageHandle);
 	CollisionManager::GetIns().SetStageHandle(stageHandle);
 	ItemManager::GetIns().SetStageHandle(stageHandle);
 
+	//フォントのハンドルをセット
+	fontLarge = ResourceManager::GetIns().GetFont("Resource/Font/JetBrainsMono_36.dft");
+	fontMedium = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_20.dft");
+
+
+
+	//敵スポーンセット
 	EnemyManager::GetIns().Init(stageHandle, &player);
 	EnemyManager::GetIns().AddSpawnPoint(VGet(25.0f, Scene::Game::SPAWN_Y_GROUND, 25.0f));
 	EnemyManager::GetIns().AddSpawnPoint(VGet(-25.0f, Scene::Game::SPAWN_Y_GROUND, 25.0f));
@@ -71,13 +77,17 @@ void GameScene::Init()
 	if (manager->GetcurrentMode() == PlayMode::MODE_EASY) {
 		ItemManager::GetIns().Clear();
 	}
+
 	EffectManager::GetIns().Clear();
+
+	SoundManager::GetIns().PlayBGM("Resource/Sound/GameBGM.wav");
+
 	monochromeHandle = MakeGraph(System::Window::WINDOW_WIDTH, System::Window::WINDOW_HEIGHT, FALSE);
 	isDeadSequence = false;
 	deathTimer = 0.0f;
 	score = 0;
 	isSceneChange = false;
-	SoundManager::GetIns().PlayBGM("Resource/Sound/GameBGM.wav");
+
 }
 
 
@@ -105,12 +115,15 @@ void GameScene::Update() {
 		}
 		player.Update();
 	}
+
+	//それぞれのクラスの更新
 	score += EnemyManager::GetIns().Update();
 	EffectManager::GetIns().Update();
 	CollisionManager::GetIns().Update();
 	ProjectileManager::GetIns().Update();
 	ItemManager::GetIns().Update(&player);
 
+	//死亡時の処理
 	if (!isDeadSequence) {
 		if (player.GetHP() <= 0) {
 			manager->SetCauseOfDeath(player.GetLastHitWeapon());
@@ -128,6 +141,7 @@ void GameScene::Update() {
 		}
 	}
 }
+
 
 void GameScene::PauseUpdate() {
 	SetMousePoint(System::Window::CENTER_X, System::Window::CENTER_Y);
@@ -159,11 +173,13 @@ void GameScene::Draw() {
 	if (!isDeadSequence) {
 		ItemManager::GetIns().SetCamPos(camera.GetPos());
 	}
+
 	MV1DrawModel(stageHandle);
 	ItemManager::GetIns().Draw();
 	ProjectileManager::GetIns().Draw();
 	EnemyManager::GetIns().Draw();
 	EffectManager::GetIns().Draw();
+
 	if (isDeadSequence) {
 		GetDrawScreenGraph(0, 0, System::Window::WINDOW_WIDTH, System::Window::WINDOW_HEIGHT, monochromeHandle);
 		GraphFilter(monochromeHandle, DX_GRAPH_FILTER_MONO, 0, 0);
@@ -176,10 +192,11 @@ void GameScene::Draw() {
 	else {
 		player.Draw();
 	}
-	Debug::Draw();
+
 	if (isPaused) {
 		PauseDraw();
 	}
+
 	if (reqTransition && !isSceneChange) {
 		isSceneChange = true;
 

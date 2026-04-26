@@ -23,14 +23,14 @@ namespace {
 
 
 	bool IsSafePlace(int modelhandle, VECTOR pos, float charaRadius, float charaHeight, float maxSlope) {
-		//床があるか
+		//床の判定チェック
 		VECTOR rayStart = VAdd(pos, VGet(0.0f, System::Pathfinding::RAY_Y_OFFSET, 0.0f));
 		VECTOR rayEnd = VAdd(pos, VGet(0.0f, -System::Pathfinding::RAY_Y_OFFSET, 0.0f));
 		MV1_COLL_RESULT_POLY centerHit = MV1CollCheck_Line(modelhandle, -1, rayStart, rayEnd);
 
 		if (centerHit.HitFlag == 0 || centerHit.Normal.y < maxSlope)return false;
 
-		//床の段差や抜けがないか
+		//床の判定を広めにチェック
 		float checkDist = charaRadius;
 		for (int i = 0; i < System::Pathfinding::CIRCLE_CHECK_SEGMENTS; i++) {
 			float angle = i * Global::Math::MATH_PI_QUARTER;
@@ -47,7 +47,8 @@ namespace {
 			}
 		}
 
-		//その上に立てるかどうか
+
+		//キャラの判定で空間チェック
 		VECTOR capBottom = VAdd(centerHit.HitPosition, VGet(0.0f, charaRadius + System::Pathfinding::CAPSULE_BOTTOM_MARGIN, 0.0f));
 		VECTOR capTop = VAdd(centerHit.HitPosition, VGet(0.0f, charaHeight - charaRadius, 0.0f));
 
@@ -61,7 +62,7 @@ namespace {
 
 void InitNode(int modelhandle, std::vector<Node>& mapnode) {
 	mapnode.clear();
-
+	//グリッド状にレイを飛ばす
 	for (float x = System::Pathfinding::MAP_MIN_X; x <= System::Pathfinding::MAP_MAX_X; x += System::Pathfinding::GRID_SIZE) {
 		for (float z = System::Pathfinding::MAP_MIN_Z; z <= System::Pathfinding::MAP_MAX_Z; z += System::Pathfinding::GRID_SIZE) {
 			VECTOR rayStart = VGet(x, System::Pathfinding::MAP_START_Y, z);
@@ -73,12 +74,14 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode) {
 					break;
 				}
 
+				//安全かチェックしてノード登録
 				if (IsSafePlace(modelhandle, hit.HitPosition, System::Pathfinding::CHARA_RADIUS, System::Pathfinding::CHARA_HEIGHT, System::Pathfinding::MAX_SLOPE_NORMAL)) {
 					Node node;
 					node.position = VAdd(hit.HitPosition, VGet(0.0f, System::Pathfinding::NODE_PLACEMENT_OFFSET_Y, 0.0f));
 					mapnode.push_back(node);
 				}
 
+				//すぐ下からレイを再開
 				rayStart = VAdd(hit.HitPosition, VGet(0.0f, System::Pathfinding::NEXT_RAY_OFFSET_Y, 0.0f));
 				if (rayStart.y < rayEnd.y)break;
 			}
@@ -86,6 +89,7 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode) {
 
 	}
 
+	//ノード同士を繋げる
 	float connectDistMax = System::Pathfinding::GRID_SIZE * System::Pathfinding::NODE_CONNECT_MAX_DIST_RATE;
 
 	for (size_t i = 0; i < mapnode.size(); ++i) {
@@ -96,10 +100,12 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode) {
 			float dist = GetDistance(posA, posB);
 			if (dist > connectDistMax) continue;
 
+			//傾斜のチェック
 			float walkableTan = sqrtf(1.0f / (System::Pathfinding::MAX_SLOPE_NORMAL * System::Pathfinding::MAX_SLOPE_NORMAL) - 1.0f);
 			float maxWalkableDiff = dist * walkableTan + System::Pathfinding::WALKABLE_HEIGHT_TOLERANCE;
 			if (std::abs(posA.y - posB.y) > maxWalkableDiff)continue;
 
+			//ノード間の障害物チェック
 			VECTOR capStart = VAdd(posA, VGet(0.0f, System::Pathfinding::CHARA_HEIGHT * 0.5f, 0.0f));
 			VECTOR capEnd = VAdd(posB, VGet(0.0f, System::Pathfinding::CHARA_HEIGHT * 0.5f, 0.0f));
 
@@ -117,6 +123,7 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode) {
 			MV1CollResultPolyDimTerminate(wallHit);
 			if (isBlockedByWall)continue;
 
+			//地面が途切れていないかチェック
 			bool isGroundContinuous = true;
 			int div = (int)(dist / System::Pathfinding::GROUND_CHECK_DIST);
 			if (div < System::Pathfinding::MIN_DIV_COUNT)div = System::Pathfinding::MIN_DIV_COUNT;
@@ -144,6 +151,7 @@ void InitNode(int modelhandle, std::vector<Node>& mapnode) {
 		}
 	}
 }
+
 int GetNearestNodeIndex(VECTOR pos, const std::vector<Node>& mapnode) {
 	int nearestID = -1;
 	float minDistSq = System::Pathfinding::MAX_DISTANCE_SQUARED;
@@ -168,9 +176,12 @@ VECTOR GetNodePosition(int nodeID, const std::vector<Node>& mapnode) {
 
 float GetDistance(VECTOR a, VECTOR b) { return VSize(VSub(a, b)); };
 
+
 std::vector<VECTOR>FindPath(VECTOR startPos, VECTOR goalPos, const std::vector<Node>& mapnode) {
 	std::vector<VECTOR> path;
 	if (mapnode.empty()) return path;
+
+	//スタートとゴールに最も近いノードを探す
 	int startIndex = GetNearestNodeIndex(startPos, mapnode);
 	int goalIndex = GetNearestNodeIndex(goalPos, mapnode);
 
@@ -179,9 +190,12 @@ std::vector<VECTOR>FindPath(VECTOR startPos, VECTOR goalPos, const std::vector<N
 	}
 
 	std::vector<NodeRecord> nodeRecords(mapnode.size());
+
+	//探索候補のキュー コストの小さい順
 	using P = std::pair<float, int>;
 	std::priority_queue <P, std::vector<P>, std::greater<P>> openList;
 
+	//スタートノードの初期化
 	nodeRecords[startIndex].costG = 0.0f;
 	nodeRecords[startIndex].costF = GetDistance(mapnode[startIndex].position, mapnode[goalIndex].position);
 	openList.push({ nodeRecords[startIndex].costF,startIndex });
@@ -190,17 +204,22 @@ std::vector<VECTOR>FindPath(VECTOR startPos, VECTOR goalPos, const std::vector<N
 		int currentIndex = openList.top().second;
 		openList.pop();
 
+		//ゴールに到達したら終了
 		if (currentIndex == goalIndex)break;
 
+		//探索済みをスキップ
 		if (nodeRecords[currentIndex].isClosed)continue;
 		nodeRecords[currentIndex].isClosed = true;
 
+		//隣接ノードをチェック
 		for (int neighborIndex : mapnode[currentIndex].connectedNode) {
 			if (nodeRecords[neighborIndex].isClosed)continue;
 
+			//隣接ノードへのGコストを計算
 			float distToNeighbor = GetDistance(mapnode[currentIndex].position, mapnode[neighborIndex].position);
 			float tentative_costG = nodeRecords[currentIndex].costG + distToNeighbor;
 
+			//コストが小さい場合は更新してキューに追加
 			if (tentative_costG < nodeRecords[neighborIndex].costG) {
 				nodeRecords[neighborIndex].parentID = currentIndex;
 				nodeRecords[neighborIndex].costG = tentative_costG;
@@ -214,6 +233,7 @@ std::vector<VECTOR>FindPath(VECTOR startPos, VECTOR goalPos, const std::vector<N
 		}
 	}
 
+	//ゴールに到達したら経路を逆に辿る
 	if (nodeRecords[goalIndex].parentID != -1 || startIndex == goalIndex) {
 		int curr = goalIndex;
 		while (curr != -1) {
@@ -221,9 +241,9 @@ std::vector<VECTOR>FindPath(VECTOR startPos, VECTOR goalPos, const std::vector<N
 			curr = nodeRecords[curr].parentID;
 		}
 
+		//スタートからゴールの順にする
 		std::reverse(path.begin(), path.end());
 	}
 
 	return path;
-
 }

@@ -35,6 +35,7 @@ void SceneManager::ChangeScene(std::unique_ptr<BaseScene> nextscene) {
 
 void SceneManager::Update() {
 	float dt = Time::GetIns().GetDelta();
+	//フェードアウト
 	if (fadeState == FadeState::FADEOUT) {
 		fadeAlpha += Scene::Manager::FADE_SPEED * dt;
 		if (fadeAlpha >= 1.0f) {
@@ -47,6 +48,7 @@ void SceneManager::Update() {
 			fadeState = FadeState::FADEIN;
 		}
 	}
+	//フェードイン
 	else if (fadeState == FadeState::FADEIN) {
 		fadeAlpha -= Scene::Manager::FADE_SPEED * dt;
 		if (fadeAlpha <= 0.0f) {

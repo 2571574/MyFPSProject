@@ -217,9 +217,8 @@ void TitleScene::Update() {
 				ActionID target = GAMEPLAY_ACTION[selectNum];
 				bool isMoveAction = (target == ActionID::MOVE_FORWARD || target == ActionID::MOVE_LEFT ||
 					target == ActionID::MOVE_BACK || target == ActionID::MOVE_RIGHT);
-
+				//コントローラーの移動操作は割り当てない
 				if (columnidx == 1 && isMoveAction) {
-					// コントローラー列の移動アクション選択時は何もしない
 				}
 				else {
 					isWaitingKey = true;

@@ -26,17 +26,17 @@ protected:
 	WeaponState currentState; //現在の武器ステート
 	int ammo;			 //現在の弾数
 	int reserveAmmo;	 //現在の予備弾数
-	bool infinite;
+	bool infinite;		//弾無限フラグ
 
 	float reloadCT;	     //リロード中タイマー     
 	float fireCT;		 //次の射撃までのタイマー
-	float equipCT;
-	bool aim;
+	float equipTimer;	 //装備時のタイマー
+	bool aim;			//ADS中フラグ
 
-	float adsWeight;
+	float adsWeight;	//ADSの進行度
 
 	int gunModelHandle;	 //銃のモデルハンドル
-	bool reloadEndPlayed;
+	bool reloadEndPlayed;//リロード完了音を再生したか
 
 	//弾速のある弾を生成する　user=射手　direction=射撃方向のベクトル
 	virtual void FireProjectile(Character& user, VECTOR baseDir, VECTOR shootDir);
@@ -107,6 +107,7 @@ public:
 	bool Reloading()const {
 		return currentState == WeaponState::RELOADING;
 	}
+
 	float GetReloadProgress() const {
 		if (currentState != WeaponState::RELOADING || spec.reloadTime <= 0.0f) return 0.0f;
 		return 1.0f - (reloadCT / spec.reloadTime);
@@ -145,7 +146,7 @@ public:
 	bool IsInfinite() const { return infinite; }
 	
 	void OnEquip() {
-		equipCT = Item::Weapon::EQUIP_TIME;
+		equipTimer = Item::Weapon::EQUIP_TIME;
 	}
 
 	int GetModelHandle()const { return gunModelHandle; }

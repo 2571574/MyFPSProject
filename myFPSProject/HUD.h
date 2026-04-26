@@ -8,16 +8,16 @@ class Player;
 class HUD
 {
 private:
-	Player* pplayer;
+	Player* pplayer;	//プレイヤーのポインタ
 
-	float hitMarkTimer = 0.0f;
-	bool lastHitWasHS = false;
-	bool lastHitWasKill = false;
+	float hitMarkTimer = 0.0f;	//ヒットマークの表示タイマー
+	bool lastHitWasHS = false;	//最後の命中がヘッドショットだったかどうか
+	bool lastHitWasKill = false;//最後の命中がキルだったかどうか
 
-	bool isGameStarted = false;
-	float scoreFadeAlpha = 0.0f;
+	bool isGameStarted = false;	//ゲーム開始フラグ　
+	float scoreFadeAlpha = 0.0f;//スコアのフェードインアルファ
 
-	float damageFlashTimer = 0.0f;
+	float damageFlashTimer = 0.0f;//ダメージ演出の表示タイマー
 
 
 

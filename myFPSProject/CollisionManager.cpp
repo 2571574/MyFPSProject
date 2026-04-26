@@ -26,6 +26,8 @@ void CollisionManager::Unregister(Character* chara) {
 }
 
 void CollisionManager::Update() {
+
+	//全キャラクターの当たり判定と押し出し処理
 	for (size_t i = 0; i < characters.size(); ++i) {
 		if (!characters[i]->GetAlive())continue;
 
@@ -38,12 +40,13 @@ void CollisionManager::Update() {
 			VECTOR posA = charaA->GetPos();
 			VECTOR posB = charaB->GetPos();
 
+			//高さが合わない場合はスキップ
 			float heightA = charaA->GetStatus().height;
 			float heightB = charaB->GetStatus().height;
 			if (posA.y > posB.y + heightB || posB.y > posA.y + heightA) {
 				continue;
 			}
-
+			//距離を計算
 			VECTOR vecAB = VSub(posB, posA);
 			vecAB.y = 0.0f;
 
@@ -52,12 +55,13 @@ void CollisionManager::Update() {
 			float radB = charaB->GetStatus().width / 2.0f;
 
 			float sumRad = radA + radB;
-
+			//距離がお互いの半径の和より小さい場合は押し出す
 			if (distSq > System::Collision::MIN_DIST_SQUARED && distSq < sumRad * sumRad) {
 				float dist = sqrtf(distSq);
 				float overlap = sumRad - dist;
 				VECTOR pushDir = VScale(vecAB, 1.0f / dist);
 
+				//質量が軽い方を動かす
 				int massA = charaA->GetStatus().mass;
 				int massB = charaB->GetStatus().mass;
 
@@ -67,6 +71,8 @@ void CollisionManager::Update() {
 				else if (massB > massA) {
 					charaA->SetPos(VSub(posA, VScale(pushDir, overlap)));
 				}
+
+				//同質量の場合は半分ずつ押し出す
 				else {
 					float half = overlap * System::Collision::PUSH_SPLIT_RATIO_EQUAL_MASS;
 					charaA->SetPos(VSub(posA, VScale(pushDir, half)));
@@ -81,6 +87,7 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 	HitInfo result;
 	float minDistance = FLT_MAX;
 	if (stageHandle != -1) {
+		//ステージとの当たり判定
 		MV1_COLL_RESULT_POLY wallHit = MV1CollCheck_Line(stageHandle, -1, start, end);
 		if (wallHit.HitFlag == TRUE) {
 			minDistance = VSize(VSub(wallHit.HitPosition, start));
@@ -93,12 +100,14 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 	for (auto* chara : characters) {
 		if (chara->GetID() == shooter || !chara->GetAlive() || chara->GetHP() <= 0) continue;
 
+		//ヒット位置のY座標を計算
 		VECTOR cPos = chara->GetPos();
 		float hitY = start.y;
 		if (hitY < cPos.y)hitY = cPos.y;
 		if (hitY > cPos.y + chara->GetStatus().height)hitY = cPos.y + chara->GetStatus().height;
 		VECTOR approxBodyHitPos = VGet(cPos.x, hitY, cPos.z);
 
+		//ヘッドショット判定
 		float bodyRad = chara->GetStatus().width / 2.0f;
 		float headRad = bodyRad / 2.0f;
 		if (headRad < System::Collision::MIN_HEAD_RAD)headRad = System::Collision::MIN_HEAD_RAD;
@@ -117,6 +126,7 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 			continue;
 		}
 
+		//ボディヒット判定
 		VECTOR bodyBottom = VAdd(cPos, VGet(0.0f, bodyRad, 0.0f));
 		float neckHeight = chara->GetCurrentEyeHeight() - headRad;
 		if (neckHeight < bodyRad * System::Collision::MIN_NECK_HEIGHT_BODYRAD_MULT)neckHeight = bodyRad * System::Collision::MIN_NECK_HEIGHT_BODYRAD_MULT;
@@ -146,6 +156,7 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 	if (stageHandle != -1) {
 		MV1_COLL_RESULT_POLY wallHit = MV1CollCheck_Line(stageHandle, -1, pos, nextPos);
 
+		//ステージとの当たり判定
 		if (wallHit.HitFlag == TRUE) {
 			minDistance = VSize(VSub(wallHit.HitPosition, pos));
 			result.isWallHit = true;
@@ -157,12 +168,14 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 	for (auto* chara : characters) {
 		if (chara->GetID() == shooter || !chara->GetAlive() || chara->GetHP() <= 0) continue;
 
+		//ヒット位置のY座標を計算
 		VECTOR cPos = chara->GetPos();
 		float hitY = pos.y;
 		if (hitY < cPos.y)hitY = cPos.y;
 		if (hitY > cPos.y + chara->GetStatus().height)hitY = cPos.y + chara->GetStatus().height;
 		VECTOR approxBodyHitPos = VGet(cPos.x, hitY, cPos.z);
 
+		//ヘッドショット判定
 		float bodyRad = chara->GetStatus().width / 2.0f;
 		float headRad = bodyRad / 2.0f;
 		if (headRad < System::Collision::MIN_HEAD_RAD)headRad = System::Collision::MIN_HEAD_RAD;
@@ -187,6 +200,8 @@ HitInfo CollisionManager::CheckProjectile(VECTOR pos, VECTOR nextPos, float radi
 			}
 			continue;
 		}
+
+		//ボディヒット判定
 		VECTOR bodyBottom = VAdd(cPos, VGet(0.0f, bodyRad, 0.0f));
 		float neckHeight = chara->GetCurrentEyeHeight() - headRad;
 		if (neckHeight < bodyRad * System::Collision::MIN_NECK_HEIGHT_BODYRAD_MULT)neckHeight = bodyRad * System::Collision::MIN_NECK_HEIGHT_BODYRAD_MULT;
@@ -214,9 +229,12 @@ bool CollisionManager::ProcessExplosion(VECTOR hitPos, float radius, int damage,
 	for (auto* chara : characters) {
 		if (!chara->GetAlive() || chara->GetHP() <= 0) continue;
 
+		//フレンドリーファイアが無効なら同じチームのキャラは無視
 		if (!friendlyFire) {
 			if (chara->GetID() == shooter)continue;
 		}
+		
+		//距離に応じてダメージを減衰させる
 		float dist = VSize(VSub(chara->GetPos(), hitPos));
 		if (dist <= radius) {
 			hit = true;
@@ -233,10 +251,12 @@ bool CollisionManager::ProcessExplosion(VECTOR hitPos, float radius, int damage,
 			}
 			else {
 				toChara = VNorm(toChara);
+				//上方向に少し加算してノックバックの軌道を調整する
 				toChara.y += System::Collision::EXPLODE_UPWARD_BIAS;
 				toChara = VNorm(toChara);
 			}
 
+			//距離に応じてノックバックを減衰させる
 			float currentKnockback = knockbackPower * damageRate;
 
 			chara->Applyknockback(VScale(toChara, currentKnockback));

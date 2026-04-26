@@ -5,7 +5,7 @@ namespace Item {
 
     namespace Weapon {
         constexpr float SPREAD_RANDOM_PRECISION = 1000.0f;      //拡散のランダム計算の精度
-        constexpr float RAY_MAX_DISTANCE = 100.0f;              //弾道計算に使うレイの最大
+        constexpr float RAY_MAX_DISTANCE = 100.0f;              //弾道計算に使うレイの最大距離
         constexpr float RECOIL_RANDOM_PRECISION = 100.0f;       //リコイルのランダム計算の精度
         constexpr int SPREAD_RANDOM_RANGE = static_cast<int>(SPREAD_RANDOM_PRECISION * 2.0f);   //拡散計算の乱数幅
         constexpr float EQUIP_TIME = 0.15f;                     //武器の取り出しにかかる時間
@@ -14,8 +14,8 @@ namespace Item {
         constexpr float CROUCH_SPREAD_MULTIPLIER = 0.7f;        //しゃがみ時の拡散の軽減倍率
         constexpr int HEADSHOT_MULTIPLIER = 2;                  //ヘッドショット時のダメージ倍率
 
-        constexpr float SOUND_RADIUS_NORMAL = 20.0f;            //リロードや空撃ちの音
-        constexpr float SOUND_RADIUS_LOUD = 40.0f;              //射撃や爆発の音
+		constexpr float SOUND_RADIUS_NORMAL = 20.0f;            //リロードや空撃ちの音の聞こえる半径
+        constexpr float SOUND_RADIUS_LOUD = 40.0f;              //射撃や爆発の音の聞こえる半径
     }
 
     namespace Item {

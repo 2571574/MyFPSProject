@@ -1,11 +1,14 @@
 ﻿#pragma once
 #include "DxLib.h"
 #include <string>
+//チームID
 enum class TEAMID {
 	ID_FRIENDLY,
 	ID_ENEMY,
 };
 
+
+//敵の種類
 enum class ENEMYTYPE {
 	DUMMY,
 	MELEE,
@@ -15,6 +18,7 @@ enum class ENEMYTYPE {
 	MAX_TYPE
 };
 
+//ゲームモード
 enum class PlayMode {
 	MODE_TUTORIAL,
 	MODE_EASY,
@@ -23,6 +27,7 @@ enum class PlayMode {
 	MODE_MAX
 };
 
+//武器ID
 enum class WeaponID {
 	AR,
 	SR,
@@ -50,48 +55,49 @@ struct CharacterStatus { //エンティティの性能
 	int score;
 };
 
-
+//武器の見た目情報の構造体
 struct WeaponVisual {
-	std::string modelPath;
-	float scale;
-	VECTOR drawOffset;
-	VECTOR adsDrawOffset;
-	VECTOR drawMuzzleOffset;
-	VECTOR drawAdsMuzzleOffset;
-	std::string uiPath;
-	std::string fireSoundPath;
-	std::string reloadSoundPath;
-	std::string reloadEndSoundPath;
+	std::string modelPath;			//モデルのパス
+	float scale;					//モデルスケール
+	VECTOR drawOffset;				//描画オフセット
+	VECTOR adsDrawOffset;			//ADS時の描画オフセット
+	VECTOR drawMuzzleOffset;		//描画用の銃口のオフセット
+	VECTOR drawAdsMuzzleOffset;		//描画用のADS時の銃口のオフセット
+	std::string uiPath;				//HUD用アイコンパス
+	std::string fireSoundPath;		//発射音のパス
+	std::string reloadSoundPath;	//リロード開始音のパス
+	std::string reloadEndSoundPath;	//リロード完了音のパス
 };
 
 struct GunStatus {		 //武器の性能
 	WeaponID id;			//武器ID 
-	bool hitscan;		//ヒットスキャン
-	bool AOE;			//範囲攻撃武器
-	bool fullAuto;		//フルオート
-	bool isInfinite;	//弾薬無限
-	int damage;			 //ダメージ
-	float range;		 //射程
-	int magAmmo;		 //弾数
-	int bagAmmo;		 //予備弾数
-	float reloadTime;	 //リロード時間
-	float fireRate;		 //連射速度
-	float spread;		 //拡散率
-	float adsSpread;
-	float recoil;	     //反動
-	VECTOR muzzleOffset; //銃口のオフセット
-	VECTOR adsMuzzleOffset;	
-	float hasDampingRatio;		//持った時の移動速度減衰率
-	float adsDampingRatio;		//覗いた時の移動速度減衰率
-	float adsFov;		 //覗いた時の視野角
+	bool hitscan;			//ヒットスキャン
+	bool AOE;				//範囲攻撃武器
+	bool fullAuto;			//フルオート
+	bool isInfinite;		//弾薬無限
+	int damage;				//ダメージ
+	float range;			//射程
+	int magAmmo;			//弾数
+	int bagAmmo;			//予備弾数
+	float reloadTime;		//リロード時間
+	float fireRate;			//連射速度
+	float spread;			//拡散率
+	float adsSpread;		//ADS時の拡散率
+	float recoil;			//反動
+	VECTOR muzzleOffset;	//銃口のオフセット
+	VECTOR adsMuzzleOffset;	//ADS時の銃口のオフセット
+	float hasDampingRatio;	//持った時の移動速度減衰率
+	float adsDampingRatio;	//覗いた時の移動速度減衰率
+	float adsFov;			//覗いた時の視野角
 	float projectileSize;	//弾のサイズ
 	float projectileSpeed;	//弾速
-	int explodeArea; //AOE=trueの場合　爆発範囲
-	float knockbackP;
-	bool friendlyFire;
-	WeaponVisual visual;
+	int explodeArea;		//AOE=trueの場合　爆発範囲
+	float knockbackP;		//ノックバックの強さ
+	bool friendlyFire;		//フレンドリーファイア
+	WeaponVisual visual;	//見た目の情報
 };
 
+//ゲームバランス用の設定
 struct GameConfigData {
 	int maxEnemyOnMap = 15;
 	int maxLimitMelee = 6;

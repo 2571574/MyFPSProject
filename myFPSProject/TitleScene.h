@@ -46,14 +46,15 @@ private:
 	};
 
 	
-	float introTimer = 0.0f;
+	float introTimer = 0.0f;	//トップ画面のイントロタイマー
 	TitleState currentState;	//現在のステート
 	int selectNum;				//現在選んでいる行
 	int columnidx = 0;			//現在選んでいる列
 	bool isWaitingKey = false;	//入力待ち　キーバインド用
-	int titleLogoHandle = -1;
-	int titleBG = -1;
-	float BGscrollX = 0.0f;
+
+	int titleLogoHandle = -1;	//タイトルロゴのハンドル
+	int titleBG = -1;			//タイトル背景のハンドル
+	float BGscrollX = 0.0f;		//背景スクロール位置
 
 	// サイズ調整用のフォントハンドル
 	int fontMenuLarge = -1;  // メニュー項目用（大）
@@ -85,15 +86,10 @@ private:
 	/// <param name="direction">増減方向</param>
 	void ModifySetting(SettingItem item, int direction);
 
-	/// <summary>
-	/// 設定の描画処理　分割用
-	/// </summary>
 	void DrawSettings();
-
-	/// <summary>
-	/// キーバインドの描画処理　分割用
-	/// </summary>
 	void DrawKeyConfig();
+
+
 public:
 
 	TitleScene(SceneManager* manager);

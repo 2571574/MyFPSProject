@@ -4,7 +4,7 @@
 namespace Visual {
 
     namespace WeaponAnim {
-        constexpr float ANIM_EQUIP_START_SCALE = 0.5f;      //武器だしアニメーションの開始
+        constexpr float ANIM_EQUIP_START_SCALE = 0.5f;      //武器だしアニメーションの開始時のスケール
         constexpr float ANIM_EQUIP_OFFSET_Y = -0.6f;        //武器だしのYオフセット
         constexpr float ANIM_EQUIP_OFFSET_Z = -0.3f;        //武器だしのZオフセット
         constexpr float ANIM_EQUIP_ROT_X = Global::Math::MATH_PI_QUARTER;       //武器だしアニメーションのX回転量
@@ -14,8 +14,8 @@ namespace Visual {
         constexpr float ANIM_RELOAD_SMG_WINDUP_Y = -0.1f;   //ピストルリロードの振り上げオフセット
         constexpr float ANIM_RELOAD_SMG_SPINS = 6.0f;       //ピストルリロードの回転スピード
         constexpr float ANIM_RELOAD_SMG_PULLBACK_Z = -0.2f; //ピストルリロードのアクション時手元に引き寄せる
-        constexpr float ANIM_RELOAD_SMG_OVERSHOOT_Y = 0.1f; //
-        constexpr float ANIM_RELOAD_SMG_OVERSHOOT_ROT_X = -Global::Math::MATH_PI_EIGHTH;
+		constexpr float ANIM_RELOAD_SMG_OVERSHOOT_Y = 0.1f; //リロード完了時の振り下ろしのオーバーシュートの回転量
+		constexpr float ANIM_RELOAD_SMG_OVERSHOOT_ROT_X = -Global::Math::MATH_PI_EIGHTH;    //リロード完了時の振り下ろしのオーバーシュートの回転量
 
         constexpr float ANIM_RELOAD_LR_PHASE1 = 0.3f;       //ランチャーのリロードのフェーズ１に入る時間
         constexpr float ANIM_RELOAD_LR_PHASE2 = 0.7f;       //ランチャーのリロードのフェーズ２に入る時間
@@ -32,7 +32,7 @@ namespace Visual {
 
     namespace ItemUI {
         constexpr Global::ColorRGB COLOR_ITEM_RING = Global::Palette::AMBER;    //ドロップアイテムの目印の描画
-        constexpr int RING_BLEND_ALPHA = 150;       //リングの透明度
+        constexpr int RING_BLEND_ALPHA = 150;                   //リングの透明度
 
         constexpr float OUTER_RING_BOB_SPEED_MULT = 1.5f;       //リングの上下揺れの速度
         constexpr float OUTER_RING_BOB_AMP = 0.05f;             //リングの上下揺れの強さ
@@ -110,36 +110,36 @@ namespace Visual {
         constexpr float INDICATOR_ARC_ANGLE_OFFSET = Global::Math::PI_VALUE / 16.0f;    //警告のオフセット
         constexpr int INDICATOR_SEGMENTS = 16;      //警告の弧の分割数
         constexpr int INDICATOR_LINE_THICKNESS = 3; //警告線の太さ
-        constexpr int INDICATOR_ALPHA_MIN = 100;        //
-        constexpr int INDICATOR_ALPHA_RANGE = 155;
+		constexpr int INDICATOR_ALPHA_MIN = 100;        //警告インジケーターの最小透明度
+		constexpr int INDICATOR_ALPHA_RANGE = 155;      //警告インジケーターの透明度の変化量
 
         constexpr int PICKUP_ICON_SIZE = 100;       //拾うHUDのアイコンサイズ
         constexpr int PICKUP_BOX_WIDTH = 350;       //拾うHUDの枠の幅
         constexpr int PICKUP_BOX_HEIGHT = 150;      //拾うHUDの枠の高さ
 
         constexpr float FADE_DURATION = 0.3f;       //タイマーがスコアに切り替わるときのフェードの秒数
-        constexpr float DAMAGE_FLASH_DURITION = 1.0f;   //ダメージエフェクトの秒数
         constexpr float DAMAGE_FLASH_EASE_POWER = 4.0f; //ダメージエフェクトの強さ
         constexpr int DAMAGE_FLASH_ALPHA_MAX = 180;     //ダメージエフェクトの透明度
         constexpr float DAMAGE_FLASH_BASE_THICKNESS = 40.0f;    //ダメージエフェクトの基準太さ
         constexpr float DAMAGE_FLASH_OFFSET_MAX = 60.0f;        //ダメージエフェクトのオフセット
 
         
-        constexpr int TOP_TEXT_BUF_SIZE = 128;
+		constexpr int TOP_TEXT_BUF_SIZE = 128;      //画面上部のテキストのバッファサイズ
 
-        constexpr int PICKUP_ICON_TEXT_GAP = 20;
-        constexpr int PICKUP_PADDING_X = 25;
-        constexpr int PICKUP_PADDING_Y = 15;
-        constexpr int PICKUP_BOX_START_Y_OFFSET = 120;
-        constexpr int PICKUP_PANEL_ALPHA = 150;
-        constexpr int PICKUP_ICON_PANEL_ALPHA = 200;
-        constexpr int PICKUP_TEXT_Y_OFFSET_FROM_ICON_CENTER = -25;
-        constexpr int PICKUP_TEXT_Y_OFFSET_NO_ICON = 10;
-        constexpr int PICKUP_SUBTEXT_Y_OFFSET = 30;
-        constexpr float DAMAGE_FLASH_DURATION = 1.0f;
+        constexpr int PICKUP_ICON_TEXT_GAP = 20;    //拾うHUDのアイコンとテキストの余白
+        constexpr int PICKUP_PADDING_X = 25;        //拾うHUDのパディングX
+        constexpr int PICKUP_PADDING_Y = 15;        //拾うHUDのパディングY
+        constexpr int PICKUP_BOX_START_Y_OFFSET = 120; //拾うHUDのボックス開始Yオフセット
+        constexpr int PICKUP_PANEL_ALPHA = 150;     //拾うHUDのパネルの透明度
+        constexpr int PICKUP_ICON_PANEL_ALPHA = 200; //拾うHUDのアイコンパネルの透明度
+        constexpr int PICKUP_TEXT_Y_OFFSET_FROM_ICON_CENTER = -25; //アイコン中心からのテキストYオフセット
+        constexpr int PICKUP_TEXT_Y_OFFSET_NO_ICON = 10; //アイコンなしの場合のテキストYオフセット
+        constexpr int PICKUP_SUBTEXT_Y_OFFSET = 30; //サブテキストのYオフセット
+        constexpr float DAMAGE_FLASH_DURATION = 1.0f; //ダメージエフェクトの持続時間
     }
 
     namespace Effect {
+        //エフェクトに使う色
         constexpr Global::ColorRGB COLOR_EFFECT_MELEE = Global::Palette::YELLOW;
         constexpr Global::ColorRGB COLOR_EFFECT_RIFLE = Global::Palette::BLUE;
         constexpr Global::ColorRGB COLOR_EFFECT_SNIPER = Global::Palette::GREEN;
@@ -151,81 +151,81 @@ namespace Visual {
         constexpr Global::ColorRGB COLOR_TRAIL_ENEMY = Global::Palette::RED;
         constexpr Global::ColorRGB COLOR_TRAIL_LAUNCHER = Global::Palette::ORANGE_BRIGHT;
         constexpr Global::ColorRGB COLOR_EXPLOSION = Global::Palette::ORANGE_BRIGHT;
-
         constexpr Global::ColorRGB COLOR_EFFECT_WHITE = { 255, 255, 255 };
-        constexpr float DEATH_VEL_Y_RANDOM_MULT = 0.3f;
-        constexpr float DEATH_VEL_Y_BASE = 0.2f;
-        constexpr float DEATH_LIFE_BASE = 1.0f;
-        constexpr float DEATH_SIZE_BASE = 0.05f;
-        constexpr int DEATH_SIZE_RANDOM_MULT = 10;
-        constexpr float MUZZLE_FLASH_LIFE = 0.05f;
-        constexpr float HIT_SPEED_RANDOM_MULT = 0.25f;
-        constexpr float HIT_SPEED_BASE = 0.1f;
-        constexpr float HIT_LIFE_BASE = 0.4f;
-        constexpr int HIT_LIFE_RANDOM = 40;
-        constexpr float HIT_SIZE_BASE = 0.04f;
-        constexpr int HIT_SIZE_RANDOM = 3;
-        constexpr float EXPLOSION_LIFE = 0.6f;
-        constexpr float EXPLOSION_SOUND_RADIUS = 50.0f;
-        constexpr float TRAIL_HITSCAN_LIFE = 0.25f;
-        constexpr float TRAIL_PROJECTILE_LIFE = 0.12f;
 
-        constexpr float MUZZLE_FLASH_BASE_SIZE = 0.5f;
-        constexpr float MUZZLE_FLASH_TOP_SCALE = 4.0f;
-        constexpr float MUZZLE_FLASH_BOTTOM_SCALE = 0.5f;
-        constexpr float MUZZLE_FLASH_SPHERE_SCALE = 0.6f;
-        constexpr int BASE_PARTICLE_COUNT_DEATH_MIN = 15;
-        constexpr int BASE_PARTICLE_COUNT_DEATH_RAND = 5;
-        constexpr int HIT_PARTICLE_COUNT_ENEMY = 12;
-        constexpr int HIT_PARTICLE_COUNT_WALL = 6;
-        constexpr int SPAWN_PARTICLE_COUNT = 4;
-        constexpr int EXPLOSION_DEBRIS_COUNT_MIN = 15;
-        constexpr int EXPLOSION_DEBRIS_COUNT_RAND = 10;
+        constexpr float DEATH_VEL_Y_RANDOM_MULT = 0.3f;         // 死亡飛散パーティクルのY軸初速のランダム倍率
+        constexpr float DEATH_VEL_Y_BASE = 0.2f;                // 死亡飛散パーティクルのY軸初速の基準値
+        constexpr float DEATH_LIFE_BASE = 1.0f;                 // 死亡飛散パーティクルの基本寿命
+        constexpr float DEATH_SIZE_BASE = 0.05f;                // 死亡飛散パーティクルの基本サイズ
+        constexpr int DEATH_SIZE_RANDOM_MULT = 10;              // 死亡飛散パーティクルのランダムサイズ計算用倍率
 
-        constexpr float PARTICLE_SPEED_BASE = 0.1f;
-        constexpr float PARTICLE_SPEED_RANDOM_MULT = 0.4f;
+        constexpr float MUZZLE_FLASH_LIFE = 0.05f;              // マズルフラッシュの表示時間
+        constexpr float MUZZLE_FLASH_BASE_SIZE = 0.5f;          // マズルフラッシュの基本サイズ
+        constexpr float MUZZLE_FLASH_TOP_SCALE = 4.0f;          // マズルフラッシュの先端へのスケール倍率
+        constexpr float MUZZLE_FLASH_BOTTOM_SCALE = 0.5f;       // マズルフラッシュの根元へのスケール倍率
+        constexpr float MUZZLE_FLASH_SPHERE_SCALE = 0.6f;       // マズルフラッシュ中心部の球体のスケール倍率
 
-        constexpr float EFFECT_GRAVITY = 0.025f;
-        constexpr float EFFECT_FLOOR_Y_LIMIT = Global::World::Y_MIN;
+        constexpr float HIT_SPEED_RANDOM_MULT = 0.25f;          // 着弾パーティクルの飛散速度のランダム乗数
+        constexpr float HIT_SPEED_BASE = 0.1f;                  // 着弾パーティクルの基本飛散速度
+        constexpr float HIT_LIFE_BASE = 0.4f;                   // 着弾パーティクルの基本寿命（秒）
+        constexpr int HIT_LIFE_RANDOM = 40;                     // 着弾パーティクルのランダム寿命の計算用係数
+        constexpr float HIT_SIZE_BASE = 0.04f;                  // 着弾パーティクルの基本サイズ
+        constexpr int HIT_SIZE_RANDOM = 3;                      // 着弾パーティクルのランダムサイズ計算用係数
 
-        constexpr float PARTICLE_BOUNCE_COEFFICIENT = -0.5f;
-        constexpr float PARTICLE_FRICTION_GROUND_XZ = 0.7f;
-        constexpr float PARTICLE_FRICTION_AIR_XZ = 0.98f;
-        constexpr float PARTICLE_ROT_DECAY = 0.8f;
+        constexpr float EXPLOSION_LIFE = 0.6f;                  // 爆発エフェクト全体の表示時間
+        constexpr float EXPLOSION_SOUND_RADIUS = 50.0f;         // 爆発音が聞こえる範囲
+        constexpr float EXPLOSION_SPEED_BASE = 0.2f;            // 爆発による破片の基本飛散速度
+        constexpr float EXPLOSION_SPEED_RAND_MULT = 0.8f;       // 爆発による破片の飛散速度のランダム乗数
+        constexpr float EXPLOSION_ROT_SPEED_BASE = 0.1f;        // 爆発破片の基本回転速度
+        constexpr float EXPLOSION_ROT_SPEED_RAND_MULT = 0.5f;   // 爆発破片の回転速度のランダム乗数
+        constexpr float EXPLOSION_SIZE_BASE = 0.04f;            // 爆発破片の基本サイズ
+        constexpr int EXPLOSION_SIZE_RAND_RANGE = 6;            // 爆発破片のランダムサイズ変動幅
+        constexpr int EXPLOSION_CORE_ALPHA_MAX = 150;           // 爆発中心の最大透明度
+        constexpr float EXPLOSION_CORE_POW = 3.0f;              // 爆発コアの拡大スピードを調整するイージングの倍率
 
-        constexpr int CONE_SEGMENTS_LOW = 3;
-        constexpr int SPHERE_SEGMENTS_LOW = 8;
-        constexpr int CAPSULE_SEGMENTS_TRAIL = 6;
-        constexpr int CAPSULE_SEGMENTS_HITSCAN = 8;
+        constexpr float TRAIL_HITSCAN_LIFE = 0.25f;             // ヒットスキャン武器の軌跡の表示時間
+        constexpr float TRAIL_PROJECTILE_LIFE = 0.12f;          // プロジェクタイル弾の軌跡の表示時間
+        constexpr float TRAIL_INNER_RAD_MULT = 0.3f;            // 軌跡の中心芯部分の半径倍率
 
-        constexpr int ROT_AXIS_RAND_RANGE = 100;
-        constexpr float ROT_AXIS_RAND_OFFSET = 50.0f;
-        constexpr float STOP_VEL_Y_THRESHOLD = 0.05f;
+        constexpr int BASE_PARTICLE_COUNT_DEATH_MIN = 15;       // 死亡時パーティクルの最低生成数
+        constexpr int BASE_PARTICLE_COUNT_DEATH_RAND = 5;       // 死亡時パーティクルのランダム追加生成数
+        constexpr int HIT_PARTICLE_COUNT_ENEMY = 12;            // 敵に着弾した際のパーティクル生成数
+        constexpr int HIT_PARTICLE_COUNT_WALL = 6;              // 壁や床に着弾した際のパーティクル生成数
+        constexpr int SPAWN_PARTICLE_COUNT = 4;                 // 敵スポーン時に1フレームあたり生成されるパーティクル数
+        constexpr int EXPLOSION_DEBRIS_COUNT_MIN = 15;          // 爆発時の破片の最低生成数
+        constexpr int EXPLOSION_DEBRIS_COUNT_RAND = 10;         // 爆発時の破片のランダム追加生成数
 
-        constexpr float SPAWN_SCAN_Y_MULT = 2.0f;
-        constexpr float SPAWN_PROGRESS_HALF = 0.5f;
-        constexpr int SPAWN_RAD_RAND_RANGE = 10;
-        constexpr int SPAWN_POS_RAND_RANGE = 20;
-        constexpr float SPAWN_POS_RAND_OFFSET = 10.0f;
-        constexpr float SPAWN_VEL_XZ_DIVISOR = 500.0f;
-        constexpr float SPAWN_VEL_Y_DIVISOR = 200.0f;
-        constexpr float SPAWN_VEL_Y_OFFSET = 5.0f;
-        constexpr float SPAWN_LIFE_BASE = 0.2f;
-        constexpr int SPAWN_LIFE_RAND_RANGE = 20;
-        constexpr float SPAWN_SIZE_BASE = 0.03f;
-        constexpr int SPAWN_SIZE_RAND_RANGE = 3;
-        constexpr float SPAWN_VEL_DECAY = 0.9f;
+        constexpr float PARTICLE_SPEED_BASE = 0.1f;             // パーティクルの基本速度
+        constexpr float PARTICLE_SPEED_RANDOM_MULT = 0.4f;      // パーティクルの速度のランダム乗数
+        constexpr float EFFECT_GRAVITY = 0.025f;                // エフェクトに掛かる重力の強さ
+        constexpr float EFFECT_FLOOR_Y_LIMIT = Global::World::Y_MIN; // エフェクトが消滅・反射する床のY座標の限界値
+        constexpr float PARTICLE_BOUNCE_COEFFICIENT = -0.5f;    // パーティクルが床でバウンドした時の反発係数
+        constexpr float PARTICLE_FRICTION_GROUND_XZ = 0.7f;     // パーティクルが床を滑る際のXZ軸の摩擦係数
+        constexpr float PARTICLE_FRICTION_AIR_XZ = 0.98f;       // パーティクルが空中にある際のXZ軸の空気抵抗
+        constexpr float PARTICLE_ROT_DECAY = 0.8f;              // パーティクルの回転の減衰率
 
-        constexpr float EXPLOSION_SPEED_BASE = 0.2f;
-        constexpr float EXPLOSION_SPEED_RAND_MULT = 0.8f;
-        constexpr float EXPLOSION_ROT_SPEED_BASE = 0.1f;
-        constexpr float EXPLOSION_ROT_SPEED_RAND_MULT = 0.5f;
-        constexpr float EXPLOSION_SIZE_BASE = 0.04f;
-        constexpr int EXPLOSION_SIZE_RAND_RANGE = 6;
-        constexpr int EXPLOSION_CORE_ALPHA_MAX = 150;
-        constexpr float EXPLOSION_CORE_POW = 3.0f;
+        constexpr int CONE_SEGMENTS_LOW = 3;                    // 破片描画時の低ポリゴン分割数
+        constexpr int SPHERE_SEGMENTS_LOW = 8;                  // フラッシュ等描画時の低ポリゴン分割数
+        constexpr int CAPSULE_SEGMENTS_TRAIL = 6;               // 弾の軌跡描画時の分割数
+        constexpr int CAPSULE_SEGMENTS_HITSCAN = 8;             // ヒットスキャンの軌跡描画時の分割数
 
-        constexpr float TRAIL_INNER_RAD_MULT = 0.3f;
+        constexpr int ROT_AXIS_RAND_RANGE = 100;                // パーティクル等の回転軸を計算する際の乱数幅
+        constexpr float ROT_AXIS_RAND_OFFSET = 50.0f;           // 回転軸計算時の乱数オフセット
+        constexpr float STOP_VEL_Y_THRESHOLD = 0.05f;           // バウンドを停止させるY軸の最小速度閾値
+
+        constexpr float SPAWN_SCAN_Y_MULT = 2.0f;               // スポーンエフェクトのY軸スキャン位置を動かす倍率
+        constexpr float SPAWN_PROGRESS_HALF = 0.5f;             // スポーン演出の折り返し地点
+        constexpr int SPAWN_RAD_RAND_RANGE = 10;                // スポーンパーティクル生成位置の半径の乱数幅
+        constexpr int SPAWN_POS_RAND_RANGE = 20;                // スポーンパーティクル生成位置の座標の乱数幅
+        constexpr float SPAWN_POS_RAND_OFFSET = 10.0f;          // スポーンパーティクル生成位置のマイナス方向オフセット
+        constexpr float SPAWN_VEL_XZ_DIVISOR = 500.0f;          // スポーンパーティクルのXZ軸初速を計算する際の除数
+        constexpr float SPAWN_VEL_Y_DIVISOR = 200.0f;           // スポーンパーティクルのY軸初速を計算する際の除数
+        constexpr float SPAWN_VEL_Y_OFFSET = 5.0f;              // スポーンパーティクルのY軸初速のマイナス方向オフセット
+        constexpr float SPAWN_LIFE_BASE = 0.2f;                 // スポーンパーティクルの基本寿命
+        constexpr int SPAWN_LIFE_RAND_RANGE = 20;               // スポーンパーティクルのランダム寿命変動幅
+        constexpr float SPAWN_SIZE_BASE = 0.03f;                // スポーンパーティクルの基本サイズ
+        constexpr int SPAWN_SIZE_RAND_RANGE = 3;                // スポーンパーティクルのランダムサイズ変動幅
+        constexpr float SPAWN_VEL_DECAY = 0.9f;                 // スポーンパーティクルの速度減衰率
     }
 
 }

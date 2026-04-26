@@ -34,13 +34,13 @@ private:
 	
 	bool isDeadSequence = false;	//死亡アニメーション中
 	float deathTimer = 0.0f;		//死亡アニメーションタイマー
+
+	bool isSceneChange = false;		//シーン遷移中
+	bool reqTransition = false;		//死亡遷移要求フラグ
+
 	int monochromeHandle = -1;		//モノクロ画像ハンドル
-
-	bool isSceneChange = false;
-	bool reqTransition = false;
-
-	int fontLarge = -1;
-	int fontMedium = -1;
+	int fontLarge = -1;				//ポーズタイトル
+	int fontMedium = -1;			//ポーズ選択肢
 
 	void PauseUpdate();
 	void PauseDraw();

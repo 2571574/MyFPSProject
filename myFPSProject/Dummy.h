@@ -13,9 +13,9 @@ struct DamageText {
 class Dummy:public Enemy
 {
 private:
-	bool damageText;
+	bool damageText;		//ダメージテキスト表示フラグ
 	std::vector<DamageText> damageTexts;	//ダメージテキストの配列
-	int fontDamage = -1;
+	int fontDamage = -1;	//ダメージテキストのフォントハンドル
 
 	float accumulateTimer;					//ダメージの累積を許す時間のタイマー
 public:

@@ -1,14 +1,13 @@
 ﻿#pragma once
-#pragma once
 
 //共通定数
 namespace Global {
 
     namespace Math {
-        constexpr float FPS_BASE = 60.0f;          //フレームレート
+        constexpr float FPS_BASE = 60.0f;          //基準のフレームレート
 
         constexpr float PI_VALUE = 3.14159265358979323846f;     //円周率
-        constexpr float DEG_TO_RAD = PI_VALUE / 180.0f;         //ラジアンへの変換
+        constexpr float DEG_TO_RAD = PI_VALUE / 180.0f;         //度からラジアンへの変換
 
         constexpr float MATH_PI_HALF = PI_VALUE / 2.0f;     // 90度
         constexpr float MATH_PI_QUARTER = PI_VALUE / 4.0f;     // 45度

@@ -26,9 +26,11 @@ void DeathEffect::Update() {
 		return;
 	}
 
+	//重力を適用
 	velocity.y -= Visual::Effect::EFFECT_GRAVITY * dt60;
 	position = VAdd(position, VScale(velocity, dt60));
 
+	//床でバウンドさせる
 	if (position.y - size < floorY) {
 		position.y = floorY + size;
 		velocity.y *= Visual::Effect::PARTICLE_BOUNCE_COEFFICIENT;
@@ -51,12 +53,15 @@ void DeathEffect::Update() {
 }
 
 void DeathEffect::Draw() {
+	//寿命に応じてサイズを減衰させる
 	float scale = lifeTime / maxLifeTime;
 	if (scale < 0.0f) scale = 0.0f;
 
+	//アルファ値を2乗で減衰させる
 	int alpha = static_cast<int>(255 * (scale * scale));
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 
+	//回転行列を作成して、円錐の上下のオフセットを計算
 	MATRIX rotMat = MGetRotAxis(rotAxis, angle);
 	VECTOR topOffset = VTransform(VGet(0.0f, size, 0.0f), rotMat);
 	VECTOR bottomOffset = VTransform(VGet(0.0f, -size, 0.0f), rotMat);
@@ -91,10 +96,12 @@ void MuzzleFlashEffect::Draw() {
 	int alpha = static_cast<int>(255 * scale);
 	SetDrawBlendMode(DX_BLENDMODE_ADD, alpha);
 
+	//銃口に沿ってフラッシュの形状を構築
 	VECTOR top = VAdd(position, VScale(direction, size * Visual::Effect::MUZZLE_FLASH_TOP_SCALE * scale));
 	VECTOR bottom = VAdd(position, VScale(direction, -size * Visual::Effect::MUZZLE_FLASH_BOTTOM_SCALE));
 	DrawCone3D(top, bottom, size * scale, Visual::Effect::CONE_SEGMENTS_LOW, color, color, TRUE);
 
+	//フラッシュの中心に球体を描画
 	DrawSphere3D(position, size * Visual::Effect::MUZZLE_FLASH_SPHERE_SCALE * scale, Visual::Effect::SPHERE_SEGMENTS_LOW, GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b), GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b), TRUE);
 
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
@@ -118,9 +125,11 @@ void HitEffect::Update() {
 		return;
 	}
 
+	//重力を適用
 	velocity.y -= Visual::Effect::EFFECT_GRAVITY * dt60;
 	position = VAdd(position, VScale(velocity, dt60));
 
+	//床でバウンドさせる
 	if (position.y - size < floorY) {
 		position.y = floorY + size;
 		velocity.y *= Visual::Effect::PARTICLE_BOUNCE_COEFFICIENT;
@@ -165,6 +174,7 @@ void SpawnEffect::Update() {
 	float dt = Time::GetIns().GetDelta();
 	float dt60 = dt * Global::Math::FPS_BASE;
 
+	//ライフタイムが切れた時点でエフェクトを破棄
 	lifeTime -= dt;
 	if (lifeTime < 0.0f && particles.empty()) {
 		alive = false;
@@ -172,9 +182,11 @@ void SpawnEffect::Update() {
 	}
 
 	if (lifeTime >= 0.0f) {
+		//生成フェーズの進行度
 		float progress = 1.0f - (lifeTime / maxLifeTime);
 		float scanY = 0.0f;
-
+	
+		//下→上→下のスキャン
 		if (progress < Visual::Effect::SPAWN_PROGRESS_HALF) {
 			scanY = (progress * Visual::Effect::SPAWN_SCAN_Y_MULT) * targetHeight;
 		}
@@ -184,6 +196,7 @@ void SpawnEffect::Update() {
 
 		VECTOR center = VAdd(position, VGet(0.0f, scanY, 0.0f));
 
+		//スキャン位置を中心に、ランダムにパーティクルを生成
 		for (int i = 0; i < Visual::Effect::SPAWN_PARTICLE_COUNT; i++) {
 			float angle = (GetRand(100) / 100.0f) * DX_PI_F * 2.0f;
 			float dist = targetRadius + (GetRand(Visual::Effect::SPAWN_RAD_RAND_RANGE) / 100.0f);
@@ -239,6 +252,7 @@ ExplosionEffect::ExplosionEffect(VECTOR pos, float radius, int c, float life)
 	Debris d;
 	d.pos = pos;
 	int debrisCount = Visual::Effect::EXPLOSION_DEBRIS_COUNT_MIN + GetRand(Visual::Effect::EXPLOSION_DEBRIS_COUNT_RAND);
+	//放射状に破片を生成
 	for (int i = 0; i < debrisCount; ++i) {
 		float theta = (GetRand(100) / 100.0f) * DX_PI_F * 2.0f;
 		float phi = acosf(1.0f - 2.0f * (GetRand(100) / 100.0f));
@@ -268,6 +282,7 @@ void ExplosionEffect::Update() {
 		return;
 	}
 
+	//破片の物理挙動を更新
 	for (auto& d : debrisList) {
 		d.vel.y -= Visual::Effect::EFFECT_GRAVITY * dt60;
 		d.pos = VAdd(d.pos, VScale(d.vel, dt60));
@@ -291,6 +306,7 @@ void ExplosionEffect::Draw() {
 	float scale = lifeTime / maxLifeTime;
 	if (scale < 0.0f)scale = 0.0f;
 
+	//爆心の描画
 	float coreProgress = 1.0f - scale;
 	float coreScale = 1.0f - std::pow(1.0f - coreProgress, Visual::Effect::EXPLOSION_CORE_POW);
 	float currentRadius = maxRadius * coreScale;
@@ -299,6 +315,7 @@ void ExplosionEffect::Draw() {
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, coreAlpha);
 	DrawSphere3D(position, currentRadius, System::Window::CIRCLE_DIVNUM, color, color, TRUE);
 
+	//破片の描画
 	int debrisAlpha = static_cast<int>(255 * (scale * scale));
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, debrisAlpha);
 
@@ -336,6 +353,7 @@ void HitScanTrail::Draw() {
 	float scale = lifeTime / maxLifeTime;
 	if (scale < 0.0f)scale = 0.0f;
 
+	// 時間経過とともにトレイルの始点を終点側へ移動させ短くしていく
 	float easeScale = scale * scale;
 	VECTOR currentStart = VAdd(endPos, VScale(VSub(startPos, endPos), scale));
 	float currentRad = initialRad * scale;
@@ -374,6 +392,7 @@ void ProjectileTrailEffect::Draw() {
 
 	int alpha = static_cast<int>(255 * scale);
 
+	//トレイルの描画
 	SetWriteZBuffer3D(FALSE);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 

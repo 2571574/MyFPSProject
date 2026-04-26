@@ -8,6 +8,7 @@
 
 class Player;
 
+//アイテムスポナーの設置情報
 struct SpawnerSetup {
 	VECTOR pos;
 	WeaponID weaponId;
@@ -28,11 +29,11 @@ class ItemManager
 {
 private:
 	std::vector < std::unique_ptr<WeaponItem>> droppedItem;	//ドロップアイテム
-	std::vector <Spawner>spawners;		//スポナー
+	std::vector <Spawner>spawners;			//スポナー
 	WeaponItem* currentNearItem = nullptr;	//最短のアイテム
 
-	int stageHandle;
-	VECTOR camPos;
+	int stageHandle;	//ステージのモデルハンドル
+	VECTOR camPos;		//カメラの座標
 
 	ItemManager() = default;
 

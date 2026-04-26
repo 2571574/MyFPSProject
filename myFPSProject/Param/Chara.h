@@ -6,7 +6,7 @@ namespace Chara {
 
     namespace Base {
         constexpr float CHARA_HEIGHT = 2.0f;            //キャラのデフォルト身長
-        constexpr float CHARA_RADIUS = 0.5f;            //キャラのデフォルト幅
+        constexpr float CHARA_RADIUS = 0.5f;            //キャラのデフォルト半径
 
         constexpr float GRAVITY = -0.008f;              //重力
         constexpr float GROUND_KB_FRICTION = 0.8f;      //ノックバック時の地上摩擦
@@ -27,7 +27,7 @@ namespace Chara {
 
         constexpr float MOVEMENT_MIN = 0.01f;           //移動とみなす最小速度
 
-        constexpr float FOOTSTEP_SOUND_RADIUS = 40.0f;          //足音の聞こえる半径
+        constexpr float FOOTSTEP_SOUND_RADIUS = 40.0f;  //足音の聞こえる半径
     }
 
     //プレイヤーの定数
@@ -68,7 +68,7 @@ namespace Chara {
 
     namespace EnemyCommon {
         constexpr int PATH_UPDATE_RANDOM = 50;                  //更新までのミリ秒数の最大
-        constexpr float PATH_NODE_REACHED_DIST = 1.0f;          //つながるノードの最大距離
+		constexpr float PATH_NODE_REACHED_DIST = 1.0f;          //次のノードに到達したとみなす距離
 
         constexpr float PATH_SAFETY_RAY_HEIGHT = 1.0f;          //ノードの床チェックのレイの高さ
         constexpr float PATH_SAFETY_NORMAL_MIN = 0.6f;          //床チェックの法線角度の下限
@@ -83,7 +83,7 @@ namespace Chara {
         constexpr float LEAN_FACTOR = 1.5f;                     //速度に応じた傾きの具合
         constexpr float SPAWN_PROCESS_TIME = 1.5f;              //出現直後の行動しない無敵時間
 
-        constexpr float HIT_FLASH_DURATION = 0.1f;          //ヒットエフェクトの時間
+        constexpr float HIT_FLASH_DURATION = 0.1f;              //ヒットエフェクトの時間
     }
 
     namespace EnemyManager {

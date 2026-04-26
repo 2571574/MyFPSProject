@@ -20,34 +20,36 @@ class Player : public Character
 {
 private:
 	VECTOR forwardVec, rightVec;		//プレイヤーの方向から取った前ベクトル、右ベクトル
-	std::vector<std::unique_ptr<Weapon>> slot;		//現在持っている武器	
-	int currentWeaponIndex;
-	int maxWeaponSlot;
 	float fov;			//現在の視野角
 	bool isAds;			//ADSしているか
 	float slidingCT;	//スライディングのクールタイム
 	bool running;		//走っているか
 	bool headBob;		//歩行時のカメラの揺れをonにするか
 	float bobbingTimer; //カメラの揺れのタイマー
-	Camera* cam;		//カメラのポインタ
 	std::unique_ptr<HUD> hud;	//HUD
 
-	WeaponID lastHit = WeaponID::UNKNOWN;
-	int Shot = 0;
-	int totalHit = 0;
-	int totalHeadHit = 0;
+	std::vector<std::unique_ptr<Weapon>> slot;		//現在持っている武器	
+	int currentWeaponIndex;		//現在所持している武器のスロット番号
+	int maxWeaponSlot;			//最大武器スロット数
+
+	WeaponID lastHit = WeaponID::UNKNOWN;	//最後の被弾武器
+	int Shot = 0;			//射撃回数
+	int totalHit = 0;		//命中回数
+	int totalHeadHit = 0;	//ヘッドショット回数
 
 	int stageHandle;	//ステージのモデルハンドル
-	std::vector<TargetInfo> targetInfo;
 
-	PlayMode currentMode;
+	std::vector<TargetInfo> targetInfo;	//インジケーター用ターゲット情報
 
-	float lastCamYaw;
-	float lastCamPitch;
-	float currentSwayX;
-	float currentSwayY;
+	PlayMode currentMode;	//現在の難易度
 
-	float moveDistance;
+	Camera* cam;		//カメラのポインタ
+	float lastCamYaw;	//前回のカメラの水平角
+	float lastCamPitch;	//前回のカメラの垂直角
+	float currentSwayX;	//現在の武器スウェイX
+	float currentSwayY;	//現在の武器スウェイY
+
+	float moveDistance;//移動距離カウント
 public:
 	/// <summary>
 	///	playerのコンストラクタ 座標にplayerを生成
@@ -77,8 +79,17 @@ public:
 	/// <param name="p">縦方向の反動量</param>
 	void AddRecoil(float y, float p)override;
 
-
+	/// <summary>
+	/// 武器を切り替える
+	/// </summary>
+	/// <param name="next">切替先の番号</param>
 	void SwitchWeapon(int next);
+
+	/// <summary>
+	/// 武器を追加する
+	/// </summary>
+	/// <param name="newWeapon">拾う武器</param>
+	/// <returns>取得処理が成功したらtrue</returns>
 	bool AddWeapon(std::unique_ptr<Weapon>& newWeapon);
 
 	void ShotRecord()override { Shot++; }
@@ -99,6 +110,9 @@ public:
 		}
 	}
 
+	/// <summary>
+	/// カメラの角度と武器スウェイの状態を同期させる
+	/// </summary>
 	void SyncCamAngle() {
 		if (cam) {
 			lastCamYaw = cam->GetYaw();
@@ -107,6 +121,10 @@ public:
 			currentSwayY = 0.0f;
 		}
 	}
+
+	/// <summary>
+	/// 移動距離に基づき足音を鳴らす
+	/// </summary>
 	void UpdateFootstep();
 
 	void SetStageHandle(int handle) { stageHandle = handle; }
@@ -116,19 +134,12 @@ public:
 		return slot[currentWeaponIndex].get();
 	}
 	int GetWeaponIndex()const { return currentWeaponIndex; }
-
 	PlayMode GetCurrentMode() const { return currentMode; }
 	void AddTargeted(VECTOR pos, float progress) { targetInfo.push_back({ pos, progress }); }
 	const std::vector<TargetInfo>& GetTargeted()const { return targetInfo; }
 	void ClearTargeted() { targetInfo.clear();}
-
-	/// <summary>
-	/// 現在のカメラの注視方向（視線ベクトル）を取得
-	/// </summary>
-	/// <returns>カメラの注視方向を返す</returns>
 	VECTOR GetCamDirection()const;
 	Camera* GetCam()const { return cam; }
-
 	int GetShots()const { return Shot; }
 	int GetHits()const { return totalHit; }
 	int GetHeadShot()const { return totalHeadHit; }

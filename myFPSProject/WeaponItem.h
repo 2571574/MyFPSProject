@@ -12,7 +12,7 @@ private:
 	VECTOR position;	//座標
 	std::unique_ptr<Weapon> droppedWeapon;	//アイテム情報
 	float bobbingTimer;	//縦揺れのタイマー
-	bool alive;		//生存タグ
+	bool alive;			//生存タグ
 
 	int fontItemAmmo = -1;	//残弾数のフォント
 	int fontItemName = -1;	//武器名のフォント

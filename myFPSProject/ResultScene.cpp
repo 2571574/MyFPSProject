@@ -50,12 +50,13 @@ void ResultScene::Draw() {
 
 	::DrawFormatStringToHandle(System::Window::CENTER_X + Scene::Result::RESULT_SCORE_OFFSET_X, Scene::Result::RESULT_SCORE_Y, yellow, fontLarge, "Score : %d", result.currentScore);
 
-
+	//死因
 	::DrawStringToHandle(Scene::Result::RESULT_COL_LEFT_X, Scene::Result::RESULT_ROW_TOP_Y, "- 死因 -", gray, fontMedium);
 	const char* causeStr = TextManager::GetIns().GetCauseName(result.causeOfDeath);
 	::DrawFormatStringToHandle(Scene::Result::RESULT_COL_LEFT_X + Scene::Result::RESULT_ITEM_INDENT_X, Scene::Result::RESULT_ROW_TOP_Y + Scene::Result::RESULT_LINE_HEIGHT, red, fontMedium, "%s", causeStr);
 
 
+	//射撃精度
 	::DrawStringToHandle(Scene::Result::RESULT_COL_RIGHT_X, Scene::Result::RESULT_ROW_TOP_Y, "- 射撃精度 -", gray, fontMedium);
 	int shot = result.Shot;
 	int hit = result.totalHit;
@@ -66,7 +67,7 @@ void ResultScene::Draw() {
 	::DrawFormatStringToHandle(Scene::Result::RESULT_COL_RIGHT_X + Scene::Result::RESULT_ITEM_INDENT_X, Scene::Result::RESULT_ROW_TOP_Y + Scene::Result::RESULT_LINE_HEIGHT, white, fontMedium, "ヒット率 : %.1f%%", accuracy);
 	::DrawFormatStringToHandle(Scene::Result::RESULT_COL_RIGHT_X + Scene::Result::RESULT_ITEM_INDENT_X, Scene::Result::RESULT_ROW_TOP_Y + Scene::Result::RESULT_LINE_HEIGHT * 2, white, fontMedium, "ヘッドショット率 : %.1f%%", hsAccuracy);
 
-
+	//キル数
 	::DrawStringToHandle(Scene::Result::RESULT_COL_LEFT_X, Scene::Result::RESULT_ROW_BOTTOM_Y, "- キル数 -", gray, fontMedium);
 	int killMelee = EnemyManager::GetIns().GetKillCount(ENEMYTYPE::MELEE);
 	int killRifle = EnemyManager::GetIns().GetKillCount(ENEMYTYPE::RIFLE);
@@ -78,7 +79,7 @@ void ResultScene::Draw() {
 	::DrawFormatStringToHandle(Scene::Result::RESULT_COL_LEFT_X + Scene::Result::RESULT_ITEM_INDENT_X, Scene::Result::RESULT_ROW_BOTTOM_Y + Scene::Result::RESULT_LINE_HEIGHT * 3, white, fontMedium, "スナイパー : %d", killSniper);
 	::DrawFormatStringToHandle(Scene::Result::RESULT_COL_LEFT_X + Scene::Result::RESULT_ITEM_INDENT_X, Scene::Result::RESULT_ROW_BOTTOM_Y + Scene::Result::RESULT_LINE_HEIGHT * 4, white, fontMedium, "爆弾 : %d", killRoll);
 
-
+	//モード別ランキング
 	const char* modeString = "";
 	switch (manager->GetcurrentMode()) {
 	case PlayMode::MODE_EASY:modeString = "EASY"; break;

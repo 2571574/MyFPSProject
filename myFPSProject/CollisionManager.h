@@ -23,7 +23,7 @@ class CollisionManager
 {
 private:
 	std::vector<Character*> characters;		//現在生存しているキャラのリスト
-	int stageHandle = -1;
+	int stageHandle = -1;		//ステージのモデルハンドル
 
 	CollisionManager() = default;
 

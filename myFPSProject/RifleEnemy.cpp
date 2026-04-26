@@ -42,6 +42,7 @@ void RifleEnemy::Update() {
 	VECTOR dir = VNorm(VSub(moveTarget, position));
 	dir.y = 0.0f;
 
+	//ターゲットとの距離が一定以上なら移動、近ければ停止して攻撃
 	if (VSize(VSub(target->GetPos(), position)) > stopDist) {
 		ApplyMovement(dir, stageHandle);
 	}
@@ -80,6 +81,7 @@ void RifleEnemy::Draw() {
 	VECTOR bodyTop = VAdd(cPos, VGet(0.0f, neck - bodyRad, 0.0f));
 	VECTOR headPos = VAdd(cPos, VGet(0.0f, currentEyeHeight, 0.0f));
 
+	//速度に応じて体を傾ける
 	VECTOR leanMax = VGet(velocity.x, 0.0f, velocity.z);
 	leanMax = VScale(leanMax, Chara::EnemyCommon::LEAN_FACTOR);
 

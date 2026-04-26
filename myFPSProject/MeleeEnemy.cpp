@@ -43,6 +43,7 @@ void MeleeEnemy::Update() {
 		fireRate = melee->GetSpec().fireRate;
 	}
 	switch (state) {
+		//プレイヤーに向かって移動
 	case MeleeState::IDLE: {
 		if (attackTimer > 0.0f)attackTimer -= dt;
 		VECTOR moveTarget = UpdateNavigation(target, dt);
@@ -65,7 +66,8 @@ void MeleeEnemy::Update() {
 		}
 		break;
 	}
-
+	
+	//振りかぶって攻撃
 	case MeleeState::ATTACK_WIND: {
 		ApplyMovement(VGet(0.0f, 0.0f, 0.0f), stageHandle);
 
@@ -78,6 +80,7 @@ void MeleeEnemy::Update() {
 		break;
 	}
 
+	//攻撃後の硬直
 	case MeleeState::ATTACK_RECOVERY: {
 		ApplyMovement(VGet(0.0f, 0.0f, 0.0f), stageHandle);
 		stateTimer -= dt;
@@ -102,6 +105,7 @@ void MeleeEnemy::Draw() {
 	VECTOR bodyTop = VAdd(cPos, VGet(0.0f, neck - bodyRad, 0.0f));
 	VECTOR headPos = VAdd(cPos, VGet(0.0f, currentEyeHeight, 0.0f));
 
+	//速度に応じて体を傾ける
 	VECTOR leanMax = VGet(velocity.x, 0.0f, velocity.z);
 	leanMax = VScale(leanMax, Chara::EnemyCommon::LEAN_FACTOR);
 

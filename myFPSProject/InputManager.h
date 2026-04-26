@@ -4,12 +4,13 @@
 #include <map>
 #include <vector>
 
-
+//キーバインド保存用の構造体
 struct KeyBind {
 	InputType type;
 	int KeyCode;
 };
 
+//アクションのID
 enum class ActionID {
 	MOVE_FORWARD,
 	MOVE_LEFT,

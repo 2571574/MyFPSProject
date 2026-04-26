@@ -39,11 +39,16 @@ void SniperEnemy::Update() {
 	if (sniper)sniper->Update(*this);
 	if (target == nullptr)return;
 
+	//移動
 	VECTOR moveTarget = UpdateNavigation(target, dt);
 	float distToPlayer = VSize(VSub(target->GetPos(), position));
 	bool hasLos = CheckLineSight(target, target->GetCurrentHeight() * 0.5f);
 	VECTOR moveDir = VGet(0.0f, 0.0f, 0.0f);
 
+
+	//行動パターン
+
+	//プレイヤーが近すぎる場合は距離を取る
 	if (distToPlayer < escapeDist) {
 		VECTOR escapeDir = VNorm(VSub(position, target->GetPos()));
 
@@ -54,10 +59,12 @@ void SniperEnemy::Update() {
 			moveDir = VGet(0.0f, 0.0f, 0.0f);
 		}
 	}
+	//攻撃距離より遠い、または視線が通っていない場合は近づく
 	else if (distToPlayer > attackDist || !hasLos) {
 		moveDir = VNorm(VSub(moveTarget, position));
 	}
 
+	//狙っている間はプレイヤーの方を向くが、プレイヤーの方に移動しない
 	if (targetingTimer > 0.0f) {
 		VECTOR toPlayer = VSub(target->GetPos(), position);
 		toPlayer.y = 0.0f;
@@ -72,6 +79,8 @@ void SniperEnemy::Update() {
 	if (sniper->GetAmmo() <= 0 && !sniper->Reloading()) {
 		sniper->Reload(*this);
 	}
+
+	//弾がある、プレイヤーが視界内、射程内なら攻撃
 	if (sniper->CanFire() && CheckLineSight(target, target->GetCurrentHeight() * 0.5f) && distToPlayer <= sniper->GetSpec().range) {
 
 		if (targetingTimer == 0.0f) {
@@ -120,6 +129,7 @@ void SniperEnemy::Draw() {
 	VECTOR bodyTop = VAdd(cPos, VGet(0.0f, neck - bodyRad, 0.0f));
 	VECTOR headPos = VAdd(cPos, VGet(0.0f, currentEyeHeight, 0.0f));
 
+	//速度に応じて体を傾ける
 	VECTOR leanMax = VGet(velocity.x, 0.0f, velocity.z);
 	leanMax = VScale(leanMax, Chara::EnemyCommon::LEAN_FACTOR);
 

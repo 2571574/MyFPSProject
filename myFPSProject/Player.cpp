@@ -77,7 +77,6 @@ void Player::Update() {
 	moveVec = VAdd(moveVec, VScale(forwardVec, forward));
 	moveVec = VAdd(moveVec, VScale(rightVec, right));
 
-	// 正規化
 	if (VSize(moveVec) > Chara::Player::INPUT_VECTOR) {
 		moveVec = VNorm(moveVec);
 	}
@@ -143,13 +142,16 @@ void Player::Update() {
 		friction = Chara::Base::AIR_KB_FRICTION;
 	}
 
+	//加速と摩擦の適用
 	velocity = VAdd(velocity, VScale(moveVec, accel * dt60));
 	float finalFriction = std::pow(friction, dt60);
 	velocity.x *= finalFriction;
 	velocity.z *= finalFriction;
 
+	//物理演算の更新
 	UpdatePhysics(stageHandle);
 
+	//　武器切替の検知
 	if (!slot.empty()) {
 		int next = currentWeaponIndex;
 
@@ -208,6 +210,7 @@ void Player::Update() {
 	cam->Update(camPos);
 	cam->Move(fov);
 
+	//武器の揺れの計算
 	float currentYaw = cam->GetYaw();
 	float currentPitch = cam->GetPitch();
 
@@ -234,6 +237,7 @@ void Player::Update() {
 	lastCamPitch = currentPitch;
 	hud->Update();
 
+	//音の更新
 	if (cam) {
 		VECTOR forward = cam->GetLookDirection();
 		VECTOR up = VGet(0.0f, 1.0f, 0.0f);

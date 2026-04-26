@@ -10,7 +10,7 @@
 class EffectManager
 {
 private:
-	std::vector<std::unique_ptr<Effect>> effects;
+	std::vector<std::unique_ptr<Effect>> effects;	//エフェクトのリスト
 	EffectManager() = default;
 
 public:

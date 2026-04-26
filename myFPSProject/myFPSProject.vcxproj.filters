@@ -60,12 +60,6 @@
     <ClCompile Include="BaseProjectile.cpp">
       <Filter>ソース ファイル\2.OBJECT\2.WEAPON\BULLET</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>ソース ファイル\2.OBJECT</Filter>
-    </ClCompile>
-    <ClCompile Include="Character.cpp">
-      <Filter>ソース ファイル\2.OBJECT</Filter>
-    </ClCompile>
     <ClCompile Include="CheckKey.cpp">
       <Filter>ソース ファイル\4.TOOL</Filter>
     </ClCompile>
@@ -144,6 +138,12 @@
     <ClCompile Include="Status.cpp">
       <Filter>ソース ファイル\4.TOOL</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>ソース ファイル\2.OBJECT\1.ENTITY</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>ソース ファイル\2.OBJECT\1.ENTITY</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ResultScene.h">
@@ -160,9 +160,6 @@
     </ClInclude>
     <ClInclude Include="GameScene.h">
       <Filter>ソース ファイル\1.GAME\SCENE</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseScene.h">
-      <Filter>ソース ファイル\3.SINGLE MANAGER</Filter>
     </ClInclude>
     <ClInclude Include="CollisionManager.h">
       <Filter>ソース ファイル\3.SINGLE MANAGER</Filter>
@@ -187,15 +184,6 @@
     </ClInclude>
     <ClInclude Include="BaseProjectile.h">
       <Filter>ソース ファイル\2.OBJECT\2.WEAPON\BULLET</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseScene.h">
-      <Filter>1.GAME\SCENE</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>ソース ファイル\2.OBJECT</Filter>
-    </ClInclude>
-    <ClInclude Include="Character.h">
-      <Filter>ソース ファイル\2.OBJECT</Filter>
     </ClInclude>
     <ClInclude Include="CheckKey.h">
       <Filter>ソース ファイル\4.TOOL</Filter>
@@ -286,6 +274,18 @@
     </ClInclude>
     <ClInclude Include="Param\Visual.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseScene.h">
+      <Filter>ソース ファイル\1.GAME\SCENE</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseScene.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>ソース ファイル\2.OBJECT\1.ENTITY</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>ソース ファイル\2.OBJECT\1.ENTITY</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

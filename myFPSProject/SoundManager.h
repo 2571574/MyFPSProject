@@ -16,7 +16,7 @@ private:
 
     int currentBGMHandle = -1;
 
-    // SEの多重再生用プール構造体
+    // SEの多重再生用構造体
     struct SEPool {
         int baseHandle = -1;
         std::vector<int> duplicateHandles;
@@ -44,18 +44,29 @@ public:
 
     void Clear();
 
-    // --- 環境音（BGM）制御 ---
     void PlayBGM(const std::string& path);
     void StopBGM();
 
-    // --- SE制御 ---
-    // UI音など、どこにいても同じ音量で聞こえる2Dサウンド
+    /// <summary>
+    /// 通常SEを再生
+    /// </summary>
+    /// <param name="path">サウンドのファイルパス</param>
     void PlaySE(const std::string& path);
 
-    // リザルト画面用：指定した秒数かけて音量がゼロになるSE
+    /// <summary>
+	/// SEをフェードアウトしながら再生
+    /// </summary>
+    /// <param name="path">サウンドのファイルパス</param>
+    /// <param name="fadeTimeSec">フェードアウトする時間（秒）</param>
     void PlaySEWithFadeOut(const std::string& path, float fadeTimeSec);
 
-    // 銃声や足音など：空間の指定座標から聞こえる3Dサウンド
+    /// <summary>
+    /// SEを3Dで再生
+    /// </summary>
+    /// <param name="path">サウンドのファイルパス</param>
+    /// <param name="position">再生位置</param>
+    /// <param name="radius">音の届く範囲</param>
+    /// <returns>ハンドル</returns>
     int Play3DSE(const std::string& path, VECTOR position, float radius = 30.0f);
 
     void StopSE(const std::string& path);
@@ -65,8 +76,13 @@ public:
     void ResumeAll();
     void StopAll();
 
-    // --- リスナー制御 ---
-    // プレイヤーの耳（カメラ）の位置と向きを更新する
+
+    /// <summary>
+    /// 3Dサウンドのリスナー位置を更新する
+    /// </summary>
+    /// <param name="pos">位置</param>
+    /// <param name="front">前方向ベクトル</param>
+    /// <param name="up">上方向ベクトル</param>
     void UpdateListener(VECTOR pos, VECTOR front, VECTOR up);
 
     float GetSoundDuration(const std::string& path);

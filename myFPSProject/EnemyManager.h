@@ -15,11 +15,11 @@ class EnemyManager
 {
 private:
 	std::vector<VECTOR>spawnPoints;	//スポーン位置
-	Player* target;
-	int stageHandle;
+	Player* target;		//プレイヤーのポインタ
+	int stageHandle;	//ステージのモデルハンドル
 	std::vector<std::unique_ptr<Enemy>> enemies;	//敵の配列
-	std::vector<Node> mapNode;		//マップのノード
-	std::map<ENEMYTYPE, int>killCounts;
+	std::vector<Node> mapNode;			//マップのノード
+	std::map<ENEMYTYPE, int>killCounts;	//敵の種類ごとの撃破数
 
 	float currentSpawnInterval;	//スポーンのインターバル
 	float spawnTimer;			//スポーンタイマー

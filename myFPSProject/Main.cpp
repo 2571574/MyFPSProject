@@ -10,7 +10,7 @@
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	SetGraphMode(System::Window::WINDOW_WIDTH, System::Window::WINDOW_HEIGHT, System::Window::WINDOW_COLORBIT);	//ウィンドウサイズの設定
+	SetGraphMode(System::Window::WINDOW_WIDTH, System::Window::WINDOW_HEIGHT, System::Window::WINDOW_COLORBIT);
 	SetMainWindowText("Killing Arena");
 	SetEnableXAudioFlag(TRUE);
 	// DXライブラリの初期化
@@ -18,7 +18,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return -1;
 	}
 
-	SetMouseDispFlag(FALSE);
+	SetMouseDispFlag(FALSE);	//マウスカーソルの無効化
 	SetUseLighting(false);		 //ライティングの無効化
 	SetDrawScreen(DX_SCREEN_BACK); // 裏画面を描画対象にする
 
@@ -36,7 +36,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	while (ProcessMessage() == 0) {
 		Time::GetIns().Update();
 		CheckKey::GetIns().Input();	//入力を取得
-		ClearDrawScreen();	//画面をクリア
+		ClearDrawScreen();
 		SoundManager::GetIns().Update();
 		ins.Update();		//更新
 		ins.Draw();		//描画
@@ -46,7 +46,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 		CheckKey::GetIns().LateInput();	//入力を保持
 	}
-	// DXライブラリの終了処理
 	DxLib_End();
 	return 0;
 }

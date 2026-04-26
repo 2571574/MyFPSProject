@@ -13,7 +13,7 @@ RollingEnemy::RollingEnemy(VECTOR pos, Player* target)
 	, isExploding(false)
 	, explodeTimer(Chara::Rolling::EXPLODE_TIME)
 	, triggerDist(Chara::Rolling::TRIGGER_DISTANCE)
-	, beepTimer(0.0f)
+	, alerttimer(0.0f)
 	, alertDuration(0.0f) {
 	explodeSpec = ENEMY_GUN::DESTRUCT;
 }
@@ -28,9 +28,10 @@ void RollingEnemy::Update() {
 		}
 		return;
 	}
+	//HPが0以下になったら爆発開始
 	if (hp <= 0 && !isExploding) {
 		isExploding = true;
-		beepTimer = 0.0f;
+		alerttimer = 0.0f;
 		explodeTimer = Chara::Rolling::EXPLODE_TIME;
 		alertDuration = SoundManager::GetIns().GetSoundDuration("Resource/Sound/alert.wav");
 		if (alertDuration <= 0.0f) alertDuration = Chara::Rolling::ALERT_DURATION_FALLBACK;
@@ -38,6 +39,7 @@ void RollingEnemy::Update() {
 
 	float distToPlayer = VSize(VSub(target->GetPos(), position));
 
+	//爆発していないときはプレイヤーに向かって移動
 	if (!isExploding) {
 		VECTOR moveTarget = UpdateNavigation(target, dt);
 		VECTOR dir = VNorm(VSub(moveTarget, position));
@@ -48,19 +50,21 @@ void RollingEnemy::Update() {
 
 		if (distToPlayer < triggerDist) {
 			isExploding = true;
-			beepTimer = 0.0f;
+			alerttimer = 0.0f;
 			alertDuration = SoundManager::GetIns().GetSoundDuration("Resource/Sound/alert.wav");
 			if (alertDuration <= 0.0f) alertDuration = Chara::Rolling::ALERT_DURATION_FALLBACK;
 		}
 	}
+
+	//爆発しているときは移動を停止
 	else {
 		ApplyMovement(VGet(0.0f, 0.0f, 0.0f), stageHandle);
 		explodeTimer -= dt;
-		beepTimer -= dt;
+		alerttimer -= dt;
 
-		if (beepTimer <= 0.0f && explodeTimer > 0.0f) {
+		if (alerttimer <= 0.0f && explodeTimer > 0.0f) {
 			SoundManager::GetIns().Play3DSE("Resource/Sound/alert.wav", position, Chara::Rolling::ALERT_SOUND_RADIUS);
-			beepTimer = alertDuration;
+			alerttimer = alertDuration;
 		}
 		if (explodeTimer <= 0.0f) {
 			Action();

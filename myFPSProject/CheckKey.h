@@ -104,7 +104,7 @@ public:
 	/// <summary>
 	/// コントローラーのスティック入力を渡す　-1000～1000
 	/// </summary>
-	/// <param name="x">xの入力量を入れる参照<param>
+	/// <param name="x">xの入力量を入れる参照</param>
 	/// <param name="y">yの入力量を入れる参照</param>
 	void GetRightStick(int& x, int& y);
 };

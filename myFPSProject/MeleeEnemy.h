@@ -3,6 +3,7 @@
 #include "Weapon.h"
 #include <memory>
 
+//攻撃状態
 enum class MeleeState {
     IDLE,
     ATTACK_WIND,
@@ -16,10 +17,10 @@ class MeleeEnemy :
     public Enemy
 {
 private:
-    MeleeState state = MeleeState::IDLE;
-    float stateTimer = 0.0f;
+	MeleeState state = MeleeState::IDLE;    //現在の攻撃状態
+    float stateTimer = 0.0f;        //攻撃状態管理用のタイマー
 	float attackTimer;  //攻撃のクールタイム
-    std::unique_ptr<Weapon> melee;
+    std::unique_ptr<Weapon> melee;  //武器
 public:
     /// <summary>
     /// コンストラクタ

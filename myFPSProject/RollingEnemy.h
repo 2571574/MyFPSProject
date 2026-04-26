@@ -8,13 +8,13 @@ class RollingEnemy :
     public Enemy
 {
 private:
-    bool isExploding;
-    float explodeTimer;
-    float triggerDist;
-    GunStatus explodeSpec;
+    bool isExploding;   //爆発中のフラグ
+    float explodeTimer; //爆発中管理用タイマー
+	float triggerDist;  //爆発開始距離
+    GunStatus explodeSpec;  //爆発の仕様
 
-    float beepTimer;
-    float alertDuration;
+    float alerttimer;  //警告タイマー
+    float alertDuration;  //爆発までの時間
 public:
 
     RollingEnemy(VECTOR pos, Player* target);

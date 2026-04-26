@@ -7,14 +7,17 @@
 #include <vector>
 #include<string>
 
-
+//ゲームのリザルト保存用
 struct GameResult {
-	int currentScore = 0;
-	int Shot = 0;
-	int totalHit = 0;
-	int totalHeadHit = 0;
-	WeaponID causeOfDeath = WeaponID::UNKNOWN;
+	int currentScore = 0;	//最終スコア
+	int Shot = 0;			//射撃数
+	int totalHit = 0;		//ヒット数
+	int totalHeadHit = 0;	//ヘッドショット数
+	WeaponID causeOfDeath = WeaponID::UNKNOWN;	//死因
 
+	/// <summary>
+	/// リザルトの初期化
+	/// </summary>
 	void Clear() {
 		currentScore = 0;
 		Shot = 0;
@@ -30,21 +33,22 @@ struct GameResult {
 class SceneManager
 {
 private:
+	//フェード用構造体
 	enum class FadeState {
 		NONE,
 		FADEOUT,
 		FADEIN
 	};
-	FadeState fadeState = FadeState::NONE;
-	float fadeAlpha = 0.0f;
-	std::unique_ptr<BaseScene> nextScenePending;
+	FadeState fadeState = FadeState::NONE;		//フェードの状態
+	float fadeAlpha = 0.0f;						//フェードの透明度
+	std::unique_ptr<BaseScene> nextScenePending;//フェード後の次のシーンのインスタンス
 	std::unique_ptr<BaseScene> currentScene;	//現在のシーン
 	bool exitTag;								//終了フラグ
 	PlayMode currentMode;						//現在の難易度
 
 	GameResult lastResult;	//直近の結果
-	std::vector<std::vector<int>> ranking;
-	const std::string RANKING_FILE = "ranking.dat";
+	std::vector<std::vector<int>> ranking;		//ランキングデータ
+	const std::string RANKING_FILE = "ranking.dat"; //ランキングデータの保存先
 
 	void SaveRanking();
 	void LoadRanking();

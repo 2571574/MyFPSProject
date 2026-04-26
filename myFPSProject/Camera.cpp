@@ -53,14 +53,15 @@ void Camera::Update(VECTOR Pos) {
 
 	pendingRecoilYaw -= moveY;
 	pendingRecoilPitch -= moveP;
-	//適用
+	//リコイルのリカバリー
 	if (recovery) {
 		recoilYaw += moveY;
 		recoilPitch += moveP;
-
+		//累積されたリコイル量に基づき、回復量を計算
 		float recY = recoilYaw * System::Camera::RECOVERY_SPEED * dt;
 		float recP = recoilPitch * System::Camera::RECOVERY_SPEED * dt;
 
+		//その分視点を戻す
 		yaw -= recY;
 		pitch -= recP;
 		recoilYaw -= recY;
@@ -80,6 +81,7 @@ void Camera::Update(VECTOR Pos) {
 }
 
 void Camera::AddAngle(float deltaYaw, float deltaPitch){
+	//反動の加算
 	pendingRecoilYaw += deltaYaw;
 	pendingRecoilPitch += deltaPitch;
 }

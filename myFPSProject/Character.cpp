@@ -51,6 +51,7 @@ void Character::UpdatePhysics(int stageHandle) {
 	float dt60 = dt * Global::Math::FPS_BASE;
 	float radius = status.width / 2.0f;
 
+	//ノックバックに減衰処理をい入れる
 	float currentkbFriction = onGround ? Chara::Base::GROUND_KB_FRICTION : Chara::Base::AIR_KB_FRICTION;
 	float kbFriction = std::pow(currentkbFriction, dt60);
 	knockback.x *= kbFriction;
@@ -60,12 +61,14 @@ void Character::UpdatePhysics(int stageHandle) {
 		knockback = VGet(0.0f, 0.0f, 0.0f);
 	}
 
+	//重力の適用　
 	velocity.y += Chara::Base::GRAVITY * dt60;
 
 	VECTOR totalVelocity = VAdd(velocity, knockback);
 	VECTOR totalMove = VScale(totalVelocity, dt60);
 	float moveDist = VSize(totalMove);
 
+	//移動処理が大きすぎた場合、移動を分割する
 	float maxStep = radius * 0.5f;
 	int stepCount = 1;
 	if (moveDist > maxStep) {
@@ -75,10 +78,13 @@ void Character::UpdatePhysics(int stageHandle) {
 	VECTOR stepMove = VScale(totalMove, 1.0f / stepCount);
 	VECTOR currentPos = position;
 
+	//このフレームで１度でも地面にいるとみなされたか
 	bool isGroundedThisFrame = false;
 
 	for (int step = 0; step < stepCount; ++step) {
 		VECTOR nextPos = VAdd(currentPos, stepMove);
+
+		//落下しているときのみ着地判定を行う
 		if (totalVelocity.y <= 0.0f) {
 			float offset = radius * Chara::Base::CAP_SIDE_OFFSET;
 
@@ -176,7 +182,6 @@ void Character::UpdatePhysics(int stageHandle) {
 
 void Character::ResolveWallPenetration(int stagehandle) {
 	if (stagehandle == -1) return;
-
 	float radius = status.width / 2.0f;
 	VECTOR capBottom = VAdd(position, VGet(0, radius + Chara::Base::CAP_BOTTOM_OFFSET, 0));
 	VECTOR capTop = VAdd(position, VGet(0, currentHeight - radius, 0));

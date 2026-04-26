@@ -125,10 +125,10 @@ namespace Scene {
         }
 
         //射撃場のターゲットの基準位置
-        constexpr float TARGET_BASE_X = -26.0f;
-        constexpr float TARGET_INTERVAL_X = 15.0f;
-        constexpr float TARGET_BASE_Z = -5.0f;
-        constexpr float TARGET_INTERVAL_Z = 15.0f;
+        constexpr float TARGET_BASE_X = -26.0f;         //ターゲットの基準X座標
+        constexpr float TARGET_INTERVAL_X = 15.0f;      //ターゲットのX間隔
+		constexpr float TARGET_BASE_Z = -5.0f;          //ターゲットの基準Z座標
+		constexpr float TARGET_INTERVAL_Z = 15.0f;      //ターゲットのZ間隔
 
         //ボタンとして使うダミーの基準位置
         constexpr float BUTTON_BASE_X = 28.0f;

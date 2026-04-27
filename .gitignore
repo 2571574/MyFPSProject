@@ -16,7 +16,7 @@ obj/
 *.tlog
 *.lastbuildstate
 *.recipe
-
+*.dat
 *.sdf
 *.VC.db
 *.VC.VC.opendb

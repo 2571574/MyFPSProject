@@ -3,6 +3,8 @@
 ## 実行方法
 1.[Releases]ページより、'KillingArena_Win.zip'をダウンロードします。
 
+https://github.com/2571574/MyFPSProject/releases/tag/v1.0.0
+
 2.ZIPファイルを展開(解凍)します。
 
 3.展開されたフォルダ内にある、'MyFPSProject.exe'を実行してください。

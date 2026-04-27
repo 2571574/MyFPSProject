@@ -48,24 +48,26 @@ void HUD::Draw() {
 	char topTextBuf[128];
 
 	//スコア&開始前タイマー
-	if (prepareTime > 0.0f) {
-		snprintf(topTextBuf, sizeof(topTextBuf), "スタートまで : %.1f", prepareTime);
-	}
-	else {
-		snprintf(topTextBuf, sizeof(topTextBuf), "スコア : %d", EnemyManager::GetIns().GetTotalScore());
-	}
+	if (pplayer->GetCurrentMode() != PlayMode::MODE_TUTORIAL) {
+		if (prepareTime > 0.0f) {
+			snprintf(topTextBuf, sizeof(topTextBuf), "スタートまで : %.1f", prepareTime);
+		}
+		else {
+			snprintf(topTextBuf, sizeof(topTextBuf), "スコア : %d", EnemyManager::GetIns().GetTotalScore());
+		}
 
-	int textWidth = GetDrawStringWidthToHandle(topTextBuf, static_cast<int>(strlen(topTextBuf)), fontJpLarge);
-	int drawX = System::Window::CENTER_X - (textWidth / 2);
+		int textWidth = GetDrawStringWidthToHandle(topTextBuf, static_cast<int>(strlen(topTextBuf)), fontJpLarge);
+		int drawX = System::Window::CENTER_X - (textWidth / 2);
 
-	if (prepareTime > 0.0f) {
-		::DrawStringToHandle(drawX, topY, topTextBuf, textColor, fontJpLarge);
-	}
-	else {
-		int alpha = static_cast<int>(scoreFadeAlpha * 255);
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-		::DrawStringToHandle(drawX, topY, topTextBuf, textColor, fontJpLarge);
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		if (prepareTime > 0.0f) {
+			::DrawStringToHandle(drawX, topY, topTextBuf, textColor, fontJpLarge);
+		}
+		else {
+			int alpha = static_cast<int>(scoreFadeAlpha * 255);
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+			::DrawStringToHandle(drawX, topY, topTextBuf, textColor, fontJpLarge);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		}
 	}
 
 	//ヒットマーク

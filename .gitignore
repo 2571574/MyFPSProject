@@ -24,4 +24,4 @@ obj/
 *.user
 *.suo
 Log.txt
-.dat
+*.dat

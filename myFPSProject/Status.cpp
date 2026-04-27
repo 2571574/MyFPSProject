@@ -1,6 +1,5 @@
 ﻿#include "Status.h"
 #include "Utils.h"
-#include "Debug.h"
 
 #include <fstream>
 
@@ -59,7 +58,6 @@ GameConfigData GameConfig;
 //csvファイルからキャラのデータを読み込む
 void LoadToChara(CharacterStatus& target, const std::vector<std::string>& row) {
     if (row.size() < 12) return;
-    try {
         target.maxHP = std::stoi(row[1]);
         target.accel = std::stof(row[2]);
         target.friction = std::stof(row[3]);
@@ -71,14 +69,11 @@ void LoadToChara(CharacterStatus& target, const std::vector<std::string>& row) {
         target.crouchEyeHeight = std::stof(row[9]);
         target.teamID = (row[10] == "ID_FRIENDLY") ? TEAMID::ID_FRIENDLY : TEAMID::ID_ENEMY;
         target.score = std::stoi(row[11]);
-    }
-    catch (...) { Debug::Log("Chara.csv Parse Error: " + row[0]); }
 }
 
 //武器のデータをcsvから読み込む
 void LoadToGun(GunStatus& target, const std::vector<std::string>& row) {
     if (row.size() < 47) return;
-    try {
         if (row[1] == "AR") target.id = WeaponID::AR;
         else if (row[1] == "SR") target.id = WeaponID::SR;
         else if (row[1] == "LR") target.id = WeaponID::LR;
@@ -126,8 +121,6 @@ void LoadToGun(GunStatus& target, const std::vector<std::string>& row) {
         target.visual.fireSoundPath = row[44];
         target.visual.reloadSoundPath = row[45];
         target.visual.reloadEndSoundPath = row[46];
-    }
-    catch (...) { Debug::Log("Gun.csv Parse Error: " + row[0]); }
 }
 
 void LoadAllStatusFromCSV() {
@@ -148,10 +141,9 @@ void LoadAllStatusFromCSV() {
             else if (id == "SNIPER") LoadToChara(CHARA_STATUS::SNIPER_ENEMY, row);
             else if (id == "ROLLING") LoadToChara(CHARA_STATUS::ROLL_ENEMY, row);
         }
-        Debug::Log("Loaded Character.csv");
     }
     else {
-        Debug::Log("Failed to open Character.csv");
+ 
     }
 
     std::ifstream gunFile("Data/Gun.csv");
@@ -172,10 +164,6 @@ void LoadAllStatusFromCSV() {
             else if (id == "ENEMY_SR") LoadToGun(ENEMY_GUN::SNIPER, row);
             else if (id == "DESTRUCT") LoadToGun(ENEMY_GUN::DESTRUCT, row);
         }
-        Debug::Log("Loaded Gun.csv");
-    }
-    else {
-        Debug::Log("Failed to open Gun.csv");
     }
 
     std::ifstream configFile("Data/GameConfig.csv");
@@ -186,7 +174,6 @@ void LoadAllStatusFromCSV() {
             if (row.size() < 2) continue;
             std::string key = row[0];
 
-            try {
                 if (key == "MAXENEMY_ONMAP") GameConfig.maxEnemyOnMap = std::stoi(row[1]);
                 else if (key == "MAX_LIMIT_MELEE") GameConfig.maxLimitMelee = std::stoi(row[1]);
                 else if (key == "MAX_LIMIT_RIFLE") GameConfig.maxLimitRifle = std::stoi(row[1]);
@@ -197,12 +184,7 @@ void LoadAllStatusFromCSV() {
                 else if (key == "DIFFICULTY_UP_INTERVAL") GameConfig.difficultyUpInterval = std::stof(row[1]);
                 else if (key == "DIFFICULTY_UP_AMOUNT") GameConfig.difficultyUpAmount = std::stof(row[1]);
                 else if (key == "MIN_SPAWN_INTERVAL") GameConfig.minSpawnInterval = std::stof(row[1]);
-            }
-            catch (...) { Debug::Log("GameConfig.csv Parse Error: " + key); }
+            
         }
-        Debug::Log("Loaded GameConfig.csv");
-    }
-    else {
-        Debug::Log("Failed to open GameConfig.csv");
     }
 }

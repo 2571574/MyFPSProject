@@ -42,9 +42,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Debug.cpp">
-      <Filter>ソース ファイル\4.TOOL</Filter>
-    </ClCompile>
     <ClCompile Include="ResultScene.cpp">
       <Filter>ソース ファイル\1.GAME\SCENE</Filter>
     </ClCompile>
@@ -149,9 +146,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Debug.h">
-      <Filter>ソース ファイル\4.TOOL</Filter>
-    </ClInclude>
     <ClInclude Include="ResultScene.h">
       <Filter>ソース ファイル\1.GAME\SCENE</Filter>
     </ClInclude>

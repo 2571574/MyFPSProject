@@ -50,8 +50,6 @@ void BaseProjectile::Update() {
 			hitEnemy = true;
 			isHeadShot = hit.isHeadShot;
 			int lastDamage = hit.isHeadShot ? spec.damage * Item::Weapon::HEADSHOT_MULTIPLIER : spec.damage;
-			if (hit.isHeadShot)Debug::Log("Headshot");
-			else Debug::Log("hit");
 			hit.character->OnHit(lastDamage, spec.id);
 			bool isKill = (hit.character->GetHP() <= 0);
 
@@ -60,11 +58,9 @@ void BaseProjectile::Update() {
 					p->HitRecord(isHeadShot, isKill);
 				}
 			}
-			Debug::Log("EffectSpawn true");
 			EffectManager::GetIns().CreateHitEffect(hit.hitPos, hit.hitNormal, true);
 		}
 		else if (hit.isWallHit) {
-			Debug::Log("EffectSpawn false");
 			EffectManager::GetIns().CreateHitEffect(hit.hitPos, hit.hitNormal, false);
 		}
 		alive = false;		//弾の生存タグを消す

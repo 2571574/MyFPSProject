@@ -92,7 +92,6 @@ void GameScene::Init()
 
 
 void GameScene::Update() {
-	Debug::Update();
 
 	if (!isDeadSequence) {
 		if (InputManager::GetIns().IsActionTrigger(ActionID::PAUSE)) {

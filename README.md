@@ -1,4 +1,4 @@
-# Killing Arena(Dxlib C++)
+# Killing Arena(Dxlib/C++)
 
 ## 実行方法
 1.[Releases]ページより、'KillingArena_Win.zip'をダウンロードします。

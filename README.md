@@ -1,7 +1,7 @@
 # Killing Arena(Dxlib/C++)
 
 ## 実行方法
-1.[Releases]ページより、'KillingArena_Win.zip'をダウンロードします。
+1.[Releases]ページより、'KillingArena_Windows.zip'をダウンロードします。
 
 https://github.com/2571574/MyFPSProject/releases/tag/v1.0.0
 

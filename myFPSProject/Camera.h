@@ -13,6 +13,7 @@ private:
 	
 	float yaw;		//水平
 	float pitch;	//垂直
+	float roll;		//傾き
 
 	float recoilYaw;	//反動によるカメラの移動　水平
 	float recoilPitch;  //反動によるカメラの移動　垂直
@@ -46,6 +47,7 @@ public:
 	void Move(float fov);
 
 	void SetPos(VECTOR pos);
+	void SetRoll(float newRoll) { roll = newRoll; }
 
 	VECTOR GetPos() const { return camPos; }
 	float GetYaw()const { return yaw; }

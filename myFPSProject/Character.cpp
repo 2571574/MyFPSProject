@@ -138,8 +138,11 @@ void Character::UpdatePhysics(int stageHandle) {
 			//カプセルの下を基準
 			VECTOR checkPos = nextPos;
 			// 法線ベクトルが下を向いているときのみ上を基準に計算
-			if (normal.y < Chara::Base::CEILING_NORMAL_MAX)checkPos = VAdd(nextPos, VGet(0, currentHeight - radius, 0));
+			bool isCeiling = (normal.y < Chara::Base::CEILING_NORMAL_MAX);
 
+			if (isCeiling) {
+				checkPos = VAdd(nextPos, VGet(0, currentHeight - radius, 0));
+			}
 			//カプセルの中心から壁の面の最短距離
 			float distance = VDot(VSub(checkPos, wallHitDim.Dim[i].Position[0]), normal);
 			//距離が半径より短い時
@@ -148,6 +151,17 @@ void Character::UpdatePhysics(int stageHandle) {
 				float pushOver = radius - distance;
 
 				VECTOR pushVec = VScale(normal, pushOver);
+
+				if (isCeiling) {
+					nextPos.y += pushVec.y; // Y軸方向（下）へ押し出してめり込みを解消
+
+					// 上昇中だった場合、速度を0にして落下
+					if (velocity.y > 0.0f) {
+						velocity.y = 0.0f;
+						totalVelocity.y = 0.0f;
+						stepMove.y = 0.0f;
+					}
+				}
 
 				pushVec.y = 0.0f;
 

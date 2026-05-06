@@ -64,6 +64,15 @@ namespace Chara {
         constexpr float SWAY_MULTIPLIER = 0.02f;                //視点の武器揺れ強さ
         constexpr float MAX_SWAY = 0.5f;                        //視点の武器揺れの最大
         constexpr float SWAY_LERP_SPEED = 0.2f;                 //視点の武器揺れの収束率
+        constexpr float WALL_RUN_RAY_LENGTH = 0.8f;             // 壁検知のレイの長さ（半径より少し長め）
+        constexpr float WALL_RUN_MIN_SPEED = 0.1f;              // 壁走りを維持するための最低水平速度
+        constexpr float WALL_RUN_NORMAL_Y_MAX = 0.2f;           // 壁とみなす法線Yの許容値（垂直判定）
+        constexpr float WALL_RUN_FALL_SPEED = -0.03f;           // 壁走り中の最大降下速度
+        constexpr float WALL_JUMP_UP_POWER = 0.35f;             // 壁ジャンプの上方向への推力
+        constexpr float WALL_JUMP_PUSH_POWER = 0.3f;            // 壁ジャンプの壁から離れる方向への推力
+        constexpr float WALL_JUMP_FORWARD_POWER = 0.2f;         // 壁ジャンプの向いている方向への追加推力
+        constexpr float WALL_RUN_CAMERA_ROLL = 15.0f * Global::Math::DEG_TO_RAD; // カメラの傾斜角度
+        constexpr float WALL_RUN_ROLL_LERP = 0.15f;             // カメラの傾斜の滑らかさ
     }
 
     namespace EnemyCommon {

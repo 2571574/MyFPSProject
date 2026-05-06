@@ -142,6 +142,51 @@ void Player::Update() {
 		friction = Chara::Base::AIR_KB_FRICTION;
 	}
 
+	isWallRunning = false;
+	// 空中でかつ一定の水平速度がある場合のみ発動
+	if (!onGround && stageHandle != -1 && VSize(VGet(velocity.x, 0.0f, velocity.z)) > Chara::Player::WALL_RUN_MIN_SPEED) {
+		// プレイヤーの中心の高さから左右にレイを飛ばす
+		VECTOR checkBasePos = VAdd(position, VGet(0.0f, currentHeight * 0.5f, 0.0f));
+		VECTOR rightEnd = VAdd(checkBasePos, VScale(rightVec, Chara::Player::WALL_RUN_RAY_LENGTH));
+		VECTOR leftEnd = VAdd(checkBasePos, VScale(rightVec, -Chara::Player::WALL_RUN_RAY_LENGTH));
+
+		MV1_COLL_RESULT_POLY rightHit = MV1CollCheck_Line(stageHandle, -1, checkBasePos, rightEnd);
+		MV1_COLL_RESULT_POLY leftHit = MV1CollCheck_Line(stageHandle, -1, checkBasePos, leftEnd);
+
+		// 垂直に近い壁か、プレイヤーとの位置関係を確認して状態を更新
+		if (rightHit.HitFlag == TRUE && std::abs(rightHit.Normal.y) < Chara::Player::WALL_RUN_NORMAL_Y_MAX) {
+			isWallRunning = true;
+			wallRunDir = 1;
+			wallNormal = rightHit.Normal;
+		}
+		else if (leftHit.HitFlag == TRUE && std::abs(leftHit.Normal.y) < Chara::Player::WALL_RUN_NORMAL_Y_MAX) {
+			isWallRunning = true;
+			wallRunDir = -1;
+			wallNormal = leftHit.Normal;
+		}
+
+		if (isWallRunning) {
+			// 重力による過剰な落下を制限（壁との摩擦を表現）
+			if (velocity.y < Chara::Player::WALL_RUN_FALL_SPEED) {
+				velocity.y = Chara::Player::WALL_RUN_FALL_SPEED;
+			}
+
+			// 走行中、壁から離れてしまわないように壁の逆方向に微小な力をかけ続ける
+			velocity = VSub(velocity, VScale(wallNormal, 0.02f));
+
+			// 壁ジャンプ入力の検知
+			if (InputManager::GetIns().IsActionTrigger(ActionID::JUMP)) {
+				// 法線方向（壁から離れる方向）、上方向、前方向にそれぞれ推力をかける
+				velocity.x = wallNormal.x * Chara::Player::WALL_JUMP_PUSH_POWER;
+				velocity.y = Chara::Player::WALL_JUMP_UP_POWER;
+				velocity.z = wallNormal.z * Chara::Player::WALL_JUMP_PUSH_POWER;
+				velocity = VAdd(velocity, VScale(forwardVec, Chara::Player::WALL_JUMP_FORWARD_POWER));
+
+				isWallRunning = false;
+			}
+		}
+	}
+
 	//加速と摩擦の適用
 	velocity = VAdd(velocity, VScale(moveVec, accel * dt60));
 	float finalFriction = std::pow(friction, dt60);
@@ -192,6 +237,11 @@ void Player::Update() {
 		if (isAds) targetFov = currentWeapon->GetSpec().adsFov * Global::Math::DEG_TO_RAD;
 	}
 	fov += (targetFov - fov) * lerp;
+
+	float targetRoll = isWallRunning ? (wallRunDir * Chara::Player::WALL_RUN_CAMERA_ROLL) : 0.0f;
+	float rollLerp = 1.0f - std::pow(1.0f - Chara::Player::WALL_RUN_ROLL_LERP, dt60);
+	currentRoll += (targetRoll - currentRoll) * rollLerp;
+	cam->SetRoll(currentRoll);
 
 	headBob = ConfigManager::GetIns().Settings().headbob;
 	if (headBob && onGround && !isAds) {
@@ -252,10 +302,12 @@ void Player::Draw() {
 	Weapon* currentWeapon = GetWeapon();
 	if (currentWeapon) {
 		VECTOR forward = cam->GetLookDirection();
-		VECTOR hforward, right;
-		cam->GetForwardVec(hforward, right);
-		VECTOR up = VNorm(VCross(forward, right));
-		right = VNorm(VCross(up, forward));
+		VECTOR hforward, trueRight;
+		cam->GetForwardVec(hforward, trueRight);
+		VECTOR trueUp = VNorm(VCross(forward, trueRight));
+
+		VECTOR up = VAdd(VScale(trueUp, cosf(currentRoll)), VScale(trueRight, -sinf(currentRoll)));
+		VECTOR right = VNorm(VCross(up, forward));
 
 		VECTOR drawPos = cam->GetPos();
 

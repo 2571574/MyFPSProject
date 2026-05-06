@@ -26,6 +26,10 @@ private:
 	bool running;		//走っているか
 	bool headBob;		//歩行時のカメラの揺れをonにするか
 	float bobbingTimer; //カメラの揺れのタイマー
+	bool isWallRunning;     // 壁走り中か
+	int wallRunDir;         // 壁の方向
+	VECTOR wallNormal;      // 現在接している壁の法線（ジャンプ時の反射計算用）
+	float currentRoll;      // 現在のカメラの傾き
 	std::unique_ptr<HUD> hud;	//HUD
 
 	std::vector<std::unique_ptr<Weapon>> slot;		//現在持っている武器	

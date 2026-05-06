@@ -99,7 +99,16 @@ void Camera::Move(float fov) {
 	targetPos.y = camPos.y + sinf(camPitch * Global::Math::DEG_TO_RAD);
 	targetPos.z = camPos.z + cosf(camPitch * Global::Math::DEG_TO_RAD) * cosf(camYaw * Global::Math::DEG_TO_RAD);
 	SetupCamera_Perspective(fov);
-	SetCameraPositionAndTarget_UpVecY(camPos, targetPos);
+
+	VECTOR forward = VNorm(VSub(targetPos, camPos));
+	VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), forward));
+	VECTOR trueUp = VNorm(VCross(forward, right));
+
+	// ロール角(傾き)を適用した上方向ベクトルを計算
+	VECTOR upVec = VAdd(VScale(trueUp, cosf(roll)), VScale(right, -sinf(roll)));
+
+	// Upベクトルを指定してカメラをセット
+	SetCameraPositionAndTargetAndUpVec(camPos, targetPos, upVec);
 }
 
 

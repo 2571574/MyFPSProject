@@ -303,6 +303,7 @@ void TutorialScene::Draw() {
 		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 4, ("ジャンプ : " + jumpKey).c_str(), colorText, fontSmall);
 		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 5, ("しゃがむ : " + crouchKey).c_str(), colorText, fontSmall);
 		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 6, "一定速度でしゃがむとスライディング", colorText, fontSmall);
+		DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 7, "壁に平行に触れることで壁走り", colorText, fontSmall);
 		break;
 
 	case TutorialPhase::COMBAT:

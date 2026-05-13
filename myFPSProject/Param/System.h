@@ -24,7 +24,7 @@ namespace System {
         constexpr float YAW_SNAP = 360.0f;              //水平角度を360でスナップする数値
         constexpr float RECOIL_SPEED = 15.0f;           //カメラの跳ね上がり速度
         constexpr float RECOVERY_SPEED = 3.0f;          //反動のリカバリー速度
-        constexpr float CAMERA_NEAR_CLIP = 0.01f;       //描画の最短距離
+        constexpr float CAMERA_NEAR_CLIP = 0.05f;       //描画の最短距離
         constexpr float CAMERA_FAR_CLIP = 1000.0f;      //描画の最大距離
     }
 

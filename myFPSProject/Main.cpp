@@ -13,6 +13,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetGraphMode(System::Window::WINDOW_WIDTH, System::Window::WINDOW_HEIGHT, System::Window::WINDOW_COLORBIT);
 	SetMainWindowText("Killing Arena");
 	SetEnableXAudioFlag(TRUE);
+	SetWaitVSyncFlag(FALSE);
 	// DXライブラリの初期化
 	if (DxLib_Init() == -1) {
 		return -1;

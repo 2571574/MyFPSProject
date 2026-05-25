@@ -29,8 +29,9 @@ private:
 	bool isWallRunning;     // 壁走り中か
 	int wallRunDir;         // 壁の方向
 	VECTOR wallNormal;      // 現在接している壁の法線（ジャンプ時の反射計算用）
-	float currentRoll;      // 現在のカメラの傾き
+
 	std::unique_ptr<HUD> hud;	//HUD
+	std::vector<TargetInfo> targetInfo;	//インジケーター用ターゲット情報
 
 	std::vector<std::unique_ptr<Weapon>> slot;		//現在持っている武器	
 	int currentWeaponIndex;		//現在所持している武器のスロット番号
@@ -43,7 +44,6 @@ private:
 
 	int stageHandle;	//ステージのモデルハンドル
 
-	std::vector<TargetInfo> targetInfo;	//インジケーター用ターゲット情報
 
 	PlayMode currentMode;	//現在の難易度
 
@@ -52,6 +52,7 @@ private:
 	float lastCamPitch;	//前回のカメラの垂直角
 	float currentSwayX;	//現在の武器スウェイX
 	float currentSwayY;	//現在の武器スウェイY
+	float currentRoll;      // 現在のカメラの傾き
 
 	float moveDistance;//移動距離カウント
 public:
@@ -96,7 +97,14 @@ public:
 	/// <returns>取得処理が成功したらtrue</returns>
 	bool AddWeapon(std::unique_ptr<Weapon>& newWeapon);
 
+	//射撃数のカウント
 	void ShotRecord()override { Shot++; }
+
+	/// <summary>
+	/// ヒット数をカウントする
+	/// </summary>
+	/// <param name="isHeadShot">ヘッドショットだったかどうか</param>
+	/// <param name="isKill">その弾がキル判定かどうか</param>
 	void HitRecord(bool isHeadShot, bool isKill = false)override {
 		totalHit++;
 		if (isHeadShot)totalHeadHit++;

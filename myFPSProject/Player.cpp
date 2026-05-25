@@ -166,7 +166,7 @@ void Player::Update() {
 		}
 
 		if (isWallRunning) {
-			// 重力による過剰な落下を制限（壁との摩擦を表現）
+			// 重力による過剰な落下を制限
 			if (velocity.y < Chara::Player::WALL_RUN_FALL_SPEED) {
 				velocity.y = Chara::Player::WALL_RUN_FALL_SPEED;
 			}
@@ -226,7 +226,7 @@ void Player::Update() {
 
 	camPos.y += currentEyeHeight;
 
-	// 視野角を変える処理
+	//スピードによる視野拡大
 	float baseFov = ConfigManager::GetIns().Settings().basefov * Global::Math::DEG_TO_RAD;
 	float speed = VSize(velocity);
 	float speedRate = speed / Chara::Player::FOV_SPEED_BASE;
@@ -238,11 +238,14 @@ void Player::Update() {
 	}
 	fov += (targetFov - fov) * lerp;
 
+	//壁走りによる視野傾き
 	float targetRoll = isWallRunning ? (wallRunDir * Chara::Player::WALL_RUN_CAMERA_ROLL) : 0.0f;
 	float rollLerp = 1.0f - std::pow(1.0f - Chara::Player::WALL_RUN_ROLL_LERP, dt60);
 	currentRoll += (targetRoll - currentRoll) * rollLerp;
 	cam->SetRoll(currentRoll);
 
+
+	//画面揺れ
 	headBob = ConfigManager::GetIns().Settings().headbob;
 	if (headBob && onGround && !isAds) {
 		if (!(crouch && speed > Chara::Player::BOBBING_CROUCH_MIN_SPEED)) {

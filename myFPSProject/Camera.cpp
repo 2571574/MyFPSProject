@@ -78,6 +78,7 @@ void Camera::Update(VECTOR Pos) {
 
 	if (yaw > System::Camera::CAM_ANGLESNAP_YAW) yaw -= System::Camera::YAW_SNAP;
 	if (yaw < -System::Camera::CAM_ANGLESNAP_YAW) yaw += System::Camera::YAW_SNAP;
+
 }
 
 void Camera::AddAngle(float deltaYaw, float deltaPitch){

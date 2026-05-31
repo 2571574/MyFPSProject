@@ -24,6 +24,7 @@ public:
 	bool GetAlive() const { return alive; }
 };
 
+
 /// <summary>
 /// 敵の死亡時エフェクト
 /// </summary>
@@ -44,6 +45,7 @@ public:
 	void Draw() override;
 };
 
+
 /// <summary>
 /// 銃のマズルフラッシュのエフェクト
 /// </summary>
@@ -57,6 +59,7 @@ public:
 	void Update() override;
 	void Draw() override;
 };
+
 
 /// <summary>
 /// 着弾エフェクト
@@ -72,6 +75,7 @@ public:
 	void Update() override;
 	void Draw() override;
 };
+
 
 /// <summary>
 /// スポーンエフェクト
@@ -97,6 +101,7 @@ public:
 	void Draw() override;
 };
 
+
 /// <summary>
 /// 爆発エフェクト
 /// </summary>
@@ -121,6 +126,7 @@ public:
 	void Draw() override;
 };
 
+
 /// <summary>
 /// ヒットスキャンの弾のトレイル
 /// </summary>
@@ -136,7 +142,10 @@ public:
 	void Draw() override;
 };
 
-//プロジェクタイルの弾のトレイル
+
+/// <summary>
+///	プロジェクタイルの弾のトレイル
+/// </summary>
 class ProjectileTrailEffect : public Effect {
 private:
 	VECTOR startPos;		//始点

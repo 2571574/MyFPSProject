@@ -9,7 +9,7 @@
 
 class Camera;
 
-//武器の状態を表す列挙型
+//武器の状態
 enum class WeaponState {
 	IDLE,
 	RELOADING
@@ -20,9 +20,9 @@ enum class WeaponState {
 /// </summary>
 class Weapon {
 protected:
-	//性能
+
 	GunStatus spec;		//武器スペック
-	//状態
+
 	WeaponState currentState; //現在の武器ステート
 	int ammo;			 //現在の弾数
 	int reserveAmmo;	 //現在の予備弾数
@@ -42,7 +42,7 @@ protected:
 	virtual void FireProjectile(Character& user, VECTOR baseDir, VECTOR shootDir);
 
 	//即着の弾の処理　中でヒットスキャンの判定を行う　user=射手　direction=射撃方向のベクトル
-	virtual void FireHitScan(Character& user, VECTOR baseDir, VECTOR shootDir);		//ヒットスキャンの発射
+	virtual void FireHitScan(Character& user, VECTOR baseDir, VECTOR shootDir);
 
 	//射撃後の処理　クールタイムのセットや弾数の減少など　user=射手
 	void Fired(Character& user);
@@ -51,26 +51,12 @@ public:
 	Weapon(const GunStatus _spec);
 	virtual ~Weapon();
 
-	/// <summary>
-	/// 更新処理
-	/// </summary>
 	void Update(Character& user);
+	void Draw(VECTOR basePos, VECTOR forward, VECTOR right, VECTOR up, bool isAds, bool isFPP);
 
-	/// <summary>
-	/// 射撃の入力を得る
-	/// </summary>
-	/// <param name="user">射手</param>
-	/// <param name="direction">射撃方向のベクトル</param>
+	//入力を得る関数
 	void FireInput(Character& user, VECTOR direction);
-
-	/// <summary>
-	/// ADSの入力を得る
-	/// </summary>
 	void AdsInput();
-
-	/// <summary>
-	/// リロードの入力を得る
-	/// </summary>
 	void ReloadInput(Character& user);
 
 	/// <summary>
@@ -90,10 +76,15 @@ public:
 	/// </summary>
 	void Reload(Character& user);
 
-	/// <summary>
-	/// 描画処理
-	/// </summary>
-	void Draw(VECTOR basePos, VECTOR forward, VECTOR right, VECTOR up, bool isAds, bool isFPP);
+
+	void OnEquip() {
+		equipTimer = Item::Weapon::EQUIP_TIME;
+	}
+
+	void AddReserveAmmo(int amount) {
+		reserveAmmo += amount;
+	}
+
 
 	bool CanFire() const {
 		return (fireCT <= 0 && currentState == WeaponState::IDLE && ammo > 0);
@@ -103,7 +94,6 @@ public:
 		return  ((infinite || reserveAmmo > 0) && ammo < spec.magAmmo && currentState == WeaponState::IDLE );
 	}
 
-	
 	bool Reloading()const {
 		return currentState == WeaponState::RELOADING;
 	}
@@ -117,37 +107,25 @@ public:
 		return aim;
 	}
 	
-
 	void CancelAds() {
 		aim = false;
 	}
 
-	/// <summary>
-	/// リロード中のリロードキャンセル処理
-	/// </summary>
 	void CancelReload() {
 		if (currentState == WeaponState::RELOADING) {
 			reloadCT = 0.0f;
 			currentState = WeaponState::IDLE;
 		}
 	}
-
 	void SetInfinite(bool flag) { infinite = flag; }
-	void AddReserveAmmo(int amount) {
-		reserveAmmo += amount;
-	}
 
 	bool IsSameType(const GunStatus& newspec) {
 		return(spec.id == newspec.id);
 	}
+
 	const GunStatus& GetSpec() const { return spec; }
 	int GetAmmo() const { return ammo; }
 	int GetReserveAmmo() const { return reserveAmmo; }
 	bool IsInfinite() const { return infinite; }
-	
-	void OnEquip() {
-		equipTimer = Item::Weapon::EQUIP_TIME;
-	}
-
 	int GetModelHandle()const { return gunModelHandle; }
 };

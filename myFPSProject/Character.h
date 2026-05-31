@@ -30,29 +30,13 @@ protected:
 	}
 
 public:
-	/// <summary>
-	/// コンストラクタ　位置とステータスを受け取る
-	/// </summary>
-	/// <param name="_position">初期座標</param>
-	/// <param name="_status">キャラのステータス</param>
 	Character(VECTOR _position, const CharacterStatus& _status);
 
 	virtual ~Character();
 
-	/// <summary>
-	/// 更新　派生クラスでオーバーライド
-	/// </summary>
 	virtual void Update() = 0;
+	virtual void Draw() = 0;
 
-	/// <summary>
-	/// 描画　派生クラスでオーバーライド
-	/// </summary>
-	virtual void Draw() = 0;		//描画
-
-	/// <summary>
-	/// 被弾処理
-	/// </summary>
-	/// <param name="damage">喰らったダメージ量</param>
 	virtual void OnHit(int damage,WeaponID id = WeaponID::UNKNOWN) {
 		if (!alive) return;
 		TakeDamage(damage,id);
@@ -119,8 +103,9 @@ public:
 	/// <param name="stagehandle"></param>
 	void ResolveWallPenetration(int stagehandle);
 
-	void SetPos(VECTOR _pos) { position = _pos; }
 
+	//setter・getter
+	void SetPos(VECTOR _pos) { position = _pos; }
 	bool GetCrouching() const { return crouch; }
 	bool GetAlive() const { return alive; }
 	int GetHP()const { return hp; }

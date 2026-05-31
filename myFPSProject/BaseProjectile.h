@@ -15,21 +15,9 @@ protected:
 	TEAMID id;			//射手のチームID
 	bool alive;			//生存タグ
 public:
-	/// <summary>
-	/// コンストラクタ
-	/// </summary>
-	/// <param name="start">発射位置</param>
-	/// <param name="_id">射手のチームID</param>
-	/// <param name="_spec">撃った銃の性能</param>
-	/// <param name="direction">射撃方向のベクトル</param>
 	BaseProjectile(VECTOR start, TEAMID _id, const GunStatus& _spec, VECTOR direction);
-	
 	 ~BaseProjectile() {}
-
-	
 	void Update();
-
-	
 	void Draw();
 
 	/// <summary>

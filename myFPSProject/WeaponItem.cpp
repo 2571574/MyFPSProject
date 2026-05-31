@@ -1,11 +1,11 @@
-﻿#include "WeaponItem.h"
+﻿#include "Param/Global.h"
+#include "Param/System.h"
+#include "Param/Visual.h"
+#include "WeaponItem.h"
 #include "Time.h"
 #include "TextManager.h"
 #include "ItemManager.h"
 #include "ResourceManager.h"
-#include "Param/Global.h"
-#include "Param/System.h"
-#include "Param/Visual.h"
 
 #include <cmath>
 
@@ -23,12 +23,13 @@ void WeaponItem::Update() {
 	bobbingTimer += dt * Visual::ItemUI::BOBBING_SPEED;
 }
 
+
 void WeaponItem::Draw() {
 	if (!alive || !droppedWeapon)return;
-
 	float yOffset = std::sinf(bobbingTimer) * Visual::ItemUI::BOBBING_AMPLITUDE;
 	VECTOR drawPos = VAdd(position, VGet(0.0f, yOffset + Visual::ItemUI::BASE_HEIGHT_OFFSET, 0.0f));
 
+	//アイテム外周のリングの描画
 	int ringColor = GetColor(Visual::ItemUI::COLOR_ITEM_RING.r, Visual::ItemUI::COLOR_ITEM_RING.g, Visual::ItemUI::COLOR_ITEM_RING.b);
 	VECTOR center = VGet(position.x, drawPos.y, position.z);
 
@@ -71,6 +72,7 @@ void WeaponItem::Draw() {
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	SetWriteZBuffer3D(TRUE);
 
+	//アイテムのモデル描画
 	int modelHandle = droppedWeapon->GetModelHandle();
 	if (modelHandle != -1) {
 		const GunStatus& spec = droppedWeapon->GetSpec();
@@ -84,6 +86,8 @@ void WeaponItem::Draw() {
 		MV1SetMatrix(modelHandle, worldMat);
 		MV1DrawModel(modelHandle);
 	}
+
+	//モデルがない場合のフォールバック
 	else {
 		int fallbackColor = GetColor(Visual::ItemUI::COLOR_FALLBACK_CUBE.r, Visual::ItemUI::COLOR_FALLBACK_CUBE.g, Visual::ItemUI::COLOR_FALLBACK_CUBE.b);
 		DrawCube3D(VAdd(drawPos, VGet(Visual::ItemUI::CUBE_HALF_SIZE, Visual::ItemUI::CUBE_HALF_SIZE, Visual::ItemUI::CUBE_HALF_SIZE)),
@@ -91,6 +95,8 @@ void WeaponItem::Draw() {
 			fallbackColor, fallbackColor, TRUE);
 	}
 
+
+	//UIテキストの描画
 	VECTOR camPos = ItemManager::GetIns().GetCamPos();
 	float distance = VSize(VSub(camPos, drawPos));
 	if (distance <= Visual::ItemUI::UI_DISPLAY_DISTANCE) {
@@ -112,10 +118,10 @@ void WeaponItem::Draw() {
 				}
 				int alpha = static_cast<int>(255 * alphaRate);
 
-				::SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-				::DrawFormatStringToHandle(drawX, drawYAmmo, GetColor(Visual::HUD::COLOR_HUD_WHITE.r, Visual::HUD::COLOR_HUD_WHITE.g, Visual::HUD::COLOR_HUD_WHITE.b), fontItemAmmo, "AMMO: %d / %d", droppedWeapon->GetAmmo(), droppedWeapon->GetReserveAmmo());
-				::DrawFormatStringToHandle(drawX, drawYName, GetColor(Visual::HUD::COLOR_HUD_WHITE.r, Visual::HUD::COLOR_HUD_WHITE.g, Visual::HUD::COLOR_HUD_WHITE.b), fontItemName, "%s", weaponName);
-				::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+				DrawFormatStringToHandle(drawX, drawYAmmo, GetColor(Visual::HUD::COLOR_HUD_WHITE.r, Visual::HUD::COLOR_HUD_WHITE.g, Visual::HUD::COLOR_HUD_WHITE.b), fontItemAmmo, "AMMO: %d / %d", droppedWeapon->GetAmmo(), droppedWeapon->GetReserveAmmo());
+				DrawFormatStringToHandle(drawX, drawYName, GetColor(Visual::HUD::COLOR_HUD_WHITE.r, Visual::HUD::COLOR_HUD_WHITE.g, Visual::HUD::COLOR_HUD_WHITE.b), fontItemName, "%s", weaponName);
+				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 			}
 		}
 	}

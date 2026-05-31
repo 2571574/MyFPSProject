@@ -186,7 +186,7 @@ int EnemyManager::Update() {
 
 void EnemyManager::Draw() {
 	for (const auto& e : enemies) {
-		e->Draw();		//1体ずつ描画　繰り返し
+		e->Draw();
 	}
 }
 

@@ -87,8 +87,10 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 	HitInfo result;
 	float minDistance = FLT_MAX;
 	if (stageHandle != -1) {
+
 		//ステージとの当たり判定
 		MV1_COLL_RESULT_POLY wallHit = MV1CollCheck_Line(stageHandle, -1, start, end);
+
 		if (wallHit.HitFlag == TRUE) {
 			minDistance = VSize(VSub(wallHit.HitPosition, start));
 			result.isWallHit = true;
@@ -103,6 +105,7 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 		//ヒット位置のY座標を計算
 		VECTOR cPos = chara->GetPos();
 		float hitY = start.y;
+
 		if (hitY < cPos.y)hitY = cPos.y;
 		if (hitY > cPos.y + chara->GetStatus().height)hitY = cPos.y + chara->GetStatus().height;
 		VECTOR approxBodyHitPos = VGet(cPos.x, hitY, cPos.z);
@@ -115,6 +118,7 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 
 		if (HitCheck_Capsule_Capsule(start, end, System::Collision::HITSCAN_RAY_THICKNESS, headPos, headPos, headRad)) {
 			float dist = VSize(VSub(headPos, start));
+
 			if (dist < minDistance) {
 				minDistance = dist;
 				result.character = chara;
@@ -123,6 +127,7 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 				result.hitPos = headPos;
 				result.hitNormal = VNorm(VSub(start, end));
 			}
+
 			continue;
 		}
 
@@ -134,6 +139,7 @@ HitInfo CollisionManager::CheckHitScan(VECTOR start, VECTOR end, TEAMID shooter)
 
 		if (HitCheck_Capsule_Capsule(start, end, System::Collision::HITSCAN_RAY_THICKNESS, bodyBottom, bodyTop, bodyRad)) {
 			float dist = VSize(VSub(approxBodyHitPos, start));
+
 			if (dist < minDistance) {
 				minDistance = dist;
 				result.character = chara;

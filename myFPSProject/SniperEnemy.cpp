@@ -1,12 +1,12 @@
-﻿#include "SniperEnemy.h"
+﻿#include "Param/Global.h"
+#include "Param/Chara.h"
+#include "Param/System.h"
+#include "Param/Visual.h"
+#include "SniperEnemy.h"
 #include "Player.h"
 #include "Status.h"
 #include "Time.h"
 #include "SoundManager.h"
-#include "Param/Global.h"
-#include "Param/Chara.h"
-#include "Param/System.h"
-#include "Param/Visual.h"
 
 SniperEnemy::SniperEnemy(VECTOR pos, Player* target)
 	: Enemy(pos, CHARA_STATUS::SNIPER_ENEMY, target, ENEMYTYPE::SNIPER)
@@ -19,7 +19,9 @@ SniperEnemy::SniperEnemy(VECTOR pos, Player* target)
 
 void SniperEnemy::Update() {
 	float dt = Time::GetIns().GetDelta();
+
 	if (onHitFlashTimer > 0.0f) onHitFlashTimer -= dt;
+
 	if (nowSpawned) {
 		spawnedTimer -= dt;
 		if (spawnedTimer <= 0.0f) {
@@ -27,11 +29,13 @@ void SniperEnemy::Update() {
 		}
 		return;
 	}
+
 	if (hp <= 0) {
 		if (chargeSoundHandle != -1) {
 			SoundManager::GetIns().StopSE(chargeSoundHandle);
 			chargeSoundHandle = -1;
 		}
+
 		alive = false;
 		return;
 	}
@@ -39,14 +43,10 @@ void SniperEnemy::Update() {
 	if (sniper)sniper->Update(*this);
 	if (target == nullptr)return;
 
-	//移動
 	VECTOR moveTarget = UpdateNavigation(target, dt);
 	float distToPlayer = VSize(VSub(target->GetPos(), position));
 	bool hasLos = CheckLineSight(target, target->GetCurrentHeight() * 0.5f);
 	VECTOR moveDir = VGet(0.0f, 0.0f, 0.0f);
-
-
-	//行動パターン
 
 	//プレイヤーが近すぎる場合は距離を取る
 	if (distToPlayer < escapeDist) {
@@ -59,6 +59,7 @@ void SniperEnemy::Update() {
 			moveDir = VGet(0.0f, 0.0f, 0.0f);
 		}
 	}
+
 	//攻撃距離より遠い、または視線が通っていない場合は近づく
 	else if (distToPlayer > attackDist || !hasLos) {
 		moveDir = VNorm(VSub(moveTarget, position));
@@ -73,6 +74,7 @@ void SniperEnemy::Update() {
 			moveDir = VGet(0.0f, 0.0f, 0.0f);
 		}
 	}
+
 	moveDir.y = 0.0f;
 	ApplyMovement(moveDir, stageHandle);
 
@@ -88,20 +90,24 @@ void SniperEnemy::Update() {
 		}
 
 		targetingTimer += dt;
+
 		if (target) {
 			float progress = targetingTimer / Chara::Sniper::TARGET_TIME;
 			if (progress > 1.0f) progress = 1.0f;
 			target->AddTargeted(position, progress);
 		}
+
 		if (targetingTimer >= Chara::Sniper::TARGET_TIME) {
 			Action();
 			targetingTimer = 0.0f;
 		}
 	}
+
 	else {
 		if (targetingTimer > 0.0f) {
 			SoundManager::GetIns().StopSE(chargeSoundHandle);
 		}
+
 		targetingTimer = 0.0f;
 	}
 
@@ -146,6 +152,7 @@ void SniperEnemy::Draw() {
 
 	int fillFlag = nowSpawned ? FALSE : TRUE;
 
+	//影
 	if (!nowSpawned) {
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, Chara::Base::SHADOW_ALPHA);
 		VECTOR shadowPos1 = VAdd(position, VGet(0.0f, Chara::Base::SHADOW_OFFSET_Y_HIGH, 0.0f));
@@ -154,16 +161,21 @@ void SniperEnemy::Draw() {
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 
+	//カプセル
 	DrawCapsule3D(bottom, bodyTop, bodyRad, System::Window::CIRCLE_DIVNUM, color, color, fillFlag);
 	DrawSphere3D(headPos, headRad, System::Window::CIRCLE_DIVNUM, color, color, fillFlag);
 
+	//武器
 	if (sniper) {
 		VECTOR forward = VGet(0.0f, 0.0f, 1.0f);
+
 		if (target) {
 			forward = VNorm(VSub(target->GetPos(), position));
 			forward.y = 0.0f;
+
 			if (VSize(forward) < System::Collision::MIN_DIST_SQUARED) forward = VGet(0.0f, 0.0f, 1.0f);
 		}
+
 		VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), forward));
 		VECTOR up = VNorm(VCross(forward, right));
 
@@ -173,7 +185,9 @@ void SniperEnemy::Draw() {
 		sniper->Draw(drawPos, forward, right, up, false, false);
 	}
 
+	//狙っている間のレーザー
 	if (targetingTimer > 0.0f) {
+
 		if (sniper && target) {
 			VECTOR gunOffset = VAdd(sniper->GetSpec().muzzleOffset, VGet(0.0f, currentEyeHeight, 0.0f));
 			VECTOR s = VAdd(position, gunOffset);
@@ -187,6 +201,7 @@ void SniperEnemy::Draw() {
 			float innerRad = 0.0f;
 			int outerAlpha = 0;
 
+			//フェーズ１
 			if (progress < Chara::Sniper::INDICATOR_PHASE1_PROGRESS_RATIO) {
 				float t = progress / Chara::Sniper::INDICATOR_PHASE1_PROGRESS_RATIO;
 				outerColor = GetColor(Chara::Sniper::INDICATOR_OUTER_COLOR_PHASE1.r, Chara::Sniper::INDICATOR_OUTER_COLOR_PHASE1.g, Chara::Sniper::INDICATOR_OUTER_COLOR_PHASE1.b);
@@ -194,6 +209,8 @@ void SniperEnemy::Draw() {
 				innerRad = Chara::Sniper::INDICATOR_INNER_RADIUS_PHASE1;
 				outerAlpha = static_cast<int>(Chara::Sniper::INDICATOR_OUTER_ALPHA_PHASE1_MAX * t);
 			}
+
+			//フェーズ２
 			else {
 				float t = (progress - Chara::Sniper::INDICATOR_PHASE1_PROGRESS_RATIO) / Chara::Sniper::INDICATOR_PHASE2_PROGRESS_RATIO;
 				int r = Chara::Sniper::INDICATOR_OUTER_COLOR_PHASE2_BASE.r;
@@ -208,9 +225,11 @@ void SniperEnemy::Draw() {
 
 			SetWriteZBuffer3D(FALSE);
 
+			//レーザーの外側
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, outerAlpha);
 			DrawCapsule3D(s, e, outerRad, Chara::Sniper::INDICATOR_CAPSULE_SEGMENTS, outerColor, outerColor, TRUE);
 
+			//レーザーの軸
 			SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
 			DrawCapsule3D(s, e, innerRad, Chara::Sniper::INDICATOR_CAPSULE_SEGMENTS, innerColor, innerColor, TRUE);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);

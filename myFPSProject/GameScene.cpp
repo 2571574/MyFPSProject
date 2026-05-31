@@ -1,15 +1,15 @@
 ﻿#include "GameScene.h"
-#include "CollisionManager.h"
-#include "SceneManager.h"
-#include "TitleScene.h"
-#include "ItemManager.h"
-#include "ResultScene.h"
-#include "ResourceManager.h"
-#include "EffectManager.h"
-#include "SoundManager.h"
 #include "Param/Global.h"
 #include "Param/Scene.h"
 #include "Param/System.h"
+#include "TitleScene.h"
+#include "ResultScene.h"
+#include "SceneManager.h"
+#include "CollisionManager.h"
+#include "ItemManager.h"
+#include "ResourceManager.h"
+#include "EffectManager.h"
+#include "SoundManager.h"
 
 GameScene::GameScene(SceneManager* manager)
 	: BaseScene(manager)
@@ -37,7 +37,7 @@ void GameScene::Init()
 	camera.SetAngle(System::Camera::DEFAULT_CAM_X, 0.0f);
 	player.SyncCamAngle();
 
-	//ステージのモデルハンドルをセット
+	//ステージのモデルハンドル
 	stageHandle = ResourceManager::GetIns().GetModel("Resource/Arena.mv1");
 	MV1SetPosition(stageHandle, VGet(0.0f, 0.0f, 0.0f));
 	MV1SetScale(stageHandle, VGet(Scene::Common::STAGE_MODEL_SCALE, Scene::Common::STAGE_MODEL_SCALE, Scene::Common::STAGE_MODEL_SCALE));
@@ -46,13 +46,13 @@ void GameScene::Init()
 	CollisionManager::GetIns().SetStageHandle(stageHandle);
 	ItemManager::GetIns().SetStageHandle(stageHandle);
 
-	//フォントのハンドルをセット
+	//フォントのハンドル
 	fontLarge = ResourceManager::GetIns().GetFont("Resource/Font/JetBrainsMono_36.dft");
 	fontMedium = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_20.dft");
 
 
 
-	//敵スポーンセット
+	//敵スポーン位置のセット
 	EnemyManager::GetIns().Init(stageHandle, &player);
 	EnemyManager::GetIns().AddSpawnPoint(VGet(25.0f, Scene::Game::SPAWN_Y_GROUND, 25.0f));
 	EnemyManager::GetIns().AddSpawnPoint(VGet(-25.0f, Scene::Game::SPAWN_Y_GROUND, 25.0f));
@@ -66,7 +66,7 @@ void GameScene::Init()
 	EnemyManager::GetIns().AddSpawnPoint(VGet(27.0f, Scene::Game::SPAWN_Y_TOP, -27.0f));
 	EnemyManager::GetIns().AddSpawnPoint(VGet(-27.0f, Scene::Game::SPAWN_Y_TOP, -27.0f));
 
-	//武器スポナー
+	//武器スポナーのセット
 	std::vector<SpawnerSetup> spawnerSetups = {
 		{VGet(25.0f, 0.4f, 25.0f),WeaponID::UNKNOWN},
 		{VGet(-25.0f, 0.4f, 25.0f),WeaponID::UNKNOWN},
@@ -78,10 +78,11 @@ void GameScene::Init()
 		ItemManager::GetIns().Clear();
 	}
 
+	//演出の初期化
 	EffectManager::GetIns().Clear();
-
 	SoundManager::GetIns().PlayBGM("Resource/Sound/GameBGM.wav");
 
+	//死亡時のエフェクト用
 	monochromeHandle = MakeGraph(System::Window::WINDOW_WIDTH, System::Window::WINDOW_HEIGHT, FALSE);
 	isDeadSequence = false;
 	deathTimer = 0.0f;
@@ -93,6 +94,7 @@ void GameScene::Init()
 
 void GameScene::Update() {
 
+	//操作処理
 	if (!isDeadSequence) {
 		if (InputManager::GetIns().IsActionTrigger(ActionID::PAUSE)) {
 			isPaused = !isPaused;
@@ -170,6 +172,7 @@ void GameScene::PauseUpdate() {
 
 void GameScene::Draw() {
 	if (!isDeadSequence) {
+		//文字表示用
 		ItemManager::GetIns().SetCamPos(camera.GetPos());
 	}
 
@@ -196,6 +199,7 @@ void GameScene::Draw() {
 		PauseDraw();
 	}
 
+	//死亡演出完了　リザルトシーンへの遷移
 	if (reqTransition && !isSceneChange) {
 		isSceneChange = true;
 

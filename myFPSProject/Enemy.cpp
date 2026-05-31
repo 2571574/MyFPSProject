@@ -1,10 +1,10 @@
 ﻿#include "Enemy.h"
-#include "EnemyManager.h"
-#include "Time.h"
-#include "SoundManager.h"
 #include "Param/Global.h"
 #include "Param/Chara.h"
 #include "Param/System.h"
+#include "EnemyManager.h"
+#include "Time.h"
+#include "SoundManager.h"
 
 #include <cmath>
 
@@ -63,13 +63,17 @@ bool Enemy::CheckPathSafety(VECTOR targetPos)const {
 		if (ground.HitFlag == 0 || ground.Normal.y < Chara::EnemyCommon::PATH_SAFETY_NORMAL_MIN || std::abs(ground.HitPosition.y - prevY)> Chara::EnemyCommon::PATH_SAFETY_HEIGHT_DIFF_MAX) {
 			return false;
 		}
+
 		prevY = ground.HitPosition.y;
 	}
+
 	//高低差が許容範囲かどうかチェック
 	float heightDiff = targetPos.y - position.y;
+
 	if (std::abs(heightDiff) > Chara::EnemyCommon::PATH_SAFETY_TOTAL_HEIGHT_DIFF) {
 		return false;
 	}
+
 	return true;
 }
 
@@ -87,6 +91,7 @@ VECTOR Enemy::UpdateNavigation(const Character* target, float dt) {
 		if (!isDirectPathSafe) {
 			SetPath(EnemyManager::GetIns().CalculatePath(position, target->GetPos()));
 		}
+
 		//計算にばらつきを持たせる
 		pathUpdateTimer = Chara::EnemyCommon::PATH_UPDATE_BASE_INTERVAL + (GetRand(Chara::EnemyCommon::PATH_UPDATE_RANDOM) / Global::Math::PERCENT_MAX);
 	}
@@ -102,6 +107,7 @@ VECTOR Enemy::UpdateNavigation(const Character* target, float dt) {
 		//ノードに十分近づいたら次のノードを目指す
 		if (VSize(toNode) < Chara::EnemyCommon::PATH_NODE_REACHED_DIST) {
 			AdvancePathIndex();
+
 			if (HasPath()) {
 				moveTarget = GetNextNodeID();
 			}
@@ -112,7 +118,9 @@ VECTOR Enemy::UpdateNavigation(const Character* target, float dt) {
 	return moveTarget;
 }
 
+
 bool Enemy::CheckFall() const { return position.y < Chara::EnemyCommon::FALL_DEATH_Y; }
+
 
 void Enemy::UpdateFootstep() {
 	if (!onGround || !alive || nowSpawned) return;
@@ -125,12 +133,14 @@ void Enemy::UpdateFootstep() {
 	if (speed > Chara::Base::MOVEMENT_MIN) {
 		moveDistance += speed * dt60;
 
+		//移動距離が一定以上になったら足音を鳴らす
 		if (moveDistance >= Chara::EnemyCommon::STEP_LENGTH) {
 			SoundManager::GetIns().Play3DSE
 			("Resource/Sound/footstep.wav", position, Chara::Base::FOOTSTEP_SOUND_RADIUS);
 			moveDistance -= Chara::EnemyCommon::STEP_LENGTH;
 		}
 	}
+
 	else {
 		moveDistance = 0.0f;
 	}

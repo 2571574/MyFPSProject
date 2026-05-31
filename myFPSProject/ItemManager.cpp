@@ -15,7 +15,7 @@ ItemManager& ItemManager::GetIns() {
 	return ins;
 }
 
-//
+
 GunStatus ItemManager::GetPlayerGunStatus(WeaponID id) {
 	switch (id) {
 	case WeaponID::AR: return PLAYER_GUN::RIFLE;

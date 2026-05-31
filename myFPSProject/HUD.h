@@ -20,7 +20,6 @@ private:
 	float damageFlashTimer = 0.0f;//ダメージ演出の表示タイマー
 
 
-
 	int fontJpLarge = -1;   // スコア、スタートタイマー用
 	int fontJpMedium = -1;  // 武器名、PickUp表記用
 	int fontEnLarge = -1;   // AMMOのメイン数字用

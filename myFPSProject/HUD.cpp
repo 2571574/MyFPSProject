@@ -28,6 +28,7 @@ void HUD::Update() {
 	if (hitMarkTimer > 0.0f) hitMarkTimer -= dt;
 
 	float prepareTime = EnemyManager::GetIns().GetPrepareTimer();
+
 	if (prepareTime <= 0.0f && !isGameStarted) {
 		isGameStarted = true;
 		scoreFadeAlpha = 0.0f;
@@ -49,6 +50,7 @@ void HUD::Draw() {
 
 	//スコア&開始前タイマー
 	if (pplayer->GetCurrentMode() != PlayMode::MODE_TUTORIAL) {
+
 		if (prepareTime > 0.0f) {
 			snprintf(topTextBuf, sizeof(topTextBuf), "スタートまで : %.1f", prepareTime);
 		}
@@ -62,6 +64,7 @@ void HUD::Draw() {
 		if (prepareTime > 0.0f) {
 			::DrawStringToHandle(drawX, topY, topTextBuf, textColor, fontJpLarge);
 		}
+
 		else {
 			int alpha = static_cast<int>(scoreFadeAlpha * 255);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
@@ -89,6 +92,7 @@ void HUD::Draw() {
 			lineLength = Visual::HUD::HITMARK_LINE_LENGTH_KILL;
 			offsetMultiplier = Visual::HUD::HITMARK_OFFSET_MULTIPLIER_KILL;
 		}
+
 		else if (lastHitWasHS) {
 			bColor = Visual::HUD::COLOR_HUD_YELLOW;
 			thickness = Visual::HUD::HITMARK_THICKNESS_HS;
@@ -135,8 +139,10 @@ void HUD::Draw() {
 
 	//武器を拾うHUD
 	WeaponItem* nearItem = ItemManager::GetIns().GetNearItem();
+
 	if (nearItem) {
 		const GunStatus* spec = nearItem->GetSpec();
+
 		if (spec) {
 			const char* weaponName = TextManager::GetIns().GetWeaponName(spec->id);
 
@@ -165,6 +171,7 @@ void HUD::Draw() {
 			int white = GetColor(Visual::HUD::COLOR_HUD_WHITE.r, Visual::HUD::COLOR_HUD_WHITE.g, Visual::HUD::COLOR_HUD_WHITE.b);
 
 			if (iconSize > 0) {
+
 				int iconHandle = ResourceManager::GetIns().GetGraph(spec->visual.uiPath);
 				if (iconHandle != -1) {
 					SetDrawBright(255, 255, 255);
@@ -172,14 +179,15 @@ void HUD::Draw() {
 					DrawExtendGraph(currentX, boxStartY + Visual::HUD::PICKUP_PADDING_Y, currentX + iconSize, boxStartY + Visual::HUD::PICKUP_PADDING_Y + iconSize, iconHandle, TRUE);
 					SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 				}
+
 				currentX += iconSize + gap;
 			}
 
 			int textStartY = boxStartY + Visual::HUD::PICKUP_PADDING_Y + (iconSize / 2) + Visual::HUD::PICKUP_TEXT_Y_OFFSET_FROM_ICON_CENTER;
 			if (iconSize == 0) textStartY = boxStartY + Visual::HUD::PICKUP_TEXT_Y_OFFSET_NO_ICON;
 
-			::DrawStringToHandle(currentX, textStartY, weaponName, white, fontJpMedium);
-			::DrawStringToHandle(currentX, textStartY + Visual::HUD::PICKUP_SUBTEXT_Y_OFFSET, pickUpStr.c_str(), white, fontEnSmall);
+			DrawStringToHandle(currentX, textStartY, weaponName, white, fontJpMedium);
+			DrawStringToHandle(currentX, textStartY + Visual::HUD::PICKUP_SUBTEXT_Y_OFFSET, pickUpStr.c_str(), white, fontEnSmall);
 		}
 	}
 
@@ -195,6 +203,7 @@ void HUD::Draw() {
 	DrawBox(hpStartX, hpStartY, hpStartX + Visual::HUD::HP_BAR_WIDTH, hpStartY + Visual::HUD::HP_BAR_HEIGHT, GetColor(Visual::HUD::COLOR_HP_BAR_BG.r, Visual::HUD::COLOR_HP_BAR_BG.g, Visual::HUD::COLOR_HP_BAR_BG.b), TRUE);
 
 	int hpColor = (hpRatio > Visual::HUD::HP_LOW_RATIO_THRESHOLD) ? GetColor(Visual::HUD::COLOR_HUD_WHITE.r, Visual::HUD::COLOR_HUD_WHITE.g, Visual::HUD::COLOR_HUD_WHITE.b) : GetColor(Visual::HUD::COLOR_HUD_RED.r, Visual::HUD::COLOR_HUD_RED.g, Visual::HUD::COLOR_HUD_RED.b);
+
 	DrawBox(hpStartX, hpStartY, hpStartX + static_cast<int>(Visual::HUD::HP_BAR_WIDTH * hpRatio), hpStartY + Visual::HUD::HP_BAR_HEIGHT, hpColor, TRUE);
 
 	Weapon* weapon = pplayer->GetWeapon();
@@ -217,6 +226,7 @@ void HUD::Draw() {
 
 		if (!spec.visual.uiPath.empty()) {
 			int iconHandle = ResourceManager::GetIns().GetGraph(spec.visual.uiPath);
+
 			if (iconHandle != -1) {
 				SetDrawBright(0, 0, 0);
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, Visual::HUD::WEAPON_ICON_PANEL_ALPHA);
@@ -229,11 +239,11 @@ void HUD::Draw() {
 		int textX = uiBaseX + Visual::HUD::WEAPON_TEXT_X_OFFSET;
 		int textY = uiBaseY + Visual::HUD::WEAPON_ICON_SIZE - Visual::HUD::WEAPON_TEXT_Y_OFFSET_FROM_ICON_BOTTOM;
 
-		::DrawFormatStringToHandle(textX, textY, GetColor(Visual::HUD::COLOR_HUD_WHITE.r, Visual::HUD::COLOR_HUD_WHITE.g, Visual::HUD::COLOR_HUD_WHITE.b), fontJpMedium, "%s", weaponName);
-		::DrawFormatStringToHandle(textX, textY + Visual::HUD::WEAPON_AMMO_TEXT_Y_OFFSET, GetColor(Visual::HUD::COLOR_HUD_WHITE.r, Visual::HUD::COLOR_HUD_WHITE.g, Visual::HUD::COLOR_HUD_WHITE.b), fontEnLarge, "AMMO  %02d / %02d", ammo, mag);
+		DrawFormatStringToHandle(textX, textY, GetColor(Visual::HUD::COLOR_HUD_WHITE.r, Visual::HUD::COLOR_HUD_WHITE.g, Visual::HUD::COLOR_HUD_WHITE.b), fontJpMedium, "%s", weaponName);
+		DrawFormatStringToHandle(textX, textY + Visual::HUD::WEAPON_AMMO_TEXT_Y_OFFSET, GetColor(Visual::HUD::COLOR_HUD_WHITE.r, Visual::HUD::COLOR_HUD_WHITE.g, Visual::HUD::COLOR_HUD_WHITE.b), fontEnLarge, "AMMO  %02d / %02d", ammo, mag);
 
 		if (!weapon->IsInfinite()) {
-			::DrawFormatStringToHandle(textX, textY + Visual::HUD::WEAPON_RESERVE_TEXT_Y_OFFSET, GetColor(Visual::HUD::COLOR_RESERVE_AMMO_TEXT.r, Visual::HUD::COLOR_RESERVE_AMMO_TEXT.g, Visual::HUD::COLOR_RESERVE_AMMO_TEXT.b), fontEnSmall, "      %03d", reserve);
+			DrawFormatStringToHandle(textX, textY + Visual::HUD::WEAPON_RESERVE_TEXT_Y_OFFSET, GetColor(Visual::HUD::COLOR_RESERVE_AMMO_TEXT.r, Visual::HUD::COLOR_RESERVE_AMMO_TEXT.g, Visual::HUD::COLOR_RESERVE_AMMO_TEXT.b), fontEnSmall, "      %03d", reserve);
 		}
 
 		//リロード
@@ -259,11 +269,12 @@ void HUD::Draw() {
 
 			const char* reloadText = "RELOADING";
 			int rWidth = GetDrawStringWidthToHandle(reloadText, static_cast<int>(strlen(reloadText)), fontEnSmall);
-			::DrawStringToHandle(cx - (rWidth / 2), cy + Visual::HUD::RELOAD_CIRCLE_RADIUS + Visual::HUD::RELOAD_TEXT_Y_OFFSET, reloadText, arcColor, fontEnSmall);
+			DrawStringToHandle(cx - (rWidth / 2), cy + Visual::HUD::RELOAD_CIRCLE_RADIUS + Visual::HUD::RELOAD_TEXT_Y_OFFSET, reloadText, arcColor, fontEnSmall);
 		}
 
 		//狙われているインジケーター
 		const auto& attackers = pplayer->GetTargeted();
+
 		if (!attackers.empty()) {
 			float playerYaw = pplayer->GetCam()->GetYaw() * Global::Math::DEG_TO_RAD;
 
@@ -280,6 +291,7 @@ void HUD::Draw() {
 				int alpha = static_cast<int>(Visual::HUD::INDICATOR_ALPHA_MIN + Visual::HUD::INDICATOR_ALPHA_RANGE * prog);
 
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+
 				for (int i = 0; i < Visual::HUD::INDICATOR_SEGMENTS; ++i) {
 					float a1 = relativeAngle - arcAngle + (arcAngle * 2.0f * i / Visual::HUD::INDICATOR_SEGMENTS);
 					float a2 = relativeAngle - arcAngle + (arcAngle * 2.0f * (i + 1) / Visual::HUD::INDICATOR_SEGMENTS);
@@ -291,29 +303,36 @@ void HUD::Draw() {
 
 					DrawLine(x1, y1, x2, y2, color, Visual::HUD::INDICATOR_LINE_THICKNESS);
 				}
+
 				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 			}
 		}
 	}
 }
 
+
 void HUD::OnHitTarget(bool isHeadShot,bool isKill) {
 	hitMarkTimer = Visual::HUD::HITMARK_DURATION;
 	lastHitWasHS = isHeadShot;
 	lastHitWasKill = isKill;
+
 	if (isKill) {
 		SoundManager::GetIns().PlaySE("Resource/Sound/kill.ogg");
 	}
+
 	else if (isHeadShot) {
 		SoundManager::GetIns().PlaySE("Resource/Sound/hs.ogg");
 	}
+
 	else {
 		SoundManager::GetIns().PlaySE("Resource/Sound/hit.ogg");
 	}
 }
 
+
 void HUD::OnPlayerTakeDamage() {
 	damageFlashTimer = Visual::HUD::DAMAGE_FLASH_DURATION;
+
 	if (pplayer->GetHP() > 0) {
 		SoundManager::GetIns().PlaySE("Resource/Sound/damage.ogg");
 	}

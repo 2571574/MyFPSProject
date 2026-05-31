@@ -1,10 +1,10 @@
 ﻿#include "SceneManager.h"
-#include "GameScene.h"
-#include "TitleScene.h"
-#include "SoundManager.h"
 #include "Param/Global.h"
 #include "Param/Scene.h"
 #include "Param/System.h"
+#include "GameScene.h"
+#include "TitleScene.h"
+#include "SoundManager.h"
 
 #include <fstream>
 #include <algorithm>
@@ -22,12 +22,14 @@ void SceneManager::ChangeScene(std::unique_ptr<BaseScene> nextscene) {
 	if (fadeState != FadeState::NONE)return;
 
 	if (currentScene == nullptr) {
+		//初回のシーン切り替えはフェードなし
 		currentScene = std::move(nextscene);
 		currentScene->Init();
 		fadeState = FadeState::FADEIN;
 		fadeAlpha = 1.0f;
 		return;
 	}
+	//次のシーンとして保持しフェードアウト
 	nextScenePending = std::move(nextscene);
 	fadeState = FadeState::FADEOUT;
 	fadeAlpha = 0.0f;
@@ -42,12 +44,13 @@ void SceneManager::Update() {
 			fadeAlpha = 1.0f;
 
 			SoundManager::GetIns().StopAll();
-
+			//完全に暗転したら次のシーンに切り替え
 			currentScene = std::move(nextScenePending);
 			currentScene->Init();
 			fadeState = FadeState::FADEIN;
 		}
 	}
+
 	//フェードイン
 	else if (fadeState == FadeState::FADEIN) {
 		fadeAlpha -= Scene::Manager::FADE_SPEED * dt;
@@ -56,6 +59,7 @@ void SceneManager::Update() {
 			fadeState = FadeState::NONE;
 		}
 	}
+
 	if (currentScene) {
 		currentScene->Update();
 	}
@@ -72,6 +76,7 @@ void SceneManager::Draw() {
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 }
+
 
 void SceneManager::SetScore(int score) {
 	lastResult.currentScore = score;

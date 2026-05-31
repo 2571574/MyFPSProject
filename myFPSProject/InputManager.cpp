@@ -2,20 +2,18 @@
 #include "Param/System.h"
 #include "DxLib.h"
 
-/*コンストラクタ*/
 InputManager::InputManager() {
 	SetDefaultBinding();
 }
 
-/*インスタンスを取得*/
 InputManager& InputManager::GetIns() {
 	static InputManager instance;
 	return instance;
 }
 
-/*デフォルトのキーバインドにする関数*/
 void InputManager::SetDefaultBinding() {
-	bindings.clear();	//バインドを全消去
+	bindings.clear();
+
 	//キーボードマウス
 	SetBind(ActionID::MOVE_FORWARD, InputType::KEYBOARD, KEY_INPUT_W);
 	SetBind(ActionID::MOVE_LEFT, InputType::KEYBOARD, KEY_INPUT_A);
@@ -54,20 +52,20 @@ void InputManager::SetDefaultBinding() {
 	SetBind(ActionID::MENU_LEFT, InputType::JOY, PAD_INPUT_LEFT);
 	SetBind(ActionID::MENU_DOWN, InputType::JOY, PAD_INPUT_DOWN);
 	SetBind(ActionID::MENU_RIGHT, InputType::JOY, PAD_INPUT_RIGHT);
-	SetBind(ActionID::MENU_SELECT, InputType::JOY, PAD_INPUT_2); // A/×: 決定
-	SetBind(ActionID::MENU_BACK, InputType::JOY, PAD_INPUT_3);   // B/○: 戻る
+	SetBind(ActionID::MENU_SELECT, InputType::JOY, PAD_INPUT_2);
+	SetBind(ActionID::MENU_BACK, InputType::JOY, PAD_INPUT_3);
 }
 
-/*キーバインドをセット*/
+
 void InputManager::SetBind(ActionID id, InputType type, int code) {
 	bindings[id].push_back({ type,code });
 }
 
-/*ホールドでアクション*/
+
 bool InputManager::IsActionHold(ActionID id)const {
 	auto it = bindings.find(id);
-	if (it == bindings.end()) return false;	//idのアクションが見つからなければreturn
-	//キー入力を検知したらtrue
+	if (it == bindings.end()) return false;
+
 	for (const auto& bind : it->second) {
 		if (CheckKey::GetIns().isHold(bind.type, bind.KeyCode)) {
 			return true;
@@ -76,11 +74,11 @@ bool InputManager::IsActionHold(ActionID id)const {
 	return false;
 }
 
-/*トリガーでアクション*/
+
 bool InputManager::IsActionTrigger(ActionID id)const {
 	auto it = bindings.find(id);
-	if (it == bindings.end()) return false;	//idのアクションが見つからなければreturn
-	//キー入力を検知したらtrue
+	if (it == bindings.end()) return false;
+
 	for (const auto& bind : it->second) {
 		if (CheckKey::GetIns().isPress(bind.type, bind.KeyCode)) {
 			return true;

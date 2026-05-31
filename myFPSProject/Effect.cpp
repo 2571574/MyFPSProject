@@ -43,6 +43,8 @@ void DeathEffect::Update() {
 			velocity.y = 0.0f;
 		}
 	}
+
+	//空中では空気抵抗を適用
 	else {
 		float friction = std::pow(Visual::Effect::PARTICLE_FRICTION_AIR_XZ, dt60);
 		velocity.x *= friction;
@@ -53,7 +55,7 @@ void DeathEffect::Update() {
 }
 
 void DeathEffect::Draw() {
-	//寿命に応じてサイズを減衰させる
+	//寿命に応じてサイズを減衰
 	float scale = lifeTime / maxLifeTime;
 	if (scale < 0.0f) scale = 0.0f;
 
@@ -61,7 +63,7 @@ void DeathEffect::Draw() {
 	int alpha = static_cast<int>(255 * (scale * scale));
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 
-	//回転行列を作成して、円錐の上下のオフセットを計算
+	//円錐の上下のオフセットを計算
 	MATRIX rotMat = MGetRotAxis(rotAxis, angle);
 	VECTOR topOffset = VTransform(VGet(0.0f, size, 0.0f), rotMat);
 	VECTOR bottomOffset = VTransform(VGet(0.0f, -size, 0.0f), rotMat);
@@ -107,6 +109,7 @@ void MuzzleFlashEffect::Draw() {
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
+
 HitEffect::HitEffect(VECTOR pos, VECTOR vel, float life, float s, float fY, int c)
 	: Effect(pos, life)
 	, velocity(vel)
@@ -141,6 +144,8 @@ void HitEffect::Update() {
 			velocity.y = 0.0f;
 		}
 	}
+
+	//空中では空気抵抗を適用
 	else {
 		float friction = std::pow(Visual::Effect::PARTICLE_FRICTION_AIR_XZ, dt60);
 		velocity.x *= friction;
@@ -215,9 +220,11 @@ void SpawnEffect::Update() {
 
 	for (auto it = particles.begin(); it != particles.end();) {
 		it->life -= dt;
+
 		if (it->life <= 0.0f) {
 			it = particles.erase(it);
 		}
+
 		else {
 			it->pos = VAdd(it->pos, VScale(it->vel, dt60));
 			it->vel.x *= std::pow(Visual::Effect::SPAWN_VEL_DECAY, dt60);
@@ -231,6 +238,7 @@ void SpawnEffect::Draw() {
 	for (const auto& p : particles) {
 		float scale = p.life / p.maxLife;
 		float currentSize = p.size * scale;
+
 		if (currentSize <= 0.0f) continue;
 
 		int alpha = static_cast<int>(255 * scale);
@@ -252,6 +260,7 @@ ExplosionEffect::ExplosionEffect(VECTOR pos, float radius, int c, float life)
 	Debris d;
 	d.pos = pos;
 	int debrisCount = Visual::Effect::EXPLOSION_DEBRIS_COUNT_MIN + GetRand(Visual::Effect::EXPLOSION_DEBRIS_COUNT_RAND);
+
 	//放射状に破片を生成
 	for (int i = 0; i < debrisCount; ++i) {
 		float theta = (GetRand(100) / 100.0f) * DX_PI_F * 2.0f;
@@ -264,6 +273,7 @@ ExplosionEffect::ExplosionEffect(VECTOR pos, float radius, int c, float life)
 
 		d.rotAxis = VNorm(VGet(GetRand(Visual::Effect::ROT_AXIS_RAND_RANGE) - Visual::Effect::ROT_AXIS_RAND_OFFSET, GetRand(Visual::Effect::ROT_AXIS_RAND_RANGE) - Visual::Effect::ROT_AXIS_RAND_OFFSET, GetRand(Visual::Effect::ROT_AXIS_RAND_RANGE) - Visual::Effect::ROT_AXIS_RAND_OFFSET));
 		if (VSize(d.rotAxis) < System::Collision::MIN_DIST_SQUARED) d.rotAxis = VGet(0.0f, 1.0f, 0.0f);
+
 		d.angle = 0.0f;
 		d.rotSpeed = (GetRand(100) / 100.0f) * Visual::Effect::EXPLOSION_ROT_SPEED_RAND_MULT + Visual::Effect::EXPLOSION_ROT_SPEED_BASE;
 		d.size = Visual::Effect::EXPLOSION_SIZE_BASE + (GetRand(Visual::Effect::EXPLOSION_SIZE_RAND_RANGE) / 100.0f);
@@ -282,7 +292,7 @@ void ExplosionEffect::Update() {
 		return;
 	}
 
-	//破片の物理挙動を更新
+	//破片の挙動を更新
 	for (auto& d : debrisList) {
 		d.vel.y -= Visual::Effect::EFFECT_GRAVITY * dt60;
 		d.pos = VAdd(d.pos, VScale(d.vel, dt60));
@@ -293,6 +303,7 @@ void ExplosionEffect::Update() {
 			d.vel.x *= std::pow(Visual::Effect::PARTICLE_FRICTION_GROUND_XZ, dt60);
 			d.vel.z *= std::pow(Visual::Effect::PARTICLE_FRICTION_GROUND_XZ, dt60);
 		}
+
 		else {
 			float friction = std::pow(Visual::Effect::PARTICLE_FRICTION_AIR_XZ, dt60);
 			d.vel.x *= friction;
@@ -353,7 +364,7 @@ void HitScanTrail::Draw() {
 	float scale = lifeTime / maxLifeTime;
 	if (scale < 0.0f)scale = 0.0f;
 
-	// 時間経過とともにトレイルの始点を終点側へ移動させ短くしていく
+	// 時間経過とともにトレイルの始点を終点側へ移動させる
 	float easeScale = scale * scale;
 	VECTOR currentStart = VAdd(endPos, VScale(VSub(startPos, endPos), scale));
 	float currentRad = initialRad * scale;
@@ -368,6 +379,7 @@ void HitScanTrail::Draw() {
 
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
+
 
 ProjectileTrailEffect::ProjectileTrailEffect(VECTOR start, VECTOR end, float radius, int c, float life)
 	: Effect(start, life)
@@ -387,9 +399,7 @@ void ProjectileTrailEffect::Update() {
 void ProjectileTrailEffect::Draw() {
 	float scale = lifeTime / maxLifeTime;
 	if (scale < 0.0f) scale = 0.0f;
-
 	float currentRadius = initialRadius * scale;
-
 	int alpha = static_cast<int>(255 * scale);
 
 	//トレイルの描画

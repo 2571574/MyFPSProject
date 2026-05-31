@@ -1,11 +1,11 @@
-﻿#include "RollingEnemy.h"
+﻿#include "Param/Global.h"
+#include "Param/Chara.h"
+#include "Param/System.h"
 #include "Player.h"
+#include "RollingEnemy.h"
 #include "EnemyManager.h"
 #include "EffectManager.h"
 #include "SoundManager.h"
-#include "Param/Global.h"
-#include "Param/Chara.h"
-#include "Param/System.h"
 
 
 RollingEnemy::RollingEnemy(VECTOR pos, Player* target)
@@ -20,14 +20,18 @@ RollingEnemy::RollingEnemy(VECTOR pos, Player* target)
 
 void RollingEnemy::Update() {
 	float dt = Time::GetIns().GetDelta();
+
 	if (onHitFlashTimer > 0.0f) onHitFlashTimer -= dt;
+
 	if (nowSpawned) {
 		spawnedTimer -= dt;
+
 		if (spawnedTimer <= 0.0f) {
 			nowSpawned = false;
 		}
 		return;
 	}
+
 	//HPが0以下になったら爆発開始
 	if (hp <= 0 && !isExploding) {
 		isExploding = true;
@@ -66,12 +70,14 @@ void RollingEnemy::Update() {
 			SoundManager::GetIns().Play3DSE("Resource/Sound/alert.wav", position, Chara::Rolling::ALERT_SOUND_RADIUS);
 			alerttimer = alertDuration;
 		}
+
 		if (explodeTimer <= 0.0f) {
 			Action();
 		}
 	}
 }
 
+//爆発処理
 void RollingEnemy::Action() {
 	SoundManager::GetIns().StopSE("Resource/Sound/alert.wav");
 	CollisionManager::GetIns().ProcessExplosion(position, explodeSpec.explodeArea, explodeSpec.damage, explodeSpec.knockbackP, true, status.teamID, explodeSpec.id, explodeSpec.friendlyFire);
@@ -81,15 +87,19 @@ void RollingEnemy::Action() {
 
 void RollingEnemy::Draw() {
 	int color = GetColor(Chara::Rolling::COLOR_NORMAL.r, Chara::Rolling::COLOR_NORMAL.g, Chara::Rolling::COLOR_NORMAL.b);
+
 	if (onHitFlashTimer > 0.0f) color = GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b);
+
 	if (isExploding) {
 		if (static_cast<int>(explodeTimer * Chara::Rolling::EXPLOSION_FLASH_TIME_SCALE) % Chara::Rolling::EXPLOSION_FLASH_MODULO == 0) color = GetColor(Chara::Rolling::COLOR_EXPLODE.r, Chara::Rolling::COLOR_EXPLODE.g, Chara::Rolling::COLOR_EXPLODE.b);
 	}
+
 	float bodyRad = status.width / 2.0f;
 	VECTOR bottom = VAdd(position, VGet(0.0f, bodyRad, 0.0f));
 	VECTOR top = VAdd(position, VGet(0.0f, currentHeight - bodyRad, 0.0f));
 	int fillFlag = nowSpawned ? FALSE : TRUE;
 
+	//影
 	if (!nowSpawned) {
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, Chara::Base::SHADOW_ALPHA);
 		VECTOR shadowPos1 = VAdd(position, VGet(0.0f, Chara::Base::SHADOW_OFFSET_Y_HIGH, 0.0f));
@@ -98,6 +108,7 @@ void RollingEnemy::Draw() {
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 
+	//本体
 	DrawCapsule3D(bottom, top, bodyRad, System::Window::CIRCLE_DIVNUM, color, color, fillFlag);
 
 	if (isExploding) {
@@ -114,6 +125,7 @@ void RollingEnemy::UpdatePhysics() {
 
 	VECTOR nextPos = VAdd(position, VScale(velocity, dt60));
 
+	//地面との当たり判定
 	if (velocity.y <= 0.0f) {
 		float offset = radius * Chara::Base::CAP_SIDE_OFFSET;
 
@@ -124,6 +136,7 @@ void RollingEnemy::UpdatePhysics() {
 			VGet(0.0f, 0.0f, offset),
 			VGet(0.0f, 0.0f, -offset),
 		};
+
 		bool hitGroundThisFrame = false;
 		float highestY = Chara::Rolling::HIGHEST_Y_SENTINEL;
 
@@ -140,12 +153,14 @@ void RollingEnemy::UpdatePhysics() {
 				}
 			}
 		}
+
 		if (hitGroundThisFrame) {
 			nextPos.y = highestY;
 			velocity.y = 0.0f;
 		}
 	}
 
+	//壁との当たり判定
 	VECTOR sphereCenter = VAdd(nextPos, VGet(0.0f, radius, 0.0f));
 	MV1_COLL_RESULT_POLY_DIM wallHitDim = MV1CollCheck_Sphere(stageHandle, -1, sphereCenter, radius);
 
@@ -155,6 +170,7 @@ void RollingEnemy::UpdatePhysics() {
 		if (normal.y > Chara::Base::GROUND_NORMAL_MIN) continue;
 
 		VECTOR checkPos = nextPos;
+
 		if (normal.y < Chara::Base::CEILING_NORMAL_MAX) {
 			checkPos = VAdd(nextPos, VGet(0.0f, currentHeight - radius, 0.0f));
 		}
@@ -168,15 +184,18 @@ void RollingEnemy::UpdatePhysics() {
 
 			nextPos = VAdd(nextPos, pushVec);
 			float dotVec = velocity.x * normal.x + velocity.z * normal.z;
+
 			if (dotVec < 0.0f) {
 				velocity.x -= normal.x * dotVec;
 				velocity.z -= normal.z * dotVec;
 			}
 		}
 	}
+
 	DxLib::MV1CollResultPolyDimTerminate(wallHitDim);
 	position = nextPos;
 }
+
 
 VECTOR RollingEnemy::UpdateNavigation(const Character* target, float dt) {
 	bool hasLOS = CheckLineSight(target, target->GetCurrentEyeHeight());
@@ -184,6 +203,7 @@ VECTOR RollingEnemy::UpdateNavigation(const Character* target, float dt) {
 	isDirectPathSafe = hasLOS && CheckPathSafety(target->GetPos());
 
 	pathUpdateTimer -= dt;
+
 	if (pathUpdateTimer <= 0.0f) {
 		if (!isDirectPathSafe) {
 			SetPath(EnemyManager::GetIns().CalculatePath(position, target->GetPos()));
@@ -192,6 +212,7 @@ VECTOR RollingEnemy::UpdateNavigation(const Character* target, float dt) {
 	}
 
 	VECTOR moveTarget = target->GetPos();
+
 	if (!isDirectPathSafe && HasPath()) {
 		moveTarget = GetNextNodeID();
 		VECTOR toNode = VSub(moveTarget, position);
@@ -202,7 +223,9 @@ VECTOR RollingEnemy::UpdateNavigation(const Character* target, float dt) {
 		if (distSq < (Chara::EnemyCommon::PATH_NODE_REACHED_DIST * Chara::EnemyCommon::PATH_NODE_REACHED_DIST)) {
 			reached = true;
 		}
+
 		else {
+
 			if (VSquareSize(velocity) > 0.0f) {
 				if (VDot(velocity, toNode) < 0.0f) {
 					reached = true;

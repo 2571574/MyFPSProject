@@ -9,20 +9,23 @@ class Player;
 class Enemy : public Character
 {
 protected:
+	ENEMYTYPE type;			//敵のタイプ
+
 	bool nowSpawned;	//現在スポーン中
 	float spawnedTimer;	//スポーン中用のタイマー
+	
 	Player* target;	//攻撃対象のプレイヤーのポインタ
-	int stageHandle = -1;	//ステージのモデルハンドル
+	bool isDirectPathSafe;	//直接攻撃しても安全かどうか
 
 	std::vector<VECTOR> currentPath;	//現在の経路
 	int currentNodeID;		//次に向かうノードのID
 	float pathUpdateTimer;	//経路更新のタイマー
 
-	bool isDirectPathSafe;	//直接攻撃しても安全かどうか
-	ENEMYTYPE type;			//敵のタイプ
-
-	float onHitFlashTimer;	//被弾時の点滅用タイマー
 	float moveDistance;		//移動距離のカウンター
+	float onHitFlashTimer;	//被弾時の点滅用タイマー
+
+	int stageHandle = -1;	//ステージのモデルハンドル
+
 public:
 
 	Enemy(VECTOR pos, const CharacterStatus& status, Player* _target, ENEMYTYPE type);
@@ -46,6 +49,10 @@ public:
 	void SetAlive(bool tag) { alive = tag; }
 	void SetStageHandle(int handle) { stageHandle = handle; }
 	float GetRadius() const { return status.width / 2.0f; }	
+	ENEMYTYPE GetType()const { return type; }
+	bool CheckFall()const;
+	bool NowSpawned()const { return nowSpawned; }
+
 
 	/// <summary>
 	/// 移動先のノードIDをセットする
@@ -63,11 +70,11 @@ public:
 	/// <summary>
 	/// 移動先のノードの座標を取得する
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>次のノードの座標</returns>
 	VECTOR GetNextNodeID()const;
 	
 	/// <summary>
-	/// 経路上のノードを１個進める
+	/// 予定経路上のノードを１個進める
 	/// </summary>
 	void AdvancePathIndex() {
 		currentNodeID++;
@@ -80,7 +87,6 @@ public:
 		nowSpawned = false;
 		spawnedTimer = 0.0f;
 	}
-	//移動
 	
 	/// <summary>
 	/// 指定した高さでターゲットとの間の障害物の有無をチェック
@@ -104,16 +110,6 @@ public:
 	/// <param name="dt">デルタタイム</param>
 	/// <returns>次の移動先の座標</returns>
 	VECTOR UpdateNavigation(const Character* target, float dt);
-	
-	ENEMYTYPE GetType()const { return type; }
-
-	/// <summary>
-	/// ステージ下に落ちているかどうかをチェック
-	/// </summary>
-	/// <returns></returns>
-	bool CheckFall()const;
-
-	bool NowSpawned()const { return nowSpawned; }
 
 	/// <summary>
 	/// カウンターに基づき足音を鳴らす

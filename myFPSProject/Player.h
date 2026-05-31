@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+//狙われている状態の管理用
 struct TargetInfo {
 	VECTOR pos;
 	float progress;
@@ -44,7 +45,6 @@ private:
 
 	int stageHandle;	//ステージのモデルハンドル
 
-
 	PlayMode currentMode;	//現在の難易度
 
 	Camera* cam;		//カメラのポインタ
@@ -56,26 +56,22 @@ private:
 
 	float moveDistance;//移動距離カウント
 public:
-	/// <summary>
-	///	playerのコンストラクタ 座標にplayerを生成
-	/// </summary>
-	/// <param name="pos">playerの初期座標</param>
-	Player(VECTOR pos, Camera* camera, PlayMode mode);	//コンストラクタ
 
-	/// <summary>
-	/// playerのデストラクタ　使用していたハンドルの削除
-	/// </summary>
+	Player(VECTOR pos, Camera* camera, PlayMode mode);
+
 	~Player() override;
 	
-	/// <summary>	
-	/// playerの更新	
-	/// </summary>
-	void Update() override;
 
-	/// <summary>
-	/// playerの描画
-	/// </summary>
-	void Draw() override;	//描画
+	void Update() override;
+	void Draw() override;
+	
+	void OnHit(int damage, WeaponID id = ::WeaponID::UNKNOWN)override {
+		Character::OnHit(damage, id);
+		if (damage > 0) {
+			lastHit = id;
+			if (hud) hud->OnPlayerTakeDamage();
+		}
+	}
 
 	/// <summary>
 	/// リコイル（反動）を加える。
@@ -113,14 +109,6 @@ public:
 			hud->OnHitTarget(isHeadShot,isKill);
 		}
 	}
-	
-	void OnHit(int damage, WeaponID id = ::WeaponID::UNKNOWN)override {
-		Character::OnHit(damage, id);
-		if (damage > 0) {
-			lastHit = id;
-			if (hud) hud->OnPlayerTakeDamage();
-		}
-	}
 
 	/// <summary>
 	/// カメラの角度と武器スウェイの状態を同期させる
@@ -139,12 +127,14 @@ public:
 	/// </summary>
 	void UpdateFootstep();
 
+	//setter・getter
 	void SetStageHandle(int handle) { stageHandle = handle; }
 
 	Weapon* GetWeapon() const { 
 		if (slot.empty() || currentWeaponIndex < 0 || currentWeaponIndex >= slot.size()) return nullptr;
 		return slot[currentWeaponIndex].get();
 	}
+
 	int GetWeaponIndex()const { return currentWeaponIndex; }
 	PlayMode GetCurrentMode() const { return currentMode; }
 	void AddTargeted(VECTOR pos, float progress) { targetInfo.push_back({ pos, progress }); }

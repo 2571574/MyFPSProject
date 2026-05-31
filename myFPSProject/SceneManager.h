@@ -1,7 +1,7 @@
 ﻿#pragma once
+#include "Param/Scene.h"
 #include "BaseScene.h"
 #include "Status.h"
-#include "Param/Scene.h"
 
 #include <memory>
 #include <vector>
@@ -64,29 +64,19 @@ public:
 	void Update();
 	void Draw();
 
-	/// <summary>
-	/// リザルト用射撃精度をセットする
-	/// </summary>
-	/// <param name="shot">合計射撃回数</param>
-	/// <param name="hit">合計ヒット回数</param>
-	/// <param name="headShot">合計ヘッドショット回数</param>
+	//リザルト関係
+	void SetScore(int score);
 	void SetAccuracy(int shot, int hit, int headShot) {
 		lastResult.Shot = shot;
 		lastResult.totalHit = hit;
 		lastResult.totalHeadHit = headShot;
 	}
+	void SetCurrentMode(PlayMode mode) { currentMode = mode; }
 
-	//スコアのセット
-	void SetScore(int score);
-	void SetCauseOfDeath(WeaponID id) { lastResult.causeOfDeath = id; }
-
-	//リザルト関係
 	const GameResult& GetResult()const { return lastResult; }
 	const std::vector<int>& GetRanking()const { return ranking[(int)currentMode]; }
-
-	//難易度
-	void SetCurrentMode(PlayMode mode) { currentMode = mode; }
 	PlayMode GetcurrentMode()const { return currentMode; }
+	void SetCauseOfDeath(WeaponID id) { lastResult.causeOfDeath = id; }
 
 	//終了フラグ
 	void SetExitTag(bool tag) { exitTag = tag; }

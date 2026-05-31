@@ -1,11 +1,11 @@
 ﻿#include "BaseProjectile.h"
-#include "CollisionManager.h"
-#include "EnemyManager.h"
-#include "Player.h"
-#include "EffectManager.h"
 #include "Param/Global.h"
 #include "Param/Item.h"
 #include "Param/Visual.h"
+#include "CollisionManager.h"
+#include "EnemyManager.h"
+#include "Player.h"
+#include"EffectManager.h"
 
 BaseProjectile::BaseProjectile(VECTOR start, TEAMID _id, const GunStatus& _spec, VECTOR direction)
 	: startpos(start)
@@ -16,7 +16,8 @@ BaseProjectile::BaseProjectile(VECTOR start, TEAMID _id, const GunStatus& _spec,
 	, alive(true) {
 	dir = VNorm(dir);
 }
-/*弾の更新*/
+
+
 void BaseProjectile::Update() {
 	float move = spec.projectileSpeed * Time::GetIns().GetDelta() * Global::Math::FPS_BASE;
 	VECTOR nextpos = VAdd(pos, VScale(dir, move));
@@ -35,7 +36,7 @@ void BaseProjectile::Update() {
 		bool hitEnemy = false;
 		bool isHeadShot = false;
 
-		//当たっていたらその敵の被弾処理
+		//範囲攻撃武器による被弾処理
 		if (spec.AOE) {
 			hitEnemy = Explode(hitPoint);
 			int color = GetColor(Visual::Effect::COLOR_EXPLOSION.r, Visual::Effect::COLOR_EXPLOSION.g, Visual::Effect::COLOR_EXPLOSION.b);
@@ -46,6 +47,8 @@ void BaseProjectile::Update() {
 				}
 			}
 		}
+
+		//キャラに当たっていた場合の処理
 		else if (hit.character) {
 			hitEnemy = true;
 			isHeadShot = hit.isHeadShot;
@@ -60,23 +63,27 @@ void BaseProjectile::Update() {
 			}
 			EffectManager::GetIns().CreateHitEffect(hit.hitPos, hit.hitNormal, true);
 		}
+
+		//壁に当たっていた場合の処理
 		else if (hit.isWallHit) {
 			EffectManager::GetIns().CreateHitEffect(hit.hitPos, hit.hitNormal, false);
 		}
 		alive = false;		//弾の生存タグを消す
 	}
 
-	// 味方の弾はライトグレー、敵の弾はオレンジで色分け
 	int trailColor = (id == TEAMID::ID_FRIENDLY) ?
 		GetColor(Visual::Effect::COLOR_TRAIL_FRIENDLY.r, Visual::Effect::COLOR_TRAIL_FRIENDLY.g, Visual::Effect::COLOR_TRAIL_FRIENDLY.b) :
 		GetColor(Visual::Effect::COLOR_TRAIL_ENEMY.r, Visual::Effect::COLOR_TRAIL_ENEMY.g, Visual::Effect::COLOR_TRAIL_ENEMY.b);
 
+	//ランチャーに限りオレンジ固定
 	if (spec.id == WeaponID::LR) trailColor = GetColor(Visual::Effect::COLOR_TRAIL_LAUNCHER.r, Visual::Effect::COLOR_TRAIL_LAUNCHER.g, Visual::Effect::COLOR_TRAIL_LAUNCHER.b);
 	EffectManager::GetIns().CreateProjectileTrail(pos, actualNextPos, spec.projectileSize * Item::Projectile::TRAIL_RADIUS_MULTIPLIER, trailColor);
 
 	if (alive) {
 		//射程以上進んだら弾の生存タグを消す
 		if (VSize(VSub(actualNextPos, startpos)) > spec.range) {
+
+			//範囲攻撃武器の場合、射程切れで爆発させる
 			if (spec.AOE) {
 				Explode(actualNextPos);
 				int color = GetColor(Visual::Effect::COLOR_EXPLOSION.r, Visual::Effect::COLOR_EXPLOSION.g, Visual::Effect::COLOR_EXPLOSION.b);
@@ -89,7 +96,6 @@ void BaseProjectile::Update() {
 	}
 }
 
-/*弾の描画*/
 void BaseProjectile::Draw() {}
 
 bool BaseProjectile::Explode(VECTOR hitPos) {

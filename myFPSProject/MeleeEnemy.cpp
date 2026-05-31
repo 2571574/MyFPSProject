@@ -1,11 +1,11 @@
 ﻿#include "MeleeEnemy.h"
+#include "Param/Global.h"
+#include "Param/Chara.h"
+#include "Param/System.h"
 #include "Player.h"
 #include "Time.h"
 #include "EnemyManager.h"
 #include "SoundManager.h"
-#include "Param/Global.h"
-#include "Param/Chara.h"
-#include "Param/System.h"
 
 #include <cmath>
 
@@ -17,14 +17,19 @@ MeleeEnemy::MeleeEnemy(VECTOR pos, Player* target)
 
 void MeleeEnemy::Update() {
 	float dt = Time::GetIns().GetDelta();
+
 	if (onHitFlashTimer > 0.0f) onHitFlashTimer -= dt;
+
 	if (nowSpawned) {
+
 		spawnedTimer -= dt;
+
 		if (spawnedTimer <= 0.0f) {
 			nowSpawned = false;
 		}
 		return;
 	}
+
 	if (hp <= 0) {
 		alive = false;
 		return;
@@ -38,24 +43,29 @@ void MeleeEnemy::Update() {
 
 	float range = 0.0f;
 	float fireRate = 0.0f;
+
 	if (melee) {
 		range = melee->GetSpec().range;
 		fireRate = melee->GetSpec().fireRate;
 	}
+
 	switch (state) {
+
 		//プレイヤーに向かって移動
 	case MeleeState::IDLE: {
 		if (attackTimer > 0.0f)attackTimer -= dt;
-		VECTOR moveTarget = UpdateNavigation(target, dt);
 
+		VECTOR moveTarget = UpdateNavigation(target, dt);
 		VECTOR dir = VNorm(VSub(moveTarget, position));
 		dir.y = 0.0f;
 
 		VECTOR targetPos = target->GetPos();
 		float distToTarget = VSize(VSub(targetPos, position));
+
 		if (distToTarget > range * Chara::Melee::MOVE_STOP_RANGE_RATIO) {
 			ApplyMovement(dir, stageHandle);
 		}
+
 		else {
 			ApplyMovement(VGet(0.0f, 0.0f, 0.0f), stageHandle);
 		}
@@ -72,6 +82,7 @@ void MeleeEnemy::Update() {
 		ApplyMovement(VGet(0.0f, 0.0f, 0.0f), stageHandle);
 
 		stateTimer -= dt;
+
 		if (stateTimer <= 0.0f) {
 			Action();
 			state = MeleeState::ATTACK_RECOVERY;
@@ -83,7 +94,9 @@ void MeleeEnemy::Update() {
 	//攻撃後の硬直
 	case MeleeState::ATTACK_RECOVERY: {
 		ApplyMovement(VGet(0.0f, 0.0f, 0.0f), stageHandle);
+
 		stateTimer -= dt;
+
 		if (stateTimer <= 0.0f) {
 			state = MeleeState::IDLE;
 			attackTimer = 1.0f / fireRate;
@@ -111,7 +124,6 @@ void MeleeEnemy::Draw() {
 
 	float headHeight = currentEyeHeight - bodyRad;
 	float bodyTopHeight = (neck - bodyRad) - bodyRad;
-
 	VECTOR bodyTopLean = VScale(leanMax, bodyTopHeight / headHeight);
 
 	bodyTop = VAdd(bodyTop, bodyTopLean);
@@ -122,6 +134,7 @@ void MeleeEnemy::Draw() {
 
 	int fillFlag = nowSpawned ? FALSE : TRUE;
 
+	//影
 	if (!nowSpawned) {
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, Chara::Base::SHADOW_ALPHA);
 		VECTOR shadowPos1 = VAdd(position, VGet(0.0f, Chara::Base::SHADOW_OFFSET_Y_HIGH, 0.0f));
@@ -130,30 +143,43 @@ void MeleeEnemy::Draw() {
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 
+	//カプセル
 	DrawCapsule3D(bottom, bodyTop, bodyRad, System::Window::CIRCLE_DIVNUM, color, color, fillFlag);
 	DrawSphere3D(headPos, headRad, System::Window::CIRCLE_DIVNUM, color, color, fillFlag);
 
+	//武器
 	if (melee) {
+
 		VECTOR forward = VGet(0.0f, 0.0f, 1.0f);
+
 		if (target) {
 			forward = VNorm(VSub(target->GetPos(), position));
 			forward.y = 0.0f;
+
 			if (VSize(forward) < System::Collision::MIN_DIST_SQUARED) forward = VGet(0.0f, 0.0f, 1.0f);
 		}
+
 		VECTOR right = VNorm(VCross(VGet(0.0f, 1.0f, 0.0f), forward));
 		VECTOR up = VNorm(VCross(forward, right));
 
+
 		float swingAngle = 0.0f;
+
+		//振り下ろし
 		if (state == MeleeState::ATTACK_WIND) {
 			float t = 1.0f - (stateTimer / Chara::Melee::ATTACK_WINDUP_TIME);
 			swingAngle = t * -Chara::Melee::SWING_90_DEG;
 		}
+
+		//攻撃後の硬直
 		else if (state == MeleeState::ATTACK_RECOVERY) {
 			float t = 1.0f - (stateTimer / Chara::Melee::ATTACK_RECOVERY_TIME);
+
 			if (t < Chara::Melee::RECOVERY_PHASE1_RATIO) {
 				float p = t / Chara::Melee::RECOVERY_PHASE1_RATIO;
 				swingAngle = -Chara::Melee::SWING_90_DEG * (1.0f - p) + Chara::Melee::SWING_QUARTER_TURN * p;
 			}
+
 			else {
 				float p = (t - Chara::Melee::RECOVERY_PHASE1_RATIO) / Chara::Melee::RECOVERY_PHASE2_RATIO;
 				swingAngle = Chara::Melee::SWING_QUARTER_TURN * (1.0f - p);
@@ -178,6 +204,9 @@ void MeleeEnemy::Action() {
 
 	VECTOR attackPos = VAdd(position, VScale(toTarget, 1.0f));
 	auto spec = melee->GetSpec();
+
+	//攻撃判定
 	CollisionManager::GetIns().ProcessExplosion(attackPos, spec.explodeArea, spec.damage, spec.knockbackP, false, GetID(), WeaponID::ENEMY_KNIFE, spec.friendlyFire);
+
 	SoundManager::GetIns().Play3DSE("Resource/Sound/melee.wav", attackPos, Chara::Melee::MELEE_ATTACK_SOUND_RADIUS);
 }

@@ -145,7 +145,7 @@
       <Filter>ソース ファイル\2.OBJECT\1.ENTITY</Filter>
     </ClCompile>
     <ClCompile Include="Debug.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\4.TOOL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -291,7 +291,7 @@
       <Filter>ソース ファイル\2.OBJECT\1.ENTITY</Filter>
     </ClInclude>
     <ClInclude Include="Debug.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ソース ファイル\4.TOOL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

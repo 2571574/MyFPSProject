@@ -1,23 +1,23 @@
 ﻿#include "TutorialScene.h"
+#include "Param/Global.h"
+#include "Param/Scene.h"
+#include "Param/System.h"
+#include "Param/Visual.h"
 #include "TitleScene.h"
+#include "MeleeEnemy.h"
+#include "RifleEnemy.h"
+#include "SniperEnemy.h"
+#include "RollingEnemy.h"
 #include "InputManager.h"
 #include "Time.h"
 #include "CollisionManager.h"
 #include "ItemManager.h"
 #include "EnemyManager.h"
 #include "ProjectileManager.h"
-#include "MeleeEnemy.h"
-#include "RifleEnemy.h"
-#include "SniperEnemy.h"
-#include "RollingEnemy.h"
 #include "ResourceManager.h"
 #include "TextManager.h"
 #include "EffectManager.h"
 #include "SoundManager.h"
-#include "Param/Global.h"
-#include "Param/Scene.h"
-#include "Param/System.h"
-#include "Param/Visual.h"
 
 TutorialScene::TutorialScene(SceneManager* manager)
 	:BaseScene(manager)
@@ -35,13 +35,17 @@ TutorialScene::~TutorialScene() {
 	EffectManager::GetIns().Clear();
 }
 
+
 void TutorialScene::Init() {
+	//カメラの初期位置と角度を設定
 	camera.SetAngle(System::Camera::DEFAULT_CAM_X, 0.0f);
 	player.SyncCamAngle();
 
+	//チュートリアルのステートを初期化
 	currentPhase = TutorialPhase::MOVEMENT;
 	currentEnemyInfo = -1;
 
+	//ステージのロード
 	stageHandle = ResourceManager::GetIns().GetModel("Resource/TutorialArena.mv1");
 	EffectManager::GetIns().Clear();
 
@@ -54,10 +58,12 @@ void TutorialScene::Init() {
 	EnemyManager::GetIns().NoPathInit(stageHandle, &player);
 	ItemManager::GetIns().SetStageHandle(stageHandle);
 
+	//フォントのロード
 	fontLarge = ResourceManager::GetIns().GetFont("Resource/Font/JetBrainsMono_36.dft");
 	fontMedium = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_20.dft");
 	fontSmall = ResourceManager::GetIns().GetFont("Resource/Font/NotoSansJP_16.dft");
 
+	//敵スポナーの初期化
 	std::vector<SpawnerSetup>spawnerSetups = {
 		{VGet(-15.0f,0.4f,-16.0f),WeaponID::AR,Scene::Tutorial::TUTORIAL_SPAWN_TIMER},
 		{VGet(-10.0f,0.4f,-16.0f),WeaponID::SR,Scene::Tutorial::TUTORIAL_SPAWN_TIMER},
@@ -66,11 +72,13 @@ void TutorialScene::Init() {
 	};
 	ItemManager::GetIns().InitSpawners(spawnerSetups);
 
+	//的ダミー初期化
 	for (int i = 0; i < 3; ++i) {
 		auto Target = std::make_unique<Dummy>(VGet(Scene::Tutorial::TARGET_BASE_X + i * Scene::Tutorial::TARGET_INTERVAL_X, 0.0f, Scene::Tutorial::TARGET_BASE_Z + i * Scene::Tutorial::TARGET_INTERVAL_Z), &player, true);
 		target.push_back(std::move(Target));
 	}
 
+	//ボタン役ダミー初期化
 	for (int i = 0; i < 4; i++) {
 		SpawnButton btn;
 		btn.pos = VGet(Scene::Tutorial::BUTTON_BASE_X + i * Scene::Tutorial::BUTTON_INTERVAL_X, 0.0f, Scene::Tutorial::BUTTON_BASE_Z);
@@ -106,6 +114,7 @@ void TutorialScene::Update() {
 
 	player.Update();
 
+	//スポーンボタンの更新
 	for (auto& btn : button) {
 		if (btn.spawnCT > 0.0f)
 			btn.spawnCT -= dt;
@@ -118,9 +127,8 @@ void TutorialScene::Update() {
 		}
 	}
 
-
+	//プレイヤーの位置に基づいてステートを更新
 	VECTOR pPos = player.GetPos();
-
 	bool isPlayerCombatArea = (pPos.x >= Scene::Tutorial::Boundary::COMBAT_MIN_X && pPos.x <= Scene::Tutorial::Boundary::COMBAT_MAX_X && pPos.z >= Scene::Tutorial::Boundary::COMBAT_MIN_Z && pPos.z <= Scene::Tutorial::Boundary::COMBAT_MAX_Z);
 	bool MovementToCombat = (pPos.x >= Scene::Tutorial::Boundary::MOVE_TO_COMBAT_MIN_X && pPos.x <= Scene::Tutorial::Boundary::MOVE_TO_COMBAT_MAX_X && pPos.z < Scene::Tutorial::Boundary::MOVE_TO_OTHER_MIN_Z);
 	bool CombatToMovement = (pPos.x >= Scene::Tutorial::Boundary::MOVE_TO_COMBAT_MIN_X && pPos.x <= Scene::Tutorial::Boundary::MOVE_TO_COMBAT_MAX_X && pPos.z > Scene::Tutorial::Boundary::MOVE_TO_OTHER_MAX_Z);
@@ -131,36 +139,46 @@ void TutorialScene::Update() {
 	if (isPlayerCombatArea) {
 		EnemyManager::GetIns().Update();
 	}
+
 	EffectManager::GetIns().Update();
 	CollisionManager::GetIns().Update();
 	ProjectileManager::GetIns().Update();
 	ItemManager::GetIns().Update(&player);
+
 	if (player.GetHP() <= 0) {
 		player.revive();
 	}
 
+
 	switch (currentPhase) {
+
 	case TutorialPhase::MOVEMENT:
+
 		if (MovementToCombat) {
 			currentPhase = TutorialPhase::COMBAT;
 			EnemyManager::GetIns().Clear();
 			currentEnemyInfo = -1;
 		}
 		break;
+
 	case TutorialPhase::COMBAT: {
 		static bool entered = false;
+
 		if (isPlayerCombatArea) {
 			entered = true;
 		}
+
 		if (entered && !isPlayerCombatArea) {
 			EnemyManager::GetIns().Clear();
 			entered = false;
 		}
+
 		if (CombatToMovement) {
 			currentPhase = TutorialPhase::MOVEMENT;
 			EnemyManager::GetIns().Clear();
 			currentEnemyInfo = -1;
 		}
+
 		if (CombatToFreerange) {
 			currentPhase = TutorialPhase::FREERANGE;
 			EnemyManager::GetIns().Clear();
@@ -168,6 +186,7 @@ void TutorialScene::Update() {
 		}
 
 		for (auto& btn : button) {
+			//ダミーが存在していて、撃たれた場合対応する敵をスポーンさせる
 			if (btn.dummy && btn.dummy->GetHP() < btn.dummy->GetStatus().maxHP) {
 				btn.dummy->revive();
 
@@ -182,21 +201,26 @@ void TutorialScene::Update() {
 					if (btn.enemyType == 1)EnemyManager::GetIns().Spawn(std::make_unique<RifleEnemy>(spawnPos, &player));
 					if (btn.enemyType == 2)EnemyManager::GetIns().Spawn(std::make_unique<SniperEnemy>(spawnPos, &player));
 					if (btn.enemyType == 3)EnemyManager::GetIns().Spawn(std::make_unique<RollingEnemy>(spawnPos, &player));
+
 					btn.spawnCT = 1.0f;
 				}
 			}
 		}
 		break;
 	}
+
 	case TutorialPhase::FREERANGE:
+
 		if (FreerangeToCombat) {
 			currentPhase = TutorialPhase::COMBAT;
 			EnemyManager::GetIns().Clear();
 			currentEnemyInfo = -1;
 		}
+
 		break;
 	}
 }
+
 
 void TutorialScene::PauseUpdate() {
 	SetMousePoint(System::Window::CENTER_X, System::Window::CENTER_Y);
@@ -224,43 +248,58 @@ void TutorialScene::PauseUpdate() {
 
 void TutorialScene::Draw() {
 	if (stageHandle != -1) MV1DrawModel(stageHandle);
+
 	ItemManager::GetIns().SetCamPos(camera.GetPos());
+
 	for (auto& btn : button) {
+
 		if (btn.dummy) {
 			btn.dummy->Draw();
+
 			VECTOR camPos = camera.GetPos();
 			float distance = VSize(VSub(camPos, btn.pos));
+
+			//プレイヤーとボタンダミーの距離が近い場合、テキストを表示
 			if (distance <= Scene::Tutorial::BUTTON_UI_VISIBLE_DIST) {
+
 				VECTOR textPos3D = VAdd(btn.pos, VGet(0.0f, Scene::Tutorial::BUTTON_UI_OFFSET_Y, 0.0f));
 				VECTOR sp = ConvWorldPosToScreenPos(textPos3D);
+
 				if (sp.z >= 0.0f && sp.z <= 1.0f) {
+
 					MV1_COLL_RESULT_POLY hit = MV1CollCheck_Line(stageHandle, -1, camPos, textPos3D);
+
 					if (hit.HitFlag == 0) {
 						const char* name = "";
+
 						if (btn.enemyType == 0) name = "Melee";
 						else if (btn.enemyType == 1) name = "Rifle";
 						else if (btn.enemyType == 2) name = "Sniper";
 						else if (btn.enemyType == 3) name = "Rolling";
+
 						float fadeStartDist = Scene::Tutorial::BUTTON_UI_FADE_START;
 						float alphaRate = 1.0f;
+
 						if (distance > fadeStartDist) {
 							alphaRate = 1.0f - ((distance - fadeStartDist) / Scene::Tutorial::BUTTON_UI_FADE_RANGE);
 						}
+
+
 						int alpha = static_cast<int>(255 * alphaRate);
 
-						::SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-						::DrawFormatStringToHandle(static_cast<int>(sp.x) + Scene::Tutorial::BUTTON_UI_TEXT_OFFSET_X, static_cast<int>(sp.y), GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b), fontMedium, "Spawn: %s", name);
-						::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+						SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+						DrawFormatStringToHandle(static_cast<int>(sp.x) + Scene::Tutorial::BUTTON_UI_TEXT_OFFSET_X, static_cast<int>(sp.y), GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b), fontMedium, "Spawn: %s", name);
+						SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 					}
 				}
 			}
 		}
 	}
 
+
 	for (auto& t : target) if (t) t->Draw();
 	EnemyManager::GetIns().Draw();
 	EffectManager::GetIns().Draw();
-
 	ProjectileManager::GetIns().Draw();
 	ItemManager::GetIns().Draw();
 	player.Draw();
@@ -268,6 +307,7 @@ void TutorialScene::Draw() {
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
 	DrawBox(0, System::Window::CENTER_Y - Scene::Tutorial::DIALOG_Y_POS, Scene::Tutorial::DIALOG_X2_POS, System::Window::CENTER_Y + Scene::Tutorial::DIALOG_Y_POS, GetColor(Global::Palette::BLACK.r, Global::Palette::BLACK.g, Global::Palette::BLACK.b), true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 
 	const int colorTitle = GetColor(Global::Palette::GREEN.r, Global::Palette::GREEN.g, Global::Palette::GREEN.b);
 	const int colorText = GetColor(Global::Palette::WHITE.r, Global::Palette::WHITE.g, Global::Palette::WHITE.b);
@@ -278,7 +318,6 @@ void TutorialScene::Draw() {
 	const int TEXT_X = 20;
 	const int TEXT_Y = 300;
 	const int LINE = 30;
-
 
 	std::string moveUpKey = TextManager::GetIns().GetActionKeyString(ActionID::MOVE_FORWARD);
 	std::string moveDownKey = TextManager::GetIns().GetActionKeyString(ActionID::MOVE_BACK);
@@ -294,7 +333,7 @@ void TutorialScene::Draw() {
 	std::string nextWepKey = TextManager::GetIns().GetActionKeyString(ActionID::WEAPON_NEXT);
 	std::string pauseKey = TextManager::GetIns().GetActionKeyString(ActionID::PAUSE);
 
-
+	//チュートリアル用説明
 	switch (currentPhase) {
 	case TutorialPhase::MOVEMENT:
 		DrawStringToHandle(TEXT_X, TEXT_Y, "[MOVEMENT]", colorTitle, fontLarge);
@@ -320,16 +359,19 @@ void TutorialScene::Draw() {
 			DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 11, "まっすぐ追いかけて攻撃してきます。", colorText, fontSmall);
 			DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 12, "至って普通の敵です。", colorText, fontSmall);
 		}
+
 		else if (currentEnemyInfo == 1) {
 			DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 10, "< ライフル >", colorWarning, fontSmall);
 			DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 11, "中距離を保って弾を撃ってきます。", colorText, fontSmall);
 			DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 12, "１発のダメージは少なめ", colorText, fontSmall);
 		}
+
 		else if (currentEnemyInfo == 2) {
 			DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 10, "< スナイパー >", colorWarning, fontSmall);
 			DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 11, "長距離から撃ってきます。", colorText, fontSmall);
 			DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 12, "レーザーに注意。", colorText, fontSmall);
 		}
+
 		else if (currentEnemyInfo == 3) {
 			DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 10, "< 爆弾 >", colorWarning, fontSmall);
 			DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 11, "近づいて少し経つと爆発します。", colorText, fontSmall);
@@ -355,15 +397,19 @@ void TutorialScene::Draw() {
 			case WeaponID::PIS:
 				DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 8, "<ハンドガン>", colorWarning, fontSmall);
 				DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 9, "デフォルト武器。　弾が無限", colorText, fontSmall); break;
+
 			case WeaponID::AR:
 				DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 8, "<アサルトライフル>", colorWarning, fontSmall);
 				DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 9, "火力、弾速、連射速度全て標準。", colorText, fontSmall); break;
+
 			case WeaponID::SR:
 				DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 8, "<スナイパーライフル>", colorWarning, fontSmall);
 				DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 9, "単発高火力。弱点ヒットで1撃", colorText, fontSmall); break;
+
 			case WeaponID::SMG:
 				DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 8, "<サブマシンガン>", colorWarning, fontSmall);
 				DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 9, "近距離最強。遠距離は苦手", colorText, fontSmall); break;
+
 			case WeaponID::LR:
 				DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 8, "<ロケットランチャー>", colorWarning, fontSmall);
 				DrawStringToHandle(TEXT_X, TEXT_Y + LINE * 9, "範囲高火力武器。自爆に注意", colorText, fontSmall); break;

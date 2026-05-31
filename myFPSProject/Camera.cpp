@@ -1,12 +1,11 @@
-﻿#include "Camera.h"
+﻿#include "Param/Global.h"
+#include "Param/System.h"
+#include "Camera.h"
 #include "Time.h"
 #include "ConfigManager.h"
-#include "Param/Global.h"
-#include "Param/System.h"
 
 #include <cmath>
 
-/*コンストラクタ*/
 Camera::Camera() 
 	: camPos(VGet(0.0f, 0.0f, 0.0f)) 
 	, yaw(0.0f)
@@ -18,8 +17,8 @@ Camera::Camera()
 }
 
 void Camera::Update(VECTOR Pos) {
-	//座標を得る
 	camPos = Pos;
+
 	float dt = Time::GetIns().GetDelta();
 	float dt60 = Global::Math::FPS_BASE * dt;
 
@@ -36,8 +35,10 @@ void Camera::Update(VECTOR Pos) {
 	//マウス
 	int deltaX = System::Window::CENTER_X - mouseX;
 	int deltaY = System::Window::CENTER_Y - mouseY;
+
 	yaw -= deltaX * mouseSens;
 	pitch += deltaY * mouseSens;
+
 	SetMousePoint(System::Window::CENTER_X, System::Window::CENTER_Y);
 
 	//コントローラー　
@@ -50,13 +51,14 @@ void Camera::Update(VECTOR Pos) {
 
 	yaw += moveY;
 	pitch += moveP;
-
 	pendingRecoilYaw -= moveY;
 	pendingRecoilPitch -= moveP;
+
 	//リコイルのリカバリー
 	if (recovery) {
 		recoilYaw += moveY;
 		recoilPitch += moveP;
+
 		//累積されたリコイル量に基づき、回復量を計算
 		float recY = recoilYaw * System::Camera::RECOVERY_SPEED * dt;
 		float recP = recoilPitch * System::Camera::RECOVERY_SPEED * dt;
@@ -67,6 +69,7 @@ void Camera::Update(VECTOR Pos) {
 		recoilYaw -= recY;
 		recoilPitch -= recP;
 	}
+
 	else {
 		recoilYaw = 0.0f;
 		recoilPitch = 0.0f;
@@ -75,22 +78,12 @@ void Camera::Update(VECTOR Pos) {
 	//補正
 	if (pitch > System::Camera::CAM_ANGLESNAP_PITCH) pitch = System::Camera::CAM_ANGLESNAP_PITCH;
 	if (pitch < -System::Camera::CAM_ANGLESNAP_PITCH) pitch = -System::Camera::CAM_ANGLESNAP_PITCH;
-
 	if (yaw > System::Camera::CAM_ANGLESNAP_YAW) yaw -= System::Camera::YAW_SNAP;
 	if (yaw < -System::Camera::CAM_ANGLESNAP_YAW) yaw += System::Camera::YAW_SNAP;
 
 }
 
-void Camera::AddAngle(float deltaYaw, float deltaPitch){
-	//反動の加算
-	pendingRecoilYaw += deltaYaw;
-	pendingRecoilPitch += deltaPitch;
-}
 
-void Camera::SetAngle(float newYaw, float newPitch) {
-	yaw = newYaw;
-	pitch = newPitch;
-}
 void Camera::Move(float fov) {
 	float camYaw = yaw;
 	float camPitch = pitch;
@@ -113,16 +106,32 @@ void Camera::Move(float fov) {
 }
 
 
+void Camera::AddAngle(float deltaYaw, float deltaPitch){
+	//反動の加算
+	pendingRecoilYaw += deltaYaw;
+	pendingRecoilPitch += deltaPitch;
+}
+
+
+void Camera::SetAngle(float newYaw, float newPitch) {
+	yaw = newYaw;
+	pitch = newPitch;
+}
+
+
 void Camera::SetPos(VECTOR pos) {
 	camPos = pos;
 }
-/*プレイヤーから見た前のベクトルの方向を得る*/
+
+
+//プレイヤーから見た前のベクトルの方向を得る
 void Camera::GetForwardVec(VECTOR& forward, VECTOR& right) const {
 	forward = VGet(sinf(yaw * Global::Math::DEG_TO_RAD), 0.0f, cosf(yaw * Global::Math::DEG_TO_RAD));
 	right = VGet(forward.z, 0.0f, -forward.x);
 }
 
-/*カメラの向いている方向を前としたベクトルを得る*/
+
+//カメラの向いている方向を前としたベクトルを得る
 VECTOR Camera::GetLookDirection()const {
 	VECTOR out;
 	float camYaw = yaw;

@@ -24,7 +24,7 @@ private:
 	bool recovery;		//反動を徐々に回復させるか
 
 public:
-	Camera();	//コンストラクタ
+	Camera();
 	
 	/// <summary>
 	/// 入力を得て、カメラの位置と向きを更新する関数
@@ -33,22 +33,16 @@ public:
 	void Update(VECTOR Pos);
 
 	/// <summary>
-	/// カメラに角度を加算する　（反動を加えるときなどに使用）
-	/// </summary>
-	/// <param name="deltaYaw">水平加算量</param>
-	/// <param name="deltaPitch">垂直加算量</param>
-	void AddAngle(float deltaYaw, float deltaPitch);
-
-	void SetAngle(float newYaw, float newPitch);
-	/// <summary>
 	/// 位置と向きの更新を反映させる
 	/// </summary>
 	/// <param name="fov">視野角</param>
 	void Move(float fov);
 
+
+	void AddAngle(float deltaYaw, float deltaPitch);
+	void SetAngle(float newYaw, float newPitch);
 	void SetPos(VECTOR pos);
 	void SetRoll(float newRoll) { roll = newRoll; }
-
 	VECTOR GetPos() const { return camPos; }
 	float GetYaw()const { return yaw; }
 	float GetPitch()const { return pitch; }

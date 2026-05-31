@@ -27,7 +27,6 @@ public:
     /// </summary>
     void UpdatePhysics();
 
-    
 	/// <summary>
 	/// 経路探索　滑っても違和感ないよう独自化
 	/// </summary>

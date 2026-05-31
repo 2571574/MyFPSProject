@@ -4,7 +4,7 @@
 #include<memory>
 
 /// <summary>
-/// ドロップアイテム１つを管理するクラス
+/// ドロップアイテムを管理するクラス
 /// </summary>
 class WeaponItem
 {
@@ -16,6 +16,7 @@ private:
 
 	int fontItemAmmo = -1;	//残弾数のフォント
 	int fontItemName = -1;	//武器名のフォント
+
 public:
 	WeaponItem(VECTOR pos, std::unique_ptr<Weapon> weapon);
 	~WeaponItem() = default;
@@ -26,7 +27,7 @@ public:
 	/// <summary>
 	/// 落ちている武器を拾う。
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>拾った武器のスマートポインタ</returns>
 	std::unique_ptr<Weapon>PickUp() {
 		alive = false;
 		return std::move(droppedWeapon);

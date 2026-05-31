@@ -28,6 +28,7 @@ Player::Player(VECTOR pos, Camera* camera, PlayMode mode)
 {
 	hud = std::make_unique<HUD>(this);
 
+	//モードごとの武器の初期化
 	slot.push_back(std::make_unique<Weapon>(PLAYER_GUN::PISTOL));
 	if (currentMode == PlayMode::MODE_EASY) {
 		maxWeaponSlot = Chara::Player::MAX_WEAPON_SLOT_EASY_NORMAL;
@@ -53,14 +54,17 @@ Player::~Player() {}
 
 void Player::Update() {
 	ClearTargeted();
+
 	float dt = Time::GetIns().GetDelta();
 	float dt60 = Global::Math::FPS_BASE * dt;
+
 	if (slidingCT > 0.0f) {
 		slidingCT -= dt;
 		if (slidingCT <= 0.0f) {
 			slidingCT = 0.0f;
 		}
 	}
+
 	// 移動入力を取得
 	VECTOR moveVec = VGet(0.0f, 0.0f, 0.0f);
 	cam->GetForwardVec(forwardVec, rightVec);
@@ -130,7 +134,7 @@ void Player::Update() {
 			}
 		}
 
-		// ジャンプの入力で瞬間的に上に加速
+		// ジャンプ
 		if (InputManager::GetIns().IsActionHold(ActionID::JUMP) && onGround) {
 			velocity.y += Chara::Player::JUMP_POWER;
 		}
@@ -143,9 +147,9 @@ void Player::Update() {
 	}
 
 	isWallRunning = false;
-	// 空中でかつ一定の水平速度がある場合のみ発動
+	// 空中でかつ一定の水平速度がある場合
 	if (!onGround && stageHandle != -1 && VSize(VGet(velocity.x, 0.0f, velocity.z)) > Chara::Player::WALL_RUN_MIN_SPEED) {
-		// プレイヤーの中心の高さから左右にレイを飛ばす
+
 		VECTOR checkBasePos = VAdd(position, VGet(0.0f, currentHeight * 0.5f, 0.0f));
 		VECTOR rightEnd = VAdd(checkBasePos, VScale(rightVec, Chara::Player::WALL_RUN_RAY_LENGTH));
 		VECTOR leftEnd = VAdd(checkBasePos, VScale(rightVec, -Chara::Player::WALL_RUN_RAY_LENGTH));
@@ -159,6 +163,7 @@ void Player::Update() {
 			wallRunDir = 1;
 			wallNormal = rightHit.Normal;
 		}
+
 		else if (leftHit.HitFlag == TRUE && std::abs(leftHit.Normal.y) < Chara::Player::WALL_RUN_NORMAL_Y_MAX) {
 			isWallRunning = true;
 			wallRunDir = -1;
@@ -166,17 +171,16 @@ void Player::Update() {
 		}
 
 		if (isWallRunning) {
-			// 重力による過剰な落下を制限
+			//重力による落下の制限
 			if (velocity.y < Chara::Player::WALL_RUN_FALL_SPEED) {
 				velocity.y = Chara::Player::WALL_RUN_FALL_SPEED;
 			}
 
-			// 走行中、壁から離れてしまわないように壁の逆方向に微小な力をかけ続ける
+			// 走行中、壁から離れないように壁の逆方向に力をかけ続ける
 			velocity = VSub(velocity, VScale(wallNormal, 0.02f));
 
 			// 壁ジャンプ入力の検知
 			if (InputManager::GetIns().IsActionTrigger(ActionID::JUMP)) {
-				// 法線方向（壁から離れる方向）、上方向、前方向にそれぞれ推力をかける
 				velocity.x = wallNormal.x * Chara::Player::WALL_JUMP_PUSH_POWER;
 				velocity.y = Chara::Player::WALL_JUMP_UP_POWER;
 				velocity.z = wallNormal.z * Chara::Player::WALL_JUMP_PUSH_POWER;
@@ -204,6 +208,7 @@ void Player::Update() {
 			next++;
 			if (next >= slot.size()) next = 0;
 		}
+
 		if (InputManager::GetIns().IsActionTrigger(ActionID::WEAPON_PREV)) {
 			next--;
 			if (next < 0) next = slot.size() - 1;
@@ -301,8 +306,11 @@ void Player::Update() {
 	UpdateFootstep();
 }
 
+
 void Player::Draw() {
+	//武器の描画
 	Weapon* currentWeapon = GetWeapon();
+
 	if (currentWeapon) {
 		VECTOR forward = cam->GetLookDirection();
 		VECTOR hforward, trueRight;
@@ -329,6 +337,8 @@ void Player::Draw() {
 		drawPos = VAdd(drawPos, VScale(up, swayY));
 		currentWeapon->Draw(drawPos, forward, right, up, isAds, true);
 	}
+
+
 	if (hud) hud->Draw();
 }
 
@@ -365,6 +375,8 @@ VECTOR Player::GetCamDirection()const {
 
 bool Player::AddWeapon(std::unique_ptr<Weapon>& newWeapon) {
 	if (!newWeapon) return false;
+
+	//同じ種類の武器を持っている場合、弾薬をまとめる
 	for (auto& w : slot) {
 		if (w->IsSameType(newWeapon->GetSpec())) {
 			int getAmmo = newWeapon->GetAmmo() + newWeapon->GetReserveAmmo();
@@ -374,22 +386,26 @@ bool Player::AddWeapon(std::unique_ptr<Weapon>& newWeapon) {
 		}
 	}
 
+	//空きスロットがある場合はそこに入れる
 	if (slot.size() < maxWeaponSlot + 1) {
 		slot.push_back(std::move(newWeapon));
 		SwitchWeapon((int)slot.size() - 1);
 		return true;
 	}
 
+	//空きスロットがない場合、現在の武器を落として新しい武器を入れる
 	int dropIndex = (currentWeaponIndex == 0) ? 1 : currentWeaponIndex;
 	if (dropIndex >= slot.size()) return false;
 
 	int totalAmmo = slot[dropIndex]->GetAmmo() + slot[dropIndex]->GetReserveAmmo();
+
 	if (totalAmmo > 0) {
 		VECTOR dropPos = VAdd(position, VGet(0.0f, Chara::Player::DROP_ITEM_Y_OFFSET, 0.0f));
 
 		auto dropItem = std::make_unique<WeaponItem>(dropPos, std::move(slot[dropIndex]));
 		ItemManager::GetIns().SpawnDroppedItem(std::move(dropItem));
 	}
+
 	else {
 		slot[dropIndex].reset();
 	}
@@ -417,6 +433,7 @@ void Player::UpdateFootstep() {
 			moveDistance -= Chara::Player::STEP_LENGTH;
 		}
 	}
+
 	else {
 		moveDistance = 0.0f;
 	}

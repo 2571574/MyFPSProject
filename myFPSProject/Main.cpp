@@ -1,19 +1,20 @@
 ﻿#include "DxLib.h"
-#include "SceneManager.h"
+#include "Param/Global.h"
+#include "Param/System.h"
+#include "Status.h"
 #include "CheckKey.h"
+#include "SceneManager.h"
 #include "ConfigManager.h"
 #include "SoundManager.h"
 #include "Time.h"
-#include "Status.h"
-#include "Param/Global.h"
-#include "Param/System.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	SetGraphMode(System::Window::WINDOW_WIDTH, System::Window::WINDOW_HEIGHT, System::Window::WINDOW_COLORBIT);
 	SetMainWindowText("Killing Arena");
-	SetEnableXAudioFlag(TRUE);
-	SetWaitVSyncFlag(FALSE);
+	SetEnableXAudioFlag(TRUE);	//サウンドにXAudioを使用
+	SetWaitVSyncFlag(FALSE);	//垂直同期はオフ
+
 	// DXライブラリの初期化
 	if (DxLib_Init() == -1) {
 		return -1;
@@ -39,8 +40,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		CheckKey::GetIns().Input();	//入力を取得
 		ClearDrawScreen();
 		SoundManager::GetIns().Update();
-		ins.Update();		//更新
-		ins.Draw();		//描画
+		ins.Update();
+		ins.Draw();	
 		ScreenFlip();
 		if (ins.GetExitTag()) {
 			break;

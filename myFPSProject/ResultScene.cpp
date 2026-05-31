@@ -1,13 +1,13 @@
-﻿#include "ResultScene.h"
+﻿#include "Param/Global.h"
+#include "Param/Scene.h"
+#include "Param/System.h"
 #include "TitleScene.h"
+#include "ResultScene.h"
 #include "InputManager.h"
 #include "EnemyManager.h"
 #include "ResourceManager.h"
 #include "TextManager.h"
 #include "SoundManager.h"
-#include "Param/Global.h"
-#include "Param/Scene.h"
-#include "Param/System.h"
 
 ResultScene::ResultScene(SceneManager* manager, int bghandle)
 	: BaseScene(manager)
@@ -46,8 +46,8 @@ void ResultScene::Draw() {
 
 	const GameResult& result = manager->GetResult();
 
+	//タイトルとスコア
 	::DrawStringToHandle(Scene::Result::RESULT_TITLE_X, Scene::Result::RESULT_TITLE_Y, "Result", white, fontLarge);
-
 	::DrawFormatStringToHandle(System::Window::CENTER_X + Scene::Result::RESULT_SCORE_OFFSET_X, Scene::Result::RESULT_SCORE_Y, yellow, fontLarge, "Score : %d", result.currentScore);
 
 	//死因
@@ -102,6 +102,7 @@ void ResultScene::Draw() {
 	}
 
 
+	//下部の操作ガイド
 	::DrawBox(0, System::Window::WINDOW_HEIGHT - Scene::Result::RESULT_HELP_BAR_HEIGHT, System::Window::WINDOW_WIDTH, System::Window::WINDOW_HEIGHT, GetColor(Global::Palette::BLACK.r, Global::Palette::BLACK.g, Global::Palette::BLACK.b), TRUE);
 
 	std::string menuSel = TextManager::GetIns().GetActionKeyString(ActionID::MENU_SELECT);

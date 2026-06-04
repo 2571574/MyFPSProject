@@ -19,7 +19,7 @@ HPが尽きるまでにスコアをどれだけ稼げるかを競う、アーケ
 
 【動作確認スペック】
 
-・OS：Windows 11 Home 23H2
+・OS：Windows 11 Home 25H2
 
 ・CPU：Intel Core i7-12700
 

@@ -19,7 +19,7 @@ HPが尽きるまでにスコアをどれだけ稼げるかを競う、アーケ
 
 【動作確認スペック】
 
-・OS：Windows 11 Home 23H2
+・OS：Windows 11 Home 25H2
 
 ・CPU：Intel Core i7-12700
 
@@ -35,8 +35,6 @@ https://github.com/2571574/MyFPSProject/releases/tag/v1.0.0
 2.ZIPファイルを展開(解凍)します。
 
 3.展開されたフォルダ内にある、'MyFPSProject.exe'を実行してください。
-
-##動作確認環境
 
 ## 操作方法
 ### メニュー
